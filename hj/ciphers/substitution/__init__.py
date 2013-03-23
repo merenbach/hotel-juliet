@@ -1,4 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from ciphers.substitution.base import *
+from .base import *
+from .monoalphabetic import *
+from .polyalphabetic import *

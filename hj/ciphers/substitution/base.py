@@ -1,10 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from ciphers.substitution import *
+from .. import Cipher
 
-class SubCipher(object):
-    """ Abstract-ish base class for ciphers
+class SubCipher(Cipher):
+    """ Abstract-ish base class for substitution ciphers
     
     Attributes
     ----------

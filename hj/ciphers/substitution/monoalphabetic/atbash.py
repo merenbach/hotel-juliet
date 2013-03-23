@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from ciphers.substitution.monoalphabetic import MonoSubCipher
+from . import MonoSubCipher
 from utils.alphabet import *
 
 class AtbashCipher(MonoSubCipher):

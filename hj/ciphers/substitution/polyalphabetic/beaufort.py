@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from ciphers.substitution.polyalphabetic import PolySubCipher
+from . import PolySubCipher
 from utils.tabula_recta import *
 
 class BeaufortCipher(PolySubCipher):

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from ciphers.substitution.polyalphabetic.vigenere import VigenereCipher
+from . import VigenereCipher
 from utils.tabula_recta import *
 
 class TrithemiusCipher(VigenereCipher):

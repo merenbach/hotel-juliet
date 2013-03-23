@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from ciphers.substitution import *
+from .. import SubCipher
 
 class MonoSubCipher(SubCipher):
     """ Monoalphabetic substitution transcoder """
