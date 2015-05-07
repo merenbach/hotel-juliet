@@ -117,13 +117,23 @@ class Alphabet(UserList):
         
         return affine_transform(self.data, m, b, inverse=inverse)
 
-    def reversed(self):
-        """ Return a reversed version of this alphabet """
-        return Alphabet(self._reversed(), uniqueify=False)
-        
-    def _reversed(self):
-        """ Return a reversed version of this alphabet as a string """
-        return flipped(self.data)
+    # def __getitem__(self, i):
+    #     """ Return the proper type when doing a slice.
+
+    #     http://stackoverflow.com/questions/27552379/why-a-userlist-subclass-appears-to-return-the-wrong-type-for-slicing
+
+    #     """
+    #     res = super().__getitem__(i)
+    #     if isinstance(i, slice):
+    #         res = type(self)(res)
+    #     return res
+
+    def flipped(self):
+        """ Return a reversed version of this alphabet.
+
+        """
+        transformed = flipped(self)
+        return Alphabet(transformed, uniqueify=False)
 
     def keyed(self, keyword):
         """ Return a "codeword" version of this alphabet """
@@ -159,7 +169,7 @@ class Alphabet(UserList):
         return Alphabet(self._wrapped(-by), uniqueify=False)
     
     def __repr__(self):
-        return repr(u''.join((str(e) for e in self.data)))
+        return repr(''.join((str(e) for e in self)))
 
     def __len__(self):
         alphabet = self.data
