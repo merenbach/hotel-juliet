@@ -1,9 +1,9 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from utils.alphabet import *
+from utils.alphabet import Alphabet
 
-class TabulaRecta(object):
+
+class TabulaRecta:
     def __init__(self, msg_alphabet=None, key_alphabet=None):
         if not msg_alphabet:
             msg_alphabet = Alphabet()
@@ -11,8 +11,8 @@ class TabulaRecta(object):
             key_alphabet = msg_alphabet
         self.msg_alphabet = msg_alphabet
         self.key_alphabet = key_alphabet
-        row_keys = tuple(k for k in key_alphabet.elements)
-        self.keyed_table = dict((row_keys[i], msg_alphabet << i) for i in range(len(key_alphabet.elements)))
+        row_keys = tuple(k for k in key_alphabet)
+        self.keyed_table = dict((row_keys[i], msg_alphabet << i) for i in range(len(key_alphabet)))
         self.index_table = tuple(msg_alphabet << i for i in range(len(key_alphabet)))
 
     def key_row(self, k):
@@ -33,7 +33,7 @@ class TabulaRecta(object):
             if idx != -1:
                 return r.element(idx)
         return None
-        
+
     def locate(self, msg_char, key_char):
         """ Locate character at intersection of character `a` with row occupant character `k` """
         """ Order here *is* important, but has nothing to do with rows vs. columns """

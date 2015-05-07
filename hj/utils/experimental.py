@@ -1,4 +1,3 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 from utils.alphabet import *
@@ -11,7 +10,7 @@ class KeyStream(object):
     def __init__(self, passphrase):
         """ We could accept a message ("autoclave element set"?) variable here and add that to the key stream as we go """
         self.passphrase = passphrase
-        super(KeyStream, self).__init__()
+        super().__init__()
     
     def __repr__(self):
         return repr(self.passphrase)
@@ -65,7 +64,7 @@ class AutoclaveKeyStream(KeyStream):
         if not alphabet:
             alphabet = Alphabet()
         self.message_stream = (e for e in alphabet.common(message))
-        return super(AutoclaveKeyStream, self).__init__(passphrase)
+        return super().__init__(passphrase)
     
     def hotel_juliet(self, passphrase):
         # Pop a character off
@@ -80,7 +79,7 @@ class ProgressiveKeyStream(KeyStream):
         if not alphabet:
             alphabet = Alphabet()
         self.alphabet = alphabet
-        return super(ProgressiveKeyStream, self).__init__(passphrase=passphrase)
+        return super().__init__(passphrase=passphrase)
     
     def advance(self, passphrase, by=1):
         # Experimental method to shift the letters in the passphrase

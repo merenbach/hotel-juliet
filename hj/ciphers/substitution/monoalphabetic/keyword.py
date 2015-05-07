@@ -1,13 +1,22 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 from . import MonoSubCipher
-from utils.alphabet import *
+from utils.alphabet import Alphabet
+
 
 class KeywordCipher(MonoSubCipher):
-    ### Monoalphabetic cipher to shift letters based on a keyword
+    """ Shift letters based on a keyword.
+
+    Parameters
+    ----------
+    alphabet : utils.alphabet.Alphabet
+        An alphabet.
+    keyword : str
+        A keyword.
+
+    """
     def __init__(self, alphabet=None, keyword=None):
         if not alphabet:
             alphabet = Alphabet()
         transformed = alphabet.keyed(keyword)
-        super(KeywordCipher, self).__init__(alphabet, transformed)
+        super().__init__(alphabet, transformed)

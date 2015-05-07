@@ -1,7 +1,8 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 from .. import SubCipher
+from utils.tabula_recta import TabulaRecta
+
 
 class PolySubCipher(SubCipher):
     """ A representation of a tabula recta cipher """
@@ -11,7 +12,7 @@ class PolySubCipher(SubCipher):
         if not tabula_recta:
             tabula_recta = TabulaRecta()
         self.tabula_recta = tabula_recta
-        super(PolySubCipher, self).__init__()
+        super().__init__()
 
     def generate_cipher_func(reverse):
         """ Default to returning the input character. Override to actually encipher/decipher anything. """
@@ -28,15 +29,15 @@ class PolySubCipher(SubCipher):
         # Character n of the message should be transcoded with character (n % passphrase len) of the passphrase
         i = 0
         for c in s:
-            if c in self.tabula_recta.msg_alphabet.elements:
-                if self.autoclave and c in self.tabula_recta.key_alphabet.elements and not reverse:
+            if c in self.tabula_recta.msg_alphabet:
+                if self.autoclave and c in self.tabula_recta.key_alphabet and not reverse:
                     passphrase.append(c)
                 e = f(c, passphrase[i % len(passphrase)])
                 if e is not None:
                     i += 1
                     o.append(e)
                     # If we are in reverse and autoclave mode, append to the passphrase
-                    if self.autoclave and c in self.tabula_recta.key_alphabet.elements and reverse:
+                    if self.autoclave and c in self.tabula_recta.key_alphabet and reverse:
                         passphrase.append(e)
                 else:
                     # We should not get here since we're checking for alphabet membership above

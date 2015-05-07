@@ -1,29 +1,38 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 import string
+from .base import rotated, flipped
+from collections import UserList
 
-class Alphabet(object):
+
+class Alphabet(UserList):
     """
     Attributes
     ----------
     DEFAULT_ALPHABET : str
                        A Unicode string of characters to use when none are specified.
                        Alphabets may make use of non-string sequences for their members.
+
+    Parameters
+    ----------
+    initlist : sequence
+        A sequence.
+
+    uniqueify
+    nullchar
     """
-    DEFAULT_ALPHABET = unicode(string.ascii_uppercase)
+    DEFAULT_ALPHABET = string.ascii_uppercase
     
     """ Represent a string of unique characters """
-    def __init__(self, elements=None, uniqueify=True, nullchar=None):
-        if not elements:
+    def __init__(self, initlist=None, uniqueify=True, nullchar=None):
+        if not initlist:
             # If no alphabet is specified, use a "default" of ASCII uppercase
-            elements = self.DEFAULT_ALPHABET
+            initlist = self.DEFAULT_ALPHABET
         # Ensure that characters are unique
         if uniqueify:
             # Render the characters within the alphabet unique prior to storing them
-            self.elements = tuple(c for i, c in enumerate(elements) if not c in elements[:i])
-        else:
-            self.elements = tuple(elements)
+            initlist = [c for i, c in enumerate(initlist) if not c in initlist[:i]]
+        super().__init__(initlist=initlist)
     
     def element(self, i):
         """ Return the element at a given index.
@@ -38,7 +47,7 @@ class Alphabet(object):
         data-type : the element at the provided index, or `None` if not found.
         """
         try:
-            return self.elements[i]
+            return self.data[i]
         except IndexError:
             return None
 
@@ -55,7 +64,7 @@ class Alphabet(object):
         int : the index of the provided element, or `-1` if not found.
         """
         try:
-            return self.elements.index(c)
+            return self.data.index(c)
         except ValueError:
             return -1
 
@@ -106,7 +115,7 @@ class Alphabet(object):
                     return u''.join([elements[position(x)] for x in range(char_len)])
             return u''
         
-        return affine_transform(self.elements, m, b, inverse=inverse)
+        return affine_transform(self.data, m, b, inverse=inverse)
 
     def reversed(self):
         """ Return a reversed version of this alphabet """
@@ -114,7 +123,7 @@ class Alphabet(object):
         
     def _reversed(self):
         """ Return a reversed version of this alphabet as a string """
-        return self.elements[::-1]
+        return flipped(self.data)
 
     def keyed(self, keyword):
         """ Return a "codeword" version of this alphabet """
@@ -125,20 +134,16 @@ class Alphabet(object):
         # Restrict keyword to characters already in the alphabet
         # This helps to prevent inadvertent "extension" of the alphabet
         # This is more efficient but uniquifying throws an error
-        #return Uniqueifier().uniqueify([c for c in keyword if c in self.elements] + self.elements)
-        return self.common(tuple(keyword)) + self.elements
+        #return Uniqueifier().uniqueify([c for c in keyword if c in self.data] + self.data)
+        return self.common(list(keyword)) + self.data
 
     def _wrapped(self, offset):
         """ Return a wrapped copy (left shifted) of this alphabet as a string """
-        o = self.elements
-        if len(o) > 0:
-            offset %= len(o)
-            o = o[offset:] + o[:offset]
-        return o
+        return rotated(self, offset)
 
     def common(self, s):
         """ Return a supplied string stripped of characters not in this alphabet """
-        f = lambda c: c in self.elements
+        f = lambda c: c in self.data
         return filter(f, s)
 
     #def shifted(self, by):
@@ -154,10 +159,10 @@ class Alphabet(object):
         return Alphabet(self._wrapped(-by), uniqueify=False)
     
     def __repr__(self):
-        return repr(u''.join((str(e) for e in self.elements)))
+        return repr(u''.join((str(e) for e in self.data)))
 
     def __len__(self):
-        alphabet = self.elements
+        alphabet = self.data
         if not alphabet:
             alphabet = u''
         return len(alphabet)

@@ -1,12 +1,21 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 from . import MonoSubCipher
-from utils.alphabet import *
+from utils.alphabet import Alphabet
+
 
 class AtbashCipher(MonoSubCipher):
     def __init__(self, alphabet=None, processor=None):
+        """ Reverse alphabet.
+
+        Parameters
+        ----------
+        alphabet : utils.alphabet.Alphabet
+            An alphabet.
+        processor : ...
+
+        """
         if not alphabet:
             alphabet = Alphabet()
         transformed = alphabet.reversed()
-        super(AtbashCipher, self).__init__(alphabet, transformed)
+        super().__init__(alphabet, transformed)

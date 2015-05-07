@@ -1,7 +1,7 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 from .. import Cipher
+
 
 class SubCipher(Cipher):
     """ Abstract-ish base class for substitution ciphers
@@ -18,7 +18,7 @@ class SubCipher(Cipher):
         self.use_strings = use_strings
         # Set a null character for padding
         self.nullchar = nullchar
-        super(SubCipher, self).__init__()
+        super().__init__()
 
     def encode(self, s, strict=False, block=0):
         return self.transcode(s, strict=strict, block=block, reverse=False)
