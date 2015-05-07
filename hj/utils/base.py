@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 
+from collections import OrderedDict
 
-def rotated(sequence, offset):
+
+def rotated(seq, offset):
     """ Wrap a copy (left shifted) of the given sequence.
 
     Parameters
     ----------
-    sequence : sequence
-        A sequence (string, list, etc.) to process.
+    seq : sequence
+        A list, tuple, or string to process.
     offset : int
         Rotate by this offset.  Use negative numbers to reverse.
         If greater in magnitude than the length of the sequence,
@@ -23,39 +25,44 @@ def rotated(sequence, offset):
     which introduces additional complexity.
 
     """
-    if len(sequence) > 0:
-        offset %= len(sequence)
-        sequence = sequence[offset:] + sequence[:offset]
-    return sequence
+    if len(seq) > 0:
+        offset %= len(seq)
+        seq = seq[offset:] + seq[:offset]
+    return seq
 
 
-def flipped(sequence):
-    """ Reverse the given sequence.
+# def flipped(sequence):
+#     """ Reverse the given sequence.
 
-        Parameters
-        ----------
-        sequence : sequence
-            A sequence (string, list, etc.) to process.
+#         Parameters
+#         ----------
+#         sequence : sequence
+#             A sequence (string, list, etc.) to process.
 
-        Returns
-        -------
-        A reversed copy of the sequence.
+#         Returns
+#         -------
+#         A reversed copy of the sequence.
 
-    """
-    return sequence[::-1]
+#     """
+#     return sequence[::-1]
+#     # return list(reversed(sequence))
 
 
-def uniqued(sequence):
-    """ Remove duplicate elements from the given sequence, preserving order.
+# def uniqued(seq):
+#     """ Remove duplicate elements from the given sequence.
 
-        Parameters
-        ----------
-        sequence : sequence
-            A sequence (string, list, etc.) to process.
+#         Parameters
+#         ----------
+#         seq : sequence
+#             A list, tuple, or string to process.
 
-        Returns
-        -------
-        A "uniquified" copy of the sequence.
+#         Returns
+#         -------
+#         A "uniquified" copy of the sequence.
 
-    """
-    return sequence
+#     """
+#     d = OrderedDict.fromkeys(seq)
+#     # [TODO] this part is a kludge
+#     if isinstance(seq, str):
+#         d = ''.join(d)
+#     return type(seq)(d)

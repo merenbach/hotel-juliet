@@ -17,5 +17,5 @@ class AtbashCipher(MonoSubCipher):
         """
         if not alphabet:
             alphabet = Alphabet()
-        transformed = alphabet.flipped()
+        transformed = alphabet.reversed()
         super().__init__(alphabet, transformed)
