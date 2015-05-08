@@ -16,12 +16,14 @@ class BaseAlphabet(UserList):
         """ Shift to the left with the << operator.
 
         """
+        print('*** OPERATOR OVERLOADING MAY BE DEPRECATED')
         return self.rotated(by)
 
     def __rshift__(self, by):
         """ Shift to the right with the >> operator.
 
         """
+        print('*** OPERATOR OVERLOADING MAY BE DEPRECATED')
         return self.rotated(-by)
 
     def reversed(self):
@@ -61,6 +63,23 @@ class BaseAlphabet(UserList):
         if len(initlist) > 0:
             offset %= len(initlist)
             initlist = initlist[offset:] + initlist[:offset]
+        return type(self)(initlist)
+
+    def keyed(self, key):
+        """ Key a copy of this list.
+
+        Parameters
+        ----------
+        seq : sequence
+            A sequence with which to key this list.
+
+        Notes
+        -----
+        Only elements already in this list may be prepended.
+        Any resulting duplicates will be handled in the constructor.
+
+        """
+        initlist = [c for c in key if c in self] + self
         return type(self)(initlist)
 
 
@@ -159,11 +178,6 @@ class Alphabet(BaseAlphabet):
     #     if isinstance(i, slice):
     #         res = type(self)(res)
     #     return res
-
-    def keyed(self, keyword):
-        """ Return a "codeword" version of this alphabet """
-        keyed = [c for c in keyword if c in self] + self
-        return Alphabet(keyed)  # [TODO] this shouldn't necessarily always be true...?
 
     def common(self, s):
         """ Return a supplied string stripped of characters not in this alphabet """

@@ -18,5 +18,5 @@ class CaesarShiftCipher(MonoSubCipher):
     def __init__(self, alphabet=None, shift=3):
         if not alphabet:
             alphabet = Alphabet()
-        transformed = alphabet << shift
+        transformed = alphabet.rotated(shift)
         super().__init__(alphabet, transformed)
