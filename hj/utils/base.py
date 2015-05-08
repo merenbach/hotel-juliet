@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from collections import OrderedDict
+from fractions import gcd
 
 
 def _is_stringlike(seq):
@@ -126,6 +127,23 @@ def keyed(seq, key):
     processed = uniqued(processed)
     return type(seq)(processed)
 
+
+def coprime(a, b):
+    """ Determine whether `a` and `b` are coprime.
+
+    Parameters
+    ----------
+    a : int
+        An integer.
+    b : int
+        An integer.
+
+    Returns
+    -------
+    `True` if `a` and `b` are coprime, `False` otherwise.
+
+    """
+    return gcd(a, b) == 1
 
 # def flipped(sequence):
 #     """ Reverse the given sequence.

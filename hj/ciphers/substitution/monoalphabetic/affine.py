@@ -3,14 +3,7 @@
 
 from . import MonoSubCipher
 from utils.alphabet import Alphabet
-
-
-def coprime(a, b):
-    """ Determine whether `a` and `b` are coprime.
-
-    """
-    from fractions import gcd
-    return gcd(a, b) == 1
+from utils.base import coprime
 
 
 class AffineCipher(MonoSubCipher):

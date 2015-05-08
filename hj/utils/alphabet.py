@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import string
-from collections import UserList, OrderedDict
+from collections import UserList
 from .base import lrotated, uniqued, keyed
 
 
