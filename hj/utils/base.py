@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from collections import OrderedDict
+# from collections import OrderedDict
 
 
-def rotated(seq, offset):
-    """ Wrap a copy (left shifted) of the given sequence.
+def lrotated(seq, offset):
+    """ Left-rotate a copy of the given sequence.
 
     Parameters
     ----------
@@ -17,18 +17,22 @@ def rotated(seq, offset):
 
     Returns
     -------
-    A wrapped copy of the sequence.
+    out : type(seq)
+        A rotated copy of the given sequence.
 
     Notes
     -----
-    Right-shifting would require negating the offset values,
-    which introduces additional complexity.
+    Right-shifting by default would require negating the
+    offset values, thus introducing additional complexity.
 
     """
+    # [TODO]? if abs(offset) > len(seq):
+    # [TODO]? if seq:
     if len(seq) > 0:
         offset %= len(seq)
-        seq = seq[offset:] + seq[:offset]
-    return seq
+    # our API contract promises a copy even if len(seq) == 0
+    rotated = seq[offset:] + seq[:offset]
+    return type(seq)(rotated)
 
 
 # def flipped(sequence):

@@ -2,6 +2,7 @@
 
 from . import MonoSubCipher
 from utils.alphabet import Alphabet
+from utils import lrotated
 
 
 class CaesarShiftCipher(MonoSubCipher):
@@ -25,5 +26,5 @@ class CaesarShiftCipher(MonoSubCipher):
 
     def __init__(self, shift=DEFAULT_SHIFT, alphabet=None):
         alphabet = Alphabet(alphabet)
-        transformed = alphabet.rotated(shift)
+        transformed = lrotated(alphabet, shift)
         super().__init__(alphabet, transformed)

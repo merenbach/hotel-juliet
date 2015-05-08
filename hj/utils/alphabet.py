@@ -2,13 +2,21 @@
 
 import string
 from collections import UserList, OrderedDict
+from .base import lrotated as rotated
 
 
 class BaseAlphabet(UserList):
     """ Base alphabet class with only unique elements in initlist.
 
+    Raises
+    ------
+    TypeError
+        If `initlist` is not iterable.
+
     """
     def __init__(self, initlist=None):
+        # [TODO] convert to strings first
+        # initlist = [str(n) for n in initlist]
         initlist = OrderedDict.fromkeys(initlist)
         super().__init__(initlist=initlist)
 
@@ -17,14 +25,14 @@ class BaseAlphabet(UserList):
 
         """
         print('*** OPERATOR OVERLOADING MAY BE DEPRECATED')
-        return self.rotated(by)
+        return self._rotated(by)
 
     def __rshift__(self, by):
         """ Shift to the right with the >> operator.
 
         """
         print('*** OPERATOR OVERLOADING MAY BE DEPRECATED')
-        return self.rotated(-by)
+        return self._rotated(-by)
 
     def reversed(self):
         """ Reverse a copy of this list.
@@ -38,7 +46,7 @@ class BaseAlphabet(UserList):
         initlist = reversed(self)
         return type(self)(initlist)
 
-    def rotated(self, offset):
+    def _rotated(self, offset):
         """ Rotate a copy (left shifted) of this list.
 
         Parameters
@@ -59,10 +67,8 @@ class BaseAlphabet(UserList):
         which introduces additional complexity.
 
         """
-        initlist = self
-        if len(initlist) > 0:
-            offset %= len(initlist)
-            initlist = initlist[offset:] + initlist[:offset]
+        print("**** ALPHABET.ROTATED WILL BE DEPRECATED")
+        initlist = rotated(self)
         return type(self)(initlist)
 
     def keyed(self, key):
@@ -79,7 +85,8 @@ class BaseAlphabet(UserList):
         Any resulting duplicates will be handled in the constructor.
 
         """
-        initlist = [c for c in key if c in self] + self
+        # [TODO] convert to strings first??: initlist = [str(e) for e in key if e in self] + list(self)
+        initlist = [e for e in key if e in self] + list(self)
         return type(self)(initlist)
 
 
@@ -93,7 +100,7 @@ class Alphabet(BaseAlphabet):
 
     """
     DEFAULT_ALPHABET = string.ascii_uppercase
-    
+
     """ Represent a string of unique characters """
     def __init__(self, initlist=None):
         # If no alphabet is specified, use a "default" of ASCII uppercase
@@ -103,12 +110,12 @@ class Alphabet(BaseAlphabet):
 
     def element(self, i):
         """ Return the element at a given index.
-        
+
         Parameters
         ----------
         i : int
             An integer index to try to retrieve. Returns None on out-of-bounds.
-        
+
         Returns
         -------
         data-type : the element at the provided index, or `None` if not found.
@@ -121,12 +128,12 @@ class Alphabet(BaseAlphabet):
 
     def find(self, c):
         """ Return the index of a given element.
-        
+
         Parameters
         ----------
         c : data-type
             An element for which to retrieve an index.
-        
+
         Returns
         -------
         int : the index of the provided element, or `-1` if not found.
@@ -138,12 +145,13 @@ class Alphabet(BaseAlphabet):
 
     def affinal(self, m, b, inverse=False):
         return Alphabet(self._affinal(m, b, inverse=inverse))
-    
+
     def _affinal(self, m, b, inverse=False):
         def xgcd(a, b):
             """ Extended Euclidean algorithm to find divisors and solve Bezout's identity
                 Returns (x, y, gcd(a, b)) such that ax + by = gcd(a, b)
             """
+            print("**** ALPHABET._AFFINAL.XGCD DEPRECATED BY FRACTION.GCD LIBRARY FUNCTION")
             if b == 0:
                 return (1, 0, a)
             else:
@@ -163,9 +171,9 @@ class Alphabet(BaseAlphabet):
                         # Get the modular multiplicative inverse
                         mmi = (gcd[1] + char_len) % char_len
                         position = lambda x : (mmi * (x - b + char_len)) % char_len
-                    return u''.join([elements[position(x)] for x in range(char_len)])
-            return u''
-        
+                    return ''.join([elements[position(x)] for x in range(char_len)])
+            return ''
+
         return affine_transform(self.data, m, b, inverse=inverse)
 
     # def __getitem__(self, i):
@@ -173,6 +181,9 @@ class Alphabet(BaseAlphabet):
 
     #     http://stackoverflow.com/questions/27552379/why-a-userlist-subclass-appears-to-return-the-wrong-type-for-slicing
 
+    # Note: the problem here is that the init() method checks if the arg is a UserList and, if so, it changes it to a
+    #       regular list via [:] prior to storing it in the data ivar.  If "copying" through a slice returns a UserList,
+    #       something might break.
     #     """
     #     res = super().__getitem__(i)
     #     if isinstance(i, slice):
@@ -184,6 +195,18 @@ class Alphabet(BaseAlphabet):
         print('**** ALPHABET.COMMON WILL BE DEPRECATED')
         f = lambda c: c in self.data
         return filter(f, s)
-    
+
     # def __repr__(self):
     #     return repr(''.join((str(e) for e in self)))
+
+# Subclasses for each cipher?  Then rotate/key/etc. in init()...
+
+# class AtbashAlphabet(Alphabet):
+#     def __init__(self, initlist, shift):
+#         initlist.shift(3)
+#         super().__init__(initlist=initlist)
+
+# a =AtbashAlphabet
+
+# c = Cipher(a, b)
+# null char should be a "None" instead of an actual character?
