@@ -3,7 +3,7 @@
 
 import string
 from collections import UserList, OrderedDict
-from .base import lrotated as rotated
+from .base import lrotated, uniqued, keyed
 
 
 class BaseAlphabet(UserList):
@@ -17,23 +17,44 @@ class BaseAlphabet(UserList):
     """
     def __init__(self, initlist=None):
         # [TODO] convert to strings first
-        # initlist = [str(n) for n in initlist]
-        initlist = OrderedDict.fromkeys(initlist)
+        initlist = [str(n) for n in initlist]
+
+        # must be converted to a list first (above) or weird things
+        # will happen within `uniqued` and other utility methods
+        initlist = uniqued(initlist)
         super().__init__(initlist=initlist)
 
     def __lshift__(self, by):
         """ Shift to the left with the << operator.
 
+        Parameters
+        ----------
+        by : int
+            Shift by this many elements.
+
+        Returns
+        -------
+        out : type(self)
+            A left-shifted copy of this alphabet.
+
         """
-        print('*** OPERATOR OVERLOADING MAY BE DEPRECATED')
-        return self._rotated(by)
+        return lrotated(self, by)
 
     def __rshift__(self, by):
         """ Shift to the right with the >> operator.
 
+        Parameters
+        ----------
+        by : int
+            Shift by this many elements.
+
+        Returns
+        -------
+        out : type(self)
+            A right-shifted copy of this alphabet.
+
         """
-        print('*** OPERATOR OVERLOADING MAY BE DEPRECATED')
-        return self._rotated(-by)
+        return lrotated(self, -by)
 
     def reversed(self):
         """ Reverse a copy of this list.
@@ -47,48 +68,26 @@ class BaseAlphabet(UserList):
         initlist = reversed(self)
         return type(self)(initlist)
 
-    def _rotated(self, offset):
-        """ Rotate a copy (left shifted) of this list.
-
-        Parameters
-        ----------
-        offset : int
-            Rotate by this offset.  Use negative numbers to reverse.
-            If greater in magnitude than the length of the sequence,
-            a mod operation will be run.
-
-        Returns
-        -------
-        out : type(self)
-            A rotated copy of this list.
-
-        Notes
-        -----
-        Right-shifting would require negating the offset values,
-        which introduces additional complexity.
-
-        """
-        print("**** ALPHABET.ROTATED WILL BE DEPRECATED")
-        initlist = rotated(self)
-        return type(self)(initlist)
-
     def keyed(self, key):
-        """ Key a copy of this list.
+        """ Key a copy of this alphabet.
 
         Parameters
         ----------
         seq : sequence
-            A sequence with which to key this list.
+            A sequence with which to key this alphabet.
+
+        Returns
+        -------
+        out : type(self)
+            A keyed copy of this alphabet.
 
         Notes
         -----
         Only elements already in this list may be prepended.
-        Any resulting duplicates will be handled in the constructor.
+        Duplicates will be removed.
 
         """
-        # [TODO] convert to strings first??: initlist = [str(e) for e in key if e in self] + list(self)
-        initlist = [e for e in key if e in self] + list(self)
-        return type(self)(initlist)
+        return keyed(self, key)
 
 
 class Alphabet(BaseAlphabet):
