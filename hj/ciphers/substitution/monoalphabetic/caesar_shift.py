@@ -11,7 +11,7 @@ class CaesarShiftCipher(MonoSubCipher):
     ----------
     shift : int
         Shift by this many positions.
-    alphabet : utils.alphabet.Alphabet, optional
+    alphabet : sequence, optional
         An alphabet.
 
     Attributes

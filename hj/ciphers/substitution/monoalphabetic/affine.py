@@ -15,7 +15,7 @@ class AffineCipher(MonoSubCipher):
             A multiplier.
         b : int
             An offset.
-        alphabet : utils.alphabet.Alphabet, optional
+        alphabet : sequence, optional
             An alphabet.
 
         Raises

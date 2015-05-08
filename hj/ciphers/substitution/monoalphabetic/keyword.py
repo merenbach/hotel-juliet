@@ -11,7 +11,7 @@ class KeywordCipher(MonoSubCipher):
     ----------
     keyword : str
         A keyword.
-    alphabet : utils.alphabet.Alphabet, optional
+    alphabet : sequence, optional
         An alphabet.
 
     """

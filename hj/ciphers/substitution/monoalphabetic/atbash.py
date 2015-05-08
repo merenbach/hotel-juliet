@@ -10,7 +10,7 @@ class AtbashCipher(MonoSubCipher):
 
         Parameters
         ----------
-        alphabet : utils.alphabet.Alphabet, optional
+        alphabet : sequence, optional
             An alphabet.
 
         """

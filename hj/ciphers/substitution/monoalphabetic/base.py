@@ -4,7 +4,16 @@ from .. import SubCipher
 
 
 class MonoSubCipher(SubCipher):
-    """ Monoalphabetic substitution transcoder """
+    """ Monoalphabetic substitution transcoder.
+
+    Parameters
+    ----------
+    plaintext_alphabet : utils.alphabet.Alphabet
+        A plaintext alphabet.
+    ciphertext_alphabet : utils.alphabet.Alphabet
+        A ciphertext alphabet.
+
+    """
 
     def __init__(self, plaintext_alphabet, ciphertext_alphabet):
         """ Initialize with source and destination character strings """
