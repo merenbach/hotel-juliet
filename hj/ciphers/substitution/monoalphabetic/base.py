@@ -21,7 +21,8 @@ class MonoSubCipher(SubCipher):
         super().__init__()
 
     def __repr__(self):
-        return u'\n'.join(repr(e) for e in self.alphabets)
+        # [TODO] shouldn't need generator below
+        return '\n'.join(repr(e) for e in self.alphabets)
 
     def _transcode(self, s, strict=False, reverse=False):
         """ Convert elements within a sequence to their positional counterparts in another """

@@ -2,7 +2,14 @@
 
 from . import MonoSubCipher
 from utils.alphabet import Alphabet
-from fractions import gcd
+
+
+def coprime(a, b):
+    """ Determine whether `a` and `b` are coprime.
+
+    """
+    from fractions import gcd
+    return gcd(a, b) == 1
 
 
 class AffineCipher(MonoSubCipher):
@@ -14,7 +21,7 @@ class AffineCipher(MonoSubCipher):
         m : int
             A multiplier.
         b : int
-            An offset.
+            An offset.  Must range from `0` to `len(alphabet) - 1`.
         alphabet : sequence, optional
             An alphabet.
 
@@ -28,11 +35,9 @@ class AffineCipher(MonoSubCipher):
         """
         # We're cheating here by not actually having the decryption method
         # use the "inverse" argument
-        if b < 0:
-            raise ValueError('Offset cannot be less than zero.')
-        if b >= len(alphabet):
-            raise ValueError('Offset must be less than length of alphabet.')
-        if gcd(m, len(alphabet)) != 1:
+        if not 0 <= b < len(alphabet):
+            raise ValueError('Offset out of range [0, <length of alphabet>).')
+        if not coprime(m, len(alphabet)):
             raise ValueError('Multiplier and alphabet length must be coprime.')
 
         alphabet = Alphabet(alphabet)
