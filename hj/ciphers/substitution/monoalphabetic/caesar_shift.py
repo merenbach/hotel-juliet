@@ -5,18 +5,25 @@ from utils.alphabet import Alphabet
 
 
 class CaesarShiftCipher(MonoSubCipher):
-    """ Shift letters based on a number.
+    """ Shift characters based on a number.
 
     Parameters
     ----------
-    alphabet : utils.alphabet.Alphabet
-        An alphabet.
     shift : int
         Shift by this many positions.
+    alphabet : utils.alphabet.Alphabet, optional
+        An alphabet.
+
+    Attributes
+    ----------
+    DEFAULT_SHIFT : int
+        The traditional shift (3 places) for a Caesar cipher.
+        Here as a variable to avoid a "magic number."
 
     """
-    def __init__(self, alphabet=None, shift=3):
-        if not alphabet:
-            alphabet = Alphabet()
+    DEFAULT_SHIFT = 3
+
+    def __init__(self, shift=DEFAULT_SHIFT, alphabet=None):
+        alphabet = Alphabet(alphabet)
         transformed = alphabet.rotated(shift)
         super().__init__(alphabet, transformed)

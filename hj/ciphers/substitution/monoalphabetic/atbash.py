@@ -5,17 +5,15 @@ from utils.alphabet import Alphabet
 
 
 class AtbashCipher(MonoSubCipher):
-    def __init__(self, alphabet=None, processor=None):
-        """ Reverse alphabet.
+    def __init__(self, alphabet=None):
+        """ Shift letters based on reverse alphabet.
 
         Parameters
         ----------
-        alphabet : utils.alphabet.Alphabet
+        alphabet : utils.alphabet.Alphabet, optional
             An alphabet.
-        processor : ...
 
         """
-        if not alphabet:
-            alphabet = Alphabet()
+        alphabet = Alphabet(alphabet)
         transformed = alphabet.reversed()
         super().__init__(alphabet, transformed)

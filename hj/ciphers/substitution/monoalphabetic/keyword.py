@@ -5,18 +5,17 @@ from utils.alphabet import Alphabet
 
 
 class KeywordCipher(MonoSubCipher):
-    """ Shift letters based on a keyword.
+    """ Shift characters based on a keyword.
 
     Parameters
     ----------
-    alphabet : utils.alphabet.Alphabet
-        An alphabet.
     keyword : str
         A keyword.
+    alphabet : utils.alphabet.Alphabet, optional
+        An alphabet.
 
     """
-    def __init__(self, alphabet=None, keyword=None):
-        if not alphabet:
-            alphabet = Alphabet()
+    def __init__(self, keyword, alphabet=None):
+        alphabet = Alphabet(alphabet)
         transformed = alphabet.keyed(keyword)
         super().__init__(alphabet, transformed)

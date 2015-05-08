@@ -1,21 +1,22 @@
 # -*- coding: utf-8 -*-
 
 from . import MonoSubCipher
+from utils.alphabet import Alphabet
 from fractions import gcd
 
 
 class AffineCipher(MonoSubCipher):
-    def __init__(self, alphabet, m, b):
-        """ Shift letters based on mx + b.
+    def __init__(self, m, b, alphabet=None):
+        """ Shift characters based on mx + b.
 
         Parameters
         ----------
-        alphabet : utils.alphabet.alphabet
-            An alphabet.
         m : int
             A multiplier.
         b : int
             An offset.
+        alphabet : utils.alphabet.Alphabet, optional
+            An alphabet.
 
         Raises
         ------
@@ -34,5 +35,6 @@ class AffineCipher(MonoSubCipher):
         if gcd(m, len(alphabet)) != 1:
             raise ValueError('Multiplier and alphabet length must be coprime.')
 
+        alphabet = Alphabet(alphabet)
         transformed = alphabet.affinal(m, b)
         super().__init__(alphabet, transformed)

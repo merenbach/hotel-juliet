@@ -16,11 +16,10 @@ class MonoSubCipher(SubCipher):
 
     def _transcode(self, s, strict=False, reverse=False):
         """ Convert elements within a sequence to their positional counterparts in another """
-        if len(self.alphabets) == 2:
+        alphabets = self.alphabets
+        if len(alphabets) == 2:
             if reverse:
-                alphabets = (alphabet for alphabet in self.alphabets[::-1])
-            else:
-                alphabets = (alphabet for alphabet in self.alphabets)
+                alphabets = alphabets[::-1]
             table = dict(zip(*alphabets))
             if not strict:
                 return (table.get(c, c) for c in s)
