@@ -3,6 +3,17 @@
 
 from .. import SubCipher
 
+from collections import UserList
+
+
+class BaseTableau(UserList):
+    def __init__(self, *initlist):
+        super().__init__(initlist=initlist)
+
+
+class Tableau(BaseTableau):
+    pass
+
 
 class MonoSubCipher(SubCipher):
     """ Monoalphabetic substitution transcoder.
@@ -18,7 +29,7 @@ class MonoSubCipher(SubCipher):
 
     def __init__(self, plaintext_alphabet, ciphertext_alphabet):
         """ Initialize with source and destination character strings """
-        self.alphabets = (plaintext_alphabet, ciphertext_alphabet)
+        self.alphabets = Tableau(plaintext_alphabet, ciphertext_alphabet)
         super().__init__()
 
     def __repr__(self):

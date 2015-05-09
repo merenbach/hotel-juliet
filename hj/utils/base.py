@@ -58,7 +58,7 @@ def lrotated(seq, offset):
     return type(seq)(processed)
 
 
-def screened(seq, mesh):
+def _screened(seq, mesh):
     """ Filter elements from a copy of the given sequence.
 
     Parameters
@@ -77,26 +77,6 @@ def screened(seq, mesh):
 
     """
     processed = [e for e in seq if e in mesh]
-    if _is_stringlike(seq):
-        processed = ''.join(processed)
-    return type(seq)(processed)
-
-
-def uniqued(seq):
-    """ Remove duplicate elements from a copy of the given sequence.
-
-    Parameters
-    ----------
-    seq : sequence
-        A list, tuple, or string to process.
-
-    Returns
-    -------
-    out : type(seq)
-        A processed copy of the given sequence.
-
-    """
-    processed = OrderedDict.fromkeys(seq)
     if _is_stringlike(seq):
         processed = ''.join(processed)
     return type(seq)(processed)
@@ -123,8 +103,7 @@ def keyed(seq, key):
     Any resulting duplicates will be handled in the constructor.
 
     """
-    processed = screened(key, seq) + seq
-    processed = uniqued(processed)
+    processed = _screened(key, seq) + seq
     return type(seq)(processed)
 
 

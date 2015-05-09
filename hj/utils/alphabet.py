@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import string
-from collections import UserList
-from .base import lrotated, uniqued, keyed
+from collections import UserList, OrderedDict
+from .base import lrotated, keyed
 
 
 class BaseAlphabet(UserList):
@@ -14,14 +14,17 @@ class BaseAlphabet(UserList):
     TypeError
         If `initlist` is not iterable.
 
+    Notes
+    -----
+    The goal of this class is to make alternative alphabets, such as with
+    tuples instead of letters, a viable option if some unlikely situation
+    requires.  Also good for integers!
+
     """
     def __init__(self, initlist=None):
-        # [TODO] convert to strings first
-        initlist = [str(n) for n in initlist]
-
-        # must be converted to a list first (above) or weird things
-        # will happen within `uniqued` and other utility methods
-        initlist = uniqued(initlist)
+        if initlist:
+            # [TODO] convert to list first?
+            initlist = OrderedDict.fromkeys(initlist)
         super().__init__(initlist=initlist)
 
     def __lshift__(self, by):
@@ -68,35 +71,28 @@ class BaseAlphabet(UserList):
         initlist = reversed(self)
         return type(self)(initlist)
 
-    def keyed(self, key):
-        """ Key a copy of this alphabet.
-
-        Parameters
-        ----------
-        seq : sequence
-            A sequence with which to key this alphabet.
-
-        Returns
-        -------
-        out : type(self)
-            A keyed copy of this alphabet.
-
-        Notes
-        -----
-        Only elements already in this list may be prepended.
-        Duplicates will be removed.
-
-        """
-        return keyed(self, key)
-
 
 class Alphabet(BaseAlphabet):
-    """
+    """ A string-based alphabet.
+
     Attributes
     ----------
     DEFAULT_ALPHABET : str
         A Unicode string of characters to use when none are specified.
         Alphabets may make use of non-string sequences for their members.
+
+    Notes
+    -----
+    We convert to strings first.
+    Technically any hashable item (e.g., tuple) should work,
+    but it is difficult to test for every eventuality, and
+    there are optimizations (str.maketrans/str.translate)
+    that will remain unavailable if strings aren't assumed
+    *somewhere*:
+
+        initlist = [str(n) for n in initlist]  # example
+
+    Totally string-agnostic items get refactored into BaseAlphabet.
 
     """
     DEFAULT_ALPHABET = string.ascii_uppercase
@@ -106,6 +102,8 @@ class Alphabet(BaseAlphabet):
         # If no alphabet is specified, use a "default" of ASCII uppercase
         if not initlist:
             initlist = self.DEFAULT_ALPHABET
+        else:
+            initlist = [str(e) for e in initlist]
         super().__init__(initlist=initlist)
 
     def element(self, i):
@@ -142,6 +140,30 @@ class Alphabet(BaseAlphabet):
             return self.data.index(c)
         except ValueError:
             return -1
+
+    def keyed(self, key):
+        """ Key a copy of this alphabet.
+
+        Parameters
+        ----------
+        seq : sequence
+            A sequence with which to key this alphabet.
+
+        Returns
+        -------
+        out : type(self)
+            A keyed copy of this alphabet.
+
+        Notes
+        -----
+        Only elements already in this list may be prepended.
+        Duplicates will be removed.
+
+        This should work on non-string types, but hasn't been tested
+        extensively with them.
+
+        """
+        return keyed(self, key)
 
     def affinal(self, m, b, inverse=False):
         return Alphabet(self._affinal(m, b, inverse=inverse))
@@ -189,6 +211,9 @@ class Alphabet(BaseAlphabet):
     #     if isinstance(i, slice):
     #         res = type(self)(res)
     #     return res
+
+    def __str__(self):
+        return ''.join(self)
 
     def common(self, s):
         """ Return a supplied string stripped of characters not in this alphabet """
