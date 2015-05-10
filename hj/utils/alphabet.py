@@ -2,33 +2,19 @@
 # -*- coding: utf-8 -*-
 
 import string
-from collections import UserList, OrderedDict
+from collections import UserString, OrderedDict
 from .base import lrotated, keyed
 
 
-class BaseAlphabet(UserList):
+class BaseAlphabet(UserString):
     """ Base alphabet class with only unique elements in initlist.
 
-    Raises
-    ------
-    TypeError
-        If `initlist` is not iterable.
-
-    Notes
-    -----
-    The goal of this class is to make alternative alphabets, such as with
-    tuples instead of letters, a viable option if some unlikely situation
-    requires.  Also good for integers!
-
     """
-    def __init__(self, initlist=None):
-        if initlist:
-            # [TODO] convert to list first?
-            initlist = OrderedDict.fromkeys(initlist)
-        super().__init__(initlist=initlist)
+    # def __init__(self, seq):
+    #     super().__init__(seq)
 
     def __lshift__(self, by):
-        """ Shift to the left with the << operator.
+        """ Shift a copy of this alphabet to the left with the << operator.
 
         Parameters
         ----------
@@ -44,7 +30,7 @@ class BaseAlphabet(UserList):
         return lrotated(self, by)
 
     def __rshift__(self, by):
-        """ Shift to the right with the >> operator.
+        """ Shift a copy of this alphabet to the right with the >> operator.
 
         Parameters
         ----------
@@ -60,16 +46,81 @@ class BaseAlphabet(UserList):
         return lrotated(self, -by)
 
     def reversed(self):
-        """ Reverse a copy of this list.
+        """ Reverse a copy of this alphabet.
 
         Returns
         -------
         out : type(self)
-            A reversed copy of this list.
+            A reversed copy of this alphabet.
 
         """
-        initlist = reversed(self)
-        return type(self)(initlist)
+        seq = self.data[::-1]
+        return type(self)(seq)
+
+# class BaseAlphabet(UserList):
+#     """ Base alphabet class with only unique elements in initlist.
+
+#     Raises
+#     ------
+#     TypeError
+#         If `initlist` is not iterable.
+
+#     Notes
+#     -----
+#     The goal of this class is to make alternative alphabets, such as with
+#     tuples instead of letters, a viable option if some unlikely situation
+#     requires.  Also good for integers!
+
+#     """
+#     def __init__(self, initlist=None):
+#         if initlist:
+#             # [TODO] convert to list first?
+#             initlist = OrderedDict.fromkeys(initlist)
+#         super().__init__(initlist=initlist)
+
+#     def __lshift__(self, by):
+#         """ Shift to the left with the << operator.
+
+#         Parameters
+#         ----------
+#         by : int
+#             Shift by this many elements.
+
+#         Returns
+#         -------
+#         out : type(self)
+#             A left-shifted copy of this alphabet.
+
+#         """
+#         return lrotated(self, by)
+
+#     def __rshift__(self, by):
+#         """ Shift to the right with the >> operator.
+
+#         Parameters
+#         ----------
+#         by : int
+#             Shift by this many elements.
+
+#         Returns
+#         -------
+#         out : type(self)
+#             A right-shifted copy of this alphabet.
+
+#         """
+#         return lrotated(self, -by)
+
+#     def reversed(self):
+#         """ Reverse a copy of this list.
+
+#         Returns
+#         -------
+#         out : type(self)
+#             A reversed copy of this list.
+
+#         """
+#         initlist = reversed(self)
+#         return type(self)(initlist)
 
 
 class Alphabet(BaseAlphabet):
@@ -98,13 +149,13 @@ class Alphabet(BaseAlphabet):
     DEFAULT_ALPHABET = string.ascii_uppercase
 
     """ Represent a string of unique characters """
-    def __init__(self, initlist=None):
+    def __init__(self, seq=None):
         # If no alphabet is specified, use a "default" of ASCII uppercase
-        if not initlist:
-            initlist = self.DEFAULT_ALPHABET
+        if not seq:
+            seq = self.DEFAULT_ALPHABET
         else:
-            initlist = [str(e) for e in initlist]
-        super().__init__(initlist=initlist)
+            seq = ''.join(OrderedDict.fromkeys(str(seq)))
+        super().__init__(seq)
 
     def element(self, i):
         """ Return the element at a given index.
@@ -212,8 +263,8 @@ class Alphabet(BaseAlphabet):
     #         res = type(self)(res)
     #     return res
 
-    def __str__(self):
-        return ''.join(self)
+    # def __str__(self):
+    #     return ''.join(self)
 
     def common(self, s):
         """ Return a supplied string stripped of characters not in this alphabet """

@@ -57,7 +57,6 @@ class SubCipher(Cipher):
                 seq = s
         else:
             seq = s
-        seq = list(seq)
         if strict and block > 0:
             # Add a set of nulls (the same number as the block size) to the end
             seq.extend(self.nullchar * block)
