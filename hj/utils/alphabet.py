@@ -3,18 +3,61 @@
 
 import string
 from collections import UserString, OrderedDict
-from .base import lrotated, keyed
+from .base import keyed
 
 
-class BaseAlphabet(UserString):
-    """ Base alphabet class with only unique elements in initlist.
+class FlexibleSequenceMixin:
+    """ Extended methods for sequence (UserString, UserList) flexibility.
+
+    Notes
+    -----
+    This will cause weird errors if not mixed into a sequence-like (sub)class
+    such as `str`, `list`, `tuple`, `UserString`, `UserList`, etc.
+
+    [TODO] add robust tests for this class
 
     """
-    # def __init__(self, seq):
-    #     super().__init__(seq)
+    def _reversed(self):
+        """ Reverse a version of this sequence.
+
+        Returns
+        -------
+        out : sequence
+            A reversed copy of this sequence.
+
+        """
+        return self[::-1]  # reversed(self)
+
+    def _lrotated(self, offset):
+        """ Left-rotate a version of this sequence.
+
+        Parameters
+        ----------
+        offset : int
+            Rotate this number of elements.  Use negative numbers to reverse.
+            If greater in magnitude than the length of the sequence,
+            a mod operation will be run.
+
+        Returns
+        -------
+        out : sequence
+            A rotated version of this sequence.
+
+        Notes
+        -----
+        Right-shifting by default would require negating the
+        offset values, thus introducing additional complexity.
+
+        """
+        try:
+            offset %= len(self)
+        except ZeroDivisionError:
+            return self
+        else:
+            return self[offset:] + self[:offset]
 
     def __lshift__(self, by):
-        """ Shift a copy of this alphabet to the left with the << operator.
+        """ Shift a copy of this sequence to the left with the << operator.
 
         Parameters
         ----------
@@ -24,13 +67,14 @@ class BaseAlphabet(UserString):
         Returns
         -------
         out : type(self)
-            A left-shifted copy of this alphabet.
+            A left-shifted copy of this sequence.
 
         """
-        return lrotated(self, by)
+        seq = self._lrotated(by)
+        return type(self)(seq)
 
     def __rshift__(self, by):
-        """ Shift a copy of this alphabet to the right with the >> operator.
+        """ Shift a copy of this sequence to the right with the >> operator.
 
         Parameters
         ----------
@@ -40,22 +84,35 @@ class BaseAlphabet(UserString):
         Returns
         -------
         out : type(self)
-            A right-shifted copy of this alphabet.
+            A right-shifted copy of this sequence.
 
         """
-        return lrotated(self, -by)
+        seq = self._lrotated(-by)
+        return type(self)(seq)
 
-    def reversed(self):
-        """ Reverse a copy of this alphabet.
+    def __invert__(self):
+        """ Reverse a copy of this sequence.
 
         Returns
         -------
         out : type(self)
-            A reversed copy of this alphabet.
+            A reversed copy of this sequence.
 
         """
-        seq = self.data[::-1]
+        seq = self._reversed()
         return type(self)(seq)
+
+
+class BaseAlphabet(UserString, FlexibleSequenceMixin):
+    """ Base alphabet class with uniqueness requirement. """
+    def __init__(self, seq):
+        seq = ''.join(OrderedDict.fromkeys(str(seq)))
+        super().__init__(seq)
+# def joinit(self, seq, stringlike=False):
+#     processed = OrderedDict.fromkeys(seq)
+#     if stringlike:
+#         processed = ''.join(processed)
+#     return type(self)(processed)
 
 # class BaseAlphabet(UserList):
 #     """ Base alphabet class with only unique elements in initlist.
@@ -130,20 +187,6 @@ class Alphabet(BaseAlphabet):
     ----------
     DEFAULT_ALPHABET : str
         A Unicode string of characters to use when none are specified.
-        Alphabets may make use of non-string sequences for their members.
-
-    Notes
-    -----
-    We convert to strings first.
-    Technically any hashable item (e.g., tuple) should work,
-    but it is difficult to test for every eventuality, and
-    there are optimizations (str.maketrans/str.translate)
-    that will remain unavailable if strings aren't assumed
-    *somewhere*:
-
-        initlist = [str(n) for n in initlist]  # example
-
-    Totally string-agnostic items get refactored into BaseAlphabet.
 
     """
     DEFAULT_ALPHABET = string.ascii_uppercase
@@ -153,8 +196,6 @@ class Alphabet(BaseAlphabet):
         # If no alphabet is specified, use a "default" of ASCII uppercase
         if not seq:
             seq = self.DEFAULT_ALPHABET
-        else:
-            seq = ''.join(OrderedDict.fromkeys(str(seq)))
         super().__init__(seq)
 
     def element(self, i):
@@ -174,23 +215,6 @@ class Alphabet(BaseAlphabet):
             return self.data[i]
         except IndexError:
             return None
-
-    def find(self, c):
-        """ Return the index of a given element.
-
-        Parameters
-        ----------
-        c : data-type
-            An element for which to retrieve an index.
-
-        Returns
-        -------
-        int : the index of the provided element, or `-1` if not found.
-        """
-        try:
-            return self.data.index(c)
-        except ValueError:
-            return -1
 
     def keyed(self, key):
         """ Key a copy of this alphabet.

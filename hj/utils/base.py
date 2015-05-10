@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from collections import OrderedDict
+# from collections import OrderedDict
 from fractions import gcd
 
 
@@ -24,38 +24,6 @@ def _is_stringlike(seq):
 
     """
     return isinstance(seq[:], str)
-
-
-def lrotated(seq, offset):
-    """ Left-rotate a copy of the given sequence.
-
-    Parameters
-    ----------
-    seq : sequence
-        A list, tuple, or string to process.
-    offset : int
-        Rotate by this number of elements.  Use negative numbers to reverse.
-        If greater in magnitude than the length of the sequence,
-        a mod operation will be run.
-
-    Returns
-    -------
-    out : type(seq)
-        A processed copy of the given sequence.
-
-    Notes
-    -----
-    Right-shifting by default would require negating the
-    offset values, thus introducing additional complexity.
-
-    """
-    try:
-        offset %= len(seq)
-    except ZeroDivisionError:
-        processed = seq[:]  # our API contract promises a copy of `seq`
-    else:
-        processed = seq[offset:] + seq[:offset]
-    return type(seq)(processed)
 
 
 def _screened(seq, mesh):
