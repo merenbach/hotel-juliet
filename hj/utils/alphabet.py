@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import string
-from collections import OrderedDict, UserList, UserString
-from .base import keyed
+from collections import OrderedDict, UserString
 
 
 class Op:
@@ -39,13 +38,34 @@ class ReverseOp(Op):
         return ~a
 
 
+# class AlphabetSequence(UserList):
+#     def __init__(self, alphabet, initlist=None):
+#         self.alphabet = alphabet
+#         super().__init__(initlist=initlist)
+
+#     def alphabet1(self):
+#         return self.alphabet
+
+#     def alphabet2(self):
+#         a = self.alphabet
+#         for op in self:
+#             a = op.handle(a)
+#         return a
+
+
 class FlexibleSequenceMixin:
     """ Extended methods for sequence (UserString, UserList) flexibility.
 
     Notes
     -----
-    This will cause weird errors if not mixed into a sequence-like (sub)class
-    such as `str`, `list`, `tuple`, `UserString`, `UserList`, etc.
+    This mixin should be added only to sequence-like such as `str`, `list`,
+    `tuple`, `UserString`, `UserList`, etc.  Failure to adhere to these
+    instructions may result in undefined behavior.
+
+    The point of this class is to abstract out robust methods for type-agnostic
+    sequence manipulation, the ultimate objective being support for non-string
+    alphabets (think encoding by tuples, integers, etc.), which is both totally
+    pointless and philosophically awesome.
 
     [TODO] add robust tests for this class
 
@@ -59,7 +79,8 @@ class FlexibleSequenceMixin:
             A reversed copy of this sequence.
 
         """
-        return self[::-1]  # reversed(self)
+        return reversed(self)
+        # return self[::-1]  # reversed(self)
 
     def _lrotated(self, offset):
         """ Left-rotate a version of this sequence.
@@ -104,9 +125,7 @@ class FlexibleSequenceMixin:
 
         """
         seq = self._lrotated(by)
-        return type(self)(seq)
-
-    # [TODO] add .lshifted() and remove << and >> ?
+        return self._recast(seq)
 
     def __rshift__(self, by):
         """ Shift a copy of this sequence to the right with the >> operator.
@@ -123,7 +142,7 @@ class FlexibleSequenceMixin:
 
         """
         seq = self._lrotated(-by)
-        return type(self)(seq)
+        return self._recast(seq)
 
     def __invert__(self):
         """ Reverse a copy of this sequence.
@@ -135,7 +154,50 @@ class FlexibleSequenceMixin:
 
         """
         seq = self._reversed()
+        return self._recast(seq)
+
+    def _recast(self, seq):
+        """ Recast a sequence as type of self.
+
+        Parameters
+        ----------
+        seq : sequence
+            Recast this as `type(self)`.
+
+        Returns
+        -------
+        out : type(self)
+            A copy of `seq` cast to `type(self)`.
+
+        """
+        if isinstance(self, (str, UserString)):
+            # str() call works around inability to join list of UserStrings
+            seq = ''.join(str(s) for s in seq)
         return type(self)(seq)
+
+    def keyed(self, seq):
+        """ Key a copy of the given sequence.
+
+        Parameters
+        ----------
+        seq : sequence
+            A sequence with which to key a copy of self.
+
+        Returns
+        -------
+        out : type(self)
+            A copy of `self` keyed with `seq`.
+
+        Notes
+        -----
+        Only elements already in self will be used for keying.
+
+        """
+        # [TODO] make this much, much better
+        # filter elements not in `self` from `seq`
+        seq = [element for element in seq if element in self]
+        seq += [element for element in self if element not in seq]
+        return self._recast(seq)
 
 
 class BaseAlphabet(UserString, FlexibleSequenceMixin):
@@ -250,30 +312,6 @@ class Alphabet(BaseAlphabet):
             return self.data[i]
         except IndexError:
             return None
-
-    def keyed(self, key):
-        """ Key a copy of this alphabet.
-
-        Parameters
-        ----------
-        seq : sequence
-            A sequence with which to key this alphabet.
-
-        Returns
-        -------
-        out : type(self)
-            A keyed copy of this alphabet.
-
-        Notes
-        -----
-        Only elements already in this list may be prepended.
-        Duplicates will be removed.
-
-        This should work on non-string types, but hasn't been tested
-        extensively with them.
-
-        """
-        return keyed(self, key)
 
     def affinal(self, m, b, inverse=False):
         return Alphabet(self._affinal(m, b, inverse=inverse))

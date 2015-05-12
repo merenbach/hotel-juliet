@@ -3,6 +3,29 @@
 
 # from collections import OrderedDict
 from fractions import gcd
+# from collections import UserString
+
+
+def _recast(seq, out):
+    """ Recast sequence `out` as type of sequence `seq`.
+
+    Parameters
+    ----------
+    seq : sequence
+        Get the type of this sequence.
+    out : sequence
+        Cast this sequence.
+
+    Returns
+    -------
+    out : type(seq)
+        A cast copy of of `out` as type of `seq`.
+
+    """
+    # if isinstance(seq, (str, UserString)):
+    if isinstance(seq[:], str):
+        out = ''.join(out)
+    return type(seq)(out)
 
 
 def _is_stringlike(seq):
@@ -26,6 +49,8 @@ def _is_stringlike(seq):
     return isinstance(seq[:], str)
 
 
+
+
 def _screened(seq, mesh):
     """ Filter elements from a copy of the given sequence.
 
@@ -45,9 +70,7 @@ def _screened(seq, mesh):
 
     """
     processed = [e for e in seq if e in mesh]
-    if _is_stringlike(seq):
-        processed = ''.join(processed)
-    return type(seq)(processed)
+    return _recast(seq, processed)
 
 
 def testscreened(seq, mesh):
@@ -76,7 +99,7 @@ def keyed(seq, key):
 
     """
     processed = _screened(key, seq) + seq
-    return type(seq)(processed)
+    return _recast(seq, processed)
 
 
 def coprime(a, b):

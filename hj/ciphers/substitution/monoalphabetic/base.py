@@ -21,7 +21,6 @@ class BaseMonoSubCipher(SubCipher):
         If `alphabet` and `alphabet_` have unequal length.
 
     """
-
     def __init__(self, alphabet, alphabet_):
         """ Initialize with source and destination character strings """
         if len(alphabet) != len(alphabet_):
