@@ -76,32 +76,6 @@ def _screened(seq, mesh):
 def testscreened(seq, mesh):
     return _screened(seq, mesh)
 
-
-def keyed(seq, key):
-    """ Key a copy of the given sequence.
-
-    Parameters
-    ----------
-    seq : sequence
-        A list, tuple, or string to process.
-    key : sequence
-        Prepend this key... [TODO]
-
-    Returns
-    -------
-    out : type(seq)
-        A processed copy of the given sequence.
-
-    Notes
-    -----
-    Only elements already in this list may be prepended.
-    Any resulting duplicates will be handled in the constructor.
-
-    """
-    processed = _screened(key, seq) + seq
-    return _recast(seq, processed)
-
-
 def coprime(a, b):
     """ Determine whether `a` and `b` are coprime.
 

@@ -5,11 +5,14 @@ import string
 from collections import OrderedDict, UserString
 
 
-class Op:
+class AlphabetOperation:
+    """ Perform a manipulation on an alphabet object.
+
+    """
     pass
 
 
-class KeyOp(Op):
+class AlphabetKeyOperation(AlphabetOperation):
     def __init__(self, keyword):
         self.keyword = keyword
 
@@ -21,7 +24,7 @@ class KeyOp(Op):
         #     return a >> self.shift
 
 
-class ShiftOp(Op):
+class AlphabetShiftOperation(AlphabetOperation):
     def __init__(self, shift):
         self.shift = shift
 
@@ -33,7 +36,7 @@ class ShiftOp(Op):
         #     return a >> self.shift
 
 
-class ReverseOp(Op):
+class AlphabetReverseOperation(AlphabetOperation):
     def handle(self, a):
         return ~a
 
@@ -66,8 +69,6 @@ class FlexibleSequenceMixin:
     sequence manipulation, the ultimate objective being support for non-string
     alphabets (think encoding by tuples, integers, etc.), which is both totally
     pointless and conceptually awesome.
-
-    [TODO] add robust tests for this class
 
     """
     def _reversed(self):

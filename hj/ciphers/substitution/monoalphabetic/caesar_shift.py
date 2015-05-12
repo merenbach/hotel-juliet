@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from . import MonoSubCipher
-from utils.alphabet import ShiftOp
+from utils.alphabet import AlphabetShiftOperation
 
 
 class CaesarShiftCipher(MonoSubCipher):
@@ -25,5 +25,5 @@ class CaesarShiftCipher(MonoSubCipher):
     DEFAULT_SHIFT = 3
 
     def __init__(self, shift=DEFAULT_SHIFT, alphabet=None):
-        operations = [ShiftOp(shift)]
+        operations = [AlphabetShiftOperation(shift)]
         super().__init__(alphabet, operations)

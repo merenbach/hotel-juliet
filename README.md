@@ -1,5 +1,4 @@
-Hotel Juliet
-============
+# Hotel Juliet
 
 ## What is it?
 
@@ -43,3 +42,13 @@ The underlying frameworks are a bit of a playground for me right now.  The code 
 
 TODO:
 Handle translation in subclasses for cipher, then pass alphabet_ to super() instead of list of ops?
+
+
+## Notes
+
+* This project uses the [NumPy/SciPy] [3] documentation style.
+
+* More robust tests are needed on everything, including utility classes (alphabet, flexible sequence mixin, etc.).
+
+
+  [3]: https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt

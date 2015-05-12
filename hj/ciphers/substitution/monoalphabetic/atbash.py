@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from . import MonoSubCipher
-from utils.alphabet import ReverseOp
+from utils.alphabet import AlphabetReverseOperation
 
 
 class AtbashCipher(MonoSubCipher):
@@ -15,5 +15,5 @@ class AtbashCipher(MonoSubCipher):
 
     """
     def __init__(self, alphabet=None):
-        operations = [ReverseOp()]
+        operations = [AlphabetReverseOperation()]
         super().__init__(alphabet, operations)

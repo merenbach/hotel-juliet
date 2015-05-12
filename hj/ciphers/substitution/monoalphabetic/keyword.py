@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from . import MonoSubCipher
-from utils.alphabet import KeyOp
+from utils.alphabet import AlphabetKeyOperation
 
 
 class KeywordCipher(MonoSubCipher):
@@ -17,5 +17,5 @@ class KeywordCipher(MonoSubCipher):
 
     """
     def __init__(self, keyword, alphabet=None):
-        operations = [KeyOp(keyword)]
+        operations = [AlphabetKeyOperation(keyword)]
         super().__init__(alphabet, operations)
