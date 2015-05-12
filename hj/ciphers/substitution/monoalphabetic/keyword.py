@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from . import MonoSubCipher
-from utils.alphabet import AlphabetKeyOperation
 
 
 class KeywordCipher(MonoSubCipher):
@@ -17,5 +16,16 @@ class KeywordCipher(MonoSubCipher):
 
     """
     def __init__(self, keyword, alphabet=None):
-        operations = [AlphabetKeyOperation(keyword)]
-        super().__init__(alphabet, operations)
+        self.keyword = keyword
+        super().__init__(alphabet)
+
+    def alphabet_(self, alphabet):
+        """ Create a transcoding alphabet.
+
+        Parameters
+        ----------
+        alphabet : utils.alphabet.Alphabet
+            An alphabet to transform.
+
+        """
+        return alphabet.keyed(self.keyword)

@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from . import MonoSubCipher
-from utils.alphabet import Alphabet
 from utils.base import coprime
 
 
@@ -16,8 +15,21 @@ class AffineCipher(MonoSubCipher):
             A multiplier.
         b : int
             An offset.  Must range from `0` to `len(alphabet) - 1`.
-        alphabet : sequence, optional
-            An alphabet.
+        alphabet : string-like, optional
+            An alphabet to use for transcoding.
+
+        """
+        self.multiplier = m
+        self.offset = b
+        super().__init__(alphabet)
+
+    def alphabet_(self, alphabet):
+        """ Create a transcoding alphabet.
+
+        Parameters
+        ----------
+        alphabet : utils.alphabet.Alphabet
+            An alphabet to transform.
 
         Raises
         ------
@@ -29,10 +41,8 @@ class AffineCipher(MonoSubCipher):
         """
         # We're cheating here by not actually having the decryption method
         # use the "inverse" argument
-        
-        super().__init__(alphabet, None)
-        if not 0 <= b < len(self.alphabet):
+        if not 0 <= self.offset < len(alphabet):
             raise ValueError('Offset out of range [0, <length of alphabet>).')
-        if not coprime(m, len(self.alphabet)):
+        if not coprime(self.multiplier, len(alphabet)):
             raise ValueError('Multiplier and alphabet length must be coprime.')
-        self.alphabet_ = self.alphabet.affinal(m, b)
+        return alphabet.affinal(self.multiplier, self.offset)

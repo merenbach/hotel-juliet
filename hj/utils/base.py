@@ -28,29 +28,6 @@ def _recast(seq, out):
     return type(seq)(out)
 
 
-def _is_stringlike(seq):
-    """ Check if a sequence is string-like.
-
-    Parameters
-    ----------
-    seq : sequence
-        A list, tuple, or string to process.
-
-    Returns
-    -------
-    `True` if the sequence is string-like, `False` otherwise.
-
-    Notes
-    -----
-    Testing is done on a slice copy of the sequence since
-    a class like `UserString` copies to a plain `str`.
-
-    """
-    return isinstance(seq[:], str)
-
-
-
-
 def _screened(seq, mesh):
     """ Filter elements from a copy of the given sequence.
 
@@ -75,6 +52,7 @@ def _screened(seq, mesh):
 
 def testscreened(seq, mesh):
     return _screened(seq, mesh)
+
 
 def coprime(a, b):
     """ Determine whether `a` and `b` are coprime.

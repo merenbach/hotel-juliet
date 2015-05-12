@@ -37,10 +37,8 @@ class MonoSubCipher(BaseMonoSubCipher):
 
     Parameters
     ----------
-    alphabet : str or string like
+    alphabet : str or string like, optional
         A source (plaintext) alphabet to underlie transcoding.
-    operations : iterable
-        An iterable of operations to perform on the initial alphabet.
 
     Notes
     -----
@@ -48,16 +46,27 @@ class MonoSubCipher(BaseMonoSubCipher):
     This class assumes existence of the Alphabet utility class, so for
     philosophical reasons it is separated out here.
 
-    Raises
-    ------
-    ValueError
-        If `alphabet` and `alphabet_` have unequal length.
-
     """
-    def __init__(self, alphabet, operations):
+    def __init__(self, alphabet=None):
         alphabet = Alphabet(alphabet)
-        alphabet_ = alphabet.translate(operations)
+        alphabet_ = self.alphabet_(alphabet)
         super().__init__(alphabet, alphabet_)
+
+    def alphabet_(self, alphabet):
+        """ Create a transcoding alphabet.
+
+        Parameters
+        ----------
+        alphabet : utils.alphabet.Alphabet
+            An alphabet to transform.
+
+        Raises
+        ------
+        NotImplementedError
+            If not overridden.
+
+        """
+        raise NotImplementedError
 
     def encode(self, *args, **kwargs):
         """ Encode a message.  All params passed through to `_transcode()`.
@@ -68,8 +77,7 @@ class MonoSubCipher(BaseMonoSubCipher):
             A encoded message.
 
         """
-        table = self._translation_table(reverse=False)
-        return self._transcode(table, *args, **kwargs)
+        return self._transcode(*args, reverse=False, **kwargs)
 
     def decode(self, *args, **kwargs):
         """ Decode a message.  All params passed through to `_transcode()`.
@@ -80,8 +88,7 @@ class MonoSubCipher(BaseMonoSubCipher):
             A decoded message.
 
         """
-        table = self._translation_table(reverse=True)
-        return self._transcode(table, *args, **kwargs)
+        return self._transcode(*args, reverse=True, **kwargs)
 
     def _translation_table(self, reverse=False):
         """ Create a string translation table.
@@ -98,12 +105,17 @@ class MonoSubCipher(BaseMonoSubCipher):
             A translation between alphabets.
 
         """
+        # null = ''
+        # if strict:
+        #     null = ''.join(set(s) - set(self.alphabet))
+        # return str.maketrans(a1, a2, null)
+
         alphabets = str(self.alphabet), str(self.alphabet_)
         if reverse:
             alphabets = reversed(alphabets)
         return str.maketrans(*alphabets)
 
-    def _transcode(self, translation_table, s, strict=False):
+    def _transcode(self, s, strict=False, reverse=False):
         """ Convert elements within a sequence.
 
         Parameters
@@ -122,6 +134,7 @@ class MonoSubCipher(BaseMonoSubCipher):
             A transcoded message.
 
         """
+        translation_table = self._translation_table(reverse=reverse)
         if strict:
             from utils.base import testscreened
             s = testscreened(s, self.alphabet)
