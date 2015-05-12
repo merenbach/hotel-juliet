@@ -10,10 +10,8 @@ class BaseMonoSubCipher(SubCipher):
 
     Parameters
     ----------
-    alphabet : str or string like
+    alphabet : sequence
         A source (plaintext) alphabet to underlie transcoding.
-    alphabet_ : str or string like
-        A destination (ciphertext) alphabet to underlie transcoding.
 
     Raises
     ------
@@ -21,48 +19,24 @@ class BaseMonoSubCipher(SubCipher):
         If `alphabet` and `alphabet_` have unequal length.
 
     """
-    def __init__(self, alphabet, alphabet_):
-        """ Initialize with source and destination character strings """
+    def __init__(self, alphabet):
+        alphabet_ = self.alphabet_(alphabet)
         if len(alphabet) != len(alphabet_):
             raise ValueError('Alphabets must have equal length')
         self.alphabet, self.alphabet_ = alphabet, alphabet_
         super().__init__()
-
-    def __repr__(self):
-        return '{}\n{}'.format(self.alphabet, self.alphabet_)
-
-
-class MonoSubCipher(BaseMonoSubCipher):
-    """ Monoalphabetic substitution transcoder.
-
-    Parameters
-    ----------
-    alphabet : str or string like, optional
-        A source (plaintext) alphabet to underlie transcoding.
-
-    Notes
-    -----
-    The `BaseMonoSubCipher` class may be initialized with only strings.
-    This class assumes existence of the Alphabet utility class, so for
-    philosophical reasons it is separated out here.
-
-    """
-    def __init__(self, alphabet=None):
-        alphabet = Alphabet(alphabet)
-        alphabet_ = self.alphabet_(alphabet)
-        super().__init__(alphabet, alphabet_)
 
     def alphabet_(self, alphabet):
         """ Create a transcoding alphabet.
 
         Parameters
         ----------
-        alphabet : utils.alphabet.Alphabet
+        alphabet : sequence
             An alphabet to transform.
 
         Returns
         -------
-        out : utils.alphabet.Alphabet
+        out : sequence
             A transformed alphabet.
 
         Raises
@@ -79,27 +53,50 @@ class MonoSubCipher(BaseMonoSubCipher):
         """
         raise NotImplementedError
 
-    def encode(self, s, strict=False):
-        """ Encode a message.  All params passed through to `_transcode()`.
+    # def _transcode(self, s, strict=False, reverse=False):
+    #     """ Convert elements within a sequence.
 
-        Returns
-        -------
-        out : sequence
-            A encoded message.
+    #     Parameters
+    #     ----------
+    #     s : sequence
+    #         A sequence to encode.
+    #     strict : bool, optional
+    #         `True` to strip all characters not in this cipher's alphabet,
+    #         `False` to funnel through to output.  Defaults to `False`.
 
-        """
-        return self._transcode(s, strict=strict, reverse=False)
+    #     Returns
+    #     -------
+    #     out : sequence
+    #         A transcoded message.
 
-    def decode(self, s, strict=False):
-        """ Decode a message.  All params passed through to `_transcode()`.
+    #     """
+    #     if strict:
+    #         from utils.base import testscreened
+    #         s = testscreened(s, self.alphabet)
+    #     return s
 
-        Returns
-        -------
-        out : sequence
-            A decoded message.
 
-        """
-        return self._transcode(s, strict=strict, reverse=True)
+class MonoSubCipher(BaseMonoSubCipher):
+    """ Monoalphabetic substitution transcoder.
+
+    Parameters
+    ----------
+    alphabet : str or string like, optional
+        A source (plaintext) alphabet to underlie transcoding.
+
+    Notes
+    -----
+    The `BaseMonoSubCipher` class may be initialized with sequences of
+    any sort.  This subclass assumes existence of the Alphabet utility
+    class, so for philosophical reasons it is separated out here.
+
+    """
+    def __init__(self, alphabet=None):
+        alphabet = Alphabet(alphabet)
+        super().__init__(alphabet)
+
+    def __repr__(self):
+        return '{}\n{}'.format(self.alphabet, self.alphabet_)
 
     def _translation_table(self, reverse=False):
         """ Create a string translation table.
@@ -131,13 +128,14 @@ class MonoSubCipher(BaseMonoSubCipher):
 
         Parameters
         ----------
-        translation_table : dict
-            A dict mapping ordinal source characters to destination characters.
         s : sequence
-            A sequence to encode.
+            A sequence to transcode.
         strict : bool, optional
             `True` to strip all characters not in this cipher's alphabet,
             `False` to funnel through to output.  Defaults to `False`.
+        reverse : bool, optional
+            `True` to transcode in the forwards direction, `False` to transcode
+            backwards.  Defaults to `False`.
 
         Returns
         -------
@@ -145,7 +143,9 @@ class MonoSubCipher(BaseMonoSubCipher):
             A transcoded message.
 
         """
+        # s = super()._transcode(s, strict=strict, reverse=reverse)
         translation_table = self._translation_table(reverse=reverse)
+        # [TODO]? s = super()._transcode(s, strict=strict, reverse=reverse)
         if strict:
             from utils.base import testscreened
             s = testscreened(s, self.alphabet)

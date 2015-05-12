@@ -47,6 +47,8 @@ class SubCipher(Cipher):
         -------
         list : the transcoded sequence, converted (if not already a list) to list form.
         """
+        return self._transcode(s, strict=strict, reverse=reverse)
+
         if not self.use_strings:
             # Special preprocessing for non-string sequences
             from itertools import chain
