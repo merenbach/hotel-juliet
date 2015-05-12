@@ -2,19 +2,18 @@
 # -*- coding: utf-8 -*-
 
 from . import MonoSubCipher
-from utils.alphabet import Alphabet
+from utils.alphabet import ReverseOp
 
 
 class AtbashCipher(MonoSubCipher):
+    """ Shift letters based on reverse alphabet.
+
+    Parameters
+    ----------
+    alphabet : string-like, optional
+        An alphabet to use for transcoding.
+
+    """
     def __init__(self, alphabet=None):
-        """ Shift letters based on reverse alphabet.
-
-        Parameters
-        ----------
-        alphabet : sequence, optional
-            An alphabet.
-
-        """
-        alphabet = Alphabet(alphabet)
-        transformed = ~alphabet
-        super().__init__(alphabet, transformed)
+        operations = [ReverseOp()]
+        super().__init__(alphabet, operations)

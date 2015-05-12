@@ -2,8 +2,41 @@
 # -*- coding: utf-8 -*-
 
 import string
-from collections import UserString, OrderedDict
+from collections import OrderedDict, UserList, UserString
 from .base import keyed
+
+
+class Op:
+    pass
+
+
+class KeyOp(Op):
+    def __init__(self, keyword):
+        self.keyword = keyword
+
+    def handle(self, a):
+        return a.keyed(self.keyword)
+        # if not reverse:
+        #     return a << self.shift
+        # else:
+        #     return a >> self.shift
+
+
+class ShiftOp(Op):
+    def __init__(self, shift):
+        self.shift = shift
+
+    def handle(self, a):
+        return a << self.shift
+        # if not reverse:
+        #     return a << self.shift
+        # else:
+        #     return a >> self.shift
+
+
+class ReverseOp(Op):
+    def handle(self, a):
+        return ~a
 
 
 class FlexibleSequenceMixin:
@@ -72,6 +105,8 @@ class FlexibleSequenceMixin:
         """
         seq = self._lrotated(by)
         return type(self)(seq)
+
+    # [TODO] add .lshifted() and remove << and >> ?
 
     def __rshift__(self, by):
         """ Shift a copy of this sequence to the right with the >> operator.
@@ -289,6 +324,26 @@ class Alphabet(BaseAlphabet):
 
     # def __str__(self):
     #     return ''.join(self)
+
+    def translate(self, operations):
+        """ Run a sequence of operations on a copy of this alphabet.
+
+        Parameters
+        ----------
+        operations : iterable
+            A sequence of operations to perform.
+
+        Returns
+        -------
+        out : type(self)
+            A character translation dict.
+
+        """
+        translation = self
+        if operations:
+            for op in operations:
+                translation = op.handle(translation)
+        return type(self)(translation)
 
     def common(self, s):
         """ Return a supplied string stripped of characters not in this alphabet """

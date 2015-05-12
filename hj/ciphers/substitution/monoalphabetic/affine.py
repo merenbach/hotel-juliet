@@ -29,11 +29,10 @@ class AffineCipher(MonoSubCipher):
         """
         # We're cheating here by not actually having the decryption method
         # use the "inverse" argument
-        if not 0 <= b < len(alphabet):
+        
+        super().__init__(alphabet, None)
+        if not 0 <= b < len(self.alphabet):
             raise ValueError('Offset out of range [0, <length of alphabet>).')
-        if not coprime(m, len(alphabet)):
+        if not coprime(m, len(self.alphabet)):
             raise ValueError('Multiplier and alphabet length must be coprime.')
-
-        alphabet = Alphabet(alphabet)
-        transformed = alphabet.affinal(m, b)
-        super().__init__(alphabet, transformed)
+        self.alphabet_ = self.alphabet.affinal(m, b)

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from . import MonoSubCipher
-from utils.alphabet import Alphabet
+from utils.alphabet import KeyOp
 
 
 class KeywordCipher(MonoSubCipher):
@@ -11,12 +11,11 @@ class KeywordCipher(MonoSubCipher):
     Parameters
     ----------
     keyword : str
-        A keyword.
-    alphabet : sequence, optional
-        An alphabet.
+        A keyword for transcoding.
+    alphabet : string-like, optional
+        An alphabet to use for transcoding.
 
     """
     def __init__(self, keyword, alphabet=None):
-        alphabet = Alphabet(alphabet)
-        transformed = alphabet.keyed(keyword)
-        super().__init__(alphabet, transformed)
+        operations = [KeyOp(keyword)]
+        super().__init__(alphabet, operations)

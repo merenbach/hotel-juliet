@@ -35,3 +35,11 @@ The underlying frameworks are a bit of a playground for me right now.  The code 
 - Trithemius
 - Variant Beaufort
 - Vigenère
+
+
+
+# [TODO]: Allow shifting a la
+    # http://rumkin.com/tools/cipher/caesar-keyed.php
+
+TODO:
+Handle translation in subclasses for cipher, then pass alphabet_ to super() instead of list of ops?

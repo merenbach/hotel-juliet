@@ -57,6 +57,20 @@ class CipherTest(unittest.TestCase):
         self.assertEqual(e, 'LJOOF, WFEOI!')
         self.assertEqual(TEST_MESSAGE, d)
 
+    def test_affinecipher(self):
+        c = AffineCipher(7, 3)
+        e = c.encode('HELLO, WORLD!')
+        d = c.decode(e)
+        self.assertEqual(e, 'AFCCX, BXSCY!')
+        self.assertEqual(TEST_MESSAGE, d)
+
+    def test_affinecipher_reverse(self):
+        c = AffineCipher(7, 3)
+        e = c.decode('HELLO, WORLD!')
+        d = c.encode(e)
+        self.assertEqual(e, 'IPQQJ, ZJCQA!')
+        self.assertEqual(TEST_MESSAGE, d)
+
 if __name__ == '__main__':
     unittest.main()
 

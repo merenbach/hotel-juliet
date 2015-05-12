@@ -50,6 +50,10 @@ def _screened(seq, mesh):
     return type(seq)(processed)
 
 
+def testscreened(seq, mesh):
+    return _screened(seq, mesh)
+
+
 def keyed(seq, key):
     """ Key a copy of the given sequence.
 

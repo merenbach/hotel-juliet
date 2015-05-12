@@ -2,66 +2,128 @@
 # -*- coding: utf-8 -*-
 
 from .. import SubCipher
-
-from collections import UserList
-
-
-class BaseTableau(UserList):
-    def __init__(self, *initlist):
-        super().__init__(initlist=initlist)
+from utils.alphabet import Alphabet
 
 
-class Tableau(BaseTableau):
-    pass
-
-
-class Tableau2(SubCipher):
-    def __init__(self, a1, a2):
-        super().__init__()
-        self.encodes = str.maketrans(a1, a2)
-        self.decodes = str.maketrans(a2, a1)
-
-    def forward(self, s):
-        return s.translate(self.encodes)
-
-    def backward(self, s):
-        return s.translate(self.decodes)
-
-
-class MonoSubCipher(Tableau2):
+class BaseMonoSubCipher(SubCipher):
     """ Monoalphabetic substitution transcoder.
 
     Parameters
     ----------
-    plaintext_alphabet : utils.alphabet.Alphabet
-        A plaintext alphabet.
-    ciphertext_alphabet : utils.alphabet.Alphabet
-        A ciphertext alphabet.
+    alphabet : str or string like
+        A source (plaintext) alphabet to underlie transcoding.
+    alphabet_ : str or string like
+        A destination (ciphertext) alphabet to underlie transcoding.
+
+    Raises
+    ------
+    ValueError
+        If `alphabet` and `alphabet_` have unequal length.
 
     """
 
-    def __init__(self, plaintext_alphabet, ciphertext_alphabet):
+    def __init__(self, alphabet, alphabet_):
         """ Initialize with source and destination character strings """
-        self.alphabets = Tableau(plaintext_alphabet, ciphertext_alphabet)
-        super().__init__(str(plaintext_alphabet), str(ciphertext_alphabet))
+        if len(alphabet) != len(alphabet_):
+            raise ValueError('Alphabets must have equal length')
+        self.alphabet, self.alphabet_ = alphabet, alphabet_
+        super().__init__()
 
     def __repr__(self):
-        # [TODO] shouldn't need generator below
-        return '\n'.join(repr(e) for e in self.alphabets)
+        return '{}\n{}'.format(self.alphabet, self.alphabet_)
 
-    def _transcode(self, s, strict=False, reverse=False):
-        """ Convert elements within a sequence to their positional counterparts in another """
-        if not reverse:
-            return self.forward(s)
-        else:
-            return self.backward(s)
-        alphabets = self.alphabets
-        if len(alphabets) == 2:
-            if reverse:
-                alphabets = alphabets[::-1]
-            table = dict(zip(*alphabets))
-            if not strict:
-                return (table.get(c, c) for c in s)
-            else:
-                return (table.get(c) for c in s if table.get(c) is not None)
-        return None
+
+class MonoSubCipher(BaseMonoSubCipher):
+    """ Monoalphabetic substitution transcoder.
+
+    Parameters
+    ----------
+    alphabet : str or string like
+        A source (plaintext) alphabet to underlie transcoding.
+    operations : iterable
+        An iterable of operations to perform on the initial alphabet.
+
+    Notes
+    -----
+    The `BaseMonoSubCipher` class may be initialized with only strings.
+    This class assumes existence of the Alphabet utility class, so for
+    philosophical reasons it is separated out here.
+
+    Raises
+    ------
+    ValueError
+        If `alphabet` and `alphabet_` have unequal length.
+
+    """
+    def __init__(self, alphabet, operations):
+        alphabet = Alphabet(alphabet)
+        alphabet_ = alphabet.translate(operations)
+        super().__init__(alphabet, alphabet_)
+
+    def encode(self, *args, **kwargs):
+        """ Encode a message.  All params passed through to `_transcode()`.
+
+        Returns
+        -------
+        out : sequence
+            A encoded message.
+
+        """
+        table = self._translation_table(reverse=False)
+        return self._transcode(table, *args, **kwargs)
+
+    def decode(self, *args, **kwargs):
+        """ Decode a message.  All params passed through to `_transcode()`.
+
+        Returns
+        -------
+        out : sequence
+            A decoded message.
+
+        """
+        table = self._translation_table(reverse=True)
+        return self._transcode(table, *args, **kwargs)
+
+    def _translation_table(self, reverse=False):
+        """ Create a string translation table.
+
+        Parameters
+        ----------
+        reverse : bool, optional
+            `True` to reverse the conversion direction, `False` otherwise.
+            Defaults to `False`.
+
+        Returns
+        -------
+        out : dict
+            A translation between alphabets.
+
+        """
+        alphabets = str(self.alphabet), str(self.alphabet_)
+        if reverse:
+            alphabets = reversed(alphabets)
+        return str.maketrans(*alphabets)
+
+    def _transcode(self, translation_table, s, strict=False):
+        """ Convert elements within a sequence.
+
+        Parameters
+        ----------
+        translation_table : dict
+            A dict mapping ordinal source characters to destination characters.
+        s : sequence
+            A sequence to encode.
+        strict : bool, optional
+            `True` to strip all characters not in this cipher's alphabet,
+            `False` to funnel through to output.  Defaults to `False`.
+
+        Returns
+        -------
+        out : sequence
+            A transcoded message.
+
+        """
+        if strict:
+            from utils.base import testscreened
+            s = testscreened(s, self.alphabet)
+        return s.translate(translation_table)
