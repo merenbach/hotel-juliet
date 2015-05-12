@@ -60,15 +60,26 @@ class MonoSubCipher(BaseMonoSubCipher):
         alphabet : utils.alphabet.Alphabet
             An alphabet to transform.
 
+        Returns
+        -------
+        out : utils.alphabet.Alphabet
+            A transformed alphabet.
+
         Raises
         ------
         NotImplementedError
             If not overridden.
 
+        Notes
+        -----
+        Since this is invoked by `__init__()` before instance is totally
+        initialized, please don't perform any operations that expect a fully
+        constructed instance.
+
         """
         raise NotImplementedError
 
-    def encode(self, *args, **kwargs):
+    def encode(self, s, strict=False):
         """ Encode a message.  All params passed through to `_transcode()`.
 
         Returns
@@ -77,9 +88,9 @@ class MonoSubCipher(BaseMonoSubCipher):
             A encoded message.
 
         """
-        return self._transcode(*args, reverse=False, **kwargs)
+        return self._transcode(s, strict=strict, reverse=False)
 
-    def decode(self, *args, **kwargs):
+    def decode(self, s, strict=False):
         """ Decode a message.  All params passed through to `_transcode()`.
 
         Returns
@@ -88,7 +99,7 @@ class MonoSubCipher(BaseMonoSubCipher):
             A decoded message.
 
         """
-        return self._transcode(*args, reverse=True, **kwargs)
+        return self._transcode(s, strict=strict, reverse=True)
 
     def _translation_table(self, reverse=False):
         """ Create a string translation table.

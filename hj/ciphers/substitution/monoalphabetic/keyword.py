@@ -22,10 +22,5 @@ class KeywordCipher(MonoSubCipher):
     def alphabet_(self, alphabet):
         """ Create a transcoding alphabet.
 
-        Parameters
-        ----------
-        alphabet : utils.alphabet.Alphabet
-            An alphabet to transform.
-
         """
         return alphabet.keyed(self.keyword)

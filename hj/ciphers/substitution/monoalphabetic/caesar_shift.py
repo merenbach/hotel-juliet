@@ -30,10 +30,5 @@ class CaesarShiftCipher(MonoSubCipher):
     def alphabet_(self, alphabet):
         """ Create a transcoding alphabet.
 
-        Parameters
-        ----------
-        alphabet : utils.alphabet.Alphabet
-            An alphabet to transform.
-
         """
         return alphabet << self.shift

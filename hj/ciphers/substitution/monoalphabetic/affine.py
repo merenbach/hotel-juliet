@@ -19,17 +19,11 @@ class AffineCipher(MonoSubCipher):
             An alphabet to use for transcoding.
 
         """
-        self.multiplier = m
-        self.offset = b
+        self.multiplier, self.offset = m, b
         super().__init__(alphabet)
 
     def alphabet_(self, alphabet):
         """ Create a transcoding alphabet.
-
-        Parameters
-        ----------
-        alphabet : utils.alphabet.Alphabet
-            An alphabet to transform.
 
         Raises
         ------
