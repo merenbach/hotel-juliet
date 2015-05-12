@@ -65,7 +65,7 @@ class FlexibleSequenceMixin:
     The point of this class is to abstract out robust methods for type-agnostic
     sequence manipulation, the ultimate objective being support for non-string
     alphabets (think encoding by tuples, integers, etc.), which is both totally
-    pointless and philosophically awesome.
+    pointless and conceptually awesome.
 
     [TODO] add robust tests for this class
 
@@ -78,9 +78,14 @@ class FlexibleSequenceMixin:
         out : sequence
             A reversed copy of this sequence.
 
+        Notes
+        -----
+        The `reversed` class provides a way to reverse arbitrary sequences.
+        Because it provides a generator, using it on strings requires logic
+        in `_recast()` that may be less robust or harder to test for now.
+
         """
-        return reversed(self)
-        # return self[::-1]  # reversed(self)
+        return self[::-1]
 
     def _lrotated(self, offset):
         """ Left-rotate a version of this sequence.
@@ -170,10 +175,14 @@ class FlexibleSequenceMixin:
             A copy of `seq` cast to `type(self)`.
 
         """
-        if isinstance(self, (str, UserString)):
-            # str() call works around inability to join list of UserStrings
-            seq = ''.join(str(s) for s in seq)
         return type(self)(seq)
+
+
+class BaseAlphabet(UserString, FlexibleSequenceMixin):
+    """ Base alphabet class with uniqueness requirement. """
+    def __init__(self, seq):
+        seq = ''.join(OrderedDict.fromkeys(str(seq)))
+        super().__init__(seq)
 
     def keyed(self, seq):
         """ Key a copy of the given sequence.
@@ -199,12 +208,21 @@ class FlexibleSequenceMixin:
         seq += [element for element in self if element not in seq]
         return self._recast(seq)
 
+    def _recast(self, seq):
+        """ Recast a sequence as type of self.
 
-class BaseAlphabet(UserString, FlexibleSequenceMixin):
-    """ Base alphabet class with uniqueness requirement. """
-    def __init__(self, seq):
-        seq = ''.join(OrderedDict.fromkeys(str(seq)))
-        super().__init__(seq)
+        Notes
+        -----
+        Add mechanism to flatten sequence of strings.
+
+        """
+        # if isinstance(self, (str, UserString)):
+        if str(self) == self:
+            # str() call works around inability to join list of UserStrings
+            seq = ''.join(str(s) for s in seq)
+        return super()._recast(seq)
+
+
 # def joinit(self, seq, stringlike=False):
 #     processed = OrderedDict.fromkeys(seq)
 #     if stringlike:
