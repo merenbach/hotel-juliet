@@ -332,39 +332,6 @@ class Alphabet(BaseAlphabet):
         except IndexError:
             return None
 
-    def affinal(self, m, b, inverse=False):
-        return Alphabet(self._affinal(m, b, inverse=inverse))
-
-    def _affinal(self, m, b, inverse=False):
-        def xgcd(a, b):
-            """ Extended Euclidean algorithm to find divisors and solve Bezout's identity
-                Returns (x, y, gcd(a, b)) such that ax + by = gcd(a, b)
-            """
-            print("**** ALPHABET._AFFINAL.XGCD DEPRECATED BY FRACTION.GCD LIBRARY FUNCTION")
-            if b == 0:
-                return (1, 0, a)
-            else:
-                (x, y, d) = xgcd(b, a % b)
-                return (y, x - (a // b) * y, d)
-
-        def affine_transform(elements, m, b, inverse=False):
-            """ m = multiplier, b = additive (a la y = mx + b)"""
-            char_len = len(elements)
-            if char_len > 0:
-                gcd = xgcd(char_len, m)
-                # Ensure lack of coprimality: result of "1" indicates *not* coprime
-                if gcd[2] == 1:
-                    if not inverse:
-                        position = lambda x : (m * x + b) % char_len
-                    else:
-                        # Get the modular multiplicative inverse
-                        mmi = (gcd[1] + char_len) % char_len
-                        position = lambda x : (mmi * (x - b + char_len)) % char_len
-                    return ''.join([elements[position(x)] for x in range(char_len)])
-            return ''
-
-        return affine_transform(self.data, m, b, inverse=inverse)
-
     # def __getitem__(self, i):
     #     """ Return the proper type when doing a slice.
 

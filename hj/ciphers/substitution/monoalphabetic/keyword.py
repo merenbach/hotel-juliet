@@ -5,7 +5,7 @@ from . import MonoSubCipher
 
 
 class KeywordCipher(MonoSubCipher):
-    """ Shift characters based on a keyword.
+    """ Transcode based on a keyword.
 
     Parameters
     ----------
