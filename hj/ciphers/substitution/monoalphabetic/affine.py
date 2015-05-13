@@ -49,24 +49,18 @@ class AffineCipher(CaesarShiftCipher):
         Notes
         -----
         We're "cheating" here by not actually having the decryption machinery
-        run any inverse operations.
+        run any inverse operations and by invoking `super()` to create an
+        offset alphabet that we then "multiply."  Without this cleverness,
+        our multiplication would be:
+
+            (self.multiplier * n + self.offset) mod len(alphabet)
 
         """
         if not 0 <= self.offset < len(alphabet):
             raise ValueError('Offset out of range [0, <length of alphabet>).')
-        if not coprime(self.multiplier, len(alphabet)):
-            raise ValueError('Multiplier and alphabet length must be coprime.')
 
         # first run Caesar cipher shifts
         alphabet = super().alphabet_(alphabet)
 
         # now let's multiply some letters
-        alpha_len = len(alphabet)
-
-        # without clever call to super() above, the below math would
-        # change to `(self.multiplier * n + self.offset) % alpha_len`
-        places = [(self.multiplier * n) % alpha_len for n in range(alpha_len)]
-
-        positions = ''.join([str(alphabet[e]) for e in places])
-        new_alpha = type(alphabet)(positions)
-        return new_alpha
+        return alphabet.multiply(self.multiplier)

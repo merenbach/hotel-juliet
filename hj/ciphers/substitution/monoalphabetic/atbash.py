@@ -12,4 +12,4 @@ class AtbashCipher(MonoSubCipher):
         """ Create a transcoding alphabet.
 
         """
-        return ~alphabet
+        return alphabet.reverse()

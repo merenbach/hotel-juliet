@@ -1,35 +1,79 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# from collections import OrderedDict
+from collections import OrderedDict
 from fractions import gcd
 # from collections import UserString
 
 
-def _recast(seq, out):
-    """ Recast sequence `out` as type of sequence `seq`.
+def lrotated(seq, offset):
+    """ Left-rotate a version of the given sequence.
 
     Parameters
     ----------
     seq : sequence
-        Get the type of this sequence.
-    out : sequence
-        Cast this sequence.
+        A list, tuple, or string to rotate.
+    offset : int
+        Rotate this number of elements.  Use negative numbers to reverse.
+        If greater in magnitude than the length of the sequence,
+        a mod operation will be run.
 
     Returns
     -------
-    out : type(seq)
-        A cast copy of of `out` as type of `seq`.
+    out : sequence
+        A rotated version of the given sequence.
+
+    Notes
+    -----
+    Right-shifting by default would require negating the
+    offset values, thus introducing additional complexity.
 
     """
-    # if isinstance(seq, (str, UserString)):
-    if isinstance(seq[:], str):
-        out = ''.join(out)
-    return type(seq)(out)
+    try:
+        offset %= len(seq)
+    except ZeroDivisionError:
+        return seq[:]
+    else:
+        return seq[offset:] + seq[:offset]
 
 
-def _screened(seq, mesh):
+def multiplied(seq, by):
+    """ Multiply each element's position by a number.
+
+    Parameters
+    ----------
+    seq : sequence
+        A list, tuple, or string to rotate.
+    by : int
+        A number by which to multiply each element's position.
+
+    Returns
+    -------
+    out : generator
+        The resulting sequence as a generator.
+
+    Raises
+    ------
+    ValueError
+        If `by` and `len(seq)` are not coprime.
+
+    Notes
+    -----
+    [TODO]: Make this more elegant.
+
+    """
+    self_len = len(seq)
+    if not coprime(by, self_len):
+        raise ValueError('Multiplier and alphabet length must be coprime.')
+
+    positions = [(by * n) % self_len for n in range(self_len)]
+    return (seq[n] for n in positions)
+
+
+def testscreened(seq, mesh):
     """ Filter elements from a copy of the given sequence.
+
+    [todo] ***ONLY USED IN ONE PLACE, FOR STRICT TRANSCODING***
 
     Parameters
     ----------
@@ -46,12 +90,24 @@ def _screened(seq, mesh):
         A processed copy of the given sequence.
 
     """
-    processed = [e for e in seq if e in mesh]
-    return _recast(seq, processed)
+    return [e for e in seq if e in mesh]
 
 
-def testscreened(seq, mesh):
-    return _screened(seq, mesh)
+def unique(seq):
+    """ Get unique items in sequence, preserving order.
+
+    Parameters
+    ----------
+    seq : sequence
+        A list, tuple, or string to process.
+
+    Returns
+    -------
+    out : generator
+        A generator expression for each element in the result.
+
+    """
+    return (n for n in OrderedDict.fromkeys(seq))
 
 
 def coprime(a, b):
@@ -70,19 +126,3 @@ def coprime(a, b):
 
     """
     return gcd(a, b) == 1
-
-# def flipped(sequence):
-#     """ Reverse the given sequence.
-
-#         Parameters
-#         ----------
-#         sequence : sequence
-#             A sequence (string, list, etc.) to process.
-
-#         Returns
-#         -------
-#         A reversed copy of the sequence.
-
-#     """
-#     return sequence[::-1]
-#     # return list(reversed(sequence))

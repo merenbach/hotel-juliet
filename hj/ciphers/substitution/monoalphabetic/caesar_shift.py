@@ -33,4 +33,4 @@ class CaesarShiftCipher(MonoSubCipher):
         """ Create a transcoding alphabet.
 
         """
-        return alphabet << self.offset
+        return alphabet.lrotate(self.offset)
