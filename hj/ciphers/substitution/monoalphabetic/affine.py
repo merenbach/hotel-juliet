@@ -62,7 +62,11 @@ class AffineCipher(CaesarShiftCipher):
 
         # now let's multiply some letters
         alpha_len = len(alphabet)
-        places = [self.multiplier * n % alpha_len for n in range(alpha_len)]
+
+        # without clever call to super() above, the below math would
+        # change to `(self.multiplier * n + self.offset) % alpha_len`
+        places = [(self.multiplier * n) % alpha_len for n in range(alpha_len)]
+
         positions = ''.join([str(alphabet[e]) for e in places])
         new_alpha = type(alphabet)(positions)
         return new_alpha
