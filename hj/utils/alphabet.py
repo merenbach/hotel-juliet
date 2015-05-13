@@ -112,7 +112,7 @@ class FlexibleSequenceMixin:
         try:
             offset %= len(self)
         except ZeroDivisionError:
-            return self
+            return self[:]
         else:
             return self[offset:] + self[:offset]
 
