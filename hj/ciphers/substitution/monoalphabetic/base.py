@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .. import SubCipher
-from utils.alphabet import Alphabet
+from utils.alphabet import Alphabet, AlphabetTranscoder
 
 
 class BaseMonoSubCipher(SubCipher):
@@ -22,65 +22,15 @@ class BaseMonoSubCipher(SubCipher):
     def __init__(self, alphabet):
         self._validate_alphabet(alphabet)
         alphabet_ = self.make_alphabet_(alphabet)
-        if len(alphabet) != len(alphabet_):
-            raise ValueError('Alphabets must have equal length')
-        self.alphabet, self.alphabet_ = alphabet, alphabet_
-
-        # cache these
-        self.xtable, self.xtable_ = self._make_xtables(alphabet, alphabet_)
+        self.transcoder = AlphabetTranscoder(alphabet, alphabet_)
         super().__init__()
+
+    def __repr__(self):
+        return repr(self.transcoder)
 
     def _validate_alphabet(self, alphabet):
         """ [TODO] remove me... """
         pass
-
-    def _make_xtable(self, a, b):
-        """ Create translation tables for encoding.
-
-        Parameters
-        ----------
-        a : str or string like
-            The source alphabet.
-        b : str or string like
-            The destination alphabet.
-
-        Returns
-        -------
-        out : dict
-            A string translation table.
-
-        Raises
-        ------
-        ValueError
-            If `a` and `b` have unequal length.
-
-        """
-        return str.maketrans(str(a), str(b))
-
-    def _make_xtables(self, a, b):
-        """ Create translation tables for encoding.
-
-        Parameters
-        ----------
-        a : str or string like
-            The source alphabet.
-        b : str or string like
-            The destination alphabet.
-
-        Returns
-        -------
-        out : tuple(dict, dict)
-            Inverse translation tables.
-
-        Raises
-        ------
-        ValueError
-            If `a` and `b` have unequal length.
-
-        """
-        xtable = self._make_xtable(a, b)
-        xtable_ = self._make_xtable(b, a)
-        return xtable, xtable_
 
     def make_alphabet_(self, alphabet):
         """ Create a transcoding alphabet.
@@ -111,11 +61,11 @@ class BaseMonoSubCipher(SubCipher):
 
     def _encode(self, s, strict):
         s = super()._encode(s, strict)
-        return s.translate(self.xtable)
+        return self.transcoder.encode(s)
 
     def _decode(self, s, strict):
         s = super()._decode(s, strict)
-        return s.translate(self.xtable_)
+        return self.transcoder.decode(s)
 
     # def _transcode(self, s, strict=False, reverse=False):
     #     """ Convert elements within a sequence.
@@ -160,10 +110,6 @@ class MonoSubCipher(BaseMonoSubCipher):
     def __init__(self, alphabet=None):
         alphabet = Alphabet(alphabet)
         super().__init__(alphabet)
-
-    def __repr__(self):
-        return '{}\n{}'.format(self.alphabet, self.alphabet_)
-
 
     # def _transcode(self, s, strict=False, xtable=None, block=0):
     #     """ Convert elements within a sequence.

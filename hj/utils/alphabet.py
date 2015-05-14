@@ -7,9 +7,6 @@ from .base import lrotated, multiplied, unique
 # import itertools
 
 
-###### [TODO]: Converter class containing two alphabets
-######         A la tabula recta
-### class CipherAlphabet()?
 ##
 ## [TODO]: Better way to manipulate alphabets when creating cipher objects...
 ## maybe only do in encode/decode methods?
@@ -74,7 +71,6 @@ class BaseAlphabet(UserString):
 
         """
         return self.lrotate(-by)
-
 
 
 class Alphabet(BaseAlphabet, UserString):
@@ -294,3 +290,99 @@ class Alphabet(BaseAlphabet, UserString):
 #             from utils.base import testscreened
 #             s = testscreened(s, self.alphabet)
 #         return s.translate(translation_table)
+
+class AlphabetTranscoder:
+    """ Convert between two alphabets.
+
+    Parameters
+    ----------
+    a : str or string like
+        A source alphabet.
+    b : str or string like
+        A destination alphabet.
+
+    Raises
+    ------
+    ValueError
+        If `a` and `b` are not of equal length.
+
+    """
+    def __init__(self, a, b):
+        if len(a) != len(b):
+            raise ValueError('Alphabets must have equal length')
+
+        self.a = Alphabet(a)
+        self.b = Alphabet(b)
+
+        self.a_to_b = self._xtable(a, b)
+        self.b_to_a = self._xtable(b, a)
+
+    def __repr__(self):
+        return '{}\n{}'.format(self.a, self.b)
+
+    def _xtable(self, src, dst):
+        """ Create a translation table between alphabets.
+
+        Parameters
+        ----------
+        alphabet : str or string like
+            An alphabet to which to translate.
+
+        Returns
+        -------
+        out : dict
+            A translation table suitable for `str.translate()`.
+
+        """
+        return str.maketrans(str(src), str(dst))
+
+    def encode(self, s):
+        """ Encode a string.
+
+        Parameters
+        ----------
+        s : str or string like
+            A string to encode.
+
+        Reverse
+        -------
+        out : str
+            An encoded string.
+
+        """
+        return self._transcode(s, reverse=False)
+
+    def decode(self, s):
+        """ Decode a string.
+
+        Parameters
+        ----------
+        s : str or string like
+            A string to decode.
+
+        Reverse
+        -------
+        out : str
+            A decoded string.
+
+        """
+        return self._transcode(s, reverse=True)
+
+    def _transcode(self, s, reverse=False):
+        """ Transcode a string between two alphabets.
+
+        Parameters
+        ----------
+        s : str or string like
+            A string to transcode.
+        reverse : bool, optional
+            `True` to transcode from source to destination alphabets,
+            `False` otherwise.
+
+        Reverse
+        -------
+        out : str
+            A transcoded string.
+
+        """
+        return s.translate(self.a_to_b if not reverse else self.b_to_a)
