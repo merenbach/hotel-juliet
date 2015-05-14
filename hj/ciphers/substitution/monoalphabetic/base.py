@@ -20,12 +20,16 @@ class BaseMonoSubCipher(SubCipher):
 
     """
     def __init__(self, alphabet):
+        self._validate_alphabet(alphabet)
         alphabet_ = self.make_alphabet_(alphabet)
         if len(alphabet) != len(alphabet_):
             raise ValueError('Alphabets must have equal length')
         self.alphabet, self.alphabet_ = alphabet, alphabet_
         self.xtable, self.xtable_ = self._make_xtables(alphabet, alphabet_)
         super().__init__()
+
+    def _validate_alphabet(self, alphabet):
+        pass
 
     def _make_xtable(self, a, b):
         """ Create translation tables for encoding.
