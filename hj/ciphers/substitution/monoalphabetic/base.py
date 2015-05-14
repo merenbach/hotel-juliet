@@ -61,11 +61,11 @@ class BaseMonoSubCipher(SubCipher):
 
     def _encode(self, s, strict):
         s = super()._encode(s, strict)
-        return self.transcoder.encode(s)
+        return self.transcoder.encode(s, strict=strict)
 
     def _decode(self, s, strict):
         s = super()._decode(s, strict)
-        return self.transcoder.decode(s)
+        return self.transcoder.decode(s, strict=strict)
 
     # def _transcode(self, s, strict=False, reverse=False):
     #     """ Convert elements within a sequence.

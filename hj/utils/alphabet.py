@@ -310,23 +310,22 @@ class AlphabetTranscoder:
     def __init__(self, a, b):
         if len(a) != len(b):
             raise ValueError('Alphabets must have equal length')
-
-        self.a = Alphabet(a)
-        self.b = Alphabet(b)
-
-        self.a_to_b = self._xtable(a, b)
-        self.b_to_a = self._xtable(b, a)
+        self.a, self.b = Alphabet(a), Alphabet(b)
 
     def __repr__(self):
         return '{}\n{}'.format(self.a, self.b)
 
-    def _xtable(self, src, dst):
+    def _xtable(self, src, dst, cut=None):
         """ Create a translation table between alphabets.
 
         Parameters
         ----------
-        alphabet : str or string like
-            An alphabet to which to translate.
+        src : str or string like
+            A source alphabet.
+        dst : str or string like
+            A destination alphabet.
+        cut : str or string like, optional
+            Characters to remove when converting.  Default `None`.
 
         Returns
         -------
@@ -334,55 +333,86 @@ class AlphabetTranscoder:
             A translation table suitable for `str.translate()`.
 
         """
-        return str.maketrans(str(src), str(dst))
+        if not cut:
+            cut = ''
+        return str.maketrans(str(src), str(dst), str(cut))
 
-    def encode(self, s):
+    def _orphans(self, s):
+        """ Find "orphaned" characters in a message.
+
+        Parameters
+        ----------
+        s : str or string-like
+            A string to check for non-processable characters.
+
+        Returns
+        -------
+        out : str
+            Characters that can't be transcoded.
+
+        """
+        orphans = set(s) - set(self.a + self.b)
+        return ''.join(orphans)
+
+    def encode(self, s, strict=False):
         """ Encode a string.
 
         Parameters
         ----------
         s : str or string like
             A string to encode.
+        strict : bool, optional
+            `True` to strip unmapped characters when transcoding,
+            `False` to leave them alone.  Default `False`.
 
-        Reverse
+        Returns
         -------
         out : str
             An encoded string.
 
         """
-        return self._transcode(s, reverse=False)
+        return self._transcode(s, self.a, self.b, strict=strict)
 
-    def decode(self, s):
+    def decode(self, s, strict=False):
         """ Decode a string.
 
         Parameters
         ----------
         s : str or string like
             A string to decode.
+        strict : bool, optional
+            `True` to strip unmapped characters when transcoding,
+            `False` to leave them alone.  Default `False`.
 
-        Reverse
+        Returns
         -------
         out : str
             A decoded string.
 
         """
-        return self._transcode(s, reverse=True)
+        return self._transcode(s, self.b, self.a, strict=strict)
 
-    def _transcode(self, s, reverse=False):
-        """ Transcode a string between two alphabets.
+    def _transcode(self, s, src, dst, strict=False):
+        """ Decode a string.
 
         Parameters
         ----------
         s : str or string like
-            A string to transcode.
-        reverse : bool, optional
-            `True` to transcode from source to destination alphabets,
-            `False` otherwise.
+            A string to decode.
+        src : str or string like
+            A source alphabet.
+        dst : str or string like
+            A destination alphabet.
+        strict : bool, optional
+            `True` to strip unmapped characters when transcoding,
+            `False` to leave them alone.  Default `False`.
 
-        Reverse
+        Returns
         -------
         out : str
-            A transcoded string.
+            A decoded string.
 
         """
-        return s.translate(self.a_to_b if not reverse else self.b_to_a)
+        cut = strict and self._orphans(s)
+        xtable = self._xtable(src, dst, cut=cut)
+        return s.translate(xtable)

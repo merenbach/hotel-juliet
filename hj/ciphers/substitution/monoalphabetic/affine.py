@@ -24,6 +24,12 @@ class AffineCipher(CaesarCipher):
     alphabet : string-like, optional
         An alphabet to use for transcoding.
 
+    Notes
+    -----
+    Although this cipher is technically different from a Caesar shift,
+    the alphabet offset functions the same way so we simply extend the
+    Caesar cipher implementation to add a multiplier.
+
     """
     DEFAULT_M = 1
     DEFAULT_B = 0
