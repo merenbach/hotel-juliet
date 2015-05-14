@@ -25,10 +25,13 @@ class BaseMonoSubCipher(SubCipher):
         if len(alphabet) != len(alphabet_):
             raise ValueError('Alphabets must have equal length')
         self.alphabet, self.alphabet_ = alphabet, alphabet_
+
+        # cache these
         self.xtable, self.xtable_ = self._make_xtables(alphabet, alphabet_)
         super().__init__()
 
     def _validate_alphabet(self, alphabet):
+        """ [TODO] remove me... """
         pass
 
     def _make_xtable(self, a, b):

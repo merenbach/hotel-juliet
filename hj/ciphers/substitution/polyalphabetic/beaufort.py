@@ -6,10 +6,18 @@ from utils.tabula_recta import TabulaRecta
 
 
 class BeaufortCipher(PolySubCipher):
-    def __init__(self, tabula_recta=None, passphrase=None):
-        if not tabula_recta:
-            tabula_recta = TabulaRecta()
-        super().__init__(tabula_recta, passphrase, autoclave=False)
+    """ Beaufort cipher.  Symmetric.  Not to be confused with Variant Beaufort.
+
+    Notes
+    -----
+    Autoclave makes no sense for this cipher, as far as I can tell, so it is
+    forced to `False`.
+
+    """
+    def __init__(self, passphrase, tabula_recta=None):
+        super().__init__(passphrase,
+                         tabula_recta=tabula_recta,
+                         autoclave=False)
 
     def generate_cipher_func(self, reverse):
         """ Convert characters from one alphabet to another (reverse is ignored) """

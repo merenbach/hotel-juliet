@@ -10,4 +10,4 @@ class TrithemiusCipher(VigenereCipher):
         if not tabula_recta:
             tabula_recta = TabulaRecta()
         passphrase = tabula_recta.key_alphabet
-        super().__init__(tabula_recta, passphrase, autoclave=False)
+        super().__init__(passphrase, tabula_recta=tabula_recta, autoclave=False)

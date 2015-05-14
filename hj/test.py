@@ -71,5 +71,65 @@ class CipherTest(unittest.TestCase):
         self.assertEqual(e, 'IPQQJ, ZJCQA!')
         self.assertEqual(TEST_MESSAGE, d)
 
+
+class PolyCipherTest(unittest.TestCase):
+    PASSPHRASE = 'OCEANOGRAPHYWHAT'
+
+    def test_vigenere(self):
+        c = VigenereCipher(self.PASSPHRASE)
+        e = c.encode('HELLO, WORLD!')
+        d = c.decode(e)
+        self.assertEqual(e, 'VGPLB, KUILS!')
+        self.assertEqual('HELLO, WORLD!', d)
+
+    def test_vigenere_reverse(self):
+        c = VigenereCipher(self.PASSPHRASE)
+        e = c.decode('HELLO, WORLD!')
+        d = c.encode(e)
+        self.assertEqual(e, 'TCHLB, IIALO!')
+        self.assertEqual('HELLO, WORLD!', d)
+
+    def test_variantbeaufort(self):
+        c = VariantBeaufortCipher(self.PASSPHRASE)
+        e = c.encode('HELLO, WORLD!')
+        d = c.decode(e)
+        self.assertEqual(e, 'TCHLB, IIALO!')
+        self.assertEqual('HELLO, WORLD!', d)
+
+    def test_variantbeaufort_reverse(self):
+        c = VariantBeaufortCipher(self.PASSPHRASE)
+        e = c.decode('HELLO, WORLD!')
+        d = c.encode(e)
+        self.assertEqual(e, 'VGPLB, KUILS!')
+        self.assertEqual('HELLO, WORLD!', d)
+
+    def test_trithemius(self):
+        c = TrithemiusCipher()
+        e = c.encode('HELLO, WORLD!')
+        d = c.decode(e)
+        self.assertEqual(e, 'HFNOS, BUYTM!')
+        self.assertEqual('HELLO, WORLD!', d)
+
+    def test_trithemius_reverse(self):
+        c = TrithemiusCipher()
+        e = c.decode('HELLO, WORLD!')
+        d = c.encode(e)
+        self.assertEqual(e, 'HDJIK, RIKDU!')
+        self.assertEqual('HELLO, WORLD!', d)
+
+    def test_beaufort(self):
+        c = BeaufortCipher(self.PASSPHRASE)
+        e = c.encode('HELLO, WORLD!')
+        d = c.decode(e)
+        self.assertEqual(e, 'HYTPZ, SSAPM!')
+        self.assertEqual('HELLO, WORLD!', d)
+
+    def test_beaufort_reverse(self):
+        c = BeaufortCipher(self.PASSPHRASE)
+        e = c.decode('HELLO, WORLD!')
+        d = c.encode(e)
+        self.assertEqual(e, 'HYTPZ, SSAPM!')
+        self.assertEqual('HELLO, WORLD!', d)
+
 if __name__ == '__main__':
     unittest.main()

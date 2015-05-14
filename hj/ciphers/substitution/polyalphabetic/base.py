@@ -5,20 +5,68 @@ from .. import SubCipher
 from utils.tabula_recta import TabulaRecta
 
 
-class PolySubCipher(SubCipher):
-    """ A representation of a tabula recta cipher """
-    def __init__(self, tabula_recta, passphrase, autoclave=False):
+class BasePolySubCipher(SubCipher):
+    """ A representation of a tabula recta cipher.
+
+    Parameters
+    ----------
+    passphrase : str or string like
+        An encryption/decryption key.
+    tabula_recta : utils.tabula_recta.TabulaRecta
+        A tabula recta to use.
+    autoclave : bool
+        `True` to make this an autoclave (autokey) cipher, where
+        the encrypted text will be appended to the key for decryption.
+
+    Notes
+    -----
+    Autoclave only makes sense for ciphers where the passphrase is shorter than
+    the message.  It might be considered a primitive form of "key stretching."
+
+    """
+    def __init__(self, passphrase, tabula_recta, autoclave):
         self.passphrase = passphrase
+        self.tabula_recta = tabula_recta
         self.autoclave = autoclave
+        super().__init__()
+
+
+class PolySubCipher(BasePolySubCipher):
+    """ A representation of a tabula recta cipher
+
+    Parameters
+    ----------
+    passphrase : str or string like
+        An encryption/decryption key.
+    tabula_recta : utils.tabula_recta.TabulaRecta
+        A tabula recta to use.
+        If you cannot afford one, one will
+        be provided for you at no cost to you.
+    autoclave : bool, optional
+        `True` to make this an autoclave (autokey) cipher, where
+        the encrypted text will be appended to the key for decryption.
+        Default `False`.
+
+    """
+    def __init__(self, passphrase, tabula_recta=None, autoclave=False):
         if not tabula_recta:
             tabula_recta = TabulaRecta()
-        self.tabula_recta = tabula_recta
-        super().__init__()
+        super().__init__(passphrase, tabula_recta, autoclave)
 
     def generate_cipher_func(reverse):
         """ Default to returning the input character. Override to actually encipher/decipher anything. """
         return lambda c : c
-    
+
+    def _encode(self, s, strict):
+        """ [TODO] kludgy shim for now to support `reverse` arg.
+        """
+        return self._transcode(s, strict, False)
+
+    def _decode(self, s, strict):
+        """ [TODO] kludgy shim for now to support `reverse` arg.
+        """
+        return self._transcode(s, strict, True)
+
     def _transcode(self, s, strict=False, reverse=False):
         """ Convert characters from one alphabet to another (reverse is ignored) """
         """ f is a translation function """
@@ -52,7 +100,7 @@ class PolySubCipher(SubCipher):
         # if hasattr(s, 'join'):
         #     # Input was a string. Output will also be a string
         #     o = u''.join(o)
-        return o
+        return ''.join(o)
 
     def __repr__(self):
         return repr(self.tabula_recta)

@@ -6,10 +6,13 @@ from utils.tabula_recta import TabulaRecta
 
 
 class VigenereCipher(PolySubCipher):
-    def __init__(self, tabula_recta=None, passphrase=None, autoclave=False):
-        if not tabula_recta:
-            tabula_recta = TabulaRecta()
-        super().__init__(tabula_recta, passphrase, autoclave=autoclave)
+    """ THE Vigenere cipher, conceptual foundation of many other ciphers.
+
+    """
+    def __init__(self, passphrase, tabula_recta=None, autoclave=False):
+        super().__init__(passphrase,
+                         tabula_recta=tabula_recta,
+                         autoclave=autoclave)
 
     def generate_cipher_func(self, reverse):
         """ Convert characters from one alphabet to another """

@@ -9,4 +9,4 @@ class VariantBeaufortCipher(VigenereCipher):
 
     def generate_cipher_func(self, reverse):
         """ Convert characters from one alphabet to another (reverse is reversed [sic]) """
-        super().generate_cipher_func(not reverse)
+        return super().generate_cipher_func(not reverse)
