@@ -16,14 +16,14 @@ TEST_MESSAGE = 'HELLO, WORLD!'
 
 class CipherTest(unittest.TestCase):
     def test_caesarcipher(self):
-        c = CaesarShiftCipher()
+        c = CaesarCipher()
         e = c.encode('HELLO, WORLD!')
         d = c.decode(e)
         self.assertEqual(e, 'KHOOR, ZRUOG!')
         self.assertEqual(TEST_MESSAGE, d)
 
     def test_caesarcipher_reverse(self):
-        c = CaesarShiftCipher()
+        c = CaesarCipher()
         e = c.decode('HELLO, WORLD!')
         d = c.encode(e)
         self.assertEqual(e, 'EBIIL, TLOIA!')
@@ -73,47 +73,3 @@ class CipherTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
-
-
-#
-# from ciphers.substitution.monoalphabetic import CaesarShiftCipher
-# from ciphers import AtbashCipher
-# from ciphers import *
-#
-#
-# x = list(range(1, 20))
-# print(x)
-# y = [3, 5, 8]
-# print(y)
-#
-# def u(x):
-#     seen = set()
-#     o = type(x)()
-#     for n in x:
-#         if n not in seen:
-#             seen.add(n)
-#             o += n
-#     return o
-#
-#
-# def q(x, y):
-#     z = y[:]
-#     for n in x:
-#         if n not in y:
-#             z += n
-#     # z = y + [n for n in x if n not in y]
-#     return z
-#
-# x='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-# y='KANGAROO'
-# # z = u([2,4,5,2,5,6])
-# z = q(x, y)
-# print(z)
-#
-cipher = CaesarShiftCipher()
-# # cipher = AtbashCipher()
-# cipher = KeywordCipher(keyword='KANGAROO')
-y = cipher.encode('HELLO, WORLD')
-# # y = cipher.encode('HELLO, WORLD')
-print(y)

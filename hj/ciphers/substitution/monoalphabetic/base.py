@@ -20,12 +20,35 @@ class BaseMonoSubCipher(SubCipher):
 
     """
     def __init__(self, alphabet):
-        alphabet_ = self.alphabet_(alphabet)
+        alphabet_ = self.make_alphabet_(alphabet)
         if len(alphabet) != len(alphabet_):
             raise ValueError('Alphabets must have equal length')
         self.alphabet, self.alphabet_ = alphabet, alphabet_
         self.xtable, self.xtable_ = self._make_xtables(alphabet, alphabet_)
         super().__init__()
+
+    def _make_xtable(self, a, b):
+        """ Create translation tables for encoding.
+
+        Parameters
+        ----------
+        a : str or string like
+            The source alphabet.
+        b : str or string like
+            The destination alphabet.
+
+        Returns
+        -------
+        out : dict
+            A string translation table.
+
+        Raises
+        ------
+        ValueError
+            If `a` and `b` have unequal length.
+
+        """
+        return str.maketrans(str(a), str(b))
 
     def _make_xtables(self, a, b):
         """ Create translation tables for encoding.
@@ -48,11 +71,11 @@ class BaseMonoSubCipher(SubCipher):
             If `a` and `b` have unequal length.
 
         """
-        xtable = str.maketrans(str(a), str(b))
-        xtable_ = str.maketrans(str(b), str(a))
+        xtable = self._make_xtable(a, b)
+        xtable_ = self._make_xtable(b, a)
         return xtable, xtable_
 
-    def alphabet_(self, alphabet):
+    def make_alphabet_(self, alphabet):
         """ Create a transcoding alphabet.
 
         Parameters
@@ -78,6 +101,14 @@ class BaseMonoSubCipher(SubCipher):
 
         """
         raise NotImplementedError
+
+    def _encode(self, s, strict):
+        s = super()._encode(s, strict)
+        return s.translate(self.xtable)
+
+    def _decode(self, s, strict):
+        s = super()._decode(s, strict)
+        return s.translate(self.xtable_)
 
     # def _transcode(self, s, strict=False, reverse=False):
     #     """ Convert elements within a sequence.
@@ -108,7 +139,9 @@ class MonoSubCipher(BaseMonoSubCipher):
     Parameters
     ----------
     alphabet : str or string like, optional
-        A source (plaintext) alphabet to underlie transcoding.
+        A source (plaintext) alphabet to underlie transcoding.  Default `None`.
+        If you cannot afford one, one will
+        be provided for you at no cost to you.
 
     Notes
     -----
@@ -124,13 +157,6 @@ class MonoSubCipher(BaseMonoSubCipher):
     def __repr__(self):
         return '{}\n{}'.format(self.alphabet, self.alphabet_)
 
-    def _encode(self, s, strict):
-        s = super()._encode(s, strict)
-        return s.translate(self.xtable)
-
-    def _decode(self, s, strict):
-        s = super()._decode(s, strict)
-        return s.translate(self.xtable_)
 
     # def _transcode(self, s, strict=False, xtable=None, block=0):
     #     """ Convert elements within a sequence.

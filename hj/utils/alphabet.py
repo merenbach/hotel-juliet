@@ -7,6 +7,13 @@ from .base import lrotated, multiplied, unique
 # import itertools
 
 
+###### [TODO]: Converter class containing two alphabets
+######         A la tabula recta
+### class CipherAlphabet()?
+##
+## [TODO]: Better way to manipulate alphabets when creating cipher objects...
+## maybe only do in encode/decode methods?
+
 class BaseAlphabet(UserString):
     """ Base alphabet class.
 
@@ -39,23 +46,6 @@ class BaseAlphabet(UserString):
             seq = ''.join(str(s) for s in seq)
         return type(self)(seq)
 
-    def reverse(self):
-        """ Shift a copy of this sequence to the left.
-
-        Parameters
-        ----------
-        by : int
-            Shift by this many elements.
-
-        Returns
-        -------
-        out : type(self)
-            A left-shifted copy of this sequence.
-
-        """
-        seq = reversed(self)
-        return self._recast(seq)
-
     def lrotate(self, by):
         """ Shift a copy of this sequence to the left with the << operator.
 
@@ -72,12 +62,6 @@ class BaseAlphabet(UserString):
         """
         seq = lrotated(self, by)
         return self._recast(seq)
-
-    def __invert__(self):
-        """ Shorthand for reversing an alphabet with ~.
-
-        """
-        return self.reverse()
 
     def __lshift__(self, by):
         """ Shorthand for left rotation with <<.

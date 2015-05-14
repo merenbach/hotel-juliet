@@ -19,7 +19,7 @@ class KeywordCipher(MonoSubCipher):
         self.keyword = keyword
         super().__init__(alphabet)
 
-    def alphabet_(self, alphabet):
+    def make_alphabet_(self, alphabet):
         """ Create a transcoding alphabet.
 
         """

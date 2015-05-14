@@ -1,15 +1,18 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from . import MonoSubCipher
+from .affine import AffineCipher
 
 
-class AtbashCipher(MonoSubCipher):
+class AtbashCipher(AffineCipher):
     """ Transcode based on reverse alphabet.
 
-    """
-    def alphabet_(self, alphabet):
-        """ Create a transcoding alphabet.
+    Notes
+    -----
+    This is a special case of the affine cipher where both the multiplier and
+    offset are equal to `len(alphabet) - 1`.  Since our alphabets wrap, we can
+    pass `-1` to `super()` without even knowing the length of the alphabet.
 
-        """
-        return alphabet.reverse()
+    """
+    def __init__(self, alphabet=None):
+        super().__init__(-1, -1, alphabet=alphabet)

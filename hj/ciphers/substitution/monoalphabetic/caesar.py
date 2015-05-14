@@ -4,7 +4,7 @@
 from . import MonoSubCipher
 
 
-class CaesarShiftCipher(MonoSubCipher):
+class CaesarCipher(MonoSubCipher):
     """ Transcode based on a numeric shift.
 
     Attributes
@@ -23,13 +23,11 @@ class CaesarShiftCipher(MonoSubCipher):
     """
     DEFAULT_OFFSET = 3
 
-    def __init__(self, offset=None, alphabet=None):
-        if offset is None:
-            offset = self.DEFAULT_OFFSET
+    def __init__(self, offset=DEFAULT_OFFSET, alphabet=None):
         self.offset = offset
         super().__init__(alphabet)
 
-    def alphabet_(self, alphabet):
+    def make_alphabet_(self, alphabet):
         """ Create a transcoding alphabet.
 
         """
