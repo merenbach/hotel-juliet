@@ -2,30 +2,59 @@
 # -*- coding: utf-8 -*-
 
 from .. import Cipher
+from utils.base import grouper
 
 
 class SubCipher(Cipher):
     """ Abstract-ish base class for substitution ciphers
-    
+
     Attributes
     ----------
     DEFAULT_NULLCHAR : str
-                       A Unicode string (X) to use as padding.
-                       Alphabets may make use of non-string sequences for their null padding.
-    """
-    DEFAULT_NULLCHAR = u'X'
+       A default string ("X") to use as padding.
 
-    def __init__(self, use_strings=True, nullchar=DEFAULT_NULLCHAR):
-        self.use_strings = use_strings
-        # Set a null character for padding
+    Parameters
+    ----------
+    nullchar : str
+        A null character for padding.
+
+    """
+    DEFAULT_NULLCHAR = 'X'
+
+    def __init__(self, nullchar=None):
+        if not nullchar:
+            nullchar = self.DEFAULT_NULLCHAR
+        # set a null character for padding
         self.nullchar = nullchar
         super().__init__()
 
+    def _encode(self, s, strict):
+        return self._transcode(s, strict)
+
+    def _decode(self, s, strict):
+        return self._transcode(s, strict)
+
     def encode(self, s, strict=False, block=0):
-        return self.transcode(s, strict=strict, block=block, reverse=False)
+        return self._encode(s, strict)
 
     def decode(self, s, strict=False, block=0):
-        return self.transcode(s, strict=strict, block=block, reverse=True)
+        return self._decode(s, strict)
+
+    # def unblockify(self, iterable, n, fillvalue=None):
+    #     """ From itertools"""
+    #     iterable = iterable.replace(self.separator, '')
+    #     groups = grouper(iterable, n, fillvalue=self.nullchar)
+    #     print(list(groups))
+    #     # out = [''.join(g) for g in groups]
+    #     return ''.join(iterable)
+    #
+    # def blockify(self, iterable, n, fillvalue=None):
+    #     """ From itertools"""
+    #     groups = grouper(iterable, n, fillvalue=self.nullchar)
+    #     # print(list(groups))
+    #     out = [''.join(g) for g in groups]
+    #     return ' '.join(out)
+
 
     def transcode(self, s, strict=False, block=0, reverse=False):
         """ Transcode an input sequence. This may be called directly with the same default effect as `encode`.

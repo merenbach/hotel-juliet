@@ -3,7 +3,7 @@
 
 from collections import OrderedDict
 from fractions import gcd
-# from collections import UserString
+from itertools import zip_longest
 
 
 def lrotated(seq, offset):
@@ -126,3 +126,30 @@ def coprime(a, b):
 
     """
     return gcd(a, b) == 1
+
+
+def grouper(iterable, n, fillvalue=None):
+    """ Collect data into fixed-length chunks or blocks.
+
+    Parameters
+    ----------
+    iterable : iterable
+        An iterable to divide into groups.
+    n : int
+        Group size.
+    fillvalue : obj, optional
+        Any value to pad empty spaces in the last group.
+
+    Returns
+    -------
+    out : itertools.zip_longest
+        The source iterable divided into groups.
+
+    Notes
+    -----
+    This comes from the itertools recipes in Python documentation.
+
+    """
+    # grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx"
+    args = [iter(iterable)] * n
+    return zip_longest(*args, fillvalue=fillvalue)

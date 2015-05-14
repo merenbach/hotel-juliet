@@ -24,7 +24,33 @@ class BaseMonoSubCipher(SubCipher):
         if len(alphabet) != len(alphabet_):
             raise ValueError('Alphabets must have equal length')
         self.alphabet, self.alphabet_ = alphabet, alphabet_
+        self.xtable, self.xtable_ = self._make_xtables(alphabet, alphabet_)
         super().__init__()
+
+    def _make_xtables(self, a, b):
+        """ Create translation tables for encoding.
+
+        Parameters
+        ----------
+        a : str or string like
+            The source alphabet.
+        b : str or string like
+            The destination alphabet.
+
+        Returns
+        -------
+        out : tuple(dict, dict)
+            Inverse translation tables.
+
+        Raises
+        ------
+        ValueError
+            If `a` and `b` have unequal length.
+
+        """
+        xtable = str.maketrans(str(a), str(b))
+        xtable_ = str.maketrans(str(b), str(a))
+        return xtable, xtable_
 
     def alphabet_(self, alphabet):
         """ Create a transcoding alphabet.
@@ -98,55 +124,36 @@ class MonoSubCipher(BaseMonoSubCipher):
     def __repr__(self):
         return '{}\n{}'.format(self.alphabet, self.alphabet_)
 
-    def _translation_table(self, reverse=False):
-        """ Create a string translation table.
+    def _encode(self, s, strict):
+        s = super()._encode(s, strict)
+        return s.translate(self.xtable)
 
-        Parameters
-        ----------
-        reverse : bool, optional
-            `True` to reverse the conversion direction, `False` otherwise.
-            Defaults to `False`.
+    def _decode(self, s, strict):
+        s = super()._decode(s, strict)
+        return s.translate(self.xtable_)
 
-        Returns
-        -------
-        out : dict
-            A translation between alphabets.
-
-        """
-        # null = ''
-        # if strict:
-        #     null = ''.join(set(s) - set(self.alphabet))
-        # return str.maketrans(a1, a2, null)
-
-        alphabets = str(self.alphabet), str(self.alphabet_)
-        if reverse:
-            alphabets = reversed(alphabets)
-        return str.maketrans(*alphabets)
-
-    def _transcode(self, s, strict=False, reverse=False):
-        """ Convert elements within a sequence.
-
-        Parameters
-        ----------
-        s : sequence
-            A sequence to transcode.
-        strict : bool, optional
-            `True` to strip all characters not in this cipher's alphabet,
-            `False` to funnel through to output.  Defaults to `False`.
-        reverse : bool, optional
-            `True` to transcode in the forwards direction, `False` to transcode
-            backwards.  Defaults to `False`.
-
-        Returns
-        -------
-        out : sequence
-            A transcoded message.
-
-        """
-        # s = super()._transcode(s, strict=strict, reverse=reverse)
-        translation_table = self._translation_table(reverse=reverse)
-        # [TODO]? s = super()._transcode(s, strict=strict, reverse=reverse)
-        if strict:
-            from utils.base import testscreened
-            s = testscreened(s, self.alphabet)
-        return s.translate(translation_table)
+    # def _transcode(self, s, strict=False, xtable=None, block=0):
+    #     """ Convert elements within a sequence.
+    #
+    #     Parameters
+    #     ----------
+    #     s : sequence
+    #         A sequence to transcode.
+    #     strict : bool, optional
+    #         `True` to strip all characters not in this cipher's alphabet,
+    #         `False` to funnel through to output.  Defaults to `False`.
+    #     reverse : bool, optional
+    #         `True` to transcode in the forwards direction, `False` to transcode
+    #         backwards.  Defaults to `False`.
+    #
+    #     Returns
+    #     -------
+    #     out : sequence
+    #         A transcoded message.
+    #
+    #     """
+    #     # s = super()._transcode(s, strict=strict, reverse=reverse)
+    #     if strict:
+    #         from utils.base import testscreened
+    #         s = testscreened(s, self.alphabet)
+    #     return s.translate(xtable)
