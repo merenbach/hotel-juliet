@@ -28,10 +28,10 @@ class SubCipher(Cipher):
         self.nullchar = nullchar
         super().__init__()
 
-    def _encode(self, s, strict):
+    def _encode(self, s, strict=False):
         return self._transcode(s, strict)
 
-    def _decode(self, s, strict):
+    def _decode(self, s, strict=False):
         return self._transcode(s, strict)
 
     def encode(self, s, strict=False, block=0):

@@ -3,8 +3,43 @@
 
 from utils.alphabet import Alphabet
 
+# def yielder(alphabet, keybet=None):
+#     max_alphas = len(keybet or alphabet)
+#     for n in range(max_alphas)
+#         yield alphabet.lrotate(n)
 
-class TabulaRecta:
+class BaseTabulaRecta:
+    def __init__(self, alphabet, keybet=None):
+        self.alphabet = alphabet
+        max_alphas = len(keybet or alphabet)
+        rows = [alphabet.lrotate(n) for n in range(max_alphas)]
+        # self.rows = rows
+
+        # alphabet_list = list(yielder(alphabet, keybet))
+        self.alphabets = dict(zip(keybet or alphabet, rows))
+        # if not keybet:
+        #     self.alphabets = {alphabet[0]: alphabet for alphabet in alphabets}
+        # else:
+        #     keybetiter = iter(keybet)
+        #     abetiter = iter(alphabets)
+        #     # self.alphabets = {next(keybetiter): alphabet for alphabet in alphabets}
+        #     self.alphabets = {k: next(abetiter) for k in keybet}
+
+    def intersect(self, col, row, coerce=False):
+        if coerce:
+            try:
+                col = self.col_headers.index(col)
+                row = self.row_headers.index(row)
+            except ValueError:
+                raise
+            else:
+                return self.intersect(col, row, coerce=False)
+        return self.alphabets[row][col]
+
+class TabulaRecta(BaseTabulaRecta):
+    """ Message alphabet is on top; key alphabet is on side.
+
+    """
     def __init__(self, msg_alphabet=None, key_alphabet=None):
         if not msg_alphabet:
             msg_alphabet = Alphabet()
@@ -12,39 +47,38 @@ class TabulaRecta:
             key_alphabet = msg_alphabet
         self.msg_alphabet = msg_alphabet
         self.key_alphabet = key_alphabet
-        row_keys = tuple(k for k in key_alphabet)
-        self.keyed_table = dict((row_keys[i], msg_alphabet << i) for i in range(len(key_alphabet)))
-        self.index_table = tuple(msg_alphabet << i for i in range(len(key_alphabet)))
-
-    def key_row(self, k):
-        """ Return a full (possibly-wrapped) alphabet from a given row, denoted by initial char `key_char` """
-        return self.keyed_table.get(k, None)
-
-    # def idx_row(self, k):
-    #     idx = self.key_alphabet.find(k)
-    #     if idx != -1:
-    #         return self.index_table[idx]
-    #     return None
+        super().__init__(msg_alphabet, keybet=key_alphabet)
 
     def intersect(self, msg_char, key_char):
         """ Locate character at intersection of characters `a` and `b` """
-        r = self.key_row(key_char)
-        if r is not None:
-            idx = self.msg_alphabet.find(msg_char)
-            if idx != -1:
-                return r.element(idx)
-        return None
+        try:
+            row, col = self.alphabets[key_char], self.alphabet.index(msg_char)
+        except (KeyError, IndexError):
+            return None
+        else:
+            out = row[col]
+            return str(out)
 
     def locate(self, msg_char, key_char):
         """ Locate character at intersection of character `a` with row occupant character `k` """
         """ Order here *is* important, but has nothing to do with rows vs. columns """
         """ If character `a` not found, return None """
-        r = self.key_row(key_char)
-        if r is not None:
-            idx = r.find(msg_char)
-            if idx != -1:
-                return self.msg_alphabet.element(idx)
-        return None
+        try:
+            row = self.alphabets[key_char]
+        except KeyError:
+            return None
+        else:
+            idx = row.index(msg_char)
+            out = self.alphabet[idx]
+            return str(out)
+
+    # def __repr__(self):
+    #     rows = ['    ' + ' '.join(str(self.alphabet))]
+    #     rows.append('  +' + '-' * 2 * len(self.alphabet))
+    #     rows.extend([str(row[0]) + ' | ' + ' '.join(str(row)) for row in self.rows])
+    #     return '\n'.join(rows)
+
+
 
     #def p(self, delimiter=' '):
     #    rows = []

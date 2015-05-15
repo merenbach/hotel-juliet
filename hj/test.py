@@ -131,5 +131,19 @@ class PolyCipherTest(unittest.TestCase):
         self.assertEqual(e, 'HYTPZ, SSAPM!')
         self.assertEqual('HELLO, WORLD!', d)
 
+    def test_gronsfeld(self):
+        c = GronsfeldCipher(passphrase='23132')
+        e = c.encode('HELLO, WORLD!')
+        d = c.decode(e)
+        self.assertEqual(e, 'JHMOQ, YRSOF!')
+        self.assertEqual('HELLO, WORLD!', d)
+
+    def test_gronsfeld_reverse(self):
+        c = GronsfeldCipher(passphrase='23132')
+        e = c.decode('HELLO, WORLD!')
+        d = c.encode(e)
+        self.assertEqual(e, 'FBKIM, ULQIB!')
+        self.assertEqual('HELLO, WORLD!', d)
+
 if __name__ == '__main__':
     unittest.main()

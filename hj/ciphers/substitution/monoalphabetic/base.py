@@ -60,11 +60,11 @@ class BaseMonoSubCipher(SubCipher):
         raise NotImplementedError
 
     def _encode(self, s, strict):
-        s = super()._encode(s, strict)
+        s = super()._encode(s)
         return self.transcoder.encode(s, strict=strict)
 
     def _decode(self, s, strict):
-        s = super()._decode(s, strict)
+        s = super()._decode(s)
         return self.transcoder.decode(s, strict=strict)
 
     # def _transcode(self, s, strict=False, reverse=False):
