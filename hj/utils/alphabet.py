@@ -3,7 +3,7 @@
 
 import string
 from collections import UserString
-from .base import lrotated, multiplied, unique
+from .base import at_modulo, lrotated, multiplied, unique
 # import itertools
 
 
@@ -92,6 +92,23 @@ class Alphabet(BaseAlphabet, UserString):
 
         seq = ''.join(unique(str(seq)))
         super().__init__(seq)
+
+    def at(self, pos):
+        """ Return the element at a given index, wrapping as needed.
+
+        Parameters
+        ----------
+        pos : int
+            An integer index to retrieve.  Will be wrapped if out of bounds.
+
+        Returns
+        -------
+        out : data-type
+            The element at the given index, or `None` if `self` has length 0.
+
+        """
+        seq = at_modulo(self, pos)
+        return self._recast(seq)
 
     def element(self, i):
         """ Return the element at a given index.
@@ -308,7 +325,7 @@ class BaseAlphabetTranscoder:
 
     """
     def __init__(self, a, b):
-        a, b = Alphabet(a), Alphabet(b or a)
+        b, a = Alphabet(b or a), Alphabet(a)
         self.alphabet, self.alphabet_ = a, b
 
     def _orphans(self, s):
