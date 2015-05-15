@@ -291,7 +291,7 @@ class Alphabet(BaseAlphabet, UserString):
 #             s = testscreened(s, self.alphabet)
 #         return s.translate(translation_table)
 
-class AlphabetTranscoder:
+class BaseAlphabetTranscoder:
     """ Convert between two alphabets.
 
     Parameters
@@ -308,9 +308,32 @@ class AlphabetTranscoder:
 
     """
     def __init__(self, a, b):
+        self.a, self.b = Alphabet(a), Alphabet(b)
+
+    def _orphans(self, s):
+        """ Find "orphaned" characters in a message.
+
+        Parameters
+        ----------
+        s : str or string-like
+            A string to check for non-processable characters.
+
+        Returns
+        -------
+        out : str
+            Characters that can't be transcoded.
+
+        """
+        orphans = set(s) - set(self.a + self.b)
+        return ''.join(orphans)
+
+
+class AlphabetTranscoder(BaseAlphabetTranscoder):
+
+    def __init__(self, a, b):
         if len(a) != len(b):
             raise ValueError('Alphabets must have equal length')
-        self.a, self.b = Alphabet(a), Alphabet(b)
+        super().__init__(a, b)
 
     def __repr__(self):
         return '{}\n{}'.format(self.a, self.b)
@@ -336,23 +359,6 @@ class AlphabetTranscoder:
         if not cut:
             cut = ''
         return str.maketrans(str(src), str(dst), str(cut))
-
-    def _orphans(self, s):
-        """ Find "orphaned" characters in a message.
-
-        Parameters
-        ----------
-        s : str or string-like
-            A string to check for non-processable characters.
-
-        Returns
-        -------
-        out : str
-            Characters that can't be transcoded.
-
-        """
-        orphans = set(s) - set(self.a + self.b)
-        return ''.join(orphans)
 
     def encode(self, s, strict=False):
         """ Encode a string.

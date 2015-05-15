@@ -8,33 +8,20 @@ from utils.alphabet import Alphabet
 #     for n in range(max_alphas)
 #         yield alphabet.lrotate(n)
 
-class BaseTabulaRecta:
-    def __init__(self, alphabet, keybet=None):
-        self.alphabet = alphabet
-        max_alphas = len(keybet or alphabet)
-        rows = [alphabet.lrotate(n) for n in range(max_alphas)]
-        # self.rows = rows
+from .alphabet import BaseAlphabetTranscoder
+class BaseTabulaRecta(BaseAlphabetTranscoder):
+    """ 
 
-        # alphabet_list = list(yielder(alphabet, keybet))
-        self.alphabets = dict(zip(keybet or alphabet, rows))
-        # if not keybet:
-        #     self.alphabets = {alphabet[0]: alphabet for alphabet in alphabets}
-        # else:
-        #     keybetiter = iter(keybet)
-        #     abetiter = iter(alphabets)
-        #     # self.alphabets = {next(keybetiter): alphabet for alphabet in alphabets}
-        #     self.alphabets = {k: next(abetiter) for k in keybet}
+    Parameters
+    ----------
+    alphabet : str or string like
+        An alphabet to use.
+    alphabet_ : str or string like, optional
+        An alternative alphabet to use for keying.
 
-    def intersect(self, col, row, coerce=False):
-        if coerce:
-            try:
-                col = self.col_headers.index(col)
-                row = self.row_headers.index(row)
-            except ValueError:
-                raise
-            else:
-                return self.intersect(col, row, coerce=False)
-        return self.alphabets[row][col]
+    """
+    def __init__(self, alphabet, alphabet_=None):
+        super().__init__(alphabet, alphabet_)
 
 class TabulaRecta(BaseTabulaRecta):
     """ Message alphabet is on top; key alphabet is on side.
@@ -47,29 +34,59 @@ class TabulaRecta(BaseTabulaRecta):
             key_alphabet = msg_alphabet
         self.msg_alphabet = msg_alphabet
         self.key_alphabet = key_alphabet
-        super().__init__(msg_alphabet, keybet=key_alphabet)
+        super().__init__(msg_alphabet, alphabet_=key_alphabet)
 
-    def intersect(self, msg_char, key_char):
-        """ Locate character at intersection of characters `a` and `b` """
+    def intersect(self, col_char, row_char):
+        """ Locate character within the grid.
+
+        Parameters
+        ----------
+        col : str or string like
+            The header character of the column to use.
+        row : str or string like
+            The header character of the row to use.
+
+        Returns
+        -------
+        out : str
+            The element at the intersection of column `col` and row `row`.
+
+        Notes
+        -----
+        Order of params is not important here _except_ insofar as
+        the tabula recta may not be square (e.g., Gronsfeld cipher).
+        
+        """
         try:
-            row, col = self.alphabets[key_char], self.alphabet.index(msg_char)
-        except (KeyError, IndexError):
+            m = self.msg_alphabet.index(str(col_char))
+            k = self.key_alphabet.index(str(row_char))
+        except ValueError:
             return None
         else:
-            out = row[col]
+            idx = (m+k) % len(self.msg_alphabet)
+            out = self.msg_alphabet[idx]
             return str(out)
 
-    def locate(self, msg_char, key_char):
+    def locate(self, col_char, row_char):
         """ Locate character at intersection of character `a` with row occupant character `k` """
         """ Order here *is* important, but has nothing to do with rows vs. columns """
-        """ If character `a` not found, return None """
+        """ If character `a` not found, return None
+        
+        Returns
+        -------
+        out : str
+            The element (encoded or plaintext) that intersects with
+            edge character `msg_char` to find character `key_char`.
+
+        """
         try:
-            row = self.alphabets[key_char]
+            m = self.msg_alphabet.index(str(col_char))
+            k = self.key_alphabet.index(str(row_char))
         except KeyError:
             return None
         else:
-            idx = row.index(msg_char)
-            out = self.alphabet[idx]
+            idx = (m-k) % len(self.msg_alphabet)
+            out = self.msg_alphabet[idx]
             return str(out)
 
     # def __repr__(self):

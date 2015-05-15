@@ -81,7 +81,7 @@ class PolySubCipher(BasePolySubCipher):
             if c in self.tabula_recta.msg_alphabet:
                 if self.autoclave and c in self.tabula_recta.key_alphabet and not reverse:
                     passphrase.append(c)
-                e = f(c, passphrase[i % len(passphrase)])
+                e = f(c, str(passphrase[i % len(passphrase)]))
                 if e is not None:
                     i += 1
                     o.append(e)
