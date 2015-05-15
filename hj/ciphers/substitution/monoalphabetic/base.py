@@ -60,12 +60,16 @@ class BaseMonoSubCipher(SubCipher):
         raise NotImplementedError
 
     def _encode(self, s, strict):
+        if strict:
+            s = self.transcoder.sanitize(s)
         s = super()._encode(s)
-        return self.transcoder.encode(s, strict=strict)
+        return self.transcoder.encode(s)
 
     def _decode(self, s, strict):
+        if strict:
+            s = self.transcoder.sanitize(s)
         s = super()._decode(s)
-        return self.transcoder.decode(s, strict=strict)
+        return self.transcoder.decode(s)
 
     # def _transcode(self, s, strict=False, reverse=False):
     #     """ Convert elements within a sequence.

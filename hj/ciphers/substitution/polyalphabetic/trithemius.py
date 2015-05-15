@@ -2,12 +2,10 @@
 # -*- coding: utf-8 -*-
 
 from . import VigenereCipher
-from utils.tabula_recta import TabulaRecta
+from utils.alphabet import Alphabet
 
 
 class TrithemiusCipher(VigenereCipher):
-    def __init__(self, tabula_recta=None):
-        if not tabula_recta:
-            tabula_recta = TabulaRecta()
-        passphrase = tabula_recta.key_alphabet
-        super().__init__(passphrase, tabula_recta=tabula_recta, autoclave=False)
+    def __init__(self, alphabet=None):
+        passphrase = Alphabet(alphabet)
+        super().__init__(passphrase, alphabet=alphabet, autoclave=False)

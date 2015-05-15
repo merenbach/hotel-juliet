@@ -48,30 +48,49 @@ class PolySubCipher(BasePolySubCipher):
         Default `False`.
 
     """
-    def __init__(self, passphrase, tabula_recta=None, autoclave=False):
-        if not tabula_recta:
-            tabula_recta = TabulaRecta()
+    def __init__(self, passphrase, alphabet=None, autoclave=False):
+        tabula_recta = TabulaRecta(alphabet)
         super().__init__(passphrase, tabula_recta, autoclave)
-
-    def generate_cipher_func(reverse):
-        """ Default to returning the input character. Override to actually encipher/decipher anything. """
-        return lambda c : c
 
     def _encode(self, s, strict):
         """ [TODO] kludgy shim for now to support `reverse` arg.
         """
+        if strict:
+            s = self.tabula_recta.sanitize(s)
         return self._transcode(s, strict, False)
 
     def _decode(self, s, strict):
         """ [TODO] kludgy shim for now to support `reverse` arg.
         """
+        if strict:
+            s = self.tabula_recta.sanitize(s)
         return self._transcode(s, strict, True)
+
+# def phrase(self, passphrase):
+#     passphrase = list(passphrase)
+#     i = iter(passphrase)
+#     while True:
+#         try:
+#             c = next(i)
+#         except StopIteration:
+#             i = iter(passphrase)
+#             c = next(i)
+#         food = yield c
+#         if food:
+#             passphrase += food
+#
+#         yield next(n)
+#         from itertools import cycle
+#         x=cycle(pphrase)
+#         z = yield next(x)
+#         if z:
+            
 
     def _transcode(self, s, strict=False, reverse=False):
         """ Convert characters from one alphabet to another (reverse is ignored) """
         """ f is a translation function """
-        f = self.generate_cipher_func(reverse)
-        passphrase = list(self.passphrase)
+        passphrase = self.passphrase
+        ### can add to the above
         o = []
         # Passphrase index: Number of successfully-located characters
         # Used to keep message and passphrase in "synch"
@@ -81,7 +100,8 @@ class PolySubCipher(BasePolySubCipher):
             if c in self.tabula_recta.msg_alphabet:
                 if self.autoclave and c in self.tabula_recta.key_alphabet and not reverse:
                     passphrase.append(c)
-                e = f(c, str(passphrase[i % len(passphrase)]))
+                e = self._cipher(c, str(passphrase[i % len(passphrase)]),
+                        reverse=reverse)
                 if e is not None:
                     i += 1
                     o.append(e)

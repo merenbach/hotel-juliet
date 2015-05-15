@@ -1,150 +1,72 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from utils.alphabet import Alphabet
-
-# def yielder(alphabet, keybet=None):
-#     max_alphas = len(keybet or alphabet)
-#     for n in range(max_alphas)
-#         yield alphabet.lrotate(n)
-
-from .alphabet import BaseAlphabetTranscoder
+from .alphabet import Alphabet, BaseTabula
+from .base import index_map
 
 
-class BaseTabulaRecta(BaseAlphabetTranscoder):
-    """ 
-
-    Parameters
-    ----------
-    alphabet : str or string like
-        An alphabet to use.
-    alphabet_ : str or string like, optional
-        An alternative alphabet to use for keying.
-
-    """
-    def __init__(self, alphabet, alphabet_=None):
-        super().__init__(alphabet, alphabet_ or alphabet)
-
-
-class TabulaRecta(BaseTabulaRecta):
+class TabulaRecta(BaseTabula):
     """ Message alphabet is on top; key alphabet is on side.
 
     Parameters
     ----------
     alphabet : str or string like, optional
-        An alphabet to use.  Message encoding will occur with this alphabet.
-        The message and this alphabet must have overlapping character sets.
-    alphabet_ : str or string like, optional
-        A cipher alphabet to use.  Passphrase keying will occur with this
-        alphabet.  The passphrase and this alphabet must have overlapping
-        character sets.
-
-    Notes
-    -----
-    Since (en/de)ciphering is done positionally with math, it really doesn't
-    matter whether the two alphabets are the same length or even whether
-    they have any of the same characters.
-
-    As long as the passphrase (in the polyalphabetic cipher) and the alphabet
-    passed in have the same character set (or rather, provided that the
-    key alphabet is a superset of the passphrase character set), everything
-    will translate fine.  Random Unicode glyphs could be used.
+        An alphabet to use for transcoding.
 
     """
-    def __init__(self, alphabet=None, alphabet_=None):
-        super().__init__(alphabet, alphabet_)
+    def __init__(self, alphabet=None):
+        super().__init__(alphabet)
+        self.charmap = index_map(self.alphabet)
+
         # [TODO] kludgy vars that shouldn't be here
         self.msg_alphabet = self.alphabet
-        self.key_alphabet = self.alphabet_
+        self.key_alphabet = self.alphabet
 
-    def _find(self, m, k, func):
+    def transcode(self, m, k, intersect=False):
         """ Locate character within the grid.
 
         Parameters
         ----------
         m : str
-            The header character of the message alphabet to use.
+            A character in the message alphabet.
         k : str
-            The header character of the key alphabet to use.
+            A character in the key alphabet.
+        intersect : bool, optional
+            `True` to find character at intersection of `k` and `m`.
+            `False` to work back from `k` and intersection `m` to find edge.
+            Default `False`.
 
         Returns
         -------
         out : str
-            The element at the location determined by `func`.
+            The transcoded character in the message alphabet.
 
         """
         try:
-            i = self.alphabet.index(m)
-            j = self.alphabet_.index(k)
-        except ValueError:
+            i, j = self.charmap[m], self.charmap[k]
+            if not intersect:
+                j *= (-1)
+        except KeyError:
             return None
         else:
-            pos = func(i, j)
-            element = self.alphabet.at(pos)
+            pos = (i + j) % len(self.alphabet)
+            element = self.alphabet[pos]
             return str(element)
 
-    def intersect(self, m, k):
-        """ Locate character within the grid.
+    def __repr__(self):
+        alphabet = self.alphabet
 
-        Parameters
-        ----------
-        m : str
-            The header character of the message alphabet to use.
-        k : str
-            The header character of the key alphabet to use.
+        rows = [self.alphabet << n for n in range(len(alphabet))]
+        keyed_rows = dict(zip(self.alphabet_, rows))
+        lines = []
+        lines.append('    ' + ' '.join(str(alphabet)))
+        lines.append('')
 
-        Returns
-        -------
-        out : str
-            The element at the intersection of column `col` and row `row`.
+        for k in self.alphabet_:
+            row = ' '.join(str(keyed_rows[k]))
+            lines.append('{0}   {1}   {0}'.format(k, row))
 
-        Notes
-        -----
-        Order of params is not important here _except_ insofar as
-        the tabula recta may not be square (e.g., Gronsfeld cipher).
+        lines.append('')
+        lines.append('    ' + ' '.join(str(alphabet)))
 
-        """
-        f = lambda a, b: a + b
-        return self._find(m, k, f)
-
-    def locate(self, col_char, k):
-        """ Locate character at intersection of character `a`
-        with row occupant character `k`.
-
-        Parameters
-        ----------
-        col : str
-            The header character of the column to use.
-        k : str
-            The header character of the key alphabet row to use.
-
-        Returns
-        -------
-        out : str
-            The element (encoded or plaintext) that intersects with
-            edge character `msg_char` to find character `key_char`.
-            If no match found, return `None`.
-
-        Notes
-        -----
-        Order here *is* important, but has nothing to do with rows vs. columns
-
-        """
-        f = lambda a, b: a - b
-        return self._find(col_char, k, f)
-
-    # def __repr__(self):
-    #     rows = ['    ' + ' '.join(str(self.alphabet))]
-    #     rows.append('  +' + '-' * 2 * len(self.alphabet))
-    #     rows.extend([str(row[0]) + ' | ' + ' '.join(str(row)) for row in self.rows])
-    #     return '\n'.join(rows)
-
-
-
-    #def p(self, delimiter=' '):
-    #    rows = []
-    #    l = len(self.table[0].elements)
-    #    rows.append(delimiter * 4 + delimiter.join(self.table[0].elements))
-    #    rows.append(delimiter * 2 + '+' + '-' * (l * 2))
-    #    rows.extend(row.elements[0] + ' |' + delimiter + delimiter.join(row.elements) for row in self.table)
-    #    return '\n'.join(rows)
+        return '\n'.join(lines)

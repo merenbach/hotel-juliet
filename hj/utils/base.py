@@ -6,29 +6,28 @@ from fractions import gcd
 from itertools import zip_longest
 
 
-def at_modulo(seq, pos):
-    """ Return the element at a given index in a sequence, wrapping as needed.
-
-    Parameters
-    ----------
-    seq : sequence
-        A list, tuple, or string to process.
-    pos : int
-        An integer index to retrieve.  Will be wrapped if out of bounds.
-
-    Returns
-    -------
-    out : data-type
-        The element at the given index, or `None` if sequence has length 0.
-
-    """
-    try:
-        pos %= len(seq)
-    except ZeroDivisionError:
-        return None
-    else:
-        return seq[pos]
-
+# def at_modulo(seq, pos):
+#     """ Return the element at a given index in sequence, wrapping as needed.
+#
+#     Parameters
+#     ----------
+#     seq : sequence
+#         A list, tuple, or string to process.
+#     pos : int
+#         An integer index to retrieve.  Will be wrapped if out of bounds.
+#
+#     Returns
+#     -------
+#     out : data-type
+#         The element at the given index, or `None` if sequence has length 0.
+#
+#     """
+#     try:
+#         pos %= len(seq)
+#     except ZeroDivisionError:
+#         return None
+#     else:
+#         return seq[pos]
 
 def lrotated(seq, offset):
     """ Left-rotate a version of the given sequence.
@@ -59,6 +58,23 @@ def lrotated(seq, offset):
         return seq[:]
     else:
         return seq[offset:] + seq[:offset]
+
+
+def index_map(seq):
+    """ Map elements to their indices within a sequence.
+
+    Parameters
+    ----------
+    seq : sequence
+        A sequence to map.
+
+    Return
+    ------
+    out : dict
+        An element-to-index mapping for a sequence.
+
+    """
+    return {element: idx for (idx, element) in enumerate(seq)}
 
 
 def multiplied(seq, by):

@@ -7,6 +7,6 @@ from . import VigenereCipher
 class VariantBeaufortCipher(VigenereCipher):
     """ Vigenere cipher with encoding and decoding steps reversed """
 
-    def generate_cipher_func(self, reverse):
+    def _cipher(self, msg_char, key_char, reverse=False):
         """ Convert characters from one alphabet to another (reverse is reversed [sic]) """
-        return super().generate_cipher_func(not reverse)
+        return super()._cipher(msg_char, key_char, not reverse)

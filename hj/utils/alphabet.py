@@ -3,7 +3,7 @@
 
 import string
 from collections import UserString
-from .base import at_modulo, lrotated, multiplied, unique
+from .base import lrotated, multiplied, unique
 # import itertools
 
 
@@ -92,23 +92,6 @@ class Alphabet(BaseAlphabet, UserString):
 
         seq = ''.join(unique(str(seq)))
         super().__init__(seq)
-
-    def at(self, pos):
-        """ Return the element at a given index, wrapping as needed.
-
-        Parameters
-        ----------
-        pos : int
-            An integer index to retrieve.  Will be wrapped if out of bounds.
-
-        Returns
-        -------
-        out : data-type
-            The element at the given index, or `None` if `self` has length 0.
-
-        """
-        seq = at_modulo(self, pos)
-        return self._recast(seq)
 
     def element(self, i):
         """ Return the element at a given index.
@@ -308,7 +291,7 @@ class Alphabet(BaseAlphabet, UserString):
 #             s = testscreened(s, self.alphabet)
 #         return s.translate(translation_table)
 
-class BaseAlphabetTranscoder:
+class BaseTabula:
     """ Convert between two alphabets.
 
     Parameters
@@ -324,9 +307,8 @@ class BaseAlphabetTranscoder:
         If `a` and `b` are not of equal length.
 
     """
-    def __init__(self, a, b):
-        b, a = Alphabet(b or a), Alphabet(a)
-        self.alphabet, self.alphabet_ = a, b
+    def __init__(self, alphabet):
+        self.alphabet = Alphabet(alphabet)
 
     def _orphans(self, s):
         """ Find "orphaned" characters in a message.
@@ -345,51 +327,45 @@ class BaseAlphabetTranscoder:
         orphans = set(s) - set(self.alphabet + self.alphabet_)
         return ''.join(orphans)
 
+    def sanitize(self, s):
+        """ Strip "orphaned" characters from a message.
 
-class AlphabetTranscoder(BaseAlphabetTranscoder):
+        Parameters
+        ----------
+        s : str or string-like
+            A string to sanitize of non-processable characters.
+
+        Returns
+        -------
+        out : str
+            The original string.
+
+        """
+        orphans = self._orphans(s)
+        xtable = str.maketrans('', '', orphans)
+        return s.translate(xtable)
+
+
+class AlphabetTranscoder(BaseTabula):
 
     def __init__(self, a, b):
         """ [TODO] this validation check should not happen till alphabets
         are created, I think """
         if len(a) != len(b):
             raise ValueError('Alphabets must have equal length')
-        super().__init__(a, b)
+        self.alphabet_ = Alphabet(b or a)
+        super().__init__(a)
 
     def __repr__(self):
         return '{}\n{}'.format(self.alphabet, self.alphabet_)
 
-    def _xtable(self, src, dst, cut=None):
-        """ Create a translation table between alphabets.
-
-        Parameters
-        ----------
-        src : str or string like
-            A source alphabet.
-        dst : str or string like
-            A destination alphabet.
-        cut : str or string like, optional
-            Characters to remove when converting.  Default `None`.
-
-        Returns
-        -------
-        out : dict
-            A translation table suitable for `str.translate()`.
-
-        """
-        if not cut:
-            cut = ''
-        return str.maketrans(str(src), str(dst), str(cut))
-
-    def encode(self, s, strict=False):
+    def encode(self, s):
         """ Encode a string.
 
         Parameters
         ----------
         s : str or string like
             A string to encode.
-        strict : bool, optional
-            `True` to strip unmapped characters when transcoding,
-            `False` to leave them alone.  Default `False`.
 
         Returns
         -------
@@ -397,18 +373,15 @@ class AlphabetTranscoder(BaseAlphabetTranscoder):
             An encoded string.
 
         """
-        return self._transcode(s, self.alphabet, self.alphabet_, strict=strict)
+        return self._transcode(s, self.alphabet, self.alphabet_)
 
-    def decode(self, s, strict=False):
+    def decode(self, s):
         """ Decode a string.
 
         Parameters
         ----------
         s : str or string like
             A string to decode.
-        strict : bool, optional
-            `True` to strip unmapped characters when transcoding,
-            `False` to leave them alone.  Default `False`.
 
         Returns
         -------
@@ -416,9 +389,9 @@ class AlphabetTranscoder(BaseAlphabetTranscoder):
             A decoded string.
 
         """
-        return self._transcode(s, self.alphabet_, self.alphabet, strict=strict)
+        return self._transcode(s, self.alphabet_, self.alphabet)
 
-    def _transcode(self, s, src, dst, strict=False):
+    def _transcode(self, s, src, dst):
         """ Decode a string.
 
         Parameters
@@ -429,9 +402,6 @@ class AlphabetTranscoder(BaseAlphabetTranscoder):
             A source alphabet.
         dst : str or string like
             A destination alphabet.
-        strict : bool, optional
-            `True` to strip unmapped characters when transcoding,
-            `False` to leave them alone.  Default `False`.
 
         Returns
         -------
@@ -439,6 +409,5 @@ class AlphabetTranscoder(BaseAlphabetTranscoder):
             A decoded string.
 
         """
-        cut = strict and self._orphans(s)
-        xtable = self._xtable(src, dst, cut=cut)
+        xtable = str.maketrans(str(src), str(dst))
         return s.translate(xtable)
