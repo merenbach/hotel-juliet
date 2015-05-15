@@ -9,6 +9,8 @@ from utils.alphabet import Alphabet
 #         yield alphabet.lrotate(n)
 
 from .alphabet import BaseAlphabetTranscoder
+
+
 class BaseTabulaRecta(BaseAlphabetTranscoder):
     """ 
 
@@ -21,20 +23,39 @@ class BaseTabulaRecta(BaseAlphabetTranscoder):
 
     """
     def __init__(self, alphabet, alphabet_=None):
-        super().__init__(alphabet, alphabet_)
+        super().__init__(alphabet, alphabet_ or alphabet)
+
 
 class TabulaRecta(BaseTabulaRecta):
     """ Message alphabet is on top; key alphabet is on side.
 
+    Parameters
+    ----------
+    alphabet : str or string like
+        An alphabet to use.  Message encoding will occur with this alphabet.
+        The message and this alphabet must have overlapping character sets.
+    alphabet_ : str or string like
+        A cipher alphabet to use.  Passphrase keying will occur with this
+        alphabet.  The passphrase and this alphabet must have overlapping
+        character sets.
+
+    Notes
+    -----
+    Since (en/de)ciphering is done positionally with math, it really doesn't
+    matter whether the two alphabets are the same length or even whether
+    they have any of the same characters.
+
+    As long as the passphrase (in the polyalphabetic cipher) and the alphabet
+    passed in have the same character set (or rather, provided that the
+    key alphabet is a superset of the passphrase character set), everything
+    will translate fine.  Random Unicode glyphs could be used.
+
     """
-    def __init__(self, msg_alphabet=None, key_alphabet=None):
-        if not msg_alphabet:
-            msg_alphabet = Alphabet()
-        if not key_alphabet:
-            key_alphabet = msg_alphabet
-        self.msg_alphabet = msg_alphabet
-        self.key_alphabet = key_alphabet
-        super().__init__(msg_alphabet, alphabet_=key_alphabet)
+    def __init__(self, alphabet=None, alphabet_=None):
+        super().__init__(alphabet, alphabet_)
+        # [TODO] kludgy vars that shouldn't be here
+        self.msg_alphabet = self.alphabet
+        self.key_alphabet = self.alphabet_
 
     def intersect(self, col_char, row_char):
         """ Locate character within the grid.
@@ -55,23 +76,23 @@ class TabulaRecta(BaseTabulaRecta):
         -----
         Order of params is not important here _except_ insofar as
         the tabula recta may not be square (e.g., Gronsfeld cipher).
-        
+
         """
         try:
-            m = self.msg_alphabet.index(str(col_char))
-            k = self.key_alphabet.index(str(row_char))
+            m = self.alphabet.index(str(col_char))
+            k = self.alphabet_.index(str(row_char))
         except ValueError:
             return None
         else:
-            idx = (m+k) % len(self.msg_alphabet)
-            out = self.msg_alphabet[idx]
+            idx = (m+k) % len(self.alphabet)
+            out = self.alphabet[idx]
             return str(out)
 
     def locate(self, col_char, row_char):
         """ Locate character at intersection of character `a` with row occupant character `k` """
         """ Order here *is* important, but has nothing to do with rows vs. columns """
         """ If character `a` not found, return None
-        
+
         Returns
         -------
         out : str
@@ -80,13 +101,13 @@ class TabulaRecta(BaseTabulaRecta):
 
         """
         try:
-            m = self.msg_alphabet.index(str(col_char))
-            k = self.key_alphabet.index(str(row_char))
+            m = self.alphabet.index(str(col_char))
+            k = self.alphabet_.index(str(row_char))
         except KeyError:
             return None
         else:
-            idx = (m-k) % len(self.msg_alphabet)
-            out = self.msg_alphabet[idx]
+            idx = (m-k) % len(self.alphabet)
+            out = self.alphabet[idx]
             return str(out)
 
     # def __repr__(self):

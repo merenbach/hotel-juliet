@@ -299,7 +299,7 @@ class BaseAlphabetTranscoder:
     a : str or string like
         A source alphabet.
     b : str or string like
-        A destination alphabet.
+        A destination alphabet.  If `None`, will default to `a`.
 
     Raises
     ------
@@ -308,7 +308,8 @@ class BaseAlphabetTranscoder:
 
     """
     def __init__(self, a, b):
-        self.a, self.b = Alphabet(a), Alphabet(b)
+        a, b = Alphabet(a), Alphabet(b or a)
+        self.alphabet, self.alphabet_ = a, b
 
     def _orphans(self, s):
         """ Find "orphaned" characters in a message.
@@ -324,19 +325,21 @@ class BaseAlphabetTranscoder:
             Characters that can't be transcoded.
 
         """
-        orphans = set(s) - set(self.a + self.b)
+        orphans = set(s) - set(self.alphabet + self.alphabet_)
         return ''.join(orphans)
 
 
 class AlphabetTranscoder(BaseAlphabetTranscoder):
 
     def __init__(self, a, b):
+        """ [TODO] this validation check should not happen till alphabets
+        are created, I think """
         if len(a) != len(b):
             raise ValueError('Alphabets must have equal length')
         super().__init__(a, b)
 
     def __repr__(self):
-        return '{}\n{}'.format(self.a, self.b)
+        return '{}\n{}'.format(self.alphabet, self.alphabet_)
 
     def _xtable(self, src, dst, cut=None):
         """ Create a translation table between alphabets.
@@ -377,7 +380,7 @@ class AlphabetTranscoder(BaseAlphabetTranscoder):
             An encoded string.
 
         """
-        return self._transcode(s, self.a, self.b, strict=strict)
+        return self._transcode(s, self.alphabet, self.alphabet_, strict=strict)
 
     def decode(self, s, strict=False):
         """ Decode a string.
@@ -396,7 +399,7 @@ class AlphabetTranscoder(BaseAlphabetTranscoder):
             A decoded string.
 
         """
-        return self._transcode(s, self.b, self.a, strict=strict)
+        return self._transcode(s, self.alphabet_, self.alphabet, strict=strict)
 
     def _transcode(self, s, src, dst, strict=False):
         """ Decode a string.
