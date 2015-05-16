@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from .. import SubCipher
-from utils.alphabet import Alphabet, AlphabetTranscoder
+from utils.alphabet import Alphabet
+from utils.transcoder import Transcoder
 
 
 class BaseMonoSubCipher(SubCipher):
@@ -22,7 +23,7 @@ class BaseMonoSubCipher(SubCipher):
     def __init__(self, alphabet):
         self._validate_alphabet(alphabet)
         alphabet_ = self.make_alphabet_(alphabet)
-        self.transcoder = AlphabetTranscoder(alphabet, alphabet_)
+        self.transcoder = Transcoder(alphabet, alphabet_)
         super().__init__()
 
     def __repr__(self):
@@ -60,16 +61,10 @@ class BaseMonoSubCipher(SubCipher):
         raise NotImplementedError
 
     def _encode(self, s, strict):
-        if strict:
-            s = self.transcoder.sanitize(s)
-        s = super()._encode(s)
-        return self.transcoder.encode(s)
+        return self.transcoder.encode(s, strict=strict)
 
     def _decode(self, s, strict):
-        if strict:
-            s = self.transcoder.sanitize(s)
-        s = super()._decode(s)
-        return self.transcoder.decode(s)
+        return self.transcoder.decode(s, strict=strict)
 
     # def _transcode(self, s, strict=False, reverse=False):
     #     """ Convert elements within a sequence.

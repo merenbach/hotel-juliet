@@ -3,16 +3,16 @@
 
 from . import VigenereCipher
 from string import digits
-from utils.alphabet import Alphabet, AlphabetTranscoder
-from utils.tabula_recta import TabulaRecta
+from utils.alphabet import Alphabet
 
 
 class GronsfeldCipher(VigenereCipher):
     def __init__(self, passphrase, alphabet=None):
         alphabet = Alphabet(alphabet)
         super().__init__(passphrase, autoclave=False)
-        self.tcoder = AlphabetTranscoder(alphabet[:len(digits)], digits)
+        self._xtable = str.maketrans(digits, str(alphabet)[:len(digits)])
 
     def _cipher(self, msg_char, key_char, reverse=False):
-        key_char = self.tcoder.decode(key_char)
+        # [TODO] this allows non-numbers in key still... need to strip 'em!
+        key_char = key_char.translate(self._xtable)
         return super()._cipher(msg_char, key_char, reverse=reverse)

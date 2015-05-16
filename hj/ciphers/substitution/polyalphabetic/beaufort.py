@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from . import PolySubCipher
-from utils.tabula_recta import TabulaRecta
 
 
 class BeaufortCipher(PolySubCipher):

@@ -3,7 +3,7 @@
 
 import string
 from collections import UserString
-from .base import lrotated, multiplied, unique
+from .base import at_modulo, lrotated, multiplied, unique
 # import itertools
 
 
@@ -86,12 +86,32 @@ class Alphabet(BaseAlphabet, UserString):
 
     """ Represent a string of unique characters """
     def __init__(self, seq=None):
+        # [TODO] reexamine: `if not seq` => blank alphabets
+        # become full ones, so lrotated(alpha, 0) gives weird
+        # results
         # If no alphabet is specified, use a "default" of ASCII uppercase
-        if not seq:
+        if seq is None:
             seq = self.DEFAULT_ALPHABET
 
         seq = ''.join(unique(str(seq)))
         super().__init__(seq)
+
+    def at(self, pos):
+        """ Return the element at a given index, wrapping as needed.
+
+        Parameters
+        ----------
+        pos : int
+            An integer index to retrieve.  Will be wrapped if out of bounds.
+
+        Returns
+        -------
+        out : data-type
+            The element at the given index, or `None` if `self` has length 0.
+
+        """
+        seq = at_modulo(self, pos)
+        return self._recast(seq)
 
     def element(self, i):
         """ Return the element at a given index.
@@ -162,26 +182,6 @@ class Alphabet(BaseAlphabet, UserString):
 
     # def __str__(self):
     #     return ''.join(self)
-
-    def translate(self, operations):
-        """ Run a sequence of operations on a copy of this alphabet.
-
-        Parameters
-        ----------
-        operations : iterable
-            A sequence of operations to perform.
-
-        Returns
-        -------
-        out : type(self)
-            A character translation dict.
-
-        """
-        translation = self
-        if operations:
-            for op in operations:
-                translation = op.handle(translation)
-        return type(self)(translation)
 
     def common(self, s):
         """ Return a supplied string stripped of characters not in this alphabet """
@@ -290,124 +290,3 @@ class Alphabet(BaseAlphabet, UserString):
 #             from utils.base import testscreened
 #             s = testscreened(s, self.alphabet)
 #         return s.translate(translation_table)
-
-class BaseTabula:
-    """ Convert between two alphabets.
-
-    Parameters
-    ----------
-    a : str or string like
-        A source alphabet.
-    b : str or string like
-        A destination alphabet.  If `None`, will default to `a`.
-
-    Raises
-    ------
-    ValueError
-        If `a` and `b` are not of equal length.
-
-    """
-    def __init__(self, alphabet):
-        self.alphabet = Alphabet(alphabet)
-
-    def _orphans(self, s):
-        """ Find "orphaned" characters in a message.
-
-        Parameters
-        ----------
-        s : str or string-like
-            A string to check for non-processable characters.
-
-        Returns
-        -------
-        out : str
-            Characters that can't be transcoded.
-
-        """
-        orphans = set(s) - set(self.alphabet + self.alphabet_)
-        return ''.join(orphans)
-
-    def sanitize(self, s):
-        """ Strip "orphaned" characters from a message.
-
-        Parameters
-        ----------
-        s : str or string-like
-            A string to sanitize of non-processable characters.
-
-        Returns
-        -------
-        out : str
-            The original string.
-
-        """
-        orphans = self._orphans(s)
-        xtable = str.maketrans('', '', orphans)
-        return s.translate(xtable)
-
-
-class AlphabetTranscoder(BaseTabula):
-
-    def __init__(self, a, b):
-        """ [TODO] this validation check should not happen till alphabets
-        are created, I think """
-        if len(a) != len(b):
-            raise ValueError('Alphabets must have equal length')
-        self.alphabet_ = Alphabet(b or a)
-        super().__init__(a)
-
-    def __repr__(self):
-        return '{}\n{}'.format(self.alphabet, self.alphabet_)
-
-    def encode(self, s):
-        """ Encode a string.
-
-        Parameters
-        ----------
-        s : str or string like
-            A string to encode.
-
-        Returns
-        -------
-        out : str
-            An encoded string.
-
-        """
-        return self._transcode(s, self.alphabet, self.alphabet_)
-
-    def decode(self, s):
-        """ Decode a string.
-
-        Parameters
-        ----------
-        s : str or string like
-            A string to decode.
-
-        Returns
-        -------
-        out : str
-            A decoded string.
-
-        """
-        return self._transcode(s, self.alphabet_, self.alphabet)
-
-    def _transcode(self, s, src, dst):
-        """ Decode a string.
-
-        Parameters
-        ----------
-        s : str or string like
-            A string to decode.
-        src : str or string like
-            A source alphabet.
-        dst : str or string like
-            A destination alphabet.
-
-        Returns
-        -------
-        out : str
-            A decoded string.
-
-        """
-        xtable = str.maketrans(str(src), str(dst))
-        return s.translate(xtable)
