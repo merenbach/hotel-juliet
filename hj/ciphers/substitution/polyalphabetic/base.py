@@ -98,14 +98,14 @@ class PolySubCipher(BasePolySubCipher):
                 passphrase.append(c)
             k = passphrase[i % len(passphrase)]
             transcoded_char = self._cipher(c, k, reverse=reverse)
-            if transcoded_char:
+            if transcoded_char and transcoded_char in self.tabula_recta.msg_alphabet:
                 i += 1
                 # If we are in reverse and autoclave mode, append to the passphrase
                 if text_autoclave and c in self.tabula_recta.key_alphabet and reverse:
                     passphrase.append(transcoded_char)
                 c = transcoded_char
             elif strict:
-                c = transcoded_char
+                c = ''
             o.append(c)
         return ''.join(o)
 

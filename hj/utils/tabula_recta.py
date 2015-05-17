@@ -57,10 +57,12 @@ class TabulaRecta(Alphabet):
         except KeyError:
             return None
         else:
+            # f = transcoder.encode if intersect else transcoder.decode
+            # return f(b, strict=True)
             if intersect:
-                return transcoder.encode(b, strict=True)
+                return transcoder.encode(b)
             else:
-                return transcoder.decode(b, strict=True)
+                return transcoder.decode(b)
         # try:
         #     x, y = self.charmap[a], self.charmap[b]
         # except KeyError:

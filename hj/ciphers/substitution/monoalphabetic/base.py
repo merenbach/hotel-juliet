@@ -59,7 +59,11 @@ class MonoSubCipher(SubCipher):
         raise NotImplementedError
 
     def _encode(self, s, strict):
-        return self.transcoder.encode(s, strict=strict)
+        if strict:
+            s = self.transcoder.sanitize(s)
+        return self.transcoder.encode(s)
 
     def _decode(self, s, strict):
-        return self.transcoder.decode(s, strict=strict)
+        if strict:
+            s = self.transcoder.sanitize(s)
+        return self.transcoder.decode(s)

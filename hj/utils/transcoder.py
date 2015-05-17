@@ -22,23 +22,22 @@ class BaseTranscoder:
 
     """
     def __init__(self, a, b):
+        a, b = str(a), str(b)
         if len(a) != len(b):
             raise ValueError('Character sets must have equal length')
-        self.a, self.b = str(a), str(b)
+        self.a, self.b = a, b
+        self.a_to_b, self.b_to_a = str.maketrans(a, b), str.maketrans(b, a)
 
     def __repr__(self):
         return '{}\n{}'.format(self.a, self.b)
 
-    def encode(self, s, strict=False):
+    def encode(self, s):
         """ Convert a string from character set `a` to character set `b`.
 
         Parameters
         ----------
         s : str
             A string to encode.
-        strict : bool, optional
-            `True` to cut from output any non-transcodeable characters,
-            `False` to leave them untouched.  Default `False`.
 
         Returns
         -------
@@ -46,51 +45,23 @@ class BaseTranscoder:
             The encoded string.
 
         """
-        return self._transcode(s, self.a, self.b, strict)
+        return s.translate(self.a_to_b)
 
-    def decode(self, s, strict=False):
+    def decode(self, s):
         """ Convert a string from character set `b` to character set `a`.
 
         Parameters
         ----------
         s : str
-            A string to encode.
-        strict : bool, optional
-            `True` to cut from output any non-transcodeable characters,
-            `False` to leave them untouched.  Default `False`.
+            A string to decode.
 
         Returns
         -------
         out : str
-            The encoded string.
+            The decoded string.
 
         """
-        return self._transcode(s, self.b, self.a, strict)
-
-    def _transcode(self, s, src, dst, strict):
-        """ Convert a string from character set `b` to character set `a`.
-
-        Parameters
-        ----------
-        s : str
-            A string to transcode.
-        src : str
-            A source character set.
-        dst : str
-            A destination character set.
-        strict : bool
-            `True` to cut from output any non-transcodeable characters,
-            `False` to leave them untouched.
-
-        Returns
-        -------
-        out : str
-            The transcoded string.
-
-        """
-        cut = strict and ''.join(set(s) - set(src + dst))
-        xtable = str.maketrans(src, dst, cut or '')
-        return s.translate(xtable)
+        return s.translate(self.b_to_a)
 
 
 class Transcoder(BaseTranscoder):

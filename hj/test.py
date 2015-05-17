@@ -4,8 +4,6 @@
 import unittest
 from ciphers import *
 
-TEST_MESSAGE = 'HELLO, WORLD!'
-
 # class AlphabetTest(unittest.TestCase):
 #     def test_rotate(self):
 #         ab = Alphabet()
@@ -15,135 +13,91 @@ TEST_MESSAGE = 'HELLO, WORLD!'
 
 
 class CipherTest(unittest.TestCase):
+
+    MESSAGE_PLAIN = 'HELLO, WORLD!'
+    MESSAGE_STRICT = 'HELLOWORLD'
+    PASSPHRASE = 'OCEANOGRAPHYWHAT'
+
+    def _transcode(self, cipher, msg, msg_strict, msg_enc, strict):
+        encoded = cipher.encode(msg, strict=strict)
+        # [TODO] should we test with both strict and non-strict decoding?
+        decoded = cipher.decode(encoded, strict=strict)
+
+        self.assertEqual(encoded, msg_enc)
+        self.assertEqual(decoded, strict and msg_strict or msg)
+
+    def _transcode_reverse(self, cipher, msg, msg_strict, msg_enc, strict):
+        encoded = cipher.decode(msg, strict=strict)
+        # [TODO] should we test with both strict and non-strict decoding?
+        decoded = cipher.encode(encoded, strict=strict)
+
+        self.assertEqual(encoded, msg_enc)
+        self.assertEqual(decoded, strict and msg_strict or msg)
+
+
     def test_caesarcipher(self):
         c = CaesarCipher()
-        e = c.encode('HELLO, WORLD!')
-        d = c.decode(e)
-        self.assertEqual(e, 'KHOOR, ZRUOG!')
-        self.assertEqual(TEST_MESSAGE, d)
-
-    def test_caesarcipher_reverse(self):
-        c = CaesarCipher()
-        e = c.decode('HELLO, WORLD!')
-        d = c.encode(e)
-        self.assertEqual(e, 'EBIIL, TLOIA!')
-        self.assertEqual(TEST_MESSAGE, d)
+        self._transcode(c, self.MESSAGE_PLAIN, None, 'KHOOR, ZRUOG!', strict=False)
+        self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'KHOORZRUOG', strict=True)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'EBIIL, TLOIA!', strict=False)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'EBIILTLOIA', strict=True)
 
     def test_atbashcipher(self):
         c = AtbashCipher()
-        e = c.encode('HELLO, WORLD!')
-        d = c.decode(e)
-        self.assertEqual(e, 'SVOOL, DLIOW!')
-        self.assertEqual(TEST_MESSAGE, d)
-
-    def test_atbashcipher_reverse(self):
-        c = AtbashCipher()
-        e = c.decode('HELLO, WORLD!')
-        d = c.encode(e)
-        self.assertEqual(e, 'SVOOL, DLIOW!')
-        self.assertEqual(TEST_MESSAGE, d)
+        self._transcode(c, self.MESSAGE_PLAIN, None, 'SVOOL, DLIOW!', strict=False)
+        self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'SVOOLDLIOW', strict=True)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'SVOOL, DLIOW!', strict=False)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'SVOOLDLIOW', strict=True)
 
     def test_keywordcipher(self):
         c = KeywordCipher(keyword='KANGAROO')
-        e = c.encode('HELLO, WORLD!')
-        d = c.decode(e)
-        self.assertEqual(e, 'CRHHL, WLQHG!')
-        self.assertEqual(TEST_MESSAGE, d)
-
-    def test_keywordcipher_reverse(self):
-        c = KeywordCipher(keyword='KANGAROO')
-        e = c.decode('HELLO, WORLD!')
-        d = c.encode(e)
-        self.assertEqual(e, 'LJOOF, WFEOI!')
-        self.assertEqual(TEST_MESSAGE, d)
+        self._transcode(c, self.MESSAGE_PLAIN, None, 'CRHHL, WLQHG!', strict=False)
+        self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'CRHHLWLQHG', strict=True)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'LJOOF, WFEOI!', strict=False)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'LJOOFWFEOI', strict=True)
 
     def test_affinecipher(self):
         c = AffineCipher(7, 3)
-        e = c.encode('HELLO, WORLD!')
-        d = c.decode(e)
-        self.assertEqual(e, 'AFCCX, BXSCY!')
-        self.assertEqual(TEST_MESSAGE, d)
+        self._transcode(c, self.MESSAGE_PLAIN, None, 'AFCCX, BXSCY!', strict=False)
+        self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'AFCCXBXSCY', strict=True)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'IPQQJ, ZJCQA!', strict=False)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'IPQQJZJCQA', strict=True)
 
-    def test_affinecipher_reverse(self):
-        c = AffineCipher(7, 3)
-        e = c.decode('HELLO, WORLD!')
-        d = c.encode(e)
-        self.assertEqual(e, 'IPQQJ, ZJCQA!')
-        self.assertEqual(TEST_MESSAGE, d)
-
-
-class PolyCipherTest(unittest.TestCase):
-    PASSPHRASE = 'OCEANOGRAPHYWHAT'
 
     def test_vigenere(self):
         c = VigenereCipher(self.PASSPHRASE)
-        e = c.encode('HELLO, WORLD!')
-        d = c.decode(e)
-        self.assertEqual(e, 'VGPLB, KUILS!')
-        self.assertEqual('HELLO, WORLD!', d)
-
-    def test_vigenere_reverse(self):
-        c = VigenereCipher(self.PASSPHRASE)
-        e = c.decode('HELLO, WORLD!')
-        d = c.encode(e)
-        self.assertEqual(e, 'TCHLB, IIALO!')
-        self.assertEqual('HELLO, WORLD!', d)
+        self._transcode(c, self.MESSAGE_PLAIN, None, 'VGPLB, KUILS!', strict=False)
+        self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'VGPLBKUILS', strict=True)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'TCHLB, IIALO!', strict=False)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'TCHLBIIALO', strict=True)
 
     def test_variantbeaufort(self):
         c = VariantBeaufortCipher(self.PASSPHRASE)
-        e = c.encode('HELLO, WORLD!')
-        d = c.decode(e)
-        self.assertEqual(e, 'TCHLB, IIALO!')
-        self.assertEqual('HELLO, WORLD!', d)
-
-    def test_variantbeaufort_reverse(self):
-        c = VariantBeaufortCipher(self.PASSPHRASE)
-        e = c.decode('HELLO, WORLD!')
-        d = c.encode(e)
-        self.assertEqual(e, 'VGPLB, KUILS!')
-        self.assertEqual('HELLO, WORLD!', d)
+        self._transcode(c, self.MESSAGE_PLAIN, None, 'TCHLB, IIALO!', strict=False)
+        self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'TCHLBIIALO', strict=True)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'VGPLB, KUILS!', strict=False)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'VGPLBKUILS', strict=True)
 
     def test_trithemius(self):
         c = TrithemiusCipher()
-        e = c.encode('HELLO, WORLD!')
-        d = c.decode(e)
-        self.assertEqual(e, 'HFNOS, BUYTM!')
-        self.assertEqual('HELLO, WORLD!', d)
-
-    def test_trithemius_reverse(self):
-        c = TrithemiusCipher()
-        e = c.decode('HELLO, WORLD!')
-        d = c.encode(e)
-        self.assertEqual(e, 'HDJIK, RIKDU!')
-        self.assertEqual('HELLO, WORLD!', d)
+        self._transcode(c, self.MESSAGE_PLAIN, None, 'HFNOS, BUYTM!', strict=False)
+        self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'HFNOSBUYTM', strict=True)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'HDJIK, RIKDU!', strict=False)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'HDJIKRIKDU', strict=True)
 
     def test_beaufort(self):
         c = BeaufortCipher(self.PASSPHRASE)
-        e = c.encode('HELLO, WORLD!')
-        d = c.decode(e)
-        self.assertEqual(e, 'HYTPZ, SSAPM!')
-        self.assertEqual('HELLO, WORLD!', d)
-
-    def test_beaufort_reverse(self):
-        c = BeaufortCipher(self.PASSPHRASE)
-        e = c.decode('HELLO, WORLD!')
-        d = c.encode(e)
-        self.assertEqual(e, 'HYTPZ, SSAPM!')
-        self.assertEqual('HELLO, WORLD!', d)
+        self._transcode(c, self.MESSAGE_PLAIN, None, 'HYTPZ, SSAPM!', strict=False)
+        self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'HYTPZSSAPM', strict=True)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'HYTPZ, SSAPM!', strict=False)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'HYTPZSSAPM', strict=True)
 
     def test_gronsfeld(self):
         c = GronsfeldCipher(passphrase='23132')
-        e = c.encode('HELLO, WORLD!')
-        d = c.decode(e)
-        self.assertEqual(e, 'JHMOQ, YRSOF!')
-        self.assertEqual('HELLO, WORLD!', d)
-
-    def test_gronsfeld_reverse(self):
-        c = GronsfeldCipher(passphrase='23132')
-        e = c.decode('HELLO, WORLD!')
-        d = c.encode(e)
-        self.assertEqual(e, 'FBKIM, ULQIB!')
-        self.assertEqual('HELLO, WORLD!', d)
+        self._transcode(c, self.MESSAGE_PLAIN, None, 'JHMOQ, YRSOF!', strict=False)
+        self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'JHMOQYRSOF', strict=True)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'FBKIM, ULQIB!', strict=False)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'FBKIMULQIB', strict=True)
 
 if __name__ == '__main__':
     unittest.main()
