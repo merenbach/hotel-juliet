@@ -16,6 +16,3 @@ class AtbashCipher(AffineCipher):
     """
     def __init__(self, alphabet=None):
         super().__init__(-1, -1, alphabet=alphabet)
-
-    def _validate_alphabet(self, alphabet):
-        pass

@@ -10,6 +10,8 @@ from .base import at_modulo, lrotated, multiplied, unique
 ##
 ## [TODO]: Better way to manipulate alphabets when creating cipher objects...
 ## maybe only do in encode/decode methods?
+## todo: grouping/null chars
+## todo: running keys/autokeys (text and cipher)
 
 class BaseAlphabet(UserString):
     """ Base alphabet class.
@@ -191,102 +193,3 @@ class Alphabet(BaseAlphabet, UserString):
 
     # def __repr__(self):
     #     return repr(''.join((str(e) for e in self)))
-
-# class AtbashAlphabet(Alphabet):
-#     def __init__(self, initlist, shift):
-#         initlist.shift(3)
-#         super().__init__(initlist=initlist)
-
-# a =AtbashAlphabet
-
-# c = Cipher(a, b)
-# null char should be a "None" instead of an actual character?
-
-
-# class BaseMessage(UserString):
-#     """ Represent a string-based message to transcode.
-
-#     """
-#     def __init__(self, seq, alphabet=None):
-#         self.alphabet = Alphabet(alphabet)
-#         super().__init__(seq)
-
-
-# class Message(BaseMessage):
-#     """ Represent a string-based message to transcode.
-
-#     """
-#     def encoded(self, cipher):
-#         """ Encode a message.  All params passed through to `_transcode()`.
-
-#         Returns
-#         -------
-#         out : sequence
-#             A encoded message.
-
-#         """
-#         for arg in args:
-#             arg.encode()
-#         table = self._translation_table(reverse=False)
-#         return self._transcode(table, *args, **kwargs)
-
-#     def decoded(self, cipher):
-#         """ Decode a message.  All params passed through to `_transcode()`.
-
-#         Returns
-#         -------
-#         out : sequence
-#             A decoded message.
-
-#         """
-#         table = self._translation_table(reverse=True)
-#         return self._transcode(table, *args, **kwargs)
-
-#     def _translation_table(self, reverse=False):
-#         """ Create a string translation table.
-
-#         Parameters
-#         ----------
-#         reverse : bool, optional
-#             `True` to reverse the conversion direction, `False` otherwise.
-#             Defaults to `False`.
-
-#         Returns
-#         -------
-#         out : dict
-#             A translation between alphabets.
-
-#         """
-#         # null = ''
-#         # if strict:
-#         #     null = ''.join(set(s) - set(self.alphabet))
-#         # return str.maketrans(a1, a2, null)
-
-#         alphabets = str(self.alphabet), str(self.alphabet_)
-#         if reverse:
-#             alphabets = reversed(alphabets)
-#         return str.maketrans(*alphabets)
-
-#     def _transcode(self, translation_table, s, strict=False):
-#         """ Convert elements within a sequence.
-
-#         Parameters
-#         ----------
-#         translation_table : dict
-#             A dict mapping ordinal source characters to destination characters.
-#         s : sequence
-#             A sequence to encode.
-#         strict : bool, optional
-#             `True` to strip all characters not in this cipher's alphabet,
-#             `False` to funnel through to output.  Defaults to `False`.
-
-#         Returns
-#         -------
-#         out : sequence
-#             A transcoded message.
-
-#         """
-#         if strict:
-#             from utils.base import testscreened
-#             s = testscreened(s, self.alphabet)
-#         return s.translate(translation_table)

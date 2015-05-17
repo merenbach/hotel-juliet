@@ -38,10 +38,6 @@ class AffineCipher(CaesarCipher):
         self.multiplier = multiplier
         super().__init__(offset=offset, alphabet=alphabet)
 
-    def _validate_alphabet(self, alphabet):
-        if not 0 <= self.offset < len(alphabet):
-            raise ValueError('Offset out of range [0, <length of alphabet>).')
-
     def make_alphabet_(self, alphabet):
         """ Create a transcoding alphabet.
 
@@ -60,6 +56,8 @@ class AffineCipher(CaesarCipher):
         cleverness, our multiplication would be:
 
             (self.multiplier * n + self.offset) mod len(alphabet)
+
+        [TODO] Make this mechanism more elegant
 
         """
         # first run Caesar cipher shifts

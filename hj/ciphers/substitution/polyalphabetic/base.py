@@ -55,16 +55,12 @@ class PolySubCipher(BasePolySubCipher):
     def _encode(self, s, strict):
         """ [TODO] kludgy shim for now to support `reverse` arg.
         """
-        if strict:
-            s = self.tabula_recta.sanitize(s)
-        return self._transcode(s, strict, False)
+        return self._transcode(s, strict=strict, reverse=False)
 
     def _decode(self, s, strict):
         """ [TODO] kludgy shim for now to support `reverse` arg.
         """
-        if strict:
-            s = self.tabula_recta.sanitize(s)
-        return self._transcode(s, strict, True)
+        return self._transcode(s, strict=strict, reverse=True)
 
 # def phrase(self, passphrase):
 #     passphrase = list(passphrase)
@@ -95,31 +91,22 @@ class PolySubCipher(BasePolySubCipher):
         # Passphrase index: Number of successfully-located characters
         # Used to keep message and passphrase in "synch"
         # Character n of the message should be transcoded with character (n % passphrase len) of the passphrase
+        text_autoclave = self.autoclave
         i = 0
         for c in s:
-            if c in self.tabula_recta.msg_alphabet:
-                if self.autoclave and c in self.tabula_recta.key_alphabet and not reverse:
-                    passphrase.append(c)
-                e = self._cipher(c, str(passphrase[i % len(passphrase)]),
-                        reverse=reverse)
-                if e is not None:
-                    i += 1
-                    o.append(e)
-                    # If we are in reverse and autoclave mode, append to the passphrase
-                    if self.autoclave and c in self.tabula_recta.key_alphabet and reverse:
-                        passphrase.append(e)
-                else:
-                    # We should not get here since we're checking for alphabet membership above
-                    # Situation, however, is similar to below
-                    o.append(c)
-            elif not strict:
-                # Append the character unchanged
-                # Don't update the passphrase index
-                o.append(c)
-        # Who is the kludgiest of them all?
-        # if hasattr(s, 'join'):
-        #     # Input was a string. Output will also be a string
-        #     o = u''.join(o)
+            if text_autoclave and c in self.tabula_recta.key_alphabet and not reverse:
+                passphrase.append(c)
+            k = passphrase[i % len(passphrase)]
+            transcoded_char = self._cipher(c, k, reverse=reverse)
+            if transcoded_char:
+                i += 1
+                # If we are in reverse and autoclave mode, append to the passphrase
+                if text_autoclave and c in self.tabula_recta.key_alphabet and reverse:
+                    passphrase.append(transcoded_char)
+                c = transcoded_char
+            elif strict:
+                c = transcoded_char
+            o.append(c)
         return ''.join(o)
 
     def __repr__(self):

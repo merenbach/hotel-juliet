@@ -5,7 +5,7 @@ from . import PolySubCipher
 
 
 class VigenereCipher(PolySubCipher):
-    """ THE Vigenere cipher, conceptual foundation of many other ciphers.
+    """ THE Vigenere cipher, conceptual foundation of several other ciphers.
 
     """
     def __init__(self, passphrase, alphabet=None, autoclave=False):
@@ -13,5 +13,5 @@ class VigenereCipher(PolySubCipher):
 
     def _cipher(self, msg_char, key_char, reverse=False):
         """ Convert characters from one alphabet to another """
-        return self.tabula_recta.transcode(msg_char, key_char,
+        return self.tabula_recta.transcode(key_char, msg_char,
                                            intersect=not reverse)

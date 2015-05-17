@@ -6,13 +6,15 @@ from utils.alphabet import Alphabet
 from utils.transcoder import Transcoder
 
 
-class BaseMonoSubCipher(SubCipher):
+class MonoSubCipher(SubCipher):
     """ Monoalphabetic substitution transcoder.
 
     Parameters
     ----------
-    alphabet : sequence
-        A source (plaintext) alphabet to underlie transcoding.
+    alphabet : str or string like, optional
+        A source (plaintext) alphabet to underlie transcoding.  Default `None`.
+        If you cannot afford one, one will
+        be provided for you at no cost to you.
 
     Raises
     ------
@@ -21,17 +23,13 @@ class BaseMonoSubCipher(SubCipher):
 
     """
     def __init__(self, alphabet):
-        self._validate_alphabet(alphabet)
+        alphabet = Alphabet(alphabet)
         alphabet_ = self.make_alphabet_(alphabet)
         self.transcoder = Transcoder(alphabet, alphabet_)
         super().__init__()
 
     def __repr__(self):
         return repr(self.transcoder)
-
-    def _validate_alphabet(self, alphabet):
-        """ [TODO] remove me... """
-        pass
 
     def make_alphabet_(self, alphabet):
         """ Create a transcoding alphabet.
@@ -65,73 +63,3 @@ class BaseMonoSubCipher(SubCipher):
 
     def _decode(self, s, strict):
         return self.transcoder.decode(s, strict=strict)
-
-    # def _transcode(self, s, strict=False, reverse=False):
-    #     """ Convert elements within a sequence.
-
-    #     Parameters
-    #     ----------
-    #     s : sequence
-    #         A sequence to encode.
-    #     strict : bool, optional
-    #         `True` to strip all characters not in this cipher's alphabet,
-    #         `False` to funnel through to output.  Defaults to `False`.
-
-    #     Returns
-    #     -------
-    #     out : sequence
-    #         A transcoded message.
-
-    #     """
-    #     if strict:
-    #         from utils.base import testscreened
-    #         s = testscreened(s, self.alphabet)
-    #     return s
-
-
-class MonoSubCipher(BaseMonoSubCipher):
-    """ Monoalphabetic substitution transcoder.
-
-    Parameters
-    ----------
-    alphabet : str or string like, optional
-        A source (plaintext) alphabet to underlie transcoding.  Default `None`.
-        If you cannot afford one, one will
-        be provided for you at no cost to you.
-
-    Notes
-    -----
-    The `BaseMonoSubCipher` class may be initialized with sequences of
-    any sort.  This subclass assumes existence of the Alphabet utility
-    class, so for philosophical reasons it is separated out here.
-
-    """
-    def __init__(self, alphabet=None):
-        alphabet = Alphabet(alphabet)
-        super().__init__(alphabet)
-
-    # def _transcode(self, s, strict=False, xtable=None, block=0):
-    #     """ Convert elements within a sequence.
-    #
-    #     Parameters
-    #     ----------
-    #     s : sequence
-    #         A sequence to transcode.
-    #     strict : bool, optional
-    #         `True` to strip all characters not in this cipher's alphabet,
-    #         `False` to funnel through to output.  Defaults to `False`.
-    #     reverse : bool, optional
-    #         `True` to transcode in the forwards direction, `False` to transcode
-    #         backwards.  Defaults to `False`.
-    #
-    #     Returns
-    #     -------
-    #     out : sequence
-    #         A transcoded message.
-    #
-    #     """
-    #     # s = super()._transcode(s, strict=strict, reverse=reverse)
-    #     if strict:
-    #         from utils.base import testscreened
-    #         s = testscreened(s, self.alphabet)
-    #     return s.translate(xtable)

@@ -111,29 +111,6 @@ def multiplied(seq, by):
     return (seq[n] for n in positions)
 
 
-def testscreened(seq, mesh):
-    """ Filter elements from a copy of the given sequence.
-
-    [todo] ***ONLY USED IN ONE PLACE, FOR STRICT TRANSCODING***
-
-    Parameters
-    ----------
-    seq : sequence
-        A list, tuple, or string to process.
-    mesh : sequence
-        Filter the original sequence through this sequence.
-        Only elements also in `mesh` will be retained in the output.
-        If an item is in `mesh` but not in `seq`, it is ignored.
-
-    Returns
-    -------
-    out : type(seq)
-        A processed copy of the given sequence.
-
-    """
-    return [e for e in seq if e in mesh]
-
-
 def unique(seq):
     """ Get unique items in sequence, preserving order.
 

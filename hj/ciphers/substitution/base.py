@@ -29,10 +29,10 @@ class SubCipher(Cipher):
         super().__init__()
 
     def _encode(self, s, strict=False):
-        return self._transcode(s, strict)
+        raise NotImplementedError
 
     def _decode(self, s, strict=False):
-        return self._transcode(s, strict)
+        raise NotImplementedError
 
     def encode(self, s, strict=False, block=0):
         return self._encode(s, strict)
