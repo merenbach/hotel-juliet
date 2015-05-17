@@ -7,7 +7,7 @@ from utils.alphabet import *
 ## Keystream will be suppliable to anything requiring a passphrase (tabula recta) and possibly even keyword ciphers?
 ## In this sense the "autoclave" and "progressive" keystream options become easily available (via dropin) to any classes that need them
 
-class KeyStream(object):
+class KeyStream:
     def __init__(self, passphrase):
         """ We could accept a message ("autoclave element set"?) variable here and add that to the key stream as we go """
         self.passphrase = passphrase

@@ -55,12 +55,16 @@ class PolySubCipher(BasePolySubCipher):
     def _encode(self, s, strict):
         """ [TODO] kludgy shim for now to support `reverse` arg.
         """
-        return self._transcode(s, strict=strict, reverse=False)
+        if strict:
+            s = ''.join(c for c in s if c in self.tabula_recta.msg_alphabet)
+        return self._transcode(s, reverse=False)
 
     def _decode(self, s, strict):
         """ [TODO] kludgy shim for now to support `reverse` arg.
         """
-        return self._transcode(s, strict=strict, reverse=True)
+        if strict:
+            s = ''.join(c for c in s if c in self.tabula_recta.msg_alphabet)
+        return self._transcode(s, reverse=True)
 
 # def phrase(self, passphrase):
 #     passphrase = list(passphrase)
@@ -82,7 +86,7 @@ class PolySubCipher(BasePolySubCipher):
 #         if z:
             
 
-    def _transcode(self, s, strict=False, reverse=False):
+    def _transcode(self, s, reverse=False):
         """ Convert characters from one alphabet to another (reverse is ignored) """
         """ f is a translation function """
         passphrase = self.passphrase
@@ -98,14 +102,14 @@ class PolySubCipher(BasePolySubCipher):
                 passphrase.append(c)
             k = passphrase[i % len(passphrase)]
             transcoded_char = self._cipher(c, k, reverse=reverse)
+            # if transcoded_char in self.tabula_recta.msg_alphabet:  # [TODO] Breaks BEAUFORT
+            # but above line should ideally be what we're using...
             if transcoded_char and transcoded_char in self.tabula_recta.msg_alphabet:
                 i += 1
                 # If we are in reverse and autoclave mode, append to the passphrase
                 if text_autoclave and c in self.tabula_recta.key_alphabet and reverse:
                     passphrase.append(transcoded_char)
                 c = transcoded_char
-            elif strict:
-                c = ''
             o.append(c)
         return ''.join(o)
 

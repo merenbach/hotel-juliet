@@ -98,23 +98,6 @@ class Alphabet(BaseAlphabet, UserString):
         seq = ''.join(unique(str(seq)))
         super().__init__(seq)
 
-    def at(self, pos):
-        """ Return the element at a given index, wrapping as needed.
-
-        Parameters
-        ----------
-        pos : int
-            An integer index to retrieve.  Will be wrapped if out of bounds.
-
-        Returns
-        -------
-        out : data-type
-            The element at the given index, or `None` if `self` has length 0.
-
-        """
-        seq = at_modulo(self, pos)
-        return self._recast(seq)
-
     def element(self, i):
         """ Return the element at a given index.
 

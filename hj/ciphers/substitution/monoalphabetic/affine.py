@@ -41,13 +41,6 @@ class AffineCipher(CaesarCipher):
     def make_alphabet_(self, alphabet):
         """ Create a transcoding alphabet.
 
-        # Raises
-        # ------
-        # ValueError
-        #     If multiplier is not coprime with the length of `alphabet`, or
-        #     if offset is greater than or equal to the length of `alphabet`,
-        #     or if offset is less than zero.
-
         Notes
         -----
         We're "cheating" here by not actually having the decryption machinery
