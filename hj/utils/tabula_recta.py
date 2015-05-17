@@ -41,6 +41,10 @@ class TabulaRecta(Alphabet):
         b : str
             A header character on the edge of the tableau,
             or a character within (if `intersect` is `True`).
+        intersect : bool, optional
+            `True` to look for the intersection of `a` and `b`, `False` to
+            look for the edge location that intersects with `a` to form `b`.
+            Default `False`.
 
         Returns
         -------
