@@ -147,14 +147,12 @@ class TabulaRecta(BaseTabula):
         An alphabet to use for transcoding.
 
     """
-    def __init__(self, alphabet=None):
-        alphabet = Alphabet(alphabet)
-        transcoders = self._make_transcoders(alphabet)
-        super().__init__(transcoders=transcoders)
+    def __init__(self, transcoders=None):
+        super().__init__(transcoders)
 
         # [TODO] kludgy vars that shouldn't be here
-        self.msg_alphabet = alphabet
-        self.key_alphabet = alphabet
+        # self.msg_alphabet = alphabet
+        # self.key_alphabet = alphabet
 
         # try:
         #     x, y = self.charmap[a], self.charmap[b]
@@ -187,13 +185,6 @@ class TabulaRecta(BaseTabula):
     #
     #     """
     #     raise NotImplementedError
-
-    def _make_transcoders(self, alphabet):
-        transcoders = {}
-        for i, c in enumerate(alphabet):
-            alphabet_ = alphabet.lrotate(i)
-            transcoders[c] = Transcoder(alphabet, alphabet_)
-        return transcoders
 
     def __repr__(self):
         alphabet = self
