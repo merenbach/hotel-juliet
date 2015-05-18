@@ -121,6 +121,8 @@ class BaseTabula:
 
 # class Tabula(BaseTabula):
 #     """ A tabula fit for a monoalphabetic cipher.
+#   [TODO] could do one of these for each type of mono cipher, thus deferring
+#    responsibility of generating alphabets.
 #
 #     Parameters
 #     ----------
