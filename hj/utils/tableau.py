@@ -3,7 +3,56 @@
 
 from .alphabet import Alphabet
 from .transcoder import Transcoder
-from .base import index_map
+
+
+# class BaseTableau:
+#     """ Base class for encoding and decoding operations.
+#
+#     """
+#     # def __init__(self):
+#     #     pass
+#
+#     def encode(self, s):
+#         """ Transcode forwards.
+#
+#         Parameters
+#         ----------
+#         s : sequence
+#             A sequence to encode.
+#
+#         Returns
+#         -------
+#         out : sequence
+#             An encoded copy of the given sequence `s`.
+#
+#         Raises
+#         ------
+#         NotImplementedError
+#             If not overridden.
+#
+#         """
+#         raise NotImplementedError
+#
+#     def decode(self, s):
+#         """ Transcode backwards.
+#
+#         Parameters
+#         ----------
+#         s : sequence
+#             A sequence to decode.
+#
+#         Returns
+#         -------
+#         out : sequence
+#             A decoded copy of the given sequence `s`.
+#
+#         Raises
+#         ------
+#         NotImplementedError
+#             If not overridden.
+#
+#         """
+#         raise NotImplementedError
 
 
 class BaseTabula:
@@ -16,7 +65,7 @@ class BaseTabula:
 
     """
     def __init__(self, transcoders=None):
-        self.transcoders = transcoders or {}
+        self.transcoders = transcoders or {}  # [TODO] OrderedDict?
 
     def encode(self, s, xkey=None):
         """ Locate element within the grid.
@@ -69,24 +118,24 @@ class BaseTabula:
             return transcoder.decode(s)
 
 
-class Tabula(BaseTabula):
-    """ A tabula fit for a monoalphabetic cipher.
-
-    Parameters
-    ----------
-    alphabet : str or string like
-        A plaintext alphabet to use for transcoding.
-    alphabet_ : str or string like
-        An enciphered alphabet to use for transcoding.
-
-    """
-    def __init__(self, alphabet, alphabet_):
-        transcoder = Transcoder(alphabet, alphabet_)
-        super().__init__(transcoders={None: transcoder})
-        # [TODO] could also run: self.transcoders.update({None: transcoder})
-
-    def __repr__(self):
-        return repr(self.transcoders[None])
+# class Tabula(BaseTabula):
+#     """ A tabula fit for a monoalphabetic cipher.
+#
+#     Parameters
+#     ----------
+#     alphabet : str or string like
+#         A plaintext alphabet to use for transcoding.
+#     alphabet_ : str or string like
+#         An enciphered alphabet to use for transcoding.
+#
+#     """
+#     def __init__(self, alphabet, alphabet_):
+#         transcoder = Transcoder(alphabet, alphabet_)
+#         super().__init__(transcoders={None: transcoder})
+#         # [TODO] could also run: self.transcoders.update({None: transcoder})
+#
+#     def __repr__(self):
+#         return repr(self.transcoders[None])
 
 
 class TabulaRecta(BaseTabula):
@@ -116,29 +165,28 @@ class TabulaRecta(BaseTabula):
         #     element = self.alphabet.at(pos)
         #     return str(element)
 
-    def _make_transcoders(self):
-        """ [TODO] these docs aren't current
-        Create a transcoding alphabet.
-
-        Returns
-        -------
-        out : sequence
-            A transformed alphabet.
-
-        Raises
-        ------
-        NotImplementedError
-            If not overridden.
-
-        Notes
-        -----
-        Since this is invoked by `__init__()` before instance is totally
-        initialized, please don't perform any operations that expect a fully
-        constructed instance.
-
-        """
-        raise NotImplementedError
-
+    # def _make_transcoders(self):
+    #     """ [TODO] these docs aren't current
+    #     Create a transcoding alphabet.
+    #
+    #     Returns
+    #     -------
+    #     out : sequence
+    #         A transformed alphabet.
+    #
+    #     Raises
+    #     ------
+    #     NotImplementedError
+    #         If not overridden.
+    #
+    #     Notes
+    #     -----
+    #     Since this is invoked by `__init__()` before instance is totally
+    #     initialized, please don't perform any operations that expect a fully
+    #     constructed instance.
+    #
+    #     """
+    #     raise NotImplementedError
 
     def _make_transcoders(self, alphabet):
         transcoders = {}

@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from . import VigenereCipher
+from .vigenere import VigenereCipher
 from string import digits
 from utils.alphabet import Alphabet
 

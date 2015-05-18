@@ -6,28 +6,57 @@ from fractions import gcd
 from itertools import zip_longest
 
 
-def at_modulo(seq, pos):
-    """ Return the element at a given index in sequence, wrapping as needed.
+# def at_modulo(seq, pos):
+#     """ Return the element at a given index in sequence, wrapping as needed.
+#
+#     Parameters
+#     ----------
+#     seq : sequence
+#         A list, tuple, or string to process.
+#     pos : int
+#         An element index to retrieve.  Will be wrapped if out of bounds.
+#
+#     Returns
+#     -------
+#     out : data-type
+#         The element at the given index, or `None` if sequence has length 0.
+#
+#     """
+#     try:
+#         pos %= len(seq)
+#     except ZeroDivisionError:
+#         return seq[:]
+#     else:
+#         return seq[pos]
+
+
+def difference(minuend, subtrahend):
+    """ Subtract the characters in one string from those in another.
 
     Parameters
     ----------
-    seq : sequence
-        A list, tuple, or string to process.
-    pos : int
-        An element index to retrieve.  Will be wrapped if out of bounds.
+    minuend : str
+        A string from which to subtract.
+    subtrahend : str
+        A string to subtract.
 
     Returns
     -------
-    out : data-type
-        The element at the given index, or `None` if sequence has length 0.
+    out : set
+        An unordered set consisting of remaining characters
+        once `subtrahend` is subtracted from `minuend`.
+    Returns
+    -------
+    out : generator
+        A generator expression for each element in the result.
+
+    Notes
+    -----
+    No apologies are made on the naming conventions for the variables.
 
     """
-    try:
-        pos %= len(seq)
-    except ZeroDivisionError:
-        return seq[:]
-    else:
-        return seq[pos]
+    remainder = set(minuend) - set(subtrahend)
+    return remainder
 
 
 def lrotated(seq, offset):
@@ -61,31 +90,31 @@ def lrotated(seq, offset):
         return seq[offset:] + seq[:offset]
 
 
-def index_map(seq):
-    """ Map elements to their indices within a sequence.
+# def index_map(seq):
+#     """ Map elements to their indices within a sequence.
+#
+#     Parameters
+#     ----------
+#     seq : sequence
+#         A sequence to map.
+#
+#     Return
+#     ------
+#     out : dict
+#         An element-to-index mapping for a sequence.
+#
+#     """
+#     return {element: idx for (idx, element) in enumerate(seq)}
 
-    Parameters
-    ----------
-    seq : sequence
-        A sequence to map.
 
-    Return
-    ------
-    out : dict
-        An element-to-index mapping for a sequence.
-
-    """
-    return {element: idx for (idx, element) in enumerate(seq)}
-
-
-def multiplied(seq, by):
+def multiplied(multiplicand, multiplier):
     """ Multiply each element's position by a number.
 
     Parameters
     ----------
-    seq : sequence
-        A list, tuple, or string to rotate.
-    by : int
+    multiplicand : sequence
+        A list, tuple, or string to multiply.
+    multiplier : int
         A number by which to multiply each element's position.
 
     Returns
@@ -103,12 +132,12 @@ def multiplied(seq, by):
     [TODO]: Make this more elegant.
 
     """
-    self_len = len(seq)
-    if not coprime(by, self_len):
+    self_len = len(multiplicand)
+    if not coprime(multiplier, self_len):
         raise ValueError('Multiplier and alphabet length must be coprime.')
 
-    positions = [(by * n) % self_len for n in range(self_len)]
-    return (seq[n] for n in positions)
+    positions = [(multiplier * n) % self_len for n in range(self_len)]
+    return (multiplicand[n] for n in positions)
 
 
 def unique(seq):

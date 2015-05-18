@@ -3,7 +3,7 @@
 
 import string
 from collections import UserString
-from .base import at_modulo, lrotated, multiplied, unique
+from .base import lrotated, multiplied, unique
 # import itertools
 
 
@@ -22,6 +22,13 @@ class BaseAlphabet(UserString):
     tuples instead of letters, a viable option at some point in the future
     if some unlikely situation requires.  Also maybe integers!
 
+    A behavioral goal to achieve the above would be to be able to substitute
+    in a UserList as the superclass here instead of a UserString.  Clearly
+    that poses issues with the extensive use of `str.maketrans()` and
+    `str.translate()` for most of the encoding throughout the program.
+
+    Because of that, this is considered a low philosophical priority.
+
     """
     def _recast(self, seq):
         """ Recast a sequence as type of self.
@@ -36,17 +43,11 @@ class BaseAlphabet(UserString):
         out : type(self)
             A copy of `seq` cast to `type(self)`.
 
-        Notes
-        -----
-        [TODO] Add mechanism to flatten sequence of strings. (??)
-
         """
-        if isinstance(self, (str, UserString)):
-            seq = ''.join(str(s) for s in seq)
         return type(self)(seq)
 
     def lrotate(self, by):
-        """ Shift a copy of this sequence to the left with the << operator.
+        """ Shift a copy of this sequence to the left.
 
         Parameters
         ----------
@@ -75,7 +76,7 @@ class BaseAlphabet(UserString):
         return self.lrotate(-by)
 
 
-class Alphabet(BaseAlphabet, UserString):
+class Alphabet(BaseAlphabet):
     """ A string-based alphabet.
 
     Attributes
@@ -98,6 +99,28 @@ class Alphabet(BaseAlphabet, UserString):
         seq = ''.join(unique(str(seq)))
         super().__init__(seq)
 
+    def _recast(self, seq):
+        """ Recast a sequence as type of self.
+
+        Parameters
+        ----------
+        seq : sequence
+            Recast this as `type(self)`.
+
+        Returns
+        -------
+        out : type(self)
+            A copy of `seq` cast to `type(self)`.
+
+        Notes
+        -----
+        [TODO] Add mechanism to flatten sequence of strings. (??)
+
+        """
+        if isinstance(self, (str, UserString)):
+            seq = ''.join(str(s) for s in seq)
+        return super()._recast(seq)
+
     def element(self, i):
         """ Return the element at a given index.
 
@@ -110,7 +133,7 @@ class Alphabet(BaseAlphabet, UserString):
         -------
         data-type : the element at the provided index, or `None` if not found.
         """
-        print('**** ALPHABET.COMMON WILL BE DEPRECATED')
+        print('**** ALPHABET.ELEMENT WILL BE DEPRECATED')
         try:
             return self.data[i]
         except IndexError:
@@ -136,7 +159,9 @@ class Alphabet(BaseAlphabet, UserString):
         """
         # [TODO] make this much, much better
         # filter elements not in `self` from `seq`
+        # uniqued seq + (self - seq)
         seq = [element for element in seq if element in self]
+        # OrderedDict(
         seq += [element for element in self if element not in seq]
         return self._recast(seq)
 

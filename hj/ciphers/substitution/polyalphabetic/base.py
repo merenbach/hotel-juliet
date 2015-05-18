@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .. import SubCipher
-from utils.tabula import TabulaRecta
+from utils import TabulaRecta
 
 
 class BasePolySubCipher(SubCipher):
