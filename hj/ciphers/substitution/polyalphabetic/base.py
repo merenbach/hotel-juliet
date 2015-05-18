@@ -51,32 +51,32 @@ class PolySubCipher(BasePolySubCipher):
     def __init__(self, passphrase, alphabet=None, autoclave=False):
         alphabet = Alphabet(alphabet)
         transcoders = self._make_alphabets(alphabet)
-        tabula_recta = TabulaRecta(transcoders)
+        tabula_recta = TabulaRecta(transcoders, alphabet=alphabet)
         super().__init__(passphrase, tabula_recta, autoclave)
 
     def _encode(self, s, strict):
         """ [TODO] kludgy shim for now to support `reverse` arg.
         """
         if strict:
-            s = ''.join(c for c in s if c in self.tabula_recta.transcoders.keys())
+            s = ''.join(c for c in s if c in self.tabula_recta.alphabet)
         return self._transcode(s, reverse=False)
 
     def _decode(self, s, strict):
         """ [TODO] kludgy shim for now to support `reverse` arg.
         """
         if strict:
-            s = ''.join(c for c in s if c in self.tabula_recta.transcoders.keys())
+            s = ''.join(c for c in s if c in self.tabula_recta.alphabet)
         return self._transcode(s, reverse=True)
 
-    def _make_alphabets(self, alphabet):
+    def _make_alphabets(self, alphabet, key_alphabet=None):
         """ Create alphabets.
 
         """
-        transcoders = {}
+        transcoders = []
         for i, c in enumerate(alphabet):
             alphabet_ = alphabet.lrotate(i)
-            transcoders[c] = Transcoder(alphabet, alphabet_)
-        return transcoders
+            transcoders.append(Transcoder(alphabet, alphabet_))
+        return dict(zip(key_alphabet or alphabet, transcoders))
 
 # def phrase(self, passphrase):
 #     passphrase = list(passphrase)
@@ -120,7 +120,7 @@ class PolySubCipher(BasePolySubCipher):
             transcoded_char = self._cipher(c, k, reverse=reverse)
             # if transcoded_char in self.tabula_recta.msg_alphabet:  # [TODO] Breaks BEAUFORT
             # but above line should ideally be what we're using...
-            if transcoded_char is not None and transcoded_char in self.tabula_recta.transcoders.keys():
+            if transcoded_char is not None and transcoded_char in self.tabula_recta.alphabet:
                 i += 1
                 # If we are in reverse and autoclave mode, append to the passphrase
                 # if text_autoclave and c in self.tabula_recta.key_alphabet and reverse:

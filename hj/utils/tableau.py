@@ -147,22 +147,23 @@ class TabulaRecta(BaseTabula):
         An alphabet to use for transcoding.
 
     """
-    def __init__(self, transcoders=None):
+    def __init__(self, transcoders=None, alphabet=None):
+        self.alphabet = Alphabet(alphabet)
         super().__init__(transcoders)
-
-        # [TODO] kludgy vars that shouldn't be here
-        # self.msg_alphabet = alphabet
-        # self.key_alphabet = alphabet
-
-        # try:
-        #     x, y = self.charmap[a], self.charmap[b]
-        # except KeyError:
-        #     return None
-        # else:
-        #     pos = x + y if intersect else x - y
-        #     element = self.alphabet.at(pos)
-        #     return str(element)
-
+    #
+    #     # [TODO] kludgy vars that shouldn't be here
+    #     # self.msg_alphabet = alphabet
+    #     # self.key_alphabet = alphabet
+    #
+    #     # try:
+    #     #     x, y = self.charmap[a], self.charmap[b]
+    #     # except KeyError:
+    #     #     return None
+    #     # else:
+    #     #     pos = x + y if intersect else x - y
+    #     #     element = self.alphabet.at(pos)
+    #     #     return str(element)
+    #
     # def _make_transcoders(self):
     #     """ [TODO] these docs aren't current
     #     Create a transcoding alphabet.
