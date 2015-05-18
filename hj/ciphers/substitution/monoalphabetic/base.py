@@ -4,6 +4,7 @@
 from .. import SubCipher
 from utils.alphabet import Alphabet
 from utils.transcoder import Transcoder
+from utils import Tabula
 
 
 class MonoSubCipher(SubCipher):
@@ -25,11 +26,12 @@ class MonoSubCipher(SubCipher):
     def __init__(self, alphabet):
         alphabet = Alphabet(alphabet)
         alphabet_ = self.make_alphabet_(alphabet)
+        self.tabula = Tabula(alphabet, alphabet_)
         self.transcoder = Transcoder(alphabet, alphabet_)
         super().__init__()
 
     def __repr__(self):
-        return repr(self.transcoder)
+        return repr(self.tabula)
 
     def make_alphabet_(self, alphabet):
         """ Create a transcoding alphabet.
@@ -56,14 +58,15 @@ class MonoSubCipher(SubCipher):
         constructed instance.
 
         """
+        # [TODO] change to maketranscoders a la poly ciphers?
         raise NotImplementedError
 
     def _encode(self, s, strict):
         if strict:
             s = self.transcoder.sanitize(s)
-        return self.transcoder.encode(s)
+        return self.tabula.encode(s)
 
     def _decode(self, s, strict):
         if strict:
             s = self.transcoder.sanitize(s)
-        return self.transcoder.decode(s)
+        return self.tabula.decode(s)

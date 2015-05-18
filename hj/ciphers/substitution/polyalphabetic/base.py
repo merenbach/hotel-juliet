@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .. import SubCipher
-from utils.tabula_recta import TabulaRecta
+from utils.tabula import TabulaRecta
 
 
 class BasePolySubCipher(SubCipher):
@@ -12,7 +12,7 @@ class BasePolySubCipher(SubCipher):
     ----------
     passphrase : str or string like
         An encryption/decryption key.
-    tabula_recta : utils.tabula_recta.TabulaRecta
+    tabula_recta : utils.tabula.TabulaRecta
         A tabula recta to use.
     autoclave : bool
         `True` to make this an autoclave (autokey) cipher, where

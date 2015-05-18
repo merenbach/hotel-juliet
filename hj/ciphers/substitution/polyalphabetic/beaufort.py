@@ -18,4 +18,4 @@ class BeaufortCipher(PolySubCipher):
 
     def _cipher(self, msg_char, key_char, reverse=False):
         """ Convert characters from one alphabet to another (reverse is ignored) """
-        return self.tabula_recta.transcode(msg_char, key_char)
+        return self.tabula_recta.decode(key_char, msg_char)

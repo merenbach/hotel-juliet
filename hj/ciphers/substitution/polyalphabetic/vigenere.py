@@ -13,5 +13,7 @@ class VigenereCipher(PolySubCipher):
 
     def _cipher(self, msg_char, key_char, reverse=False):
         """ Convert characters from one alphabet to another """
-        return self.tabula_recta.transcode(key_char, msg_char,
-                                           intersect=not reverse)
+        if reverse:
+            return self.tabula_recta.decode(msg_char, key_char)
+        else:
+            return self.tabula_recta.encode(msg_char, key_char)
