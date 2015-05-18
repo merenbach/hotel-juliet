@@ -9,5 +9,6 @@ class GronsfeldCipher(VigenereCipher):
     """ Vigenere but with only ten key alphabets, corresponding to 0..9.
 
     """
-    def _make_alphabets(self, alphabet, key_alphabet=None):
-        return super()._make_alphabets(alphabet, key_alphabet=digits)
+    def __init__(self, passphrase, alphabet=None):
+        super().__init__(passphrase, alphabet=alphabet, key_alphabet=digits,
+                         autoclave=False)

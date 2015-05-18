@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from .base import *
-from .monoalphabetic import *
-from .polyalphabetic import *
+from .base import *  # noqa
+from .monoalphabetic import *  # noqa
+from .polyalphabetic import *  # noqa

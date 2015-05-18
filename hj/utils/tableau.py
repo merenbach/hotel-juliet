@@ -3,6 +3,7 @@
 
 from .alphabet import Alphabet
 from .transcoder import Transcoder
+from collections import OrderedDict
 
 
 # class BaseTableau:
@@ -147,9 +148,61 @@ class TabulaRecta(BaseTabula):
         An alphabet to use for transcoding.
 
     """
-    def __init__(self, transcoders=None, alphabet=None):
-        self.alphabet = Alphabet(alphabet)
+    def __init__(self, alphabet=None, key_alphabet=None):
+        alphabet = Alphabet(alphabet)
+        transcoders = self._make_alphabets(alphabet, key_alphabet)
+        self.alphabet = alphabet
         super().__init__(transcoders)
+
+    def _make_alphabets(self, alphabet, key_alphabet=None):
+        """ Create alphabets.
+
+        [TODO] Use an OrderedDict and put inside TabulaRecta
+
+        """
+        transcoders = []
+        for i, c in enumerate(alphabet):
+            alphabet_ = alphabet.lrotate(i)
+            transcoders.append(Transcoder(alphabet, alphabet_))
+        return OrderedDict(zip(key_alphabet or alphabet, transcoders))
+
+    def __repr__(self):
+        alphabet = str(self.alphabet)
+        lines = []
+        lines.append('  | ' + ' '.join(alphabet))
+        lines.append('--+' + '-' * len(alphabet) * 2)
+
+        for k, v in self.transcoders.items():
+            row = ' '.join(str(v.b))
+            lines.append('{0} | {1}'.format(k, row))
+
+        return '\n'.join(lines)
+
+
+class PortaTabulaRecta(TabulaRecta):
+    """ Porta cipher version, doubling up rows and symmetric.
+
+    [TODO] Would like to be able to make fewer overrides on parent class logic,
+    as well as more nicely represent the tableau in __repr__.
+
+    """
+    def _make_alphabets(self, alphabet, key_alphabet=None):
+        alpha_len = len(alphabet) // 2  # need an int
+        first_half_alphabet = alphabet[:alpha_len]
+        second_half_alphabet = alphabet[alpha_len:]
+
+        transcoders = []
+        for i, c in enumerate(alphabet):
+            offset = i // 2
+            secondhalf = second_half_alphabet.lrotate(offset)
+            firsthalf = first_half_alphabet.lrotate(-offset)
+            alphabet_ = secondhalf + firsthalf
+            transcoders.append(Transcoder(alphabet, alphabet_))
+
+        return OrderedDict(zip(key_alphabet or alphabet, transcoders))
+
+# [TODO] class GronsfeldTabulaRecta, PortaTabulaRecta...?
+
     #
     #     # [TODO] kludgy vars that shouldn't be here
     #     # self.msg_alphabet = alphabet
@@ -187,21 +240,3 @@ class TabulaRecta(BaseTabula):
     #     """
     #     raise NotImplementedError
 
-    def __repr__(self):
-        alphabet = self
-        return str(alphabet)
-
-        rows = [alphabet << n for n in range(len(alphabet))]
-        keyed_rows = dict(zip(self, rows))
-        lines = []
-        lines.append('    ' + ' '.join(str(alphabet)))
-        lines.append('')
-
-        for k in str(self):
-            row = ' '.join(str(keyed_rows[k]))
-            lines.append('{0}   {1}   {0}'.format(k, row))
-
-        lines.append('')
-        lines.append('    ' + ' '.join(str(alphabet)))
-
-        return '\n'.join(lines)

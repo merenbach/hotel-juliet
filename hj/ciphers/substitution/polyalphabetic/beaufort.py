@@ -17,5 +17,6 @@ class BeaufortCipher(PolySubCipher):
         super().__init__(passphrase, alphabet=alphabet, autoclave=False)
 
     def _cipher(self, msg_char, key_char, reverse=False):
-        """ Convert characters from one alphabet to another (reverse is ignored) """
+        """ Convert characters from one alphabet to another
+        (reverse is ignored) """
         return self.tabula_recta.decode(key_char, msg_char)

@@ -38,6 +38,10 @@ class PolySubCipher(BasePolySubCipher):
     ----------
     passphrase : str or string like
         An encryption/decryption key.
+    alphabet : str or string like
+        An alphabet to use for transcoding.
+    key_alphabet : str or string like
+        An alphabet to use to match key characters to message transcoders.
     tabula_recta : utils.tabula_recta.TabulaRecta
         A tabula recta to use.
         If you cannot afford one, one will
@@ -48,10 +52,9 @@ class PolySubCipher(BasePolySubCipher):
         Default `False`.
 
     """
-    def __init__(self, passphrase, alphabet=None, autoclave=False):
-        alphabet = Alphabet(alphabet)
-        transcoders = self._make_alphabets(alphabet)
-        tabula_recta = TabulaRecta(transcoders, alphabet=alphabet)
+    def __init__(self, passphrase, alphabet=None, key_alphabet=None,
+                 autoclave=False):
+        tabula_recta = TabulaRecta(alphabet, key_alphabet=key_alphabet)
         super().__init__(passphrase, tabula_recta, autoclave)
 
     def _encode(self, s, strict):
@@ -67,16 +70,6 @@ class PolySubCipher(BasePolySubCipher):
         if strict:
             s = ''.join(c for c in s if c in self.tabula_recta.alphabet)
         return self._transcode(s, reverse=True)
-
-    def _make_alphabets(self, alphabet, key_alphabet=None):
-        """ Create alphabets.
-
-        """
-        transcoders = []
-        for i, c in enumerate(alphabet):
-            alphabet_ = alphabet.lrotate(i)
-            transcoders.append(Transcoder(alphabet, alphabet_))
-        return dict(zip(key_alphabet or alphabet, transcoders))
 
 # def phrase(self, passphrase):
 #     passphrase = list(passphrase)

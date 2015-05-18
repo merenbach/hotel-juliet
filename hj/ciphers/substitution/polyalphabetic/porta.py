@@ -2,10 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from . import PolySubCipher
-from .beaufort import BeaufortCipher
-from utils.base import grouper
-from utils.alphabet import Alphabet
-from utils import Transcoder
+from utils import PortaTabulaRecta
 
 
 class PortaCipher(PolySubCipher):
@@ -20,20 +17,9 @@ class PortaCipher(PolySubCipher):
     group in the leftmost (key) column
 
     """
-    def _make_alphabets(self, alphabet):
-        alpha_len = len(alphabet) // 2  # need an int
-        first_half_alphabet = alphabet[:alpha_len]
-        second_half_alphabet = alphabet[alpha_len:]
-
-        transcoders = {}
-        for i, c in enumerate(alphabet):
-            offset = i // 2
-            secondhalf = second_half_alphabet.lrotate(offset)
-            firsthalf = first_half_alphabet.lrotate(-offset)
-            alphabet_ = secondhalf + firsthalf
-            transcoders[c] = Transcoder(alphabet, alphabet_)
-
-        return transcoders
+    def __init__(self, passphrase, alphabet=None):
+        super().__init__(passphrase, alphabet=alphabet, autoclave=False)
+        self.tabula_recta = PortaTabulaRecta(alphabet)
 
     def _cipher(self, msg_char, key_char, reverse=False):
         """ Convert characters from one alphabet to another
