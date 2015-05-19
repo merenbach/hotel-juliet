@@ -30,9 +30,13 @@ class PolySubCipher(SubCipher):
     Autoclave only makes sense for ciphers where the passphrase is shorter than
 
     """
-    def __init__(self, passphrase, alphabet=None, autoclave=False):
+    def __init__(self, passphrase, alphabet=None,
+                 text_autoclave=False, key_autoclave=False):
+        if text_autoclave and key_autoclave:
+            raise ValueError('Only one of text or key autoclave may be set')
         alphabet = Alphabet(alphabet)
-        self.autoclave = autoclave
+        self.text_autoclave = text_autoclave
+        self.key_autoclave = key_autoclave
         self.passphrase = passphrase
         tableau = self._make_tableau(alphabet)
         super().__init__(tableau)
@@ -94,35 +98,4 @@ class PolySubCipher(SubCipher):
             
 
     def _transcode(self, s, reverse=False):
-        """ Convert characters from one alphabet to another (reverse is ignored) """
-        """ f is a translation function """
-        passphrase = self.passphrase
-        ### can add to the above
-        o = []
-        # Passphrase index: Number of successfully-located characters
-        # Used to keep message and passphrase in "synch"
-        # Character n of the message should be transcoded with character (n % passphrase len) of the passphrase
-        text_autoclave = self.autoclave
-        if text_autoclave and not reverse:
-            passphrase += s
-        # elif key_autoclave and reverse:
-        #     passphrase += s
-        i = 0
-        for c in s:
-            # if text_autoclave and c in self.tableau.key_alphabet and not reverse:
-            #     passphrase.append(c)
-            k = passphrase[i % len(passphrase)]
-            # [TODO] some of this makes the assumption that a polyalphabetic
-            #        cipher has a tabula recta.  Probably should be in a
-            #        Vigenere subclass.
-            transcoded_char = self._cipher(c, k, reverse=reverse)
-            # if transcoded_char in self.tableau.msg_alphabet:  # [TODO] Breaks BEAUFORT
-            # but above line should ideally be what we're using...
-            if transcoded_char is not None and transcoded_char in self.tableau.alphabet:
-                i += 1
-                # If we are in reverse and autoclave mode, append to the passphrase
-                # if text_autoclave and c in self.tableau.key_alphabet and reverse:
-                #     passphrase.append(transcoded_char)
-                c = transcoded_char
-            o.append(c)
-        return ''.join(o)
+        raise NotImplementedError

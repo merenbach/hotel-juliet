@@ -10,9 +10,6 @@ class BeaufortCipher(VigenereCipher):
 
     Notes
     -----
-    Autoclave makes no sense for this cipher, as far as I can tell, so it is
-    forced to `False`.
-
     Unlike the vigenere cipher, the *key* letter is located inside the grid;
     put another way, the `cipher` method in the parent class simply has its
     `key_char` and `msg_char` arguments swapped.  Although this implementation
@@ -21,9 +18,11 @@ class BeaufortCipher(VigenereCipher):
 
     To reduce code duplication, that tableau is used here.
 
+    N.b.: Because this is a symmetric cipher, autoclave is disabled.
+
     """
     def __init__(self, passphrase, alphabet=None):
-        super().__init__(passphrase, alphabet=alphabet, autoclave=False)
+        super().__init__(passphrase, alphabet=alphabet)
 
     def _make_tableau(self, alphabet):
         """ Same alphabet as normal, with digits for keys.

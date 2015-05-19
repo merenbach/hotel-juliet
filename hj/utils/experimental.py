@@ -50,36 +50,43 @@ class RepeatedKeyStream(BaseKeyStream):
 
     """
     def stream(self):
+        # passphrase = list(self.passphrase)  # mutable copy
+        # for n in passphrase:
+        #     yield n
+        #     passphrase.extend(n)
         n = yield from cycle(self.passphrase)
         print('n = '+str(n))
 
 
-class AppendableRepeatedKeyStream(BaseKeyStream):
-    """ Repeat the key in the keystream without autoclaving.
+# class AppendableRepeatedKeyStream(BaseKeyStream):
+#     """ Repeat the key in the keystream without autoclaving.
+#
+#     Notes
+#     -----
+#     This is the traditional behavior of many polyalphabetic ciphers.
+#
+#     """
+#     # def next(self):
+#     #     try:
+#     #         return self.stream()
+#     #     except StopIteration:
+#     #         print('yo')
+#
+def appendable_stream(seq):
+    """ Return an infinite repeating stream that can be fed.
 
-    Notes
-    -----
-    This is the traditional behavior of many polyalphabetic ciphers.
+    Parameters
+    ----------
+    seq : sequence
+        A list, tuple, or string over which to iterate.
 
     """
-    # def next(self):
-    #     try:
-    #         return self.stream()
-    #     except StopIteration:
-    #         print('yo')
-
-    def stream(self):
-        # make a mutable copy
-        passphrase = list(self.passphrase)
-        for n in passphrase:
-            i = yield n
-            # if i:
-            #     passphrase.extend(i)
-            while i is not None:
-                passphrase.extend(i)
-                i = yield
-        # i =iter(passphrase)
-        # yield from i
+    # make a mutable copy
+    seq = list(seq)
+    for n in seq:
+        food = yield n
+        seq.extend(food or n)  # add whole strings, but not integers
+        # seq.append(food or n)    # add integers, but not multichar strs
 
 
 # class AutoclaveKeyStream(KeyStream):

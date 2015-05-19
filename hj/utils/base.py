@@ -200,3 +200,20 @@ def grouper(iterable, n, fillvalue=None):
     # grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx"
     args = [iter(iterable)] * n
     return zip_longest(*args, fillvalue=fillvalue)
+
+
+def appendable_stream(seq):
+    """ Return an infinite repeating stream that can be fed.
+
+    Parameters
+    ----------
+    seq : sequence
+        A list, tuple, or string over which to iterate.
+
+    """
+    # make a mutable copy
+    seq = list(seq)
+    for n in seq:
+        food = yield n
+        seq.extend(food or n)  # add whole strings, but not integers
+        # seq.append(food or n)    # add integers, but not multichar strs

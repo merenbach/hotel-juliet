@@ -20,7 +20,7 @@ class PortaCipher(VigenereCipher):
 
     """
     def __init__(self, passphrase, alphabet=None):
-        super().__init__(passphrase, alphabet=alphabet, autoclave=False)
+        super().__init__(passphrase, alphabet=alphabet)
 
     def _make_tableau(self, alphabet):
         """ Same alphabet as normal, with digits for keys.

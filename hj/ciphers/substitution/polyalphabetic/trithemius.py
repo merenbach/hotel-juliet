@@ -17,4 +17,4 @@ class TrithemiusCipher(VigenereCipher):
     """
     def __init__(self, alphabet=None):
         alphabet = Alphabet(alphabet)
-        super().__init__(alphabet, alphabet=alphabet, autoclave=False)
+        super().__init__(alphabet, alphabet=alphabet)
