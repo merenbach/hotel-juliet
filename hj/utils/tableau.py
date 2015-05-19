@@ -65,8 +65,8 @@ class BaseTabula:
         A dictionary mapping keys to Transcoder objects.
 
     """
-    def __init__(self, transcoders=None):
-        self.transcoders = transcoders or {}  # [TODO] OrderedDict?
+    def __init__(self, transcoders):
+        self.transcoders = OrderedDict(transcoders)
 
     def encode(self, s, xkey=None):
         """ Locate element within the grid.
@@ -152,21 +152,20 @@ class TabulaRecta(BaseTabula):
     """
     def __init__(self, alphabet=None, key_alphabet=None):
         alphabet = Alphabet(alphabet)
-        transcoders = self._make_alphabets(alphabet, key_alphabet)
         self.alphabet = alphabet
+        transcoders_list = self._make_alphabets(alphabet)
+        transcoders = zip(key_alphabet or alphabet, transcoders_list)
         super().__init__(transcoders)
 
-    def _make_alphabets(self, alphabet, key_alphabet=None):
+    def _make_alphabets(self, alphabet):
         """ Create alphabets.
-
-        [TODO] Use an OrderedDict and put inside TabulaRecta
 
         """
         transcoders = []
         for i, c in enumerate(alphabet):
             alphabet_ = alphabet.lrotate(i)
             transcoders.append(Transcoder(alphabet, alphabet_))
-        return OrderedDict(zip(key_alphabet or alphabet, transcoders))
+        return transcoders
 
     def __repr__(self):
         alphabet = str(self.alphabet)
@@ -188,7 +187,7 @@ class PortaTabulaRecta(TabulaRecta):
     as well as more nicely represent the tableau in __repr__.
 
     """
-    def _make_alphabets(self, alphabet, key_alphabet=None):
+    def _make_alphabets(self, alphabet):
         alpha_len = len(alphabet) // 2  # need an int
         first_half_alphabet = alphabet[:alpha_len]
         second_half_alphabet = alphabet[alpha_len:]
@@ -201,7 +200,7 @@ class PortaTabulaRecta(TabulaRecta):
             alphabet_ = secondhalf + firsthalf
             transcoders.append(Transcoder(alphabet, alphabet_))
 
-        return OrderedDict(zip(key_alphabet or alphabet, transcoders))
+        return transcoders
 
 # [TODO] class GronsfeldTabulaRecta, PortaTabulaRecta...?
 
