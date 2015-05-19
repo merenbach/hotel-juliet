@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from . import PolySubCipher
+from .base import PolySubCipher
 from utils import PortaTabulaRecta
 
 
@@ -15,11 +15,13 @@ class PortaCipher(PolySubCipher):
 
     [TODO] ensure alphabet length is divisible by the number of items in each
     group in the leftmost (key) column
+    [TODO] does/should this support autoclave?
 
     """
-    def __init__(self, passphrase, alphabet=None):
-        super().__init__(passphrase, alphabet=alphabet, autoclave=False)
-        self.tabula_recta = PortaTabulaRecta(alphabet)
+    TABULA_RECTA = PortaTabulaRecta
+    # def __init__(self, passphrase, alphabet=None, autoclave=False):
+    #     tableau = PortaTabulaRecta(alphabet)
+    #     super().__init__(passphrase, tableau=tableau, autoclave=autoclave)
 
     def _cipher(self, msg_char, key_char, reverse=False):
         """ Convert characters from one alphabet to another

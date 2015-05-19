@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .. import SubCipher
-from utils import Alphabet, Transcoder, TabulaRecta
+from utils import TabulaRecta
 
 
 class BasePolySubCipher(SubCipher):
@@ -52,10 +52,10 @@ class PolySubCipher(BasePolySubCipher):
         Default `False`.
 
     """
-    def __init__(self, passphrase, alphabet=None, key_alphabet=None,
-                 autoclave=False):
-        tabula_recta = TabulaRecta(alphabet, key_alphabet=key_alphabet)
-        super().__init__(passphrase, tabula_recta, autoclave)
+    TABULA_RECTA = TabulaRecta
+    def __init__(self, passphrase, alphabet=None, autoclave=False):
+        tableau = self.TABULA_RECTA(alphabet)
+        super().__init__(passphrase, tableau, autoclave)
 
     def _encode(self, s, strict):
         """ [TODO] kludgy shim for now to support `reverse` arg.

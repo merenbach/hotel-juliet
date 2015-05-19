@@ -1,16 +1,19 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from . import PolySubCipher
+from .base import PolySubCipher
 
 
 class VigenereCipher(PolySubCipher):
     """ THE Vigenere cipher, conceptual foundation of several other ciphers.
 
     """
-    def _cipher(self, msg_char, key_char, reverse=False):
-        """ Convert characters from one alphabet to another """
-        if reverse:
-            return self.tabula_recta.decode(msg_char, key_char)
+    def _cipher(self, msg_char, key_char, reverse):
+        """ Convert characters from one alphabet to another
+
+        """
+        if not reverse:
+            cipher_func = self.tabula_recta.encode
         else:
-            return self.tabula_recta.encode(msg_char, key_char)
+            cipher_func = self.tabula_recta.decode
+        return cipher_func(msg_char, key_char)

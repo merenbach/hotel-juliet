@@ -4,6 +4,7 @@
 from .alphabet import Alphabet
 from .transcoder import Transcoder
 from collections import OrderedDict
+from string import digits
 
 
 # class BaseTableau:
@@ -150,22 +151,13 @@ class TabulaRecta(BaseTabula):
         An alphabet to use for transcoding.
 
     """
-    def __init__(self, alphabet=None, key_alphabet=None):
+    def __init__(self, alphabet=None, keys=None, msg_alphabet=None):
         alphabet = Alphabet(alphabet)
         self.alphabet = alphabet
-        transcoders_list = self._make_alphabets(alphabet)
-        transcoders = zip(key_alphabet or alphabet, transcoders_list)
+        transcoders_list = self._make_alphabets(alphabet, msg_alphabet or alphabet)
+        # [TODO]: create transcoders here!! Transcoder(alphabet, item_in_list)
+        transcoders = zip(keys or alphabet, transcoders_list)
         super().__init__(transcoders)
-
-    def _make_alphabets(self, alphabet):
-        """ Create alphabets.
-
-        """
-        transcoders = []
-        for i, c in enumerate(alphabet):
-            alphabet_ = alphabet.lrotate(i)
-            transcoders.append(Transcoder(alphabet, alphabet_))
-        return transcoders
 
     def __repr__(self):
         alphabet = str(self.alphabet)
@@ -179,6 +171,31 @@ class TabulaRecta(BaseTabula):
 
         return '\n'.join(lines)
 
+    def _make_alphabets(self, alphabet, msg_alphabet):
+        """ Create alphabets.
+
+        """
+        transcoders = []
+        for i, c in enumerate(alphabet):
+            alphabet_ = msg_alphabet.lrotate(i)
+            transcoders.append(Transcoder(alphabet, alphabet_))
+        return transcoders
+
+
+class GronsfeldTabulaRecta(TabulaRecta):
+    """ Digits as the key alphabet.
+
+    """
+    def __init__(self, alphabet=None):
+        super().__init__(alphabet=alphabet, keys=digits)
+
+
+class BeaufortTabulaRecta(TabulaRecta):
+    def __init__(self, alphabet=None, keys=None):
+        alphabet = Alphabet(alphabet)
+        rev_alphabet = alphabet[::-1]
+        super().__init__(alphabet=alphabet, keys=rev_alphabet, msg_alphabet=rev_alphabet)
+
 
 class PortaTabulaRecta(TabulaRecta):
     """ Porta cipher version, doubling up rows and symmetric.
@@ -187,7 +204,7 @@ class PortaTabulaRecta(TabulaRecta):
     as well as more nicely represent the tableau in __repr__.
 
     """
-    def _make_alphabets(self, alphabet):
+    def _make_alphabets(self, alphabet, msg_alphabet):
         alpha_len = len(alphabet) // 2  # need an int
         first_half_alphabet = alphabet[:alpha_len]
         second_half_alphabet = alphabet[alpha_len:]
@@ -207,7 +224,7 @@ class PortaTabulaRecta(TabulaRecta):
     #
     #     # [TODO] kludgy vars that shouldn't be here
     #     # self.msg_alphabet = alphabet
-    #     # self.key_alphabet = alphabet
+    #     # self.keys = alphabet
     #
     #     # try:
     #     #     x, y = self.charmap[a], self.charmap[b]

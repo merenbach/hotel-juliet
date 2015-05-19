@@ -1,11 +1,26 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from . import VigenereCipher
+from .vigenere import VigenereCipher
 
 
 class VariantBeaufortCipher(VigenereCipher):
-    """ Vigenere cipher with encoding and decoding steps reversed """
+    """ Vigenere cipher with encoding and decoding steps reversed.
 
-    def _cipher(self, msg_char, key_char, reverse=False):
-        return super()._cipher(msg_char, key_char, not reverse)
+    Notes
+    -----
+    Not to be confused with the symmetric Beaufort cipher, which also uses
+    the tabula recta.
+
+    """
+    def _encode(self, s, strict):
+        """ Reverse the encoding direction.
+
+        """
+        return super()._decode(s, strict)
+
+    def _decode(self, s, strict):
+        """ Reverse the decoding direction.
+
+        """
+        return super()._encode(s, strict)
