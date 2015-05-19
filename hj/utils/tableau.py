@@ -156,8 +156,8 @@ class TabulaRecta(BaseTabula):
     def __init__(self, alphabet=None, keys=None, msg_alphabet=None):
         alphabet = Alphabet(alphabet)
         self.alphabet = alphabet
-        transcoders_list = self._make_alphabets(alphabet, msg_alphabet or alphabet)
-        # [TODO]: create transcoders here!! Transcoder(alphabet, item_in_list)
+        alphabets = self._make_alphabets(alphabet, msg_alphabet or alphabet)
+        transcoders_list = [Transcoder(alphabet, ab_) for ab_ in alphabets]
         transcoders = zip(keys or alphabet, transcoders_list)
         super().__init__(transcoders)
 
@@ -176,12 +176,17 @@ class TabulaRecta(BaseTabula):
     def _make_alphabets(self, alphabet, msg_alphabet):
         """ Create alphabets.
 
+        Returns
+        -------
+        out : list
+            An ordered list of alphabets.
+
         """
-        transcoders = []
+        alphabets = []
         for i, c in enumerate(alphabet):
             alphabet_ = msg_alphabet.lrotate(i)
-            transcoders.append(Transcoder(alphabet, alphabet_))
-        return transcoders
+            alphabets.append(alphabet_)
+        return alphabets
 
 class PortaTabulaRecta(TabulaRecta):
     """ Porta cipher version, doubling up rows and symmetric.
@@ -191,19 +196,20 @@ class PortaTabulaRecta(TabulaRecta):
 
     """
     def _make_alphabets(self, alphabet, msg_alphabet):
+        alphabets = []
+
         alpha_len = len(alphabet) // 2  # need an int
         first_half_alphabet = alphabet[:alpha_len]
         second_half_alphabet = alphabet[alpha_len:]
 
-        transcoders = []
         for i, c in enumerate(alphabet):
             offset = i // 2
             secondhalf = second_half_alphabet.lrotate(offset)
             firsthalf = first_half_alphabet.lrotate(-offset)
             alphabet_ = secondhalf + firsthalf
-            transcoders.append(Transcoder(alphabet, alphabet_))
+            alphabets.append(alphabet_)
 
-        return transcoders
+        return alphabets
 
 # [TODO] class GronsfeldTabulaRecta, PortaTabulaRecta...?
 
