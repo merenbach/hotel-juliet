@@ -132,7 +132,13 @@ class PolySubCipher(BasePolySubCipher):
             # if text_autoclave and c in self.tabula_recta.key_alphabet and not reverse:
             #     passphrase.append(c)
             k = passphrase[i % len(passphrase)]
-            transcoded_char = self._cipher(c, k, reverse=reverse)
+            # [TODO] this makes the assumption that a polyalphabetic cipher
+            #        has a tabula recta.  Probably should be in a subclass>
+            if not reverse:
+                cipher_func = self.tabula_recta.encode
+            else:
+                cipher_func = self.tabula_recta.decode
+            transcoded_char = cipher_func(c, k)
             # if transcoded_char in self.tabula_recta.msg_alphabet:  # [TODO] Breaks BEAUFORT
             # but above line should ideally be what we're using...
             if transcoded_char is not None and transcoded_char in self.tabula_recta.alphabet:

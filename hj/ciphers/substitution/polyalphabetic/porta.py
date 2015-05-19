@@ -2,10 +2,11 @@
 # -*- coding: utf-8 -*-
 
 from .base import PolySubCipher
+from .vigenere import VigenereCipher
 from utils import PortaTabulaRecta
 
 
-class PortaCipher(PolySubCipher):
+class PortaCipher(VigenereCipher):
     """ Della porta cipher.  Symmetric.
 
     Notes
@@ -21,12 +22,6 @@ class PortaCipher(PolySubCipher):
     # def __init__(self, passphrase, alphabet=None, autoclave=False):
     #     tableau = PortaTabulaRecta(alphabet)
     #     super().__init__(passphrase, tableau=tableau, autoclave=autoclave)
-
-    def _cipher(self, msg_char, key_char, reverse=False):
-        """ Convert characters from one alphabet to another
-        (reverse is ignored) """
-        # return super()._cipher(msg_char, key_char, reverse=reverse)
-        return self.tabula_recta.decode(msg_char, key_char)
 
     def _make_tableau(self, alphabet):
         """ Same alphabet as normal, with digits for keys.
