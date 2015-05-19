@@ -30,21 +30,25 @@ class VigenereCipher(PolySubCipher):
         #        Vigenere subclass.
         text_autoclave = self.text_autoclave
         key_autoclave = self.key_autoclave
-        if text_autoclave and not reverse:
-            passphrase += s
-        elif key_autoclave and reverse:
-            passphrase += s
+        # if text_autoclave and not reverse:
+        #     passphrase += s
+        # elif key_autoclave and reverse:
+        #     passphrase += s
 
         keystream = appendable_stream(passphrase)
-        k = keystream.send(None)  # prime the stream and get our first char
+        k = keystream.send(None)  # prime the stream and get our first keychar
         for msg_char in s:
             if msg_char in self.tableau.alphabet:
                 food = None
                 if reverse:
+                    if key_autoclave:
+                        food = msg_char
                     msg_char = self.tableau.decode(msg_char, k)
                     if text_autoclave:
                         food = msg_char
                 else:
+                    if text_autoclave:
+                        food = msg_char
                     msg_char = self.tableau.encode(msg_char, k)
                     if key_autoclave:
                         food = msg_char
