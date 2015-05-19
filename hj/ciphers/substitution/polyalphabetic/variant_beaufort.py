@@ -9,7 +9,7 @@ class VariantBeaufortCipher(VigenereCipher):
 
     Notes
     -----
-    Not to be confused with the symmetric Beaufort cipher, which also uses
+    Not to be confused with the (symmetric) Beaufort cipher, which also uses
     the tabula recta.
 
     """

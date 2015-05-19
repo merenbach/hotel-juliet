@@ -7,20 +7,12 @@ from .caesar import CaesarCipher
 class AffineCipher(CaesarCipher):
     """ Transcode based on mx + b.
 
-    Attributes
-    ----------
-    DEFAULT_M : int
-        With the default value of 1, this becomes a Caesar cipher.
-    DEFAULT_B : int
-        A default shift of 0.
-        Exists as a named variable to avoid a "magic number."
-
     Parameters
     ----------
-    multiplier : int, optional
-        A multiplier.
-    offset : int, optional
-        An offset.  Must range from `0` to `len(alphabet) - 1`.
+    multiplier : int,
+        A multiplier.  Must be coprime with length of alphabet used.
+    offset : int
+        An offset.
     alphabet : string-like, optional
         An alphabet to use for transcoding.
 
@@ -31,10 +23,7 @@ class AffineCipher(CaesarCipher):
     Caesar cipher implementation to add a multiplier.
 
     """
-    DEFAULT_M = 1
-    DEFAULT_B = 0
-
-    def __init__(self, multiplier=DEFAULT_M, offset=DEFAULT_B, alphabet=None):
+    def __init__(self, multiplier, offset, alphabet=None):
         self.multiplier = multiplier
         super().__init__(offset=offset, alphabet=alphabet)
 

@@ -18,7 +18,6 @@ class PortaCipher(PolySubCipher):
     [TODO] does/should this support autoclave?
 
     """
-    TABULA_RECTA = PortaTabulaRecta
     # def __init__(self, passphrase, alphabet=None, autoclave=False):
     #     tableau = PortaTabulaRecta(alphabet)
     #     super().__init__(passphrase, tableau=tableau, autoclave=autoclave)
@@ -28,3 +27,9 @@ class PortaCipher(PolySubCipher):
         (reverse is ignored) """
         # return super()._cipher(msg_char, key_char, reverse=reverse)
         return self.tabula_recta.decode(msg_char, key_char)
+
+    def _make_tableau(self, alphabet):
+        """ Same alphabet as normal, with digits for keys.
+
+        """
+        return PortaTabulaRecta(alphabet=alphabet)

@@ -11,6 +11,8 @@ class TrithemiusCipher(VigenereCipher):
     Notes
     -----
     Not especially secure as passphrase is simply the alphabet.
+    Autoclave isn't a feature of this cipher mainly because it wouldn't be true
+    to the original (insecure) design.
 
     """
     def __init__(self, alphabet=None):

@@ -149,6 +149,8 @@ class TabulaRecta(BaseTabula):
     ----------
     alphabet : str or string like, optional
         An alphabet to use for transcoding.
+    keys : sequence
+        An ordered sequence of keys to use for generated transcoders.
 
     """
     def __init__(self, alphabet=None, keys=None, msg_alphabet=None):
@@ -180,22 +182,6 @@ class TabulaRecta(BaseTabula):
             alphabet_ = msg_alphabet.lrotate(i)
             transcoders.append(Transcoder(alphabet, alphabet_))
         return transcoders
-
-
-class GronsfeldTabulaRecta(TabulaRecta):
-    """ Digits as the key alphabet.
-
-    """
-    def __init__(self, alphabet=None):
-        super().__init__(alphabet=alphabet, keys=digits)
-
-
-class BeaufortTabulaRecta(TabulaRecta):
-    def __init__(self, alphabet=None, keys=None):
-        alphabet = Alphabet(alphabet)
-        rev_alphabet = alphabet[::-1]
-        super().__init__(alphabet=alphabet, keys=rev_alphabet, msg_alphabet=rev_alphabet)
-
 
 class PortaTabulaRecta(TabulaRecta):
     """ Porta cipher version, doubling up rows and symmetric.

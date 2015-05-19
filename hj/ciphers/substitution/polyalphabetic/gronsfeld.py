@@ -3,7 +3,7 @@
 
 from .vigenere import VigenereCipher
 from string import digits
-from utils import GronsfeldTabulaRecta
+from utils import TabulaRecta
 
 
 class GronsfeldCipher(VigenereCipher):
@@ -13,10 +13,14 @@ class GronsfeldCipher(VigenereCipher):
     -----
     Since the passphrase is numeric, autoclave makes less sense here.
 
-    [TODO] raise valueerror when passphrase contains non digits
+    [TODO] raise valueerror when passphrase contains non digits?
 
     """
-    TABULA_RECTA = GronsfeldTabulaRecta
-
     def __init__(self, passphrase, alphabet=None):
         super().__init__(passphrase, alphabet=alphabet, autoclave=False)
+
+    def _make_tableau(self, alphabet):
+        """ Same alphabet as normal, with digits for keys.
+
+        """
+        return TabulaRecta(alphabet=alphabet, keys=digits)
