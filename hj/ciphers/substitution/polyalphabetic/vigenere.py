@@ -8,4 +8,12 @@ class VigenereCipher(PolySubCipher):
     """ THE Vigenere cipher, conceptual foundation of several other ciphers.
 
     """
-    pass
+    def _cipher(self, msg_char, key_char, reverse):
+        """ Convert characters from one alphabet to another
+
+        """
+        if not reverse:
+            cipher_func = self.tableau.encode
+        else:
+            cipher_func = self.tableau.decode
+        return cipher_func(msg_char, key_char)

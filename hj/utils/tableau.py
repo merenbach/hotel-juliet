@@ -166,11 +166,9 @@ class TabulaRecta(BaseTabula):
         lines = []
         lines.append('  | ' + ' '.join(alphabet))
         lines.append('--+' + '-' * len(alphabet) * 2)
-
         for k, v in self.transcoders.items():
             row = ' '.join(str(v.b))
             lines.append('{0} | {1}'.format(k, row))
-
         return '\n'.join(lines)
 
     def _make_alphabets(self, alphabet, msg_alphabet):
@@ -192,7 +190,10 @@ class PortaTabulaRecta(TabulaRecta):
     """ Porta cipher version, doubling up rows and symmetric.
 
     [TODO] Would like to be able to make fewer overrides on parent class logic,
-    as well as more nicely represent the tableau in __repr__.
+    as well as more nicely represent the tableau in __repr__, say with
+    either collapsed rows... or with keys equal to
+    [('A', 'B'), ('C', 'D'), ... ('Y', 'Z')] and a "search" function
+    to find the right one before passing to super.
 
     """
     def _make_alphabets(self, alphabet, msg_alphabet):
@@ -204,10 +205,9 @@ class PortaTabulaRecta(TabulaRecta):
 
         for i, c in enumerate(alphabet):
             offset = i // 2
-            secondhalf = second_half_alphabet.lrotate(offset)
-            firsthalf = first_half_alphabet.lrotate(-offset)
-            alphabet_ = secondhalf + firsthalf
-            alphabets.append(alphabet_)
+            a1 = second_half_alphabet.lrotate(offset)
+            a2 = first_half_alphabet.lrotate(-offset)
+            alphabets.append(a1 + a2)
 
         return alphabets
 

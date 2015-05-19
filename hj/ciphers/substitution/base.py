@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from .. import Cipher
-from utils.base import grouper
+# from utils.base import grouper
+# [TODO] still need to implement grouping/blocks
 
 
 class SubCipher(Cipher):
@@ -15,18 +16,26 @@ class SubCipher(Cipher):
 
     Parameters
     ----------
-    nullchar : str
-        A null character for padding.
+    tableau : data-type
+        A tableau to use for transcoding.
+    nullchar : str, optional
+        A null character for padding.  Default `DEFAULT_NULLCHAR`.
+
+    Notes
+    -----
+    This assumes one tableau per cipher.  If more are needed,
+    refactoring may be required.
 
     """
     DEFAULT_NULLCHAR = 'X'
 
-    def __init__(self, nullchar=None):
-        if not nullchar:
-            nullchar = self.DEFAULT_NULLCHAR
-        # set a null character for padding
+    def __init__(self, tableau, nullchar=DEFAULT_NULLCHAR):
+        self.tableau = tableau
         self.nullchar = nullchar
         super().__init__()
+
+    def __repr__(self):
+        return repr(self.tableau)
 
     def _encode(self, s, strict=False):
         raise NotImplementedError

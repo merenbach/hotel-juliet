@@ -5,33 +5,7 @@ from .. import SubCipher
 from utils import Alphabet, TabulaRecta
 
 
-class BasePolySubCipher(SubCipher):
-    """ A representation of a tabula recta cipher.
-
-    Parameters
-    ----------
-    passphrase : str or string like
-        An encryption/decryption key.
-    tabula_recta : utils.tabula.TabulaRecta
-        A tabula recta to use.
-    autoclave : bool
-        `True` to make this an autoclave (autokey) cipher, where
-        the encrypted text will be appended to the key for decryption.
-
-    Notes
-    -----
-    Autoclave only makes sense for ciphers where the passphrase is shorter than
-    the message.  It might be considered a primitive form of "key stretching."
-
-    """
-    def __init__(self, passphrase, tabula_recta, autoclave):
-        self.passphrase = passphrase
-        self.tabula_recta = tabula_recta
-        self.autoclave = autoclave
-        super().__init__()
-
-
-class PolySubCipher(BasePolySubCipher):
+class PolySubCipher(SubCipher):
     """ A representation of a tabula recta cipher
 
     Parameters
@@ -51,11 +25,17 @@ class PolySubCipher(BasePolySubCipher):
         the encrypted text will be appended to the key for decryption.
         Default `False`.
 
+    Notes
+    -----
+    Autoclave only makes sense for ciphers where the passphrase is shorter than
+
     """
     def __init__(self, passphrase, alphabet=None, autoclave=False):
         alphabet = Alphabet(alphabet)
+        self.autoclave = autoclave
+        self.passphrase = passphrase
         tableau = self._make_tableau(alphabet)
-        super().__init__(passphrase, tableau, autoclave)
+        super().__init__(tableau)
 
     def _make_tableau(self, alphabet):
         """ Create a tabula recta for transcoding.
@@ -83,14 +63,14 @@ class PolySubCipher(BasePolySubCipher):
         """ [TODO] kludgy shim for now to support `reverse` arg.
         """
         if strict:
-            s = ''.join(c for c in s if c in self.tabula_recta.alphabet)
+            s = ''.join(c for c in s if c in self.tableau.alphabet)
         return self._transcode(s, reverse=False)
 
     def _decode(self, s, strict):
         """ [TODO] kludgy shim for now to support `reverse` arg.
         """
         if strict:
-            s = ''.join(c for c in s if c in self.tabula_recta.alphabet)
+            s = ''.join(c for c in s if c in self.tableau.alphabet)
         return self._transcode(s, reverse=True)
 
 # def phrase(self, passphrase):
@@ -129,26 +109,20 @@ class PolySubCipher(BasePolySubCipher):
         #     passphrase += s
         i = 0
         for c in s:
-            # if text_autoclave and c in self.tabula_recta.key_alphabet and not reverse:
+            # if text_autoclave and c in self.tableau.key_alphabet and not reverse:
             #     passphrase.append(c)
             k = passphrase[i % len(passphrase)]
-            # [TODO] this makes the assumption that a polyalphabetic cipher
-            #        has a tabula recta.  Probably should be in a subclass>
-            if not reverse:
-                cipher_func = self.tabula_recta.encode
-            else:
-                cipher_func = self.tabula_recta.decode
-            transcoded_char = cipher_func(c, k)
-            # if transcoded_char in self.tabula_recta.msg_alphabet:  # [TODO] Breaks BEAUFORT
+            # [TODO] some of this makes the assumption that a polyalphabetic
+            #        cipher has a tabula recta.  Probably should be in a
+            #        Vigenere subclass.
+            transcoded_char = self._cipher(c, k, reverse=reverse)
+            # if transcoded_char in self.tableau.msg_alphabet:  # [TODO] Breaks BEAUFORT
             # but above line should ideally be what we're using...
-            if transcoded_char is not None and transcoded_char in self.tabula_recta.alphabet:
+            if transcoded_char is not None and transcoded_char in self.tableau.alphabet:
                 i += 1
                 # If we are in reverse and autoclave mode, append to the passphrase
-                # if text_autoclave and c in self.tabula_recta.key_alphabet and reverse:
+                # if text_autoclave and c in self.tableau.key_alphabet and reverse:
                 #     passphrase.append(transcoded_char)
                 c = transcoded_char
             o.append(c)
         return ''.join(o)
-
-    def __repr__(self):
-        return repr(self.tabula_recta)

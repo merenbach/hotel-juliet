@@ -63,6 +63,18 @@ class BaseAlphabet(UserString):
         seq = lrotated(self, by)
         return self._recast(seq)
 
+    def reverse(self):
+        """ Reverse a copy of this sequence.
+
+        Returns
+        -------
+        out : type(self)
+            A reversed copy of this sequence.
+
+        """
+        seq = reversed(self)
+        return self._recast(seq)
+
     def __lshift__(self, by):
         """ Shorthand for left rotation with <<.
 
@@ -74,6 +86,12 @@ class BaseAlphabet(UserString):
 
         """
         return self.lrotate(-by)
+
+    def __invert__(self):
+        """ Shorthand for reversal with ~.
+
+        """
+        return self.reverse()
 
 
 class Alphabet(BaseAlphabet):

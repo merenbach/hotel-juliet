@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from . import MonoSubCipher
+from .base import MonoSubCipher
 
 
 class KeywordCipher(MonoSubCipher):
@@ -11,7 +11,7 @@ class KeywordCipher(MonoSubCipher):
     ----------
     keyword : str
         A keyword for transcoding.
-    alphabet : string-like, optional
+    alphabet : str or string like, optional
         An alphabet to use for transcoding.
 
     """

@@ -25,11 +25,8 @@ class MonoSubCipher(SubCipher):
     def __init__(self, alphabet):
         alphabet = Alphabet(alphabet)
         alphabet_ = self.make_alphabet_(alphabet)
-        self.transcoder = Transcoder(alphabet, alphabet_)
-        super().__init__()
-
-    def __repr__(self):
-        return repr(self.transcoder)
+        tableau = Transcoder(alphabet, alphabet_)
+        super().__init__(tableau)
 
     def make_alphabet_(self, alphabet):
         """ Create a transcoding alphabet.
@@ -61,10 +58,10 @@ class MonoSubCipher(SubCipher):
 
     def _encode(self, s, strict):
         if strict:
-            s = self.transcoder.sanitize(s)
-        return self.transcoder.encode(s)
+            s = self.tableau.sanitize(s)
+        return self.tableau.encode(s)
 
     def _decode(self, s, strict):
         if strict:
-            s = self.transcoder.sanitize(s)
-        return self.transcoder.decode(s)
+            s = self.tableau.sanitize(s)
+        return self.tableau.decode(s)

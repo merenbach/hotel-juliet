@@ -29,5 +29,7 @@ class BeaufortCipher(VigenereCipher):
         """ Same alphabet as normal, with digits for keys.
 
         """
-        return TabulaRecta(alphabet=alphabet, keys=alphabet[::-1],
-                msg_alphabet=alphabet[::-1])
+        ralphabet = alphabet.reverse()
+        return TabulaRecta(alphabet=alphabet,
+                           keys=ralphabet,
+                           msg_alphabet=ralphabet)

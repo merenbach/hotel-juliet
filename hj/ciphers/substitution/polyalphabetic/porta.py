@@ -1,7 +1,6 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from .base import PolySubCipher
 from .vigenere import VigenereCipher
 from utils import PortaTabulaRecta
 
@@ -11,17 +10,17 @@ class PortaCipher(VigenereCipher):
 
     Notes
     -----
-    This is a variant of the Beaufort cipher, not to be confused with the
+    This is similar to the Beaufort cipher, not to be confused with the
     "variant Beaufort" cipher, which is a variant of the Vigenere.
 
     [TODO] ensure alphabet length is divisible by the number of items in each
     group in the leftmost (key) column
-    [TODO] does/should this support autoclave?
+
+    Since this is a symmetric cipher, autoclave is not implemented.
 
     """
-    # def __init__(self, passphrase, alphabet=None, autoclave=False):
-    #     tableau = PortaTabulaRecta(alphabet)
-    #     super().__init__(passphrase, tableau=tableau, autoclave=autoclave)
+    def __init__(self, passphrase, alphabet=None):
+        super().__init__(passphrase, alphabet=alphabet, autoclave=False)
 
     def _make_tableau(self, alphabet):
         """ Same alphabet as normal, with digits for keys.

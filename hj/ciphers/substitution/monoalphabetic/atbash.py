@@ -7,6 +7,11 @@ from .affine import AffineCipher
 class AtbashCipher(AffineCipher):
     """ Transcode based on reverse alphabet.
 
+    Parameters
+    ----------
+    alphabet : str or string like, optional
+        An alphabet to use for transcoding.
+
     Notes
     -----
     This is a special case of the affine cipher where both the multiplier and

@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from . import MonoSubCipher
+from .base import MonoSubCipher
 
 
 class CaesarCipher(MonoSubCipher):
@@ -17,7 +17,7 @@ class CaesarCipher(MonoSubCipher):
     ----------
     offset : int, optional
         An integer offset for transcoding.
-    alphabet : string-like, optional
+    alphabet : str or string like, optional
         An alphabet to use for transcoding.
 
     """

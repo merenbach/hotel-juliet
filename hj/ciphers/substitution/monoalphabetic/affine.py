@@ -13,7 +13,7 @@ class AffineCipher(CaesarCipher):
         A multiplier.  Must be coprime with length of alphabet used.
     offset : int
         An offset.
-    alphabet : string-like, optional
+    alphabet : str or string like, optional
         An alphabet to use for transcoding.
 
     Notes

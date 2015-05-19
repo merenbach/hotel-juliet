@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .vigenere import VigenereCipher
-from utils import Alphabet, TabulaRecta
+from utils import Alphabet
 
 
 class TrithemiusCipher(VigenereCipher):
