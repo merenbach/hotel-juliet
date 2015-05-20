@@ -10,13 +10,14 @@ class BeaufortCipher(VigenereCipher):
 
     Notes
     -----
-    Unlike the vigenere cipher, the *key* letter is located inside the grid;
-    put another way, the `cipher` method in the parent class simply has its
-    `key_char` and `msg_char` arguments swapped.  Although this implementation
-    works just fine, a separate tabula recta is often described online
-    to make the Vigenere cipher encode just like the Beaufort.
+    Unlike the vigenere cipher, the *key* letter is located inside the grid.
+    Thus encryption simply swaps the location of the message character and
+    the key character in encryption and decryption.
 
-    To reduce code duplication, that tableau is used here.
+    Although such an implementation works just fine, a separate tabula recta is
+    sometimes employed to tailor Vigenere cipher techniques to the Beaufort.
+    In an effort to reduce code duplication (and to make a cool tabula recta
+    display), that alternative tableau is used here.
 
     N.b.: Because this is a symmetric cipher, autoclave is disabled.
 
