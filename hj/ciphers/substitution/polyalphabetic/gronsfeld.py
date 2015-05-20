@@ -9,6 +9,13 @@ from utils import TabulaRecta
 class GronsfeldCipher(VigenereCipher):
     """ Vigenere with only ten key alphabets, corresponding to 0..9.
 
+    Parameters
+    ----------
+    passphrase : str
+        An encryption/decryption key.
+    charset : str, optional
+        A character set to use for transcoding.  Default `None`.
+
     Notes
     -----
     Since the passphrase is numeric, autoclave makes less sense here.
@@ -16,8 +23,8 @@ class GronsfeldCipher(VigenereCipher):
     [TODO] raise valueerror when passphrase contains non digits?
 
     """
-    def __init__(self, passphrase, alphabet=None):
-        super().__init__(passphrase, alphabet=alphabet)
+    def __init__(self, passphrase, charset=None):
+        super().__init__(passphrase, charset=charset)
 
     def _make_tableau(self, alphabet):
         """ Same alphabet as normal, with digits for keys.

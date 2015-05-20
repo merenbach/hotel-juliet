@@ -213,7 +213,15 @@ def appendable_stream(seq):
     """
     # make a mutable copy
     seq = list(seq)
-    for n in seq:
-        food = yield n
-        seq.extend(food or n)  # add whole strings, but not integers
+    while seq:
+        for element in seq:
+            food = yield element
+            while food is not None:
+                seq.append(food)
+                food = yield
+        # for element in seq:
+        #     food = None
+        #     while food is None:
+        #         food = yield element
+        #     seq.append(food)
         # seq.append(food or n)    # add integers, but not multichar strs

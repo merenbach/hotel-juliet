@@ -11,24 +11,17 @@ class MonoSubCipher(SubCipher):
 
     Parameters
     ----------
-    alphabet : str or string like, optional
-        A source (plaintext) alphabet to underlie transcoding.  Default `None`.
-        If you cannot afford one, one will
-        be provided for you at no cost to you.
-
-    Raises
-    ------
-    ValueError
-        If `alphabet` and `alphabet_` have unequal length.
+    charset : str
+        A character set to use for transcoding.
 
     """
-    def __init__(self, alphabet):
-        alphabet = Alphabet(alphabet)
-        alphabet_ = self.make_alphabet_(alphabet)
+    def __init__(self, charset):
+        alphabet = Alphabet(charset)
+        alphabet_ = self._make_alphabet(alphabet)
         tableau = Transcoder(alphabet, alphabet_)
         super().__init__(tableau)
 
-    def make_alphabet_(self, alphabet):
+    def _make_alphabet(self, alphabet):
         """ Create a transcoding alphabet.
 
         Parameters
@@ -53,7 +46,6 @@ class MonoSubCipher(SubCipher):
         constructed instance.
 
         """
-        # [TODO] change to maketranscoders a la poly ciphers?
         raise NotImplementedError
 
     def _encode(self, s, strict):

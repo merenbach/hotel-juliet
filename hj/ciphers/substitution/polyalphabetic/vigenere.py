@@ -11,10 +11,10 @@ class VigenereCipher(PolySubCipher):
 
     Parameters
     ----------
-    passphrase : str or string like
+    passphrase : str
         An encryption/decryption key.
-    alphabet : str or string like, optional
-        An alphabet to use for transcoding.  Default `None`.
+    charset : str, optional
+        A character set to use for transcoding.  Default `None`.
     text_autoclave : bool, optional
         `True` to make this a text autoclave (text autokey) cipher, where
         the plaintext will be appended to the passphrase before encryption.
@@ -34,22 +34,20 @@ class VigenereCipher(PolySubCipher):
     Autoclave only makes sense for ciphers where the passphrase is shorter than
 
     """
-    def __init__(self, passphrase, alphabet=None,
+    def __init__(self, passphrase, charset=None,
                  text_autoclave=False, key_autoclave=False):
         if text_autoclave and key_autoclave:
             raise ValueError('Only one of text or key autoclave may be set')
         self.text_autoclave = text_autoclave
         self.key_autoclave = key_autoclave
         self.passphrase = passphrase
-        super().__init__(alphabet=alphabet)
+        super().__init__(charset=charset)
 
     def _transcode(self, s, reverse=False):
         """ Convert characters from one alphabet to another.
 
         """
-        passphrase = self.passphrase
         ### can add to the above
-        o = []
         # Passphrase index: Number of successfully-located characters
         # Used to keep message and passphrase in "synch"
         # Character n of the message should be transcoded with character (n % passphrase len) of the passphrase
@@ -62,30 +60,119 @@ class VigenereCipher(PolySubCipher):
         # [TODO] some of this makes the assumption that a polyalphabetic
         #        cipher has a tabula recta.  Probably should be in a
         #        Vigenere subclass.
-        text_autoclave = self.text_autoclave
-        key_autoclave = self.key_autoclave
         # if text_autoclave and not reverse:
         #     passphrase += s
         # elif key_autoclave and reverse:
         #     passphrase += s
+        encoding_text_autoclave = self.text_autoclave and not reverse
+        decoding_text_autoclave = self.text_autoclave and reverse
+        encoding_key_autoclave = self.key_autoclave and not reverse
+        decoding_key_autoclave = self.key_autoclave and reverse
 
-        keystream = appendable_stream(passphrase)
-        k = keystream.send(None)  # prime the stream and get our first keychar
-        for msg_char in s:
-            if msg_char in self.tableau.alphabet:
-                food = None
-                if reverse:
-                    if key_autoclave:
-                        food = msg_char
-                    msg_char = self.tableau.decode(msg_char, k)
-                    if text_autoclave:
-                        food = msg_char
-                else:
-                    if text_autoclave:
-                        food = msg_char
-                    msg_char = self.tableau.encode(msg_char, k)
-                    if key_autoclave:
-                        food = msg_char
-                k = keystream.send(food)
-            o.append(msg_char)
+        cipher_func = self.tableau.decode if reverse else self.tableau.encode
+
+        # def Keystream(UserString):
+        #     def __init__(self, passphrase):
+        #         self.passphrase = passphrase
+        #
+        #     def yo(self):
+        #         return next(self.passphrase)
+        #
+
+
+
+
+#         # alternative tack:
+# get usable passphrase chars: [p for p in passphrase if p in self.tableau.keys()]
+# get encodeable characters: [m for m in msg if m in self.tableau.alphabet]
+# for c, k in zip(encodeable_chars, usable_passphrase_chars):
+#     output += 
+
+
+
+
+        def gennie(s, passphrase):
+            # this would include characters that don't belong
+            # if encoding_text_autoclave or decoding_key_autoclave:
+            #     passphrase += s
+
+            # [NOTE] if passphrase is blank at this point,
+            # the output will be empty.
+            keystream = appendable_stream(passphrase)
+
+            # prime the stream and get our first keychar
+            for char in s:
+                # [NOTE] this is basically always true if `strict` is on
+                if char in self.tableau.alphabet:
+                    key_char = next(keystream)
+
+                    if encoding_text_autoclave or decoding_key_autoclave:
+                        keystream.send(char)
+
+                    char = cipher_func(char, key_char)
+
+                    if encoding_key_autoclave or decoding_text_autoclave:
+                        keystream.send(char)
+                yield char
+            # prime the stream and get our first keychar
+            # mchariter = iter(s)
+            # for kchar in keystream:
+            #     # [NOTE] this is basically always true if `strict` is on
+            #     while:
+            #         char = next(mchariter)
+            #         if char in self.tableau.alphabet:
+            #             char = cipher_func(char, kchar)
+            #
+            #             if encoding_key_autoclave or decoding_text_autoclave:
+            #                 keystream.send(char)
+            #         yield char
+
+        # consume iter(s) up to a point, then continue, etc.
+
+        # msg_iter = iter(s)
+        # key_iter = iter(passphrase)
+        # msg_len = len(s)
+        # key_len = len(passphrase)
+        #
+        # full_msg_out = []
+        # msg_encoded = []
+        # while:
+        #     full_msg_out.extend(msg_encoded)
+        #     key_iter = iter(msg_encoded)
+        #     for key_char in key_iter:
+        #         msg_char = next(msg_iter):
+        #         try:
+        #             msg_encoded.append(None)  # encode
+        #         except StopIteration:
+        #             # we ran out of key characters
+        #             break
+        #     if msg exhausted:
+        #         break
+        #
+        # output = []
+        # segment = []
+        # key_iter = iter(passphrase)
+        # for msg_char in msg_iter:
+        #     char = msg_char
+        #     if can_transcode(msg_char):  # should just return None in tabula?
+        #         try:
+        #             msg_char = encode(msg_char, next(key_iter))
+        #             segment.append(msg_char)
+        #         except StopIteration:
+        #             if post_autoclave:
+        #                 key_iter = iter(segment[:])
+        #             else:
+        #                 key_iter = iter(passphrase)
+        #             segment.clear()
+        #     output.append(char)
+        #
+
+
+        o = [n for n in gennie(s, self.passphrase)]
+        current_stretch = o
+        if encoding_key_autoclave or decoding_text_autoclave:
+            for i in range(20):
+                g = gennie(s[len(o):], current_stretch)
+                current_stretch = (n for n in g)
+                o.extend(current_stretch)
         return ''.join(o)

@@ -10,12 +10,12 @@ class PolySubCipher(SubCipher):
 
     Parameters
     ----------
-    alphabet : str or string like, optional
+    charset : str, optional
         An alphabet to use for transcoding.  Default `None`.
 
     """
-    def __init__(self, alphabet=None):
-        alphabet = Alphabet(alphabet)
+    def __init__(self, charset=None):
+        alphabet = Alphabet(charset)
         tableau = self._make_tableau(alphabet)
         super().__init__(tableau)
 

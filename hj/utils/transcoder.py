@@ -45,6 +45,8 @@ class Transcoder(namedtuple('Transcoder', 'a b encode decode')):
 
         """
         print('***_ORPHANS MAY BE DEPRECATED')
+        # this methodology may be flawed: only one alphabet should probably
+        # be checked (`a`?) as the input/message alphabet
         orphans = difference(s, self.a + self.b)
         return ''.join(orphans)
 

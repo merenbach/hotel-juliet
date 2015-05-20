@@ -8,6 +8,13 @@ from utils import PortaTabulaRecta
 class PortaCipher(VigenereCipher):
     """ Della porta cipher.  Symmetric.
 
+    Parameters
+    ----------
+    passphrase : str
+        An encryption/decryption key.
+    charset : str, optional
+        A character set to use for transcoding.  Default `None`.
+
     Notes
     -----
     This is similar to the Beaufort cipher, not to be confused with the
@@ -19,8 +26,8 @@ class PortaCipher(VigenereCipher):
     Since this is a symmetric cipher, autoclave is not implemented.
 
     """
-    def __init__(self, passphrase, alphabet=None):
-        super().__init__(passphrase, alphabet=alphabet)
+    def __init__(self, passphrase, charset=None):
+        super().__init__(passphrase, charset=charset)
 
     def _make_tableau(self, alphabet):
         """ Same alphabet as normal, with digits for keys.

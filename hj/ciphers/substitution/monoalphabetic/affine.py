@@ -13,8 +13,8 @@ class AffineCipher(CaesarCipher):
         A multiplier.  Must be coprime with length of alphabet used.
     offset : int
         An offset.
-    alphabet : str or string like, optional
-        An alphabet to use for transcoding.
+    charset : str, optional
+        A character set to use for transcoding.  Default `None`.
 
     Notes
     -----
@@ -23,11 +23,11 @@ class AffineCipher(CaesarCipher):
     Caesar cipher implementation to add a multiplier.
 
     """
-    def __init__(self, multiplier, offset, alphabet=None):
+    def __init__(self, multiplier, offset, charset=None):
         self.multiplier = multiplier
-        super().__init__(offset=offset, alphabet=alphabet)
+        super().__init__(offset, charset=charset)
 
-    def make_alphabet_(self, alphabet):
+    def _make_alphabet(self, alphabet):
         """ Create a transcoding alphabet.
 
         Notes
@@ -43,7 +43,7 @@ class AffineCipher(CaesarCipher):
 
         """
         # first run Caesar cipher shifts
-        alphabet = super().make_alphabet_(alphabet)
+        alphabet = super()._make_alphabet(alphabet)
 
         # now let's multiply some letters
         return alphabet.multiply(self.multiplier)

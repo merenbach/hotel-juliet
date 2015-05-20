@@ -9,15 +9,15 @@ class AtbashCipher(AffineCipher):
 
     Parameters
     ----------
-    alphabet : str or string like, optional
-        An alphabet to use for transcoding.
+    charset : str, optional
+        A character set to use for transcoding.  Default `None`.
 
     Notes
     -----
-    This is a special case of the affine cipher where both the multiplier and
-    offset are equal to `len(alphabet) - 1`.  Since our alphabets wrap, we can
-    pass `-1` to `super()` without even knowing the length of the alphabet.
+    This is a special case of the affine cipher where multiplier and offset are
+    both equal to `len(alphabet) - 1`.  Since the affine machinery wraps, we
+    can pass `-1` to `super()` without even knowing the length of the alphabet.
 
     """
-    def __init__(self, alphabet=None):
-        super().__init__(-1, -1, alphabet=alphabet)
+    def __init__(self, charset=None):
+        super().__init__(-1, -1, charset=charset)

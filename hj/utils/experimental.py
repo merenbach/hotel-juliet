@@ -1,62 +1,62 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from utils.alphabet import *
-from itertools import cycle
+# from utils.alphabet import *
+# from itertools import cycle
 
 ### Idea
 ## Keystream will be suppliable to anything requiring a passphrase (tabula recta) and possibly even keyword ciphers?
 ## In this sense the "autoclave" and "progressive" keystream options become easily available (via dropin) to any classes that need them
 
 
-class BaseKeyStream:
-    """ Base keystream.
-
-    Parameters
-    ----------
-    passphrase : str
-        A passphrase.
-
-    """
-    def __init__(self, passphrase):
-        self.passphrase = passphrase
-
-    def __repr__(self):
-        return repr(self.passphrase)
-
-    def stream(self):
-        """ Key stream generator.
-
-        Yields
-        ------
-        out : data-type
-            The next element of the keystream.
-
-        Raises
-        ------
-        NotImplementedError
-            If not overridden.
-
-        """
-        raise NotImplementedError
-
-
-class RepeatedKeyStream(BaseKeyStream):
-    """ Repeat the key in the keystream without autoclaving.
-
-    Notes
-    -----
-    This is the traditional behavior of many polyalphabetic ciphers.
-
-    """
-    def stream(self):
-        # passphrase = list(self.passphrase)  # mutable copy
-        # for n in passphrase:
-        #     yield n
-        #     passphrase.extend(n)
-        n = yield from cycle(self.passphrase)
-        print('n = '+str(n))
-
+# class BaseKeyStream:
+#     """ Base keystream.
+#
+#     Parameters
+#     ----------
+#     passphrase : str
+#         A passphrase.
+#
+#     """
+#     def __init__(self, passphrase):
+#         self.passphrase = passphrase
+#
+#     def __repr__(self):
+#         return repr(self.passphrase)
+#
+#     def stream(self):
+#         """ Key stream generator.
+#
+#         Yields
+#         ------
+#         out : data-type
+#             The next element of the keystream.
+#
+#         Raises
+#         ------
+#         NotImplementedError
+#             If not overridden.
+#
+#         """
+#         raise NotImplementedError
+#
+#
+# class RepeatedKeyStream(BaseKeyStream):
+#     """ Repeat the key in the keystream without autoclaving.
+#
+#     Notes
+#     -----
+#     This is the traditional behavior of many polyalphabetic ciphers.
+#
+#     """
+#     def stream(self):
+#         # passphrase = list(self.passphrase)  # mutable copy
+#         # for n in passphrase:
+#         #     yield n
+#         #     passphrase.extend(n)
+#         n = yield from cycle(self.passphrase)
+#         print('n = '+str(n))
+#
 
 # class AppendableRepeatedKeyStream(BaseKeyStream):
 #     """ Repeat the key in the keystream without autoclaving.

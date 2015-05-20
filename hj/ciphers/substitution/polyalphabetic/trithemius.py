@@ -8,6 +8,13 @@ from utils import Alphabet
 class TrithemiusCipher(VigenereCipher):
     """ Conceptual precursor to Vigenere.
 
+    Parameters
+    ----------
+    passphrase : str
+        An encryption/decryption key.
+    charset : str, optional
+        A character set to use for transcoding.  Default `None`.
+
     Notes
     -----
     Not especially secure as passphrase is simply the alphabet.
@@ -15,6 +22,6 @@ class TrithemiusCipher(VigenereCipher):
     to the original (insecure) design.
 
     """
-    def __init__(self, alphabet=None):
-        alphabet = Alphabet(alphabet)
-        super().__init__(alphabet, alphabet=alphabet)
+    def __init__(self, charset=None):
+        alphabet = Alphabet(charset)
+        super().__init__(alphabet, charset=alphabet)

@@ -5,6 +5,7 @@ from .alphabet import Alphabet
 from .transcoder import Transcoder
 from collections import OrderedDict
 from string import digits
+from .base import lrotated
 
 
 # class BaseTableau:
@@ -182,7 +183,7 @@ class TabulaRecta(BaseTabula):
         """
         alphabets = []
         for i, c in enumerate(alphabet):
-            alphabet_ = msg_alphabet.lrotate(i)
+            alphabet_ = lrotated(msg_alphabet, i)
             alphabets.append(alphabet_)
         return alphabets
 
@@ -205,8 +206,8 @@ class PortaTabulaRecta(TabulaRecta):
 
         for i, c in enumerate(alphabet):
             offset = i // 2
-            a1 = second_half_alphabet.lrotate(offset)
-            a2 = first_half_alphabet.lrotate(-offset)
+            a1 = lrotated(second_half_alphabet, offset)
+            a2 = lrotated(first_half_alphabet, -offset)
             alphabets.append(a1 + a2)
 
         return alphabets

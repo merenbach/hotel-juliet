@@ -11,15 +11,15 @@ class KeywordCipher(MonoSubCipher):
     ----------
     keyword : str
         A keyword for transcoding.
-    alphabet : str or string like, optional
-        An alphabet to use for transcoding.
+    charset : str, optional
+        An alphabet to use for transcoding.  Default `None`.
 
     """
-    def __init__(self, keyword, alphabet=None):
+    def __init__(self, keyword, charset=None):
         self.keyword = keyword
-        super().__init__(alphabet)
+        super().__init__(charset)
 
-    def make_alphabet_(self, alphabet):
+    def _make_alphabet(self, alphabet):
         """ Create a transcoding alphabet.
 
         """

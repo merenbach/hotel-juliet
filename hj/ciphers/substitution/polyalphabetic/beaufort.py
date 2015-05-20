@@ -8,6 +8,13 @@ from utils import TabulaRecta
 class BeaufortCipher(VigenereCipher):
     """ Beaufort cipher.  Symmetric.  Not to be confused with Variant Beaufort.
 
+    Parameters
+    ----------
+    passphrase : str
+        An encryption/decryption key.
+    charset : str, optional
+        A character set to use for transcoding.  Default `None`.
+
     Notes
     -----
     Unlike the vigenere cipher, the *key* letter is located inside the grid.
@@ -22,8 +29,8 @@ class BeaufortCipher(VigenereCipher):
     N.b.: Because this is a symmetric cipher, autoclave is disabled.
 
     """
-    def __init__(self, passphrase, alphabet=None):
-        super().__init__(passphrase, alphabet=alphabet)
+    def __init__(self, passphrase, charset=None):
+        super().__init__(passphrase, charset=charset)
 
     def _make_tableau(self, alphabet):
         """ Same alphabet as normal, with digits for keys.

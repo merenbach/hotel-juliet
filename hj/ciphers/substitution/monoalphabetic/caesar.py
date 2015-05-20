@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .base import MonoSubCipher
+from utils import lrotated
 
 
 class CaesarCipher(MonoSubCipher):
@@ -16,19 +17,19 @@ class CaesarCipher(MonoSubCipher):
     Parameters
     ----------
     offset : int, optional
-        An integer offset for transcoding.
-    alphabet : str or string like, optional
-        An alphabet to use for transcoding.
+        An integer offset for transcoding.  Default `3`.
+    charset : str, optional
+        An alphabet to use for transcoding.  Default `None`.
 
     """
     DEFAULT_OFFSET = 3
 
-    def __init__(self, offset=DEFAULT_OFFSET, alphabet=None):
+    def __init__(self, offset=DEFAULT_OFFSET, charset=None):
         self.offset = offset
-        super().__init__(alphabet)
+        super().__init__(charset)
 
-    def make_alphabet_(self, alphabet):
+    def _make_alphabet(self, alphabet):
         """ Create a transcoding alphabet.
 
         """
-        return alphabet.lrotate(self.offset)
+        return lrotated(alphabet, self.offset)
