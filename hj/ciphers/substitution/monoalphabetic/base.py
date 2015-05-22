@@ -13,47 +13,24 @@ class MonoSubCipher(SubCipher):
     ----------
     charset : str
         A character set to use for transcoding.
+    transform : function
+        A function or lambda to transform the alphabet.
 
     """
-    def __init__(self, charset):
+    def __init__(self, charset, transform):
         alphabet = Alphabet(charset)
-        alphabet_ = self._make_alphabet(alphabet)
+        alphabet_ = transform(alphabet)
         tableau = Transcoder(alphabet, alphabet_)
         super().__init__(tableau)
 
-    def _make_alphabet(self, alphabet):
-        """ Create a transcoding alphabet.
-
-        Parameters
-        ----------
-        alphabet : sequence
-            An alphabet to transform.
-
-        Returns
-        -------
-        out : sequence
-            A transformed alphabet.
-
-        Raises
-        ------
-        NotImplementedError
-            If not overridden.
-
-        Notes
-        -----
-        Since this is invoked by `__init__()` before instance is totally
-        initialized, please don't perform any operations that expect a fully
-        constructed instance.
+    def _restrict(self, s):
+        """ Clean characters for strict mode.
 
         """
-        raise NotImplementedError
+        return self.tableau.sanitize(s)
 
-    def _encode(self, s, strict):
-        if strict:
-            s = self.tableau.sanitize(s)
+    def _encode(self, s):
         return self.tableau.encode(s)
 
-    def _decode(self, s, strict):
-        if strict:
-            s = self.tableau.sanitize(s)
+    def _decode(self, s):
         return self.tableau.decode(s)

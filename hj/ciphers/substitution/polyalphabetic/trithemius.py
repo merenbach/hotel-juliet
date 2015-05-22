@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .vigenere import VigenereCipher
-from utils import Alphabet
+from utils import default_charset
 
 
 class TrithemiusCipher(VigenereCipher):
@@ -21,7 +21,8 @@ class TrithemiusCipher(VigenereCipher):
     Autoclave isn't a feature of this cipher mainly because it wouldn't be true
     to the original (insecure) design.
 
+    [TODO] is there a way to make this even simpler w/r/t mechanism?
+
     """
     def __init__(self, charset=None):
-        alphabet = Alphabet(charset)
-        super().__init__(alphabet, charset=alphabet)
+        super().__init__(charset or default_charset, charset=charset)

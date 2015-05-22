@@ -14,9 +14,11 @@ class AtbashCipher(AffineCipher):
 
     Notes
     -----
-    This is a special case of the affine cipher where multiplier and offset are
-    both equal to `len(alphabet) - 1`.  Since the affine machinery wraps, we
-    can pass `-1` to `super()` without even knowing the length of the alphabet.
+    The reversal of an alphabet represents a special case of the affine cipher,
+    where multiplier and offset are both equal to one less than the length of
+    the alphabet.  Thanks to modular arithmetic, values of `-1` for offset and
+    multiplier yield the same outcome, without even needing to know the length
+    of the alphabet.
 
     """
     def __init__(self, charset=None):

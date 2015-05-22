@@ -25,11 +25,5 @@ class CaesarCipher(MonoSubCipher):
     DEFAULT_OFFSET = 3
 
     def __init__(self, offset=DEFAULT_OFFSET, charset=None):
-        self.offset = offset
-        super().__init__(charset)
-
-    def _make_alphabet(self, alphabet):
-        """ Create a transcoding alphabet.
-
-        """
-        return lrotated(alphabet, self.offset)
+        transform = lambda c: lrotated(c, offset)
+        super().__init__(charset, transform)

@@ -41,18 +41,20 @@ class PolySubCipher(SubCipher):
         """
         return TabulaRecta(alphabet=alphabet)
 
-    def _encode(self, s, strict):
+    def _restrict(self, s):
+        """ Clean characters for strict mode.
+
+        """
+        return ''.join(c for c in s if c in self.tableau.alphabet)
+
+    def _encode(self, s):
         """ [TODO] kludgy shim for now to support `reverse` arg.
         """
-        if strict:
-            s = ''.join(c for c in s if c in self.tableau.alphabet)
         return self._transcode(s, reverse=False)
 
-    def _decode(self, s, strict):
+    def _decode(self, s):
         """ [TODO] kludgy shim for now to support `reverse` arg.
         """
-        if strict:
-            s = ''.join(c for c in s if c in self.tableau.alphabet)
         return self._transcode(s, reverse=True)
 
     def _transcode(self, s, reverse=False):

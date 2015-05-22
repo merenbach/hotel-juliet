@@ -1,11 +1,13 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from .caesar import CaesarCipher
+from .base import MonoSubCipher
+from utils import affined
 
 
-class AffineCipher(CaesarCipher):
-    """ Transcode based on mx + b.
+class AffineCipher(MonoSubCipher):
+    """ Transcode based on a transformation of `mx + b` for multiplier `m`,
+    character `x`, and added offset `b`.
 
     Parameters
     ----------
@@ -18,32 +20,19 @@ class AffineCipher(CaesarCipher):
 
     Notes
     -----
-    Although this cipher is technically different from a Caesar shift,
-    the alphabet offset functions the same way so we simply extend the
-    Caesar cipher implementation to add a multiplier.
+    Although this cipher is technically different from a Caesar shift, the
+    behavioral outcome here is, interestingly enough, the same as if we'd run a
+    Caesar shift and then multiplied the letters with an added offset of zero.
+
+    The inverse affine operation is complicated mathematically so we "cheat" by
+    caching a tableau (as we do for other monoalphabetic ciphers) and using
+    that for encoding (forward) and decoding (reverse).
+
+    This may be less secure than other monoalphabetic ciphers because it is
+    vulnerable not only to frequency analysis, but also has an algebraic
+    solution that, when computed, reveals the whole ciphertext alphabet.
 
     """
     def __init__(self, multiplier, offset, charset=None):
-        self.multiplier = multiplier
-        super().__init__(offset, charset=charset)
-
-    def _make_alphabet(self, alphabet):
-        """ Create a transcoding alphabet.
-
-        Notes
-        -----
-        We're "cheating" here by not actually having the decryption machinery
-        run any inverse operations and by invoking `super()` to create an
-        offset alphabet that we then "multiply."  Without this second bit of
-        cleverness, our multiplication would be:
-
-            (self.multiplier * n + self.offset) mod len(alphabet)
-
-        [TODO] Make this mechanism more elegant
-
-        """
-        # first run Caesar cipher shifts
-        alphabet = super()._make_alphabet(alphabet)
-
-        # now let's multiply some letters
-        return alphabet.multiply(self.multiplier)
+        transform = lambda c: affined(c, multiplier, offset)
+        super().__init__(charset, transform)

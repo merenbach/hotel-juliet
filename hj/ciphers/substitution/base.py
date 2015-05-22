@@ -35,7 +35,12 @@ class SubCipher(Cipher):
         super().__init__()
 
     def __repr__(self):
+        # [TODO] maybe improve this
         return repr(self.tableau)
+
+    def __str__(self):
+        # [TODO] maybe improve this
+        return str(self.tableau)
 
     def _encode(self, s, strict=False):
         raise NotImplementedError
@@ -44,10 +49,25 @@ class SubCipher(Cipher):
         raise NotImplementedError
 
     def encode(self, s, strict=False, block=0):
-        return self._encode(s, strict)
+        if strict:
+            s = self._restrict(s)
+        return self._encode(s)
 
     def decode(self, s, strict=False, block=0):
-        return self._decode(s, strict)
+        if strict:
+            s = self._restrict(s)
+        return self._decode(s)
+
+    def _restrict(self, s):
+        """ Clean characters for strict mode.
+
+        Raises
+        ------
+        NotImplementedError
+            If not overridden.
+
+        """
+        raise NotImplementedError
 
     # def unblockify(self, iterable, n, fillvalue=None):
     #     """ From itertools"""

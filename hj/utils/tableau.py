@@ -4,7 +4,7 @@
 from .alphabet import Alphabet
 from .transcoder import Transcoder
 from collections import OrderedDict
-from string import digits
+# from string import digits
 from .base import lrotated
 
 

@@ -1,10 +1,18 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from collections import OrderedDict
+from collections import OrderedDict, UserString
 from fractions import gcd
 from itertools import zip_longest
+from string import ascii_uppercase as default_charset
 
+
+# [TODO] factor out UserString
+
+def _recast(seq, newseq):
+    if isinstance(seq, (str, UserString)):
+        newseq = ''.join(str(s) for s in newseq)
+    return type(seq)(newseq)
 
 # def at_modulo(seq, pos):
 #     """ Return the element at a given index in sequence, wrapping as needed.
@@ -137,7 +145,14 @@ def multiplied(multiplicand, multiplier):
         raise ValueError('Multiplier and alphabet length must be coprime.')
 
     positions = [(multiplier * n) % self_len for n in range(self_len)]
+    # positions = [(multiplier * n + offset) % self_len for n in range(self_len)]
     return (multiplicand[n] for n in positions)
+
+
+def affined(seq, multiplier, offset):
+    newseq = lrotated(seq, offset)
+    newseq = multiplied(newseq, multiplier)
+    return _recast(seq, newseq)
 
 
 def unique(seq):
@@ -155,6 +170,32 @@ def unique(seq):
 
     """
     return (n for n in OrderedDict.fromkeys(seq))
+
+
+def keyed(seq, keyword):
+    """ Key a copy of the given sequence.
+
+    Parameters
+    ----------
+    seq : sequence
+        A sequence with which to key a copy of self.
+
+    Returns
+    -------
+    out : type(self)
+        A copy of `self` keyed with `seq`.
+
+    Notes
+    -----
+    Only elements already in self will be used for keying.
+
+    """
+    # [TODO] make this much, much better
+    # filter elements not in `self` from `seq`
+    # uniqued seq + (self - seq)
+    newseq = [element for element in keyword if element in seq]
+    newseq += [element for element in seq]
+    return _recast(seq, newseq)
 
 
 def coprime(a, b):
