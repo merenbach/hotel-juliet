@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .base import PolySubCipher
-from utils import Alphabet
+from utils import TabulaRecta
 from utils.base import appendable_stream
 
 
@@ -13,7 +13,7 @@ class VigenereCipher(PolySubCipher):
     ----------
     passphrase : str
         An encryption/decryption key.
-    charset : str, optional
+    charset : str
         A character set to use for transcoding.  Default `None`.
     text_autoclave : bool, optional
         `True` to make this a text autoclave (text autokey) cipher, where
@@ -38,10 +38,48 @@ class VigenereCipher(PolySubCipher):
                  text_autoclave=False, key_autoclave=False):
         if text_autoclave and key_autoclave:
             raise ValueError('Only one of text or key autoclave may be set')
+        if not passphrase:
+            raise ValueError('A passphrase is required')
+        # try:
+        #     iter(passphrase):
+        # except TypeError:
+        #     raise TypeError('Passphrase must be iterable')
         self.text_autoclave = text_autoclave
         self.key_autoclave = key_autoclave
         self.passphrase = passphrase
-        super().__init__(charset=charset)
+        super().__init__(charset)
+
+    def _make_tableau(self, charset):
+        """ Create a tabula recta for transcoding.
+
+        Parameters
+        ----------
+        charset : str
+            A character set to use for transcoding.
+
+        Returns
+        -------
+        out : utils.tableau.TabulaRecta
+            A tabula recta to use for transcoding.
+
+        Notes
+        -----
+        Since this is invoked by `__init__()` before instance is totally
+        initialized, please don't perform any operations that expect a fully
+        constructed instance.
+
+        """
+        return TabulaRecta(charset=charset)
+
+    def _encode(self, s):
+        """ [TODO] kludgy shim for now to support `reverse` arg.
+        """
+        return self._transcode(s, reverse=False)
+
+    def _decode(self, s):
+        """ [TODO] kludgy shim for now to support `reverse` arg.
+        """
+        return self._transcode(s, reverse=True)
 
     def _transcode(self, s, reverse=False):
         """ Convert characters from one alphabet to another.
@@ -96,6 +134,8 @@ class VigenereCipher(PolySubCipher):
             # if encoding_text_autoclave or decoding_key_autoclave:
             #     passphrase += s
 
+            key_elements = self.tableau.transcoders.keys() # todo make ordereddict subclass?
+            passphrase = ''.join(char for char in passphrase if char in key_elements)
             # [NOTE] if passphrase is blank at this point,
             # the output will be empty.
             keystream = appendable_stream(passphrase)
@@ -103,17 +143,30 @@ class VigenereCipher(PolySubCipher):
             # prime the stream and get our first keychar
             for char in s:
                 # [NOTE] this is basically always true if `strict` is on
-                if char in self.tableau.alphabet:
+                if char in self.tableau.charset:  # is this actually required?
+                    ## if we don't restrict charset above...
+                    # while key_char and key_char not in key_elements:
+                    #     key_char = next(keystream)
                     key_char = next(keystream)
+                    # advance keystream until valid char found, else break
+                    # if key_char == '3': print('char = ' + char)
 
                     if encoding_text_autoclave or decoding_key_autoclave:
                         keystream.send(char)
 
+                    # returns None if key char not found in rows
                     char = cipher_func(char, key_char)
 
                     if encoding_key_autoclave or decoding_text_autoclave:
                         keystream.send(char)
+
                 yield char
+            # msg = iter(s)
+            # for kchar in keystream:
+            #     char = next(msg)
+            #     if char in self.tableau.charset:
+            #
+
             # prime the stream and get our first keychar
             # mchariter = iter(s)
             # for kchar in keystream:
@@ -169,10 +222,10 @@ class VigenereCipher(PolySubCipher):
 
 
         o = [n for n in gennie(s, self.passphrase)]
-        current_stretch = o
-        if encoding_key_autoclave or decoding_text_autoclave:
-            for i in range(20):
-                g = gennie(s[len(o):], current_stretch)
-                current_stretch = (n for n in g)
-                o.extend(current_stretch)
+        # current_stretch = o
+        # if encoding_key_autoclave or decoding_text_autoclave:
+        #     for i in range(20):
+        #         g = gennie(s[len(o):], current_stretch)
+        #         current_stretch = (n for n in g)
+        #         o.extend(current_stretch)
         return ''.join(o)

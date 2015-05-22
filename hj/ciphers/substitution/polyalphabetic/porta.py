@@ -29,8 +29,8 @@ class PortaCipher(VigenereCipher):
     def __init__(self, passphrase, charset=None):
         super().__init__(passphrase, charset=charset)
 
-    def _make_tableau(self, alphabet):
+    def _make_tableau(self, charset):
         """ Same alphabet as normal, with digits for keys.
 
         """
-        return PortaTabulaRecta(alphabet=alphabet)
+        return PortaTabulaRecta(charset=charset)

@@ -2,32 +2,37 @@
 # -*- coding: utf-8 -*-
 
 from .. import SubCipher
-from utils.alphabet import Alphabet
 from utils.transcoder import Transcoder
 
 
 class MonoSubCipher(SubCipher):
     """ Monoalphabetic substitution transcoder.
 
-    Parameters
-    ----------
-    charset : str
-        A character set to use for transcoding.
-    transform : function
-        A function or lambda to transform the alphabet.
-
     """
-    def __init__(self, charset, transform):
-        alphabet = Alphabet(charset)
-        alphabet_ = transform(alphabet)
-        tableau = Transcoder(alphabet, alphabet_)
-        super().__init__(tableau)
+    def _make_tableau(self, charset):
+        charset_ = self._transform(charset)
+        return Transcoder(charset, charset_)
 
-    def _restrict(self, s):
-        """ Clean characters for strict mode.
+    def _transform(self, charset):
+        """ Transform a character set for transcoding.
+
+        Parameters
+        ----------
+        charset : str
+            A character set to use for transcoding.
+
+        Returns
+        -------
+        out : str
+            A transformed version of the provided character set.
+
+        Raises
+        ------
+        NotImplementedError
+            If not overridden.
 
         """
-        return self.tableau.sanitize(s)
+        raise NotImplementedError
 
     def _encode(self, s):
         return self.tableau.encode(s)

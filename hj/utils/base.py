@@ -195,7 +195,26 @@ def keyed(seq, keyword):
     # uniqued seq + (self - seq)
     newseq = [element for element in keyword if element in seq]
     newseq += [element for element in seq]
-    return _recast(seq, newseq)
+    return ''.join(unique(newseq))
+
+
+# def union(a, b):
+#     """ Union of two sequences.
+#
+#     Parameters
+#     ----------
+#     a : sequence
+#         A list, tuple, or string.
+#     b : sequence
+#         A list, tuple, or string.
+#
+#     Returns
+#     -------
+#     out : set
+#         The union of `set(a)` and `set(b)`.
+#
+#     """
+#     return set(a) & set(b)
 
 
 def coprime(a, b):
@@ -210,7 +229,8 @@ def coprime(a, b):
 
     Returns
     -------
-    `True` if `a` and `b` are coprime, `False` otherwise.
+    out : bool
+        `True` if `a` and `b` are coprime, `False` otherwise.
 
     """
     return gcd(a, b) == 1

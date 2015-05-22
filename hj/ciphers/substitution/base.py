@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .. import Cipher
+from utils import unique, default_charset
 # from utils.base import grouper
 # [TODO] still need to implement grouping/blocks
 
@@ -16,8 +17,8 @@ class SubCipher(Cipher):
 
     Parameters
     ----------
-    tableau : data-type
-        A tableau to use for transcoding.
+    charset : str
+        A character set to use for transcoding.
     nullchar : str, optional
         A null character for padding.  Default `DEFAULT_NULLCHAR`.
 
@@ -29,10 +30,38 @@ class SubCipher(Cipher):
     """
     DEFAULT_NULLCHAR = 'X'
 
-    def __init__(self, tableau, nullchar=DEFAULT_NULLCHAR):
-        self.tableau = tableau
-        self.nullchar = nullchar
+    def __init__(self, charset, nullchar=DEFAULT_NULLCHAR):
         super().__init__()
+        charset = ''.join(unique(charset or default_charset))
+        self.charset, self.tableau = charset, self._make_tableau(charset)
+        self.nullchar = nullchar
+
+    def _make_tableau(self, charset):
+        """ Create a tableau for transcoding.
+
+        Parameters
+        ----------
+        charset : sequence
+            A character set to use for transcoding.
+
+        Returns
+        -------
+        out : data-type
+            A tableau to use for transcoding.
+
+        Raises
+        ------
+        NotImplementedError
+            If not overridden.
+
+        Notes
+        -----
+        Since this is invoked by `__init__()` before instance is totally
+        initialized, please don't perform any operations that expect a fully
+        constructed instance.
+
+        """
+        raise NotImplementedError
 
     def __repr__(self):
         # [TODO] maybe improve this
@@ -42,24 +71,18 @@ class SubCipher(Cipher):
         # [TODO] maybe improve this
         return str(self.tableau)
 
-    def _encode(self, s, strict=False):
-        raise NotImplementedError
+    def _encode(self, s):
+        """ Encoding logic.
 
-    def _decode(self, s, strict=False):
-        raise NotImplementedError
+        Parameters
+        ----------
+        s : str
+            A message to encode.
 
-    def encode(self, s, strict=False, block=0):
-        if strict:
-            s = self._restrict(s)
-        return self._encode(s)
-
-    def decode(self, s, strict=False, block=0):
-        if strict:
-            s = self._restrict(s)
-        return self._decode(s)
-
-    def _restrict(self, s):
-        """ Clean characters for strict mode.
+        Returns
+        -------
+        out : str
+            An encoded message.
 
         Raises
         ------
@@ -68,6 +91,89 @@ class SubCipher(Cipher):
 
         """
         raise NotImplementedError
+
+    def _decode(self, s):
+        """ Decoding logic.
+
+        Parameters
+        ----------
+        s : str
+            A message to decode.
+
+        Returns
+        -------
+        out : str
+            A decoded message.
+
+        Raises
+        ------
+        NotImplementedError
+            If not overridden.
+
+        """
+        raise NotImplementedError
+
+    def encode(self, s, strict=False, block=0):
+        """ Encode a message.
+
+        Parameters
+        ----------
+        s : str
+            A message to encode.
+        strict : bool, optional
+            `True` to strip non-transcodeable characters from the string,
+            `False` otherwise.
+        block : int, optional
+            NOT YET IMPLEMENTED.  Divide output into blocks of this size.
+
+        Returns
+        -------
+        out : str
+            The encoded message.
+
+        """
+        if strict:
+            s = self._restrict(s)
+        return self._encode(s)
+
+    def decode(self, s, strict=False, block=0):
+        """ Decode a message.
+
+        Parameters
+        ----------
+        s : str
+            A message to decode.
+        strict : bool, optional
+            `True` to strip non-transcodeable characters from the string,
+            `False` otherwise.
+        block : int, optional
+            NOT YET IMPLEMENTED.  Divide output into blocks of this size.
+
+        Returns
+        -------
+        out : str
+            The decoded message.
+
+        """
+        if strict:
+            s = self._restrict(s)
+        return self._decode(s)
+
+    def _restrict(self, s):
+        """ Clean characters for strict mode.
+
+        Parameters
+        ----------
+        s : str
+            A string to clean.
+
+        Returns
+        -------
+        out : str
+            A string cleared of non-transcodable characters.
+
+        """
+        return ''.join(char for char in s if char in self.charset)
 
     # def unblockify(self, iterable, n, fillvalue=None):
     #     """ From itertools"""

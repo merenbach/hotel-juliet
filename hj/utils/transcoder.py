@@ -1,5 +1,5 @@
-from .base import difference
-from collections import namedtuple, UserString
+#! /usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 
 class Transcoder:
@@ -15,9 +15,7 @@ class Transcoder:
     """
     def __init__(self, a, b):
         self._a = self._b = None  # initialize underlying ivars
-        # self.a, self.b = a, b
-        self.a = str(a) if isinstance(a, UserString) else a  # maketrans needs str
-        self.b = str(b) if isinstance(b, UserString) else b  # maketrans needs str
+        self.a, self.b = a, b
 
     def encode(self, s):
         return s.translate(self.a2b)
@@ -72,42 +70,3 @@ class Transcoder:
 
     def __str__(self):
         return '{}\n{}'.format(self.a, self.b)
-
-    def _orphans(self, s):
-        """ Find "orphaned" characters in a message.
-
-        Parameters
-        ----------
-        s : str or string-like
-            A string to check for non-processable characters.
-
-        Returns
-        -------
-        out : str
-            Characters that can't be transcoded.
-
-        """
-        print('***_ORPHANS MAY BE DEPRECATED')
-        # this methodology may be flawed: only one alphabet should probably
-        # be checked (`a`?) as the input/message alphabet
-        orphans = difference(s, self.a + self.b)
-        return ''.join(orphans)
-
-    def sanitize(self, s):
-        """ Strip "orphaned" characters from a message.
-
-        Parameters
-        ----------
-        s : str or string-like
-            A string to sanitize of non-processable characters.
-
-        Returns
-        -------
-        out : str
-            The original string.
-
-        """
-        print('***sanitize MAY BE DEPRECATED')
-        orphans = self._orphans(s)
-        xtable = str.maketrans('', '', orphans)
-        return s.translate(xtable)

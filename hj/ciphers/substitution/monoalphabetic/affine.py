@@ -34,5 +34,8 @@ class AffineCipher(MonoSubCipher):
 
     """
     def __init__(self, multiplier, offset, charset=None):
-        transform = lambda c: affined(c, multiplier, offset)
-        super().__init__(charset, transform)
+        self.multiplier, self.offset = multiplier, offset
+        super().__init__(charset)
+
+    def _transform(self, charset):
+        return affined(charset, self.multiplier, self.offset)

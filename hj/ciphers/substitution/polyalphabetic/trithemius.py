@@ -6,22 +6,19 @@ from utils import default_charset
 
 
 class TrithemiusCipher(VigenereCipher):
-    """ Conceptual precursor to Vigenere.
+    """ Conceptual precursor to Vigenere with alphabet as passphrase.
 
     Parameters
     ----------
-    passphrase : str
-        An encryption/decryption key.
     charset : str, optional
         A character set to use for transcoding.  Default `None`.
+        If specified, will also be used as a passphrase.
 
     Notes
     -----
-    Not especially secure as passphrase is simply the alphabet.
-    Autoclave isn't a feature of this cipher mainly because it wouldn't be true
-    to the original (insecure) design.
-
-    [TODO] is there a way to make this even simpler w/r/t mechanism?
+    One of the least secure polyalphabetic ciphers.  This implementation
+    does not allow for autoclave because it wouldn't be true to the original
+    specification, where the passphrase is fixed to the alphabet.
 
     """
     def __init__(self, charset=None):

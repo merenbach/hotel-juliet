@@ -1,7 +1,6 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from .alphabet import Alphabet
 from .transcoder import Transcoder
 from collections import OrderedDict
 # from string import digits
@@ -154,38 +153,43 @@ class TabulaRecta(BaseTabula):
         An ordered sequence of keys to use for generated transcoders.
 
     """
-    def __init__(self, alphabet=None, keys=None, msg_alphabet=None):
-        alphabet = Alphabet(alphabet)
-        self.alphabet = alphabet
-        alphabets = self._make_alphabets(alphabet, msg_alphabet or alphabet)
-        transcoders_list = [Transcoder(alphabet, ab_) for ab_ in alphabets]
-        transcoders = zip(keys or alphabet, transcoders_list)
+    def __init__(self, charset, keys=None):
+        self.charset = charset
+        alphabets = self._make_rows(charset)
+        transcoders_list = [Transcoder(charset, ab_) for ab_ in alphabets]
+        transcoders = zip(keys or charset, transcoders_list)
         super().__init__(transcoders)
 
     def __repr__(self):
-        alphabet = str(self.alphabet)
+        charset = str(self.charset)
         lines = []
-        lines.append('  | ' + ' '.join(alphabet))
-        lines.append('--+' + '-' * len(alphabet) * 2)
+        lines.append('  | ' + ' '.join(charset))
+        lines.append('--+' + '-' * len(charset) * 2)
         for k, v in self.transcoders.items():
             row = ' '.join(str(v.b))
             lines.append('{0} | {1}'.format(k, row))
         return '\n'.join(lines)
 
-    def _make_alphabets(self, alphabet, msg_alphabet):
+    def _make_rows(self, charset):
         """ Create alphabets.
 
         Returns
         -------
         out : list
-            An ordered list of alphabets.
+            An ordered collection of character sets.
 
         """
-        alphabets = []
-        for i, c in enumerate(alphabet):
-            alphabet_ = lrotated(msg_alphabet, i)
-            alphabets.append(alphabet_)
-        return alphabets
+        return [lrotated(charset, i) for i in range(len(charset))]
+        # return [lrotated(charset, i) for i, _ in enumerate(charset)]
+
+
+class BeaufortTabulaRecta(TabulaRecta):
+    """ Beaufort cipher version.
+
+    """
+    def _make_rows(self, charset):
+        return super()._make_rows(charset[::-1])
+
 
 class PortaTabulaRecta(TabulaRecta):
     """ Porta cipher version, doubling up rows and symmetric.
@@ -197,20 +201,23 @@ class PortaTabulaRecta(TabulaRecta):
     to find the right one before passing to super.
 
     """
-    def _make_alphabets(self, alphabet, msg_alphabet):
+    def _make_rows(self, charset):
         alphabets = []
 
-        alpha_len = len(alphabet) // 2  # need an int
-        first_half_alphabet = alphabet[:alpha_len]
-        second_half_alphabet = alphabet[alpha_len:]
+        alpha_len = len(charset) // 2  # need an int
+        a1 = charset[:alpha_len]
+        a2 = charset[alpha_len:]
 
-        for i, c in enumerate(alphabet):
-            offset = i // 2
-            a1 = lrotated(second_half_alphabet, offset)
-            a2 = lrotated(first_half_alphabet, -offset)
-            alphabets.append(a1 + a2)
+        for i in range(len(charset)):
+            alphabet_ = lrotated(a2, i) + lrotated(a1, -i)
+            alphabets.append(alphabet_)
+            alphabets.append(alphabet_)
 
         return alphabets
+
+        # alphabets = [lrotated(a2, i) + lrotated(a1, -i) for i in range(len(charset))]
+        # return [i for i in alphabets for _ in range(2)]
+        # for i in range(len(alphabet)) for i in range(2)]
 
 # [TODO] class GronsfeldTabulaRecta, PortaTabulaRecta...?
 

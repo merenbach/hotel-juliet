@@ -19,15 +19,15 @@ class GronsfeldCipher(VigenereCipher):
     Notes
     -----
     Since the passphrase is numeric, autoclave makes less sense here.
-
-    [TODO] raise valueerror when passphrase contains non digits?
+    Technically, it can be made totally symmetric if a Beaufort tabula recta
+    is used instead.
 
     """
     def __init__(self, passphrase, charset=None):
         super().__init__(passphrase, charset=charset)
 
-    def _make_tableau(self, alphabet):
+    def _make_tableau(self, charset):
         """ Same alphabet as normal, with digits for keys.
 
         """
-        return TabulaRecta(alphabet=alphabet, keys=digits)
+        return TabulaRecta(charset, keys=digits)

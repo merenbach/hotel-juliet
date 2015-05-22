@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .vigenere import VigenereCipher
-from utils import TabulaRecta
+from utils import BeaufortTabulaRecta
 
 
 class BeaufortCipher(VigenereCipher):
@@ -32,11 +32,8 @@ class BeaufortCipher(VigenereCipher):
     def __init__(self, passphrase, charset=None):
         super().__init__(passphrase, charset=charset)
 
-    def _make_tableau(self, alphabet):
-        """ Same alphabet as normal, with digits for keys.
+    def _make_tableau(self, charset):
+        """ Same alphabet as normal, with *reversed* alphabet inside table.
 
         """
-        ralphabet = alphabet[::-1]
-        return TabulaRecta(alphabet=alphabet,
-                           keys=ralphabet,
-                           msg_alphabet=ralphabet)
+        return BeaufortTabulaRecta(charset=charset, keys=reversed(charset))
