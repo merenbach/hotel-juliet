@@ -3,7 +3,6 @@
 
 from .base import PolySubCipher
 from utils import TabulaRecta
-from utils.base import appendable_stream
 
 
 class VigenereCipher(PolySubCipher):
@@ -135,10 +134,10 @@ class VigenereCipher(PolySubCipher):
             #     passphrase += s
 
             key_elements = self.tableau.transcoders.keys() # todo make ordereddict subclass?
-            passphrase = ''.join(char for char in passphrase if char in key_elements)
+            passphrase = [char for char in passphrase if char in key_elements]
             # [NOTE] if passphrase is blank at this point,
             # the output will be empty.
-            keystream = appendable_stream(passphrase)
+            keystream = iter(passphrase)
 
             # prime the stream and get our first keychar
             for char in s:
@@ -151,14 +150,19 @@ class VigenereCipher(PolySubCipher):
                     # advance keystream until valid char found, else break
                     # if key_char == '3': print('char = ' + char)
 
-                    if encoding_text_autoclave or decoding_key_autoclave:
-                        keystream.send(char)
-
                     # returns None if key char not found in rows
-                    char = cipher_func(char, key_char)
+                    transcode_char = cipher_func(char, key_char)
 
-                    if encoding_key_autoclave or decoding_text_autoclave:
-                        keystream.send(char)
+                    if encoding_text_autoclave or decoding_key_autoclave:
+                        key_char = char
+                    elif encoding_key_autoclave or decoding_text_autoclave:
+                        key_char = transcode_char
+
+                    # if autoclave is disabled, this has the nice side effect
+                    # of causing our passphrase to loop indefinitely per the
+                    # default tabula recta encryption behavior
+                    passphrase.append(key_char)
+                    char = transcode_char
 
                 yield char
             # msg = iter(s)
@@ -221,7 +225,7 @@ class VigenereCipher(PolySubCipher):
         #
 
 
-        o = [n for n in gennie(s, self.passphrase)]
+        o = [n for n in gennie(s, self.passphrase) if n is not None]
         # current_stretch = o
         # if encoding_key_autoclave or decoding_text_autoclave:
         #     for i in range(20):

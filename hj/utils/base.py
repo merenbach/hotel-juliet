@@ -3,8 +3,8 @@
 
 from collections import OrderedDict, UserString
 from fractions import gcd
-from itertools import zip_longest
-from string import ascii_uppercase as default_charset
+# from itertools import zip_longest
+from string import ascii_uppercase as default_charset  # noqa
 
 
 # [TODO] factor out UserString
@@ -236,53 +236,53 @@ def coprime(a, b):
     return gcd(a, b) == 1
 
 
-def grouper(iterable, n, fillvalue=None):
-    """ Collect data into fixed-length chunks or blocks.
+# def grouper(iterable, n, fillvalue=None):
+#     """ Collect data into fixed-length chunks or blocks.
+#
+#     Parameters
+#     ----------
+#     iterable : iterable
+#         An iterable to divide into groups.
+#     n : int
+#         Group size.
+#     fillvalue : obj, optional
+#         Any value to pad empty spaces in the last group.
+#
+#     Returns
+#     -------
+#     out : itertools.zip_longest
+#         The source iterable divided into groups.
+#
+#     Notes
+#     -----
+#     This comes from the itertools recipes in Python documentation.
+#
+#     """
+#     # grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx"
+#     args = [iter(iterable)] * n
+#     return zip_longest(*args, fillvalue=fillvalue)
 
-    Parameters
-    ----------
-    iterable : iterable
-        An iterable to divide into groups.
-    n : int
-        Group size.
-    fillvalue : obj, optional
-        Any value to pad empty spaces in the last group.
 
-    Returns
-    -------
-    out : itertools.zip_longest
-        The source iterable divided into groups.
-
-    Notes
-    -----
-    This comes from the itertools recipes in Python documentation.
-
-    """
-    # grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx"
-    args = [iter(iterable)] * n
-    return zip_longest(*args, fillvalue=fillvalue)
-
-
-def appendable_stream(seq):
-    """ Return an infinite repeating stream that can be fed.
-
-    Parameters
-    ----------
-    seq : sequence
-        A list, tuple, or string over which to iterate.
-
-    """
-    # make a mutable copy
-    seq = list(seq)
-    while seq:
-        for element in seq:
-            food = yield element
-            while food is not None:
-                seq.append(food)
-                food = yield
-        # for element in seq:
-        #     food = None
-        #     while food is None:
-        #         food = yield element
-        #     seq.append(food)
-        # seq.append(food or n)    # add integers, but not multichar strs
+# def appendable_stream(seq):
+#     """ Return an infinite repeating stream that can be fed.
+#
+#     Parameters
+#     ----------
+#     seq : sequence
+#         A list, tuple, or string over which to iterate.
+#
+#     """
+#     # make a mutable copy
+#     seq = list(seq)
+#     while seq:
+#         for element in seq:
+#             food = yield element
+#             while food is not None:
+#                 seq.append(food)
+#                 food = yield
+#         # for element in seq:
+#         #     food = None
+#         #     while food is None:
+#         #         food = yield element
+#         #     seq.append(food)
+#         # seq.append(food or n)    # add integers, but not multichar strs
