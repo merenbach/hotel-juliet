@@ -116,120 +116,83 @@ class VigenereCipher(PolySubCipher):
         #         return next(self.passphrase)
         #
 
+        def transcode_char(passphrase):
+            """ Transcode a character.
+
+            Parameters
+            ----------
+            msg_char : str
+                A message character to transcode.
+            passphrase : str
+                A passphrase to use for transcoding.
+
+            Yields
+            -------
+            out : str
+                The transcoded message character.
+
+            """
+            key = list(passphrase)
+
+            for key_char in iter(key):
+                msg_char = yield
+                # # if we instead want to provide the used key char...
+                # msg_char = yield key_char
+                transcode_char = cipher_func(msg_char, key_char)
+                if transcode_char:
+                    new_kchar = yield transcode_char
+                    # append to the keystream either a new character
+                    # (in case of autoclave) or the current key character
+                    # (in the case of normal transcoding)
+                    key.append(new_kchar or key_char)
+
 
 
 
 #         # alternative tack:
 # get usable passphrase chars: [p for p in passphrase if p in self.tableau.keys()]
 # get encodeable characters: [m for m in msg if m in self.tableau.alphabet]
+# [H, E, L, L, O, ',', ' ', W, O, R, L, D]
+# [O, C, E, A, N, nil, nil, O, C, E, A, N]
+# kchars = [n for n in cycle passphrase if tcodeable msg at same pos...]
 # for c, k in zip(encodeable_chars, usable_passphrase_chars):
 #     output += 
 
-
-
-
-        def gennie(s, passphrase):
+        def tcode(s, passphrase):
             # this would include characters that don't belong
             # if encoding_text_autoclave or decoding_key_autoclave:
             #     passphrase += s
-
             key_elements = self.tableau.transcoders.keys() # todo make ordereddict subclass?
             passphrase = [char for char in passphrase if char in key_elements]
             # [NOTE] if passphrase is blank at this point,
             # the output will be empty.
-            keystream = iter(passphrase)
-
             # prime the stream and get our first keychar
+
+            ### feeding msg to transcoder containing key...
+            ### would other way around be better? feed next key to msg tcoder?
+            tcoder = transcode_char(passphrase)
+            key_char = tcoder.send(None)
             for char in s:
                 # [NOTE] this is basically always true if `strict` is on
                 if char in self.tableau.charset:  # is this actually required?
-                    ## if we don't restrict charset above...
-                    # while key_char and key_char not in key_elements:
-                    #     key_char = next(keystream)
-                    key_char = next(keystream)
-                    # advance keystream until valid char found, else break
-                    # if key_char == '3': print('char = ' + char)
-
                     # returns None if key char not found in rows
-                    transcode_char = cipher_func(char, key_char)
+                    tchar = tcoder.send(char)
 
                     if encoding_text_autoclave or decoding_key_autoclave:
-                        key_char = char
+                        autokey_append = char
                     elif encoding_key_autoclave or decoding_text_autoclave:
-                        key_char = transcode_char
+                        autokey_append = tchar
+                    else:
+                        # normal transcoding
+                        # if autoclave is disabled, this has the nice side
+                        # effect of causing our passphrase to loop indefinitely
+                        # per the default tabula recta encryption behavior
+                        autokey_append = None
 
-                    # if autoclave is disabled, this has the nice side effect
-                    # of causing our passphrase to loop indefinitely per the
-                    # default tabula recta encryption behavior
-                    passphrase.append(key_char)
-                    char = transcode_char
+                    tcoder.send(autokey_append)
+                    char = tchar
 
                 yield char
-            # msg = iter(s)
-            # for kchar in keystream:
-            #     char = next(msg)
-            #     if char in self.tableau.charset:
-            #
 
-            # prime the stream and get our first keychar
-            # mchariter = iter(s)
-            # for kchar in keystream:
-            #     # [NOTE] this is basically always true if `strict` is on
-            #     while:
-            #         char = next(mchariter)
-            #         if char in self.tableau.alphabet:
-            #             char = cipher_func(char, kchar)
-            #
-            #             if encoding_key_autoclave or decoding_text_autoclave:
-            #                 keystream.send(char)
-            #         yield char
-
-        # consume iter(s) up to a point, then continue, etc.
-
-        # msg_iter = iter(s)
-        # key_iter = iter(passphrase)
-        # msg_len = len(s)
-        # key_len = len(passphrase)
-        #
-        # full_msg_out = []
-        # msg_encoded = []
-        # while:
-        #     full_msg_out.extend(msg_encoded)
-        #     key_iter = iter(msg_encoded)
-        #     for key_char in key_iter:
-        #         msg_char = next(msg_iter):
-        #         try:
-        #             msg_encoded.append(None)  # encode
-        #         except StopIteration:
-        #             # we ran out of key characters
-        #             break
-        #     if msg exhausted:
-        #         break
-        #
-        # output = []
-        # segment = []
-        # key_iter = iter(passphrase)
-        # for msg_char in msg_iter:
-        #     char = msg_char
-        #     if can_transcode(msg_char):  # should just return None in tabula?
-        #         try:
-        #             msg_char = encode(msg_char, next(key_iter))
-        #             segment.append(msg_char)
-        #         except StopIteration:
-        #             if post_autoclave:
-        #                 key_iter = iter(segment[:])
-        #             else:
-        #                 key_iter = iter(passphrase)
-        #             segment.clear()
-        #     output.append(char)
-        #
-
-
-        o = [n for n in gennie(s, self.passphrase) if n is not None]
-        # current_stretch = o
-        # if encoding_key_autoclave or decoding_text_autoclave:
-        #     for i in range(20):
-        #         g = gennie(s[len(o):], current_stretch)
-        #         current_stretch = (n for n in g)
-        #         o.extend(current_stretch)
+        o = [n for n in tcode(s, self.passphrase) if n is not None]
         return ''.join(o)
