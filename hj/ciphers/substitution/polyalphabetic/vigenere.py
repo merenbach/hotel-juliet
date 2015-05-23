@@ -88,33 +88,12 @@ class VigenereCipher(PolySubCipher):
         # Passphrase index: Number of successfully-located characters
         # Used to keep message and passphrase in "synch"
         # Character n of the message should be transcoded with character (n % passphrase len) of the passphrase
-        # msg_stream = iter(s)
-        # text_autoclave = self.autoclave
-        # if text_autoclave and not reverse:
-        #     passphrase += s
-        # elif key_autoclave and reverse:
-        #     passphrase += s
-        # [TODO] some of this makes the assumption that a polyalphabetic
-        #        cipher has a tabula recta.  Probably should be in a
-        #        Vigenere subclass.
-        # if text_autoclave and not reverse:
-        #     passphrase += s
-        # elif key_autoclave and reverse:
-        #     passphrase += s
         encoding_text_autoclave = self.text_autoclave and not reverse
         decoding_text_autoclave = self.text_autoclave and reverse
         encoding_key_autoclave = self.key_autoclave and not reverse
         decoding_key_autoclave = self.key_autoclave and reverse
 
         cipher_func = self.tableau.decode if reverse else self.tableau.encode
-
-        # def Keystream(UserString):
-        #     def __init__(self, passphrase):
-        #         self.passphrase = passphrase
-        #
-        #     def yo(self):
-        #         return next(self.passphrase)
-        #
 
         def transcode_char(passphrase):
             """ Transcode a character.
@@ -128,8 +107,15 @@ class VigenereCipher(PolySubCipher):
 
             Yields
             -------
+            out : None
+                Waiting for message character.
+            in : str
+                The next message character.
             out : str
                 The transcoded message character.
+            in : str or None
+                Character to append to keystream, or None to simply append
+                the current keystream character.
 
             """
             key = list(passphrase)
@@ -138,6 +124,15 @@ class VigenereCipher(PolySubCipher):
                 msg_char = yield
                 # # if we instead want to provide the used key char...
                 # msg_char = yield key_char
+                # new_kchar = yield cipher_func(msg_char, key_char)
+                # # append to the keystream either a new character
+                # # (in case of autoclave) or the current key character
+                # # (in the case of normal transcoding)
+                # key.append(new_kchar or key_char)
+                ### this might or might not be more robust or performant;
+                ### it won't append to the key (even for default behavior
+                ### of cycling key) unless the current key character
+                ### was in the list of keys for the tableau
                 transcode_char = cipher_func(msg_char, key_char)
                 if transcode_char:
                     new_kchar = yield transcode_char
@@ -162,7 +157,7 @@ class VigenereCipher(PolySubCipher):
             # this would include characters that don't belong
             # if encoding_text_autoclave or decoding_key_autoclave:
             #     passphrase += s
-            key_elements = self.tableau.transcoders.keys() # todo make ordereddict subclass?
+            key_elements = self.tableau.transcoders # todo make ordereddict subclass?
             passphrase = [char for char in passphrase if char in key_elements]
             # [NOTE] if passphrase is blank at this point,
             # the output will be empty.
@@ -171,7 +166,8 @@ class VigenereCipher(PolySubCipher):
             ### feeding msg to transcoder containing key...
             ### would other way around be better? feed next key to msg tcoder?
             tcoder = transcode_char(passphrase)
-            key_char = tcoder.send(None)
+            # prime the generator
+            tcoder.send(None)
             for char in s:
                 # [NOTE] this is basically always true if `strict` is on
                 if char in self.tableau.charset:  # is this actually required?
