@@ -127,6 +127,22 @@ class VigenereCipher(PolySubCipher):
             # ## was in the list of keys for the tableau
 
     def _transcode_message(self, message, reverse):
+        """ Transcode a message.
+
+
+        Parameters
+        ----------
+        message : str
+            A message to transcode.
+        reverse : bool
+            `False` if we're encoding, `True` if we're decoding.
+
+        Yields
+        ------
+        out : str
+            The next character of the message.
+
+        """
         _encoding_text_autoclave = self.text_autoclave and not reverse
         _decoding_text_autoclave = self.text_autoclave and reverse
         _encoding_key_autoclave = self.key_autoclave and not reverse
