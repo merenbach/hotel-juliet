@@ -4,7 +4,7 @@
 from .transcoder import Transcoder
 from collections import OrderedDict
 # from string import digits
-from .base import lrotated
+from .base import lrotated, orotated
 
 
 # class BaseTableau:
@@ -194,24 +194,10 @@ class PortaTabulaRecta(TabulaRecta):
 
     """
     def _make_rows(self, charset):
-        alphabets = []
+        charset = lrotated(charset, len(charset) // 2)
+        return [orotated(charset, i // 2) for i in range(len(charset))]
 
-        alpha_len = len(charset) // 2  # need an int
-        a1 = charset[:alpha_len]
-        a2 = charset[alpha_len:]
-
-        for i in range(len(charset)):
-            alphabet_ = lrotated(a2, i) + lrotated(a1, -i)
-            alphabets.append(alphabet_)
-            alphabets.append(alphabet_)
-
-        return alphabets
-
-        # alphabets = [lrotated(a2, i) + lrotated(a1, -i) for i in range(len(charset))]
-        # return [i for i in alphabets for _ in range(2)]
-        # for i in range(len(alphabet)) for i in range(2)]
-
-# [TODO] class GronsfeldTabulaRecta, PortaTabulaRecta...?
+# [TODO] class GronsfeldTabulaRecta, etc.?
 
     #
     #     # [TODO] kludgy vars that shouldn't be here

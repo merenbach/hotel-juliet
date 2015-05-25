@@ -98,6 +98,37 @@ def lrotated(seq, offset):
         return seq[offset:] + seq[:offset]
 
 
+def orotated(seq, offset):
+    """ Outward-rotate a version of the given sequence.
+
+    Parameters
+    ----------
+    seq : sequence
+        A list, tuple, or string to rotate.
+    offset : int
+        Rotate this number of elements.  Use negative numbers to reverse.
+        If greater in magnitude than the length of the sequence,
+        a mod operation will be run.
+
+    Returns
+    -------
+    out : sequence
+        A rotated version of the given sequence.
+
+    Notes
+    -----
+    This function acts as though each half of `seq` is on an interlocking gear.
+
+    """
+    if len(seq) % 2 != 0:
+        raise ValueError('Sequence length must be even')
+
+    # divide into halves (a first, b second)
+    a, b = seq[:len(seq) // 2], seq[len(seq) // 2:]
+
+    # rotate each half symmetrically
+    return lrotated(a, offset) + lrotated(b, -offset)
+
 # def index_map(seq):
 #     """ Map elements to their indices within a sequence.
 #
