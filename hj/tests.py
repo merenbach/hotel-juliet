@@ -142,7 +142,7 @@ class CipherTest(unittest.TestCase):
         self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'FBKIMULQIB', strict=True)
 
     def test_porta(self):
-        c = PortaCipher(self.PASSPHRASE)
+        c = DellaPortaCipher(self.PASSPHRASE)
         self._transcode(c, self.MESSAGE_PLAIN, None, 'OSNYI, CLJYX!', strict=False)
         self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'OSNYICLJYX', strict=True)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'OSNYI, CLJYX!', strict=False)

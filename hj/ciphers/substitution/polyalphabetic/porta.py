@@ -5,7 +5,7 @@ from .vigenere import VigenereCipher
 from utils import PortaTabulaRecta
 
 
-class PortaCipher(VigenereCipher):
+class DellaPortaCipher(VigenereCipher):
     """ Della porta cipher.  Symmetric.
 
     Parameters
