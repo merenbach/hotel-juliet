@@ -57,7 +57,7 @@ from .base import lrotated
 #         raise NotImplementedError
 
 
-class BaseTabula:
+class BaseTabulaRecta:
     """ Message alphabet is on top; key alphabet is on side.
 
     Parameters
@@ -69,7 +69,7 @@ class BaseTabula:
     def __init__(self, transcoders):
         self.transcoders = OrderedDict(transcoders)
 
-    def encode(self, s, xkey=None):
+    def encode(self, s, xkey):
         """ Locate element within the grid.
 
         Parameters
@@ -77,8 +77,8 @@ class BaseTabula:
         s : str
             A string to transcode.
             Essentially a row header character on the left edge of the tableau.
-        xkey : str, optional
-            The dictionary key of a transcoder.  Default `None`.
+        xkey : str
+            The dictionary key of a transcoder.
             Essentially a row header character on the left edge of the tableau.
 
         Returns
@@ -87,14 +87,10 @@ class BaseTabula:
             An encoded string, or `None` if no key transcoder could be found.
 
         """
-        try:
-            transcoder = self.transcoders[xkey]
-        except KeyError:
-            return None
-        else:
-            return transcoder.encode(s)
+        transcoder = self.transcoders.get(xkey)
+        return transcoder and transcoder.encode(s)
 
-    def decode(self, s, xkey=None):
+    def decode(self, s, xkey):
         """ Locate element within the grid.
 
         Parameters
@@ -102,8 +98,8 @@ class BaseTabula:
         s : str
             A string to transcode.
             Essentially a row header character on the left edge of the tableau.
-        xkey : str, optional
-            The dictionary key of a transcoder.  Default `None`.
+        xkey : str
+            The dictionary key of a transcoder.
             Essentially a row header character on the left edge of the tableau.
 
         Returns
@@ -112,12 +108,8 @@ class BaseTabula:
             A decoded string, or `None` if no key transcoder could be found.
 
         """
-        try:
-            transcoder = self.transcoders[xkey]
-        except KeyError:
-            return None
-        else:
-            return transcoder.decode(s)
+        transcoder = self.transcoders.get(xkey)
+        return transcoder and transcoder.decode(s)
 
 
 # class Tabula(BaseTabula):
@@ -142,7 +134,7 @@ class BaseTabula:
 #         return repr(self.transcoders[None])
 
 
-class TabulaRecta(BaseTabula):
+class TabulaRecta(BaseTabulaRecta):
     """ Message alphabet is on top; key alphabet is on side.
 
     Parameters
@@ -161,12 +153,12 @@ class TabulaRecta(BaseTabula):
         super().__init__(transcoders)
 
     def __repr__(self):
-        charset = str(self.charset)
+        charset = self.charset
         lines = []
         lines.append('  | ' + ' '.join(charset))
         lines.append('--+' + '-' * len(charset) * 2)
         for k, v in self.transcoders.items():
-            row = ' '.join(str(v.b))
+            row = ' '.join(v.b)
             lines.append('{0} | {1}'.format(k, row))
         return '\n'.join(lines)
 
