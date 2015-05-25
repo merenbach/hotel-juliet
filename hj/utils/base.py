@@ -3,7 +3,7 @@
 
 from collections import OrderedDict, UserString
 from fractions import gcd
-# from itertools import zip_longest
+from itertools import zip_longest, cycle, islice
 from string import ascii_uppercase as default_charset  # noqa
 
 
@@ -267,31 +267,51 @@ def coprime(a, b):
     return gcd(a, b) == 1
 
 
-# def grouper(iterable, n, fillvalue=None):
-#     """ Collect data into fixed-length chunks or blocks.
-#
-#     Parameters
-#     ----------
-#     iterable : iterable
-#         An iterable to divide into groups.
-#     n : int
-#         Group size.
-#     fillvalue : obj, optional
-#         Any value to pad empty spaces in the last group.
-#
-#     Returns
-#     -------
-#     out : itertools.zip_longest
-#         The source iterable divided into groups.
-#
-#     Notes
-#     -----
-#     This comes from the itertools recipes in Python documentation.
-#
-#     """
-#     # grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx"
-#     args = [iter(iterable)] * n
-#     return zip_longest(*args, fillvalue=fillvalue)
+def grouper(iterable, n, fillvalue=None):
+    """ Collect data into fixed-length chunks or blocks.
+
+    Parameters
+    ----------
+    iterable : iterable
+        An iterable to divide into groups.
+    n : int
+        Group size.
+    fillvalue : obj, optional
+        Any value to pad empty spaces in the last group.
+
+    Returns
+    -------
+    out : itertools.zip_longest
+        The source iterable divided into groups.
+
+    Notes
+    -----
+    This comes from the itertools recipes in Python documentation.
+
+    """
+    # grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx"
+    args = [iter(iterable)] * n
+    return zip_longest(*args, fillvalue=fillvalue)
+
+
+def roundrobin(*iterables):
+    """
+    Notes
+    -----
+    This comes from the itertools recipes in Python documentation.
+
+    """
+    "roundrobin('ABC', 'D', 'EF') --> A D E B F C"
+    # Recipe credited to George Sakkis
+    pending = len(iterables)
+    nexts = cycle(iter(it).__next__ for it in iterables)
+    while pending:
+        try:
+            for next in nexts:
+                yield next()
+        except StopIteration:
+            pending -= 1
+            nexts = cycle(islice(nexts, pending))
 
 
 # def appendable_stream(seq):

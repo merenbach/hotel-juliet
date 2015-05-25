@@ -23,6 +23,7 @@ class CipherTest(unittest.TestCase):
         # [TODO] should we test with both strict and non-strict decoding?
         decoded = cipher.decode(encoded, strict=strict)
 
+        self.assertNotEqual(encoded, decoded)
         self.assertEqual(encoded, msg_enc)
         self.assertEqual(decoded, strict and msg_strict or msg)
 
@@ -62,6 +63,13 @@ class CipherTest(unittest.TestCase):
         self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'AFCCXBXSCY', strict=True)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'IPQQJ, ZJCQA!', strict=False)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'IPQQJZJCQA', strict=True)
+
+    def test_scytale(self):
+        c = ScytaleCipher(4)
+        self._transcode(c, self.MESSAGE_PLAIN, None, 'HOO!E,RXL LXLWDX', strict=False)
+        # self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'VGPLBKUILS', strict=True)
+        # self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'TCHLB, IIALO!', strict=False)
+        # self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'TCHLBIIALO', strict=True)
 
     def test_vigenere(self):
         c = VigenereCipher(self.PASSPHRASE)

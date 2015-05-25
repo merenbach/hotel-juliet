@@ -3,3 +3,4 @@
 
 from .base import *  # noqa
 from .substitution import *  # noqa
+from .transposition import *  # noqa

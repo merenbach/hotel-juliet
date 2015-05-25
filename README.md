@@ -23,18 +23,21 @@ The underlying frameworks are a bit of a playground for me right now.  The code 
 
 - Affine
 - Atbash
-- Caesar shift
+- Caesar
 - Keyword
 
 ### Polyalphabetic substitution
 
 - Beaufort
-- *Planned:* Della Porta
+- Della Porta
 - Gronsfeld
 - Trithemius
 - Variant Beaufort
 - Vigenère
 
+### Transposition and other
+
+- Scytale
 
 
 # [TODO]: Allow shifting a la
@@ -42,6 +45,7 @@ The underlying frameworks are a bit of a playground for me right now.  The code 
 
 TODO:
 Handle translation in subclasses for cipher, then pass alphabet_ to super() instead of list of ops?
+autotranslate to upper case?
 
 
 ## Notes

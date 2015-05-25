@@ -71,48 +71,6 @@ class SubCipher(Cipher):
         # [TODO] maybe improve this
         return str(self.tableau)
 
-    def _encode(self, s):
-        """ Encoding logic.
-
-        Parameters
-        ----------
-        s : str
-            A message to encode.
-
-        Returns
-        -------
-        out : str
-            An encoded message.
-
-        Raises
-        ------
-        NotImplementedError
-            If not overridden.
-
-        """
-        raise NotImplementedError
-
-    def _decode(self, s):
-        """ Decoding logic.
-
-        Parameters
-        ----------
-        s : str
-            A message to decode.
-
-        Returns
-        -------
-        out : str
-            A decoded message.
-
-        Raises
-        ------
-        NotImplementedError
-            If not overridden.
-
-        """
-        raise NotImplementedError
-
     def encode(self, s, strict=False, block=0):
         """ Encode a message.
 
