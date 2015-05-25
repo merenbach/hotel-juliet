@@ -198,14 +198,13 @@ class PortaTabulaRecta(TabulaRecta):
         lines = []
         lines.append('     | ' + ' '.join(charset))
         lines.append('-----+' + '-' * len(charset) * 2)
-        cur_l = ''
+        cur_header = None
         for i, (k, v) in enumerate(self.transcoders.items()):
             if i % 2 == 0:
-                cur_l= k
+                cur_header = k
             elif i % 2 == 1:
-                cur_l+=', '+k
                 row = ' '.join(v.b[:len(charset)])
-                lines.append('{0} | {1}'.format(cur_l, row))
+                lines.append('{0}, {1} | {2}'.format(cur_header, k, row))
         return '\n'.join(lines)
 
     def _make_rows(self, charset):
