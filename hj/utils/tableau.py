@@ -184,7 +184,7 @@ class BeaufortTabulaRecta(TabulaRecta):
 
 
 class PortaTabulaRecta(TabulaRecta):
-    """ Porta cipher version, doubling up rows and symmetric.
+    """ Porta cipher version, doubling up rows and symmetrically rotating.
 
     [TODO] Would like to be able to make fewer overrides on parent class logic,
     as well as more nicely represent the tableau in __repr__, say with
@@ -193,6 +193,23 @@ class PortaTabulaRecta(TabulaRecta):
     to find the right one before passing to super.
 
     """
+    def __repr__(self):
+        charset = self.charset[:len(self.charset) // 2]
+        lines = []
+        lines.append('     | ' + ' '.join(charset))
+        lines.append('-----+' + '-' * len(charset) * 2)
+        i = 0
+        cur_l = ''
+        for k, v in self.transcoders.items():
+            row = ' '.join(v.b[:len(charset)])
+            if i % 2 == 0:
+                cur_l= k
+            elif i % 2 == 1:
+                cur_l+=', '+k
+                lines.append('{0} | {1}'.format(cur_l, row))
+            i += 1
+        return '\n'.join(lines)
+
     def _make_rows(self, charset):
         charset = lrotated(charset, len(charset) // 2)
         return [orotated(charset, i // 2) for i in range(len(charset))]

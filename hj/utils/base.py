@@ -121,7 +121,7 @@ def orotated(seq, offset):
 
     """
     if len(seq) % 2 != 0:
-        raise ValueError('Sequence length must be even')
+        raise ValueError('Sequence length must be divisible by two')
 
     # divide into halves (a first, b second)
     a, b = seq[:len(seq) // 2], seq[len(seq) // 2:]
