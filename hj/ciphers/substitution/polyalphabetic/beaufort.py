@@ -12,7 +12,7 @@ class BeaufortCipher(VigenereCipher):
     ----------
     passphrase : str
         An encryption/decryption key.
-    charset : str, optional
+    alphabet : str, optional
         A character set to use for transcoding.  Default `None`.
 
     Notes
@@ -29,11 +29,7 @@ class BeaufortCipher(VigenereCipher):
     N.b.: Because this is a symmetric cipher, autoclave is disabled.
 
     """
-    def __init__(self, passphrase, charset=None):
-        super().__init__(passphrase, charset=charset)
+    TABULA_RECTA = BeaufortTabulaRecta
 
-    def _make_tableau(self, charset):
-        """ Same alphabet as normal, with *reversed* alphabet inside table.
-
-        """
-        return BeaufortTabulaRecta(charset=charset, keys=reversed(charset))
+    def __init__(self, passphrase, alphabet=None):
+        super().__init__(passphrase, alphabet=alphabet)

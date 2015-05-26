@@ -2,23 +2,23 @@
 # -*- coding: utf-8 -*-
 
 from .. import SubCipher
-from utils.transcoder import Transcoder
+from utils import OneDimensionalTableau
 
 
 class MonoSubCipher(SubCipher):
     """ Monoalphabetic substitution transcoder.
 
     """
-    def _make_tableau(self, charset):
-        charset_ = self._transform(charset)
-        return Transcoder(charset, charset_)
+    def _make_tableau(self, alphabet):
+        alphabet_ = self._transform(alphabet)
+        return OneDimensionalTableau(alphabet, alphabet_)
 
-    def _transform(self, charset):
+    def _transform(self, alphabet):
         """ Transform a character set for transcoding.
 
         Parameters
         ----------
-        charset : str
+        alphabet : str
             A character set to use for transcoding.
 
         Returns

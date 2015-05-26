@@ -1,18 +1,16 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from collections import OrderedDict, UserString
+from collections import OrderedDict
 from fractions import gcd
 from itertools import zip_longest, cycle, islice
-from string import ascii_uppercase as default_charset  # noqa
+from string import ascii_uppercase as default_alphabet  # noqa
 
 
-# [TODO] factor out UserString
-
-def _recast(seq, newseq):
-    if isinstance(seq, (str, UserString)):
-        newseq = ''.join(str(s) for s in newseq)
-    return type(seq)(newseq)
+def clever_cast(t, s):
+    if t is str:
+        s = ''.join(c for c in s)
+    return t(s)
 
 # def at_modulo(seq, pos):
 #     """ Return the element at a given index in sequence, wrapping as needed.
@@ -183,10 +181,10 @@ def multiplied(multiplicand, multiplier):
 def affined(seq, multiplier, offset):
     newseq = lrotated(seq, offset)
     newseq = multiplied(newseq, multiplier)
-    return _recast(seq, newseq)
+    return clever_cast(type(seq), newseq)
 
 
-def unique(seq):
+def unique(s):
     """ Get unique items in sequence, preserving order.
 
     Parameters
@@ -196,11 +194,11 @@ def unique(seq):
 
     Returns
     -------
-    out : generator
-        A generator expression for each element in the result.
+    out : list
+        A list copy of the original sequence with duplicate elements removed.
 
     """
-    return (n for n in OrderedDict.fromkeys(seq))
+    return clever_cast(type(s), OrderedDict.fromkeys(s))
 
 
 def keyed(seq, keyword):

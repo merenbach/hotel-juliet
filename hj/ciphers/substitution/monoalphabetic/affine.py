@@ -15,7 +15,7 @@ class AffineCipher(MonoSubCipher):
         A multiplier.  Must be coprime with length of alphabet used.
     offset : int
         An offset.
-    charset : str, optional
+    alphabet : str, optional
         A character set to use for transcoding.  Default `None`.
 
     Notes
@@ -33,9 +33,9 @@ class AffineCipher(MonoSubCipher):
     solution that, when computed, reveals the whole ciphertext alphabet.
 
     """
-    def __init__(self, multiplier, offset, charset=None):
+    def __init__(self, multiplier, offset, alphabet=None):
         self.multiplier, self.offset = multiplier, offset
-        super().__init__(charset)
+        super().__init__(alphabet)
 
-    def _transform(self, charset):
-        return affined(charset, self.multiplier, self.offset)
+    def _transform(self, alphabet):
+        return affined(alphabet, self.multiplier, self.offset)

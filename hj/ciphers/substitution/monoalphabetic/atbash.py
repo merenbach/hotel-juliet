@@ -9,7 +9,7 @@ class AtbashCipher(AffineCipher):
 
     Parameters
     ----------
-    charset : str, optional
+    alphabet : str, optional
         A character set to use for transcoding.  Default `None`.
 
     Notes
@@ -21,5 +21,5 @@ class AtbashCipher(AffineCipher):
     of the alphabet.
 
     """
-    def __init__(self, charset=None):
-        super().__init__(-1, -1, charset=charset)
+    def __init__(self, alphabet=None):
+        super().__init__(-1, -1, alphabet=alphabet)

@@ -12,7 +12,7 @@ class VigenereCipher(PolySubCipher):
     ----------
     passphrase : str
         An encryption/decryption key.
-    charset : str
+    alphabet : str
         A character set to use for transcoding.  Default `None`.
     text_autoclave : bool, optional
         `True` to make this a text autoclave (text autokey) cipher, where
@@ -33,7 +33,9 @@ class VigenereCipher(PolySubCipher):
     Autoclave only makes sense for ciphers where the passphrase is shorter than
 
     """
-    def __init__(self, passphrase, charset=None,
+    TABULA_RECTA = TabulaRecta
+
+    def __init__(self, passphrase, alphabet=None,
                  text_autoclave=False, key_autoclave=False):
         if text_autoclave and key_autoclave:
             raise ValueError('Only one of text or key autoclave may be set')
@@ -46,14 +48,14 @@ class VigenereCipher(PolySubCipher):
         self.text_autoclave = text_autoclave
         self.key_autoclave = key_autoclave
         self.passphrase = passphrase
-        super().__init__(charset)
+        super().__init__(alphabet)
 
-    def _make_tableau(self, charset):
+    def _make_tableau(self, alphabet):
         """ Create a tabula recta for transcoding.
 
         Parameters
         ----------
-        charset : str
+        alphabet : str
             A character set to use for transcoding.
 
         Returns
@@ -68,11 +70,14 @@ class VigenereCipher(PolySubCipher):
         constructed instance.
 
         """
-        return TabulaRecta(charset=charset)
+        return self.TABULA_RECTA(alphabet=alphabet)
 
     def _encode(self, s):
         """ [TODO] kludgy shim for now to support `reverse` arg.
         """
+        # before encoding, take strings of digits up to 9 digits long, replace 1-9
+        # with A-I and 0 with J, preceding each string by a letter Q
+        #
         return self._transcode(s, reverse=False)
 
     def _decode(self, s):
@@ -154,7 +159,7 @@ class VigenereCipher(PolySubCipher):
         cipher_func = self.tableau.decode if reverse else self.tableau.encode
 
         # [TODO] make ordereddict subclass?
-        key_elements = self.tableau.transcoders
+        key_elements = self.tableau.data  # [TODO] kludge
         passphrase = [char for char in self.passphrase if char in key_elements]
 
         tcoder = self._transcode_char(passphrase, cipher_func)
@@ -163,7 +168,7 @@ class VigenereCipher(PolySubCipher):
 
         for msg_char in message:
             # [NOTE] this is basically always true if `strict` is on
-            if msg_char in self.tableau.charset:  # is this actually required?
+            if msg_char in self.tableau.alphabet:  # is this actually required?
                 # returns None if key char not found in rows
                 tchar = tcoder.send(msg_char)
 

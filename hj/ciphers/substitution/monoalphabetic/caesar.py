@@ -18,15 +18,15 @@ class CaesarCipher(MonoSubCipher):
     ----------
     offset : int, optional
         An integer offset for transcoding.  Default `3`.
-    charset : str, optional
+    alphabet : str, optional
         A character set to use for transcoding.  Default `None`.
 
     """
     DEFAULT_OFFSET = 3
 
-    def __init__(self, offset=DEFAULT_OFFSET, charset=None):
+    def __init__(self, offset=DEFAULT_OFFSET, alphabet=None):
         self.offset = offset
-        super().__init__(charset)
+        super().__init__(alphabet)
 
-    def _transform(self, charset):
-        return lrotated(charset, self.offset)
+    def _transform(self, alphabet):
+        return lrotated(alphabet, self.offset)

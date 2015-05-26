@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .vigenere import VigenereCipher
-from utils import default_charset
+from utils import default_alphabet
 
 
 class TrithemiusCipher(VigenereCipher):
@@ -10,7 +10,7 @@ class TrithemiusCipher(VigenereCipher):
 
     Parameters
     ----------
-    charset : str, optional
+    alphabet : str, optional
         A character set to use for transcoding.  Default `None`.
         If specified, will also be used as a passphrase.
 
@@ -21,5 +21,5 @@ class TrithemiusCipher(VigenereCipher):
     specification, where the passphrase is fixed to the alphabet.
 
     """
-    def __init__(self, charset=None):
-        super().__init__(charset or default_charset, charset=charset)
+    def __init__(self, alphabet=None):
+        super().__init__(alphabet or default_alphabet, alphabet=alphabet)

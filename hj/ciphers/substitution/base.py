@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .. import Cipher
-from utils import unique, default_charset
+from utils import unique, default_alphabet
 # from utils.base import grouper
 # [TODO] still need to implement grouping/blocks
 
@@ -17,7 +17,7 @@ class SubCipher(Cipher):
 
     Parameters
     ----------
-    charset : str
+    alphabet : str
         A character set to use for transcoding.
     nullchar : str, optional
         A null character for padding.  Default `DEFAULT_NULLCHAR`.
@@ -30,18 +30,18 @@ class SubCipher(Cipher):
     """
     DEFAULT_NULLCHAR = 'X'
 
-    def __init__(self, charset, nullchar=DEFAULT_NULLCHAR):
+    def __init__(self, alphabet, nullchar=DEFAULT_NULLCHAR):
         super().__init__()
-        charset = ''.join(unique(charset or default_charset))
-        self.charset, self.tableau = charset, self._make_tableau(charset)
+        alphabet = unique(alphabet or default_alphabet)
+        self.tableau = self._make_tableau(alphabet)
         self.nullchar = nullchar
 
-    def _make_tableau(self, charset):
+    def _make_tableau(self, alphabet):
         """ Create a tableau for transcoding.
 
         Parameters
         ----------
-        charset : sequence
+        alphabet : sequence
             A character set to use for transcoding.
 
         Returns
@@ -92,7 +92,7 @@ class SubCipher(Cipher):
         """
         if strict:
             s = self._restrict(s)
-        return self._encode(s)
+        return ''.join(self._encode(s))
 
     def decode(self, s, strict=False, block=0):
         """ Decode a message.
@@ -115,7 +115,7 @@ class SubCipher(Cipher):
         """
         if strict:
             s = self._restrict(s)
-        return self._decode(s)
+        return ''.join(self._decode(s))
 
     def _restrict(self, s):
         """ Clean characters for strict mode.
@@ -131,7 +131,7 @@ class SubCipher(Cipher):
             A string cleared of non-transcodable characters.
 
         """
-        return ''.join(char for char in s if char in self.charset)
+        return [char for char in s if char in self.tableau.alphabet]
 
     # def unblockify(self, iterable, n, fillvalue=None):
     #     """ From itertools"""

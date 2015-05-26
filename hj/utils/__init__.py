@@ -3,4 +3,5 @@
 
 from utils.base import *  # noqa
 from utils.tableau import *  # noqa
+from utils.tabula_recta import *  # noqa
 from utils.transcoder import *  # noqa

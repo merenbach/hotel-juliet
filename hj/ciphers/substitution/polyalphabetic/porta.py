@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .vigenere import VigenereCipher
-from utils import PortaTabulaRecta
+from utils import DellaPortaTabulaRecta
 
 
 class DellaPortaCipher(VigenereCipher):
@@ -12,7 +12,7 @@ class DellaPortaCipher(VigenereCipher):
     ----------
     passphrase : str
         An encryption/decryption key.
-    charset : str, optional
+    alphabet : str, optional
         A character set to use for transcoding.  Default `None`.
 
     Notes
@@ -26,11 +26,7 @@ class DellaPortaCipher(VigenereCipher):
     Since this is a symmetric cipher, autoclave is not implemented.
 
     """
-    def __init__(self, passphrase, charset=None):
-        super().__init__(passphrase, charset=charset)
+    TABULA_RECTA = DellaPortaTabulaRecta
 
-    def _make_tableau(self, charset):
-        """ Same alphabet as normal, with digits for keys.
-
-        """
-        return PortaTabulaRecta(charset=charset)
+    def __init__(self, passphrase, alphabet=None):
+        super().__init__(passphrase, alphabet=alphabet)

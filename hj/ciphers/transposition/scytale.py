@@ -14,11 +14,15 @@ class ScytaleCipher(TransCipher):
     ----------
     length : int
         The number of characters per row.
-    charset : str, optional
+    alphabet : str, optional
         A character set to use for transcoding.  Default `None`.
 
+    Notes
+    -----
+    This is far less polished than the other ciphers.  Given time...
+
     """
-    def __init__(self, length, charset=None):
+    def __init__(self, length, alphabet=None):
         self.length = length
         # self.depth =
         super().__init__()

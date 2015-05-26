@@ -12,13 +12,13 @@ class KeywordCipher(MonoSubCipher):
     ----------
     keyword : str
         A keyword for transcoding.
-    charset : str, optional
+    alphabet : str, optional
         A character set to use for transcoding.  Default `None`.
 
     """
-    def __init__(self, keyword, charset=None):
+    def __init__(self, keyword, alphabet=None):
         self.keyword = keyword
-        super().__init__(charset)
+        super().__init__(alphabet)
 
-    def _transform(self, charset):
-        return keyed(charset, self.keyword)
+    def _transform(self, alphabet):
+        return keyed(alphabet, self.keyword)
