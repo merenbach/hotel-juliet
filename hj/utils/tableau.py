@@ -93,12 +93,21 @@ class OneDimensionalTableau(Tableau):
     alphabet_ : sequence
         An alphabet for the tableau.  Duplicate elements will be removed.
 
+    Notes
+    -----
+    The `encode` and `decode` methods, in conjunction with the `a2b` and `b2a`
+    dictionaries, function very much like `str.translate` with the output of
+    `str.maketrans`.  An alternative implementation is included, commented-out,
+    for anyone interested.
+
     """
     def __init__(self, alphabet, alphabet_):
         super().__init__(alphabet)
         self.alphabet_ = unique(alphabet_)
         self.a2b = dict(zip(alphabet, alphabet_))
         self.b2a = dict(zip(alphabet_, alphabet))
+        # self.a2b = str.maketrans(alphabet, alphabet_)
+        # self.b2a = str.maketrans(alphabet_, alphabet)
 
     def __str__(self):
         return 'PT: {}\nCT: {}'.format(self.alphabet, self.alphabet_)
@@ -115,9 +124,11 @@ class OneDimensionalTableau(Tableau):
         -------
         out : sequence
             An encoded copy of the given sequence `s`.
+            Non-encodable elements will be included unchanged.
 
         """
-        return [self.a2b.get(c) or c for c in s]
+        return [self.a2b.get(c, c) for c in s]
+        # return s.translate(self.a2b)
 
     def decode(self, s):
         """ Transcode backwards.
@@ -131,9 +142,11 @@ class OneDimensionalTableau(Tableau):
         -------
         out : sequence
             A decoded copy of the given sequence `s`.
+            Non-decodable elements will be included unchanged.
 
         """
-        return [self.b2a.get(c) or c for c in s]
+        return [self.b2a.get(c, c) for c in s]
+        # return s.translate(self.b2a)
 
 
 class TwoDimensionalTableau(Tableau):
