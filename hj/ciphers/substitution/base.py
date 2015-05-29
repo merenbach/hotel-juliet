@@ -90,9 +90,8 @@ class SubCipher(Cipher):
             The encoded message.
 
         """
-        if strict:
-            s = self._restrict(s)
-        return ''.join(self._encode(s))
+        out = self._encode(s, strict=strict)
+        return ''.join(out)
 
     def decode(self, s, strict=False, block=0):
         """ Decode a message.
@@ -113,25 +112,8 @@ class SubCipher(Cipher):
             The decoded message.
 
         """
-        if strict:
-            s = self._restrict(s)
-        return ''.join(self._decode(s))
-
-    def _restrict(self, s):
-        """ Clean characters for strict mode.
-
-        Parameters
-        ----------
-        s : str
-            A string to clean.
-
-        Returns
-        -------
-        out : str
-            A string cleared of non-transcodable characters.
-
-        """
-        return [char for char in s if char in self.tableau.alphabet]
+        out = self._decode(s, strict=strict)
+        return ''.join(out)
 
     # def unblockify(self, iterable, n, fillvalue=None):
     #     """ From itertools"""

@@ -34,8 +34,8 @@ class MonoSubCipher(SubCipher):
         """
         raise NotImplementedError
 
-    def _encode(self, s):
-        return self.tableau.encode(s)
+    def _encode(self, s, strict):
+        return self.tableau.encode(s, strict=strict)
 
-    def _decode(self, s):
-        return self.tableau.decode(s)
+    def _decode(self, s, strict):
+        return self.tableau.decode(s, strict=strict)

@@ -1,8 +1,7 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from .tableau import TwoDimensionalTableau
-from .transcoder import Transcoder
+from .tableau import OneDimensionalTableau, TwoDimensionalTableau
 from .base import lrotated, orotated
 from collections import OrderedDict
 from string import digits
@@ -20,10 +19,10 @@ class TabulaRecta(TwoDimensionalTableau):
 
     """
     def __init__(self, alphabet, keys=None):
-        super().__init__(alphabet)
+        super().__init__(alphabet, alphabet)
         alphabet = self.alphabet
         alphabets = self._make_rows(alphabet)
-        transcoders_list = [Transcoder(alphabet, ab_) for ab_ in alphabets]
+        transcoders_list = [OneDimensionalTableau(alphabet, ab_) for ab_ in alphabets]
         self.data = OrderedDict(zip(keys or alphabet, transcoders_list))
 
     def __str__(self):

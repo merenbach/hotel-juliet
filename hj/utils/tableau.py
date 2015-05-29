@@ -112,53 +112,80 @@ class OneDimensionalTableau(Tableau):
     def __str__(self):
         return 'PT: {}\nCT: {}'.format(self.alphabet, self.alphabet_)
 
-    def encode(self, s):
+    def _transcode(self, s, xtable, lenient):
+        out = (xtable.get(c, lenient and c) for c in s)
+        return [c for c in out if c]
+
+    def encode(self, s, strict=False):
         """ Transcode forwards.
 
         Parameters
         ----------
         s : sequence
             A sequence to encode.
+        strict : bool, optional
+            `False` to return non-transcodable elements unchanged,
+            `True` to replace with `None`.  Default `False`.
 
         Returns
         -------
         out : sequence
             An encoded copy of the given sequence `s`.
-            Non-encodable elements will be included unchanged.
 
         """
-        return [self.a2b.get(c, c) for c in s]
+        return self._transcode(s, self.a2b, not strict)
+        # return map(self.a2b.get, s, s)
         # return s.translate(self.a2b)
 
-    def decode(self, s):
+    def decode(self, s, strict=False):
         """ Transcode backwards.
 
         Parameters
         ----------
         s : sequence
             A sequence to decode.
+        strict : bool, optional
+            `False` to return non-transcodable elements unchanged,
+            `True` to replace with `None`.  Default `False`.
 
         Returns
         -------
         out : sequence
             A decoded copy of the given sequence `s`.
-            Non-decodable elements will be included unchanged.
 
         """
-        return [self.b2a.get(c, c) for c in s]
+        return self._transcode(s, self.b2a, not strict)
+        # return map(self.b2a.get, s, s)
         # return s.translate(self.b2a)
 
 
-class TwoDimensionalTableau(Tableau):
+class TwoDimensionalTableau(OneDimensionalTableau):
     """ Polyalphabetic tableau.
 
     Parameters
     ----------
     alphabet : sequence
         An alphabet for the tableau.  Duplicate elements will be removed.
+    tableaux : sequence of `OneDimensionalTableau`
+        Rows for the tableau.
 
     """
-    def encode(self, s, key):
+    # def __init__(self, alphabet, tableaux):
+    #     from string import ascii_uppercase
+    #     from utils import lrotated
+    #     t = [OneDimensionalTableau(alphabet, lrotated(ascii_uppercase, n)) for n in range(26)]
+    #     super().__init__(alphabet, t)
+    #
+    # #     alphabets = self._make_rows(alphabet)
+    # #     transcoders_list = [Transcoder(alphabet, ab_) for ab_ in alphabets]
+    # #     self.data = OrderedDict(zip(keys or alphabet, transcoders_list))
+    # #     self.alphabet_ = unique(alphabet_)
+    # #     self.a2b = dict(zip(alphabet, alphabet_))
+    # #     self.b2a = dict(zip(alphabet_, alphabet))
+    # #     # self.a2b = str.maketrans(alphabet, alphabet_)
+    # #     # self.b2a = str.maketrans(alphabet_, alphabet)
+
+    def encode(self, s, key, strict=False):
         """ Locate element within the grid.
 
         Parameters
@@ -177,9 +204,9 @@ class TwoDimensionalTableau(Tableau):
 
         """
         transcoder = self.data.get(key)
-        return transcoder and transcoder.encode(s)
+        return transcoder and ''.join(transcoder.encode(s, strict))
 
-    def decode(self, s, key):
+    def decode(self, s, key, strict=False):
         """ Locate element within the grid.
 
         Parameters
@@ -198,4 +225,4 @@ class TwoDimensionalTableau(Tableau):
 
         """
         transcoder = self.data.get(key)
-        return transcoder and transcoder.decode(s)
+        return transcoder and ''.join(transcoder.decode(s, strict))

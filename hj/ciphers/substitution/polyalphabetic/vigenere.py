@@ -72,18 +72,35 @@ class VigenereCipher(PolySubCipher):
         """
         return self.TABULA_RECTA(alphabet=alphabet)
 
-    def _encode(self, s):
+    def _encode(self, s, strict):
         """ [TODO] kludgy shim for now to support `reverse` arg.
         """
-        # before encoding, take strings of digits up to 9 digits long, replace 1-9
-        # with A-I and 0 with J, preceding each string by a letter Q
-        #
+        if strict:
+            s = self._restrict(s)
         return self._transcode(s, reverse=False)
 
-    def _decode(self, s):
+    def _decode(self, s, strict):
         """ [TODO] kludgy shim for now to support `reverse` arg.
         """
+        if strict:
+            s = self._restrict(s)
         return self._transcode(s, reverse=True)
+
+    def _restrict(self, s):
+        """ Clean characters for strict mode.
+
+        Parameters
+        ----------
+        s : str
+            A string to clean.
+
+        Returns
+        -------
+        out : str
+            A string cleared of non-transcodable characters.
+
+        """
+        return [char for char in s if char in self.tableau.alphabet]
 
     def _transcode_char(self, passphrase, cipher_func):
         """ Transcode a character.
