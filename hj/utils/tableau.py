@@ -40,18 +40,21 @@ class Tableau(BaseTableau):
         alphabet = unique(alphabet)
         super().__init__(alphabet)
 
-    def encode(self, s):
+    def encode(self, s, strict=False):
         """ Transcode forwards.
 
         Parameters
         ----------
         s : sequence
-            A sequence to encode.
+            A sequence to transcode.
+        strict : bool, optional
+            `False` to return non-transcodable elements unchanged,
+            `True` to replace with `None`.  Default `False`.
 
         Returns
         -------
         out : sequence
-            An encoded copy of the given sequence `s`.
+            A transcoded copy of the given sequence `s`.
 
         Raises
         ------
@@ -61,18 +64,21 @@ class Tableau(BaseTableau):
         """
         raise NotImplementedError
 
-    def decode(self, s):
+    def decode(self, s, strict=False):
         """ Transcode backwards.
 
         Parameters
         ----------
         s : sequence
-            A sequence to decode.
+            A sequence to transcode.
+        strict : bool, optional
+            `False` to return non-transcodable elements unchanged,
+            `True` to replace with `None`.  Default `False`.
 
         Returns
         -------
         out : sequence
-            A decoded copy of the given sequence `s`.
+            A transcoded copy of the given sequence `s`.
 
         Raises
         ------
@@ -122,7 +128,7 @@ class OneDimensionalTableau(Tableau):
         Parameters
         ----------
         s : sequence
-            A sequence to encode.
+            A sequence to transcode.
         strict : bool, optional
             `False` to return non-transcodable elements unchanged,
             `True` to replace with `None`.  Default `False`.
@@ -130,7 +136,7 @@ class OneDimensionalTableau(Tableau):
         Returns
         -------
         out : sequence
-            An encoded copy of the given sequence `s`.
+            A transcoded copy of the given sequence `s`.
 
         """
         return self._transcode(s, self.a2b, not strict)
@@ -143,7 +149,7 @@ class OneDimensionalTableau(Tableau):
         Parameters
         ----------
         s : sequence
-            A sequence to decode.
+            A sequence to transcode.
         strict : bool, optional
             `False` to return non-transcodable elements unchanged,
             `True` to replace with `None`.  Default `False`.
@@ -151,7 +157,7 @@ class OneDimensionalTableau(Tableau):
         Returns
         -------
         out : sequence
-            A decoded copy of the given sequence `s`.
+            A transcoded copy of the given sequence `s`.
 
         """
         return self._transcode(s, self.b2a, not strict)
@@ -196,15 +202,23 @@ class TwoDimensionalTableau(OneDimensionalTableau):
         key : str
             The dictionary key of a transcoder.
             Essentially a row header character on the left edge of the tableau.
+        strict : bool, optional
+            `False` to return non-transcodable elements unchanged,
+            `True` to replace with `None`.  Default `False`.
 
         Returns
         -------
         out : str
             An encoded string, or `None` if no key transcoder could be found.
 
+        Raises
+        ------
+        KeyError
+            If no tableau could be found for the given key.
+
         """
-        transcoder = self.data.get(key)
-        return transcoder and ''.join(transcoder.encode(s, strict))
+        transcoder = self.data[key]
+        return transcoder.encode(s, strict=strict)
 
     def decode(self, s, key, strict=False):
         """ Locate element within the grid.
@@ -217,12 +231,20 @@ class TwoDimensionalTableau(OneDimensionalTableau):
         key : str
             The dictionary key of a transcoder.
             Essentially a row header character on the left edge of the tableau.
+        strict : bool, optional
+            `False` to return non-transcodable elements unchanged,
+            `True` to replace with `None`.  Default `False`.
 
         Returns
         -------
         out : str
             A decoded string, or `None` if no key transcoder could be found.
 
+        Raises
+        ------
+        KeyError
+            If no tableau could be found for the given key.
+
         """
-        transcoder = self.data.get(key)
-        return transcoder and ''.join(transcoder.decode(s, strict))
+        transcoder = self.data[key]
+        return transcoder.decode(s, strict=strict)

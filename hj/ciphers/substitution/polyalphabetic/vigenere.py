@@ -75,80 +75,60 @@ class VigenereCipher(PolySubCipher):
     def _encode(self, s, strict):
         """ [TODO] kludgy shim for now to support `reverse` arg.
         """
-        if strict:
-            s = self._restrict(s)
-        return self._transcode(s, reverse=False)
+        return self._transcode(s, strict, False)
 
     def _decode(self, s, strict):
         """ [TODO] kludgy shim for now to support `reverse` arg.
         """
-        if strict:
-            s = self._restrict(s)
-        return self._transcode(s, reverse=True)
+        return self._transcode(s, strict, True)
 
-    def _restrict(self, s):
-        """ Clean characters for strict mode.
+    # def _transcode_char(self, passphrase, cipher_func, strict):
+    #     """ Transcode a character.
+    #
+    #     Parameters
+    #     ----------
+    #     passphrase : str
+    #         A passphrase to use for transcoding.
+    #     cipher_func : function
+    #         A function (encode or decode) to use.
+    #
+    #     Yields
+    #     -------
+    #     out : None
+    #         Waiting for message character.
+    #     in : str
+    #         The next message character.
+    #     out : str
+    #         The transcoded message character.
+    #     in : str or None
+    #         Character to append to keystream, or None to simply append
+    #         the current keystream character.
+    #
+    #     """
+    #     key = list(passphrase)
+    #
+    #     for key_char in key:
+    #         msg_char = yield
+    #         transcode_char = cipher_func(msg_char, key_char, strict)
+    #         if transcode_char:
+    #             new_kchar = yield transcode_char
+    #             # append to the keystream either a new character
+    #             # (in case of autoclave) or the current key character
+    #             # (in the case of normal transcoding)
+    #             key.append(new_kchar or key_char)
+    #         # # if we instead want to provide the used key char...
+    #         # msg_char = yield key_char
+    #         # new_kchar = yield cipher_func(msg_char, key_char)
+    #         # # append to the keystream either a new character
+    #         # # (in case of autoclave) or the current key character
+    #         # # (in the case of normal transcoding)
+    #         # key.append(new_kchar or key_char)
+    #         # ## this might or might not be more robust or performant;
+    #         # ## it won't append to the key (even for default behavior
+    #         # ## of cycling key) unless the current key character
+    #         # ## was in the list of keys for the tableau
 
-        Parameters
-        ----------
-        s : str
-            A string to clean.
-
-        Returns
-        -------
-        out : str
-            A string cleared of non-transcodable characters.
-
-        """
-        return [char for char in s if char in self.tableau.alphabet]
-
-    def _transcode_char(self, passphrase, cipher_func):
-        """ Transcode a character.
-
-        Parameters
-        ----------
-        passphrase : str
-            A passphrase to use for transcoding.
-        cipher_func : function
-            A function (encode or decode) to use.
-
-        Yields
-        -------
-        out : None
-            Waiting for message character.
-        in : str
-            The next message character.
-        out : str
-            The transcoded message character.
-        in : str or None
-            Character to append to keystream, or None to simply append
-            the current keystream character.
-
-        """
-        key = list(passphrase)
-
-        for key_char in key:
-            msg_char = yield
-            transcode_char = cipher_func(msg_char, key_char)
-            if transcode_char:
-                new_kchar = yield transcode_char
-                # append to the keystream either a new character
-                # (in case of autoclave) or the current key character
-                # (in the case of normal transcoding)
-                key.append(new_kchar or key_char)
-            # # if we instead want to provide the used key char...
-            # msg_char = yield key_char
-            # new_kchar = yield cipher_func(msg_char, key_char)
-            # # append to the keystream either a new character
-            # # (in case of autoclave) or the current key character
-            # # (in the case of normal transcoding)
-            # key.append(new_kchar or key_char)
-            # ## this might or might not be more robust or performant;
-            # ## it won't append to the key (even for default behavior
-            # ## of cycling key) unless the current key character
-            # ## was in the list of keys for the tableau
-
-    def _transcode_message(self, message, reverse):
+    def _transcode(self, message, strict, reverse):
         """ Transcode a message.
 
 
@@ -175,20 +155,47 @@ class VigenereCipher(PolySubCipher):
 
         cipher_func = self.tableau.decode if reverse else self.tableau.encode
 
-        # [TODO] make ordereddict subclass?
-        key_elements = self.tableau.data  # [TODO] kludge
-        passphrase = [char for char in self.passphrase if char in key_elements]
-
-        tcoder = self._transcode_char(passphrase, cipher_func)
+        # tcoder = self._transcode_char(passphrase, cipher_func, strict)
         # prime the generator
-        tcoder.send(None)
+        # tcoder.send(None)
 
+
+
+        ####
+        key = list(self.passphrase)
+        keystream = iter(key)
+
+        # for key_char in key:
+        #     msg_char = yield
+        #     transcode_char = cipher_func(msg_char, key_char, strict)
+        #     if transcode_char:
+        #         new_kchar = yield transcode_char
+        #         # append to the keystream either a new character
+        #         # (in case of autoclave) or the current key character
+        #         # (in the case of normal transcoding)
+        #         key.append(new_kchar or key_char)
+        ####
+        key_char = next(keystream)
+
+        output = []
         for msg_char in message:
             # [NOTE] this is basically always true if `strict` is on
-            if msg_char in self.tableau.alphabet:  # is this actually required?
-                # returns None if key char not found in rows
-                tchar = tcoder.send(msg_char)
+            # returns None if key char not found in rows
+            # advance to next usable key char
+            while True:
+                try:
+                    # use strict since we're handling non-matches ourselves
+                    tchar = cipher_func(msg_char, key_char, True)
+                except KeyError:
+                    try:
+                        key_char = next(keystream)
+                    except StopIteration:
+                        # no valid characters within the key
+                        return []
+                else:
+                    break
 
+            if tchar:
                 if append_input:
                     autokey_append = msg_char
                 elif append_output:
@@ -200,38 +207,10 @@ class VigenereCipher(PolySubCipher):
                     # per the default tabula recta encryption behavior
                     autokey_append = None
 
-                tcoder.send(autokey_append)
+                key.extend(autokey_append or key_char)
                 msg_char = tchar
-            yield msg_char
-
-    def _transcode(self, s, reverse=False):
-        """ Convert characters from one alphabet to another.
-
-        """
-        # Passphrase index: Number of successfully-located characters
-        # Used to keep message and passphrase in "synch"
-        # Character n of the message should be transcoded with character
-        # (n % passphrase len) of the passphrase
-
-        return ''.join(self._transcode_message(s, reverse))
-        #         # alternative tack:
-        # get usable passphrase chars: [p for p in passphrase
-        #                               if p in self.tableau.keys()]
-        # get encodeable characters: [m for m in msg
-        #                             if m in self.tableau.alphabet]
-        # [H, E, L, L, O, ',', ' ', W, O, R, L, D]
-        # [O, C, E, A, N, nil, nil, O, C, E, A, N]
-        # kchars = [n for n in cycle passphrase if tcodeable msg
-        #           at same pos...]
-        # for c, k in zip(encodeable_chars, usable_passphrase_chars):
-        #     output += ...
-
-        # this would include characters that don't belong
-        # if append_input:
-        #     passphrase += s
-        # [NOTE] if passphrase is blank at this point,
-        # the output will be empty.
-        # prime the stream and get our first keychar
-
-        # ## feeding msg to transcoder containing key...
-        # ## would other way around be better? feed next key to msg tcoder?
+                key_char = next(keystream)
+                output.extend(msg_char)
+            elif not strict:
+                output.extend(msg_char)
+        return output

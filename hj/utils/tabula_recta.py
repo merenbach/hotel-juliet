@@ -6,6 +6,15 @@ from .base import lrotated, orotated
 from collections import OrderedDict
 from string import digits
 
+# [TODO] some way to match up transcodeable chars + usable key chars?
+#
+#   OCEANOGRAPHYWHAT!ILOVEund4Da$eA
+#   STORM THE CASTLE AT MIDNIGHT
+#
+# to
+#
+#   OCEAN#OGR#APHYWH#AT#!I LOVEund4Da$eA
+#   STORM THE CASTLE AT #MIDNIG####H###T
 
 class TabulaRecta(TwoDimensionalTableau):
     """ Message alphabet is on top; key alphabet is on side.
