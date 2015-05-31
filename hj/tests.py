@@ -78,7 +78,6 @@ class CipherTest(unittest.TestCase):
         self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'TCHLB, IIALO!', strict=False)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'TCHLBIIALO', strict=True)
 
-    def test_vigenere_weird(self):
         c = VigenereCipher('8O3CEiAN#OGRAPHYrrWrrHATz')
         self._transcode(c, self.MESSAGE_PLAIN, None, 'VGPLB, KUILS!', strict=False)
         self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'VGPLBKUILS', strict=True)
@@ -92,7 +91,6 @@ class CipherTest(unittest.TestCase):
         self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'TCHLB, DMKAC!', strict=False)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'TCHLBDMKAC', strict=True)
 
-    def test_vigenere_text_autoclave_weird(self):
         c = VigenereCipher('9OC33EarqAN!', text_autoclave=True)
         self._transcode(c, self.MESSAGE_PLAIN, None, 'VGPLB, DSCWR!', strict=False)
         self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'VGPLBDSCWR', strict=True)
@@ -106,7 +104,6 @@ class CipherTest(unittest.TestCase):
         self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'TCHLB, PKGAP!', strict=False)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'TCHLBPKGAP', strict=True)
 
-    def test_vigenere_key_autoclave_weird(self):
         c = VigenereCipher('9OC33EarqAN!', key_autoclave=True)
         self._transcode(c, self.MESSAGE_PLAIN, None, 'VGPLB, RUGWE!', strict=False)
         self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'VGPLBRUGWE', strict=True)

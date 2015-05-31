@@ -40,7 +40,7 @@ class TabulaRecta(TwoDimensionalTableau):
         lines.append('  | ' + ' '.join(alphabet))
         lines.append('--+' + '-' * len(alphabet) * 2)
         for k, v in self.data.items():
-            row = ' '.join(v.b)
+            row = ' '.join(v.alphabet_)
             lines.append('{0} | {1}'.format(k, row))
         return '\n'.join(lines)
 
@@ -58,7 +58,7 @@ class TabulaRecta(TwoDimensionalTableau):
 
 
 class GronsfeldTabulaRecta(TabulaRecta):
-    """ Beaufort cipher version.
+    """ Gronsfeld cipher version.
 
     Parameters
     ----------
@@ -106,7 +106,7 @@ class DellaPortaTabulaRecta(TabulaRecta):
             if i % 2 == 0:
                 cur_header = k
             elif i % 2 == 1:
-                row = ' '.join(v.b[:len(alphabet)])
+                row = ' '.join(v.alphabet_[:len(alphabet)])
                 lines.append('{0}, {1} | {2}'.format(cur_header, k, row))
         return '\n'.join(lines)
 

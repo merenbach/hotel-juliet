@@ -162,7 +162,7 @@ class VigenereCipher(PolySubCipher):
 
 
         ####
-        key = list(self.passphrase)
+        key = list(self.passphrase)  # make a mutable copy (for now)
         keystream = iter(key)
 
         # for key_char in key:
@@ -175,7 +175,7 @@ class VigenereCipher(PolySubCipher):
         #         # (in the case of normal transcoding)
         #         key.append(new_kchar or key_char)
         ####
-        key_char = next(keystream)
+        key_char = None
 
         output = []
         for msg_char in message:
@@ -185,7 +185,7 @@ class VigenereCipher(PolySubCipher):
             while True:
                 try:
                     # use strict since we're handling non-matches ourselves
-                    tchar = cipher_func(msg_char, key_char, True)
+                    tchar = cipher_func(msg_char, key_char, strict=True)
                 except KeyError:
                     try:
                         key_char = next(keystream)
@@ -209,7 +209,7 @@ class VigenereCipher(PolySubCipher):
 
                 key.extend(autokey_append or key_char)
                 msg_char = tchar
-                key_char = next(keystream)
+                key_char = None
                 output.extend(msg_char)
             elif not strict:
                 output.extend(msg_char)
