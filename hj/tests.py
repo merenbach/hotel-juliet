@@ -18,22 +18,26 @@ class CipherTest(unittest.TestCase):
     MESSAGE_STRICT = 'HELLOWORLD'
     PASSPHRASE = 'OCEANOGRAPHYWHAT'
 
-    def _transcode(self, cipher, msg, msg_strict, msg_enc, strict):
+    def _transcode(self, cipher, msg, msg_strict, msg_enc_expected, strict):
         encoded = cipher.encode(msg, strict=strict)
         # [TODO] should we test with both strict and non-strict decoding?
         decoded = cipher.decode(encoded, strict=strict)
 
-        self.assertNotEqual(encoded, decoded)
-        self.assertEqual(encoded, msg_enc)
-        self.assertEqual(decoded, strict and msg_strict or msg)
+        self.assertEqual(encoded, msg_enc_expected)
+        if msg_enc_expected is not '':
+            self.assertNotEqual(encoded, decoded)
+            self.assertEqual(decoded, strict and msg_strict or msg)
 
-    def _transcode_reverse(self, cipher, msg, msg_strict, msg_enc, strict):
+    def _transcode_reverse(self, cipher, msg, msg_strict, msg_enc_expected,
+                           strict):
         encoded = cipher.decode(msg, strict=strict)
         # [TODO] should we test with both strict and non-strict decoding?
         decoded = cipher.encode(encoded, strict=strict)
 
-        self.assertEqual(encoded, msg_enc)
-        self.assertEqual(decoded, strict and msg_strict or msg)
+        self.assertEqual(encoded, msg_enc_expected)
+        if msg_enc_expected is not '':
+            self.assertNotEqual(encoded, decoded)
+            self.assertEqual(decoded, strict and msg_strict or msg)
 
 
     def test_caesarcipher(self):
@@ -84,6 +88,12 @@ class CipherTest(unittest.TestCase):
         self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'TCHLB, IIALO!', strict=False)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'TCHLBIIALO', strict=True)
 
+        c = VigenereCipher('b4dk3y')
+        self._transcode(c, self.MESSAGE_PLAIN, None, '', strict=False)
+        self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, '', strict=True)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, None, '', strict=False)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, '', strict=True)
+
     def test_vigenere_text_autoclave(self):
         c = VigenereCipher(self.PASSPHRASE[:5], text_autoclave=True)
         self._transcode(c, self.MESSAGE_PLAIN, None, 'VGPLB, DSCWR!', strict=False)
@@ -97,6 +107,12 @@ class CipherTest(unittest.TestCase):
         self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'TCHLB, DMKAC!', strict=False)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'TCHLBDMKAC', strict=True)
 
+        c = VigenereCipher('b4dk3y', text_autoclave=True)
+        self._transcode(c, self.MESSAGE_PLAIN, None, '', strict=False)
+        self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, '', strict=True)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, None, '', strict=False)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, '', strict=True)
+
     def test_vigenere_key_autoclave(self):
         c = VigenereCipher(self.PASSPHRASE[:5], key_autoclave=True)
         self._transcode(c, self.MESSAGE_PLAIN, None, 'VGPLB, RUGWE!', strict=False)
@@ -109,6 +125,12 @@ class CipherTest(unittest.TestCase):
         self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'VGPLBRUGWE', strict=True)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'TCHLB, PKGAP!', strict=False)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'TCHLBPKGAP', strict=True)
+
+        c = VigenereCipher('b4dk3y', key_autoclave=True)
+        self._transcode(c, self.MESSAGE_PLAIN, None, '', strict=False)
+        self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, '', strict=True)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, None, '', strict=False)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, '', strict=True)
 
     def test_variantbeaufort(self):
         c = VariantBeaufortCipher(self.PASSPHRASE)
