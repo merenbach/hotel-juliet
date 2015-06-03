@@ -75,12 +75,18 @@ class VigenereCipher(PolySubCipher):
     def _encode(self, s, strict):
         """ [TODO] kludgy shim for now to support `reverse` arg.
         """
-        return self._transcode(s, strict, False)
+        passphrase = self.passphrase
+        if self.text_autoclave:
+            passphrase += s
+        return self._transcode(s, strict, passphrase, False)
 
     def _decode(self, s, strict):
         """ [TODO] kludgy shim for now to support `reverse` arg.
         """
-        return self._transcode(s, strict, True)
+        passphrase = self.passphrase
+        if self.key_autoclave:
+            passphrase += s
+        return self._transcode(s, strict, passphrase, True)
 
     # def _transcode_char(self, passphrase, cipher_func, strict):
     #     """ Transcode a character.
@@ -128,7 +134,7 @@ class VigenereCipher(PolySubCipher):
     #         # ## of cycling key) unless the current key character
     #         # ## was in the list of keys for the tableau
 
-    def _transcode(self, message, strict, reverse):
+    def _transcode(self, message, strict, passphrase, reverse):
         """ Transcode a message.
 
 
@@ -162,7 +168,7 @@ class VigenereCipher(PolySubCipher):
 
 
         ####
-        key = list(self.passphrase)  # make a mutable copy (for now)
+        key = list(passphrase)  # make a mutable copy (for now)
         keystream = iter(key)
 
         # for key_char in key:
@@ -196,21 +202,17 @@ class VigenereCipher(PolySubCipher):
                     break
 
             if tchar:
-                if append_input:
-                    autokey_append = msg_char
-                elif append_output:
-                    autokey_append = tchar
-                else:
+                if append_output:
+                    key.extend(tchar)
+                elif not append_input:
                     # normal transcoding
                     # if autoclave is disabled, this has the nice side
                     # effect of causing our passphrase to loop indefinitely
                     # per the default tabula recta encryption behavior
-                    autokey_append = None
+                    key.extend(key_char)
 
-                key.extend(autokey_append or key_char)
-                msg_char = tchar
                 key_char = None
-                output.extend(msg_char)
+                output.extend(tchar)
             elif not strict:
                 output.extend(msg_char)
         return output
