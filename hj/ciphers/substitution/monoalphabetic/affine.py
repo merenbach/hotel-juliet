@@ -28,8 +28,8 @@ class AffineCipher(MonoSubCipher):
     caching a tableau (as we do for other monoalphabetic ciphers) and using
     that for encoding (forward) and decoding (reverse).
 
-    This may be less secure than other monoalphabetic ciphers because it is
-    vulnerable not only to frequency analysis, but also has an algebraic
+    This may be less secure than some other monoalphabetic ciphers because it
+    is vulnerable not only to frequency analysis, but also has an algebraic
     solution that, when computed, reveals the whole ciphertext alphabet.
 
     """
