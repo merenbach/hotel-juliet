@@ -335,3 +335,28 @@ def roundrobin(*iterables):
 #         #         food = yield element
 #         #     seq.append(food)
 #         # seq.append(food or n)    # add integers, but not multichar strs
+
+
+# class MessageSeq:
+#     """
+#
+# does this actually help beyond simply filtering the passphrase beforehand?
+# then
+#
+# p = MessageSeq(passphrase).message(strict=True)
+# m = MessageSeq(message)
+#
+# if p:
+#     for c in m.message(strict=strict):
+#         # transcode without regard to invalid p or chars in p
+#
+#
+#
+#     """
+#     def __init__(self, message, alphabet=None):
+#         super().__init__()
+#         self.message = message
+#         self.alphabet = alphabet or default_alphabet
+#
+#     def message(strict=False):
+#         return [e for e in self.message if not strict or e in self.alphabet]

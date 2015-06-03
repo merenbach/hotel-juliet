@@ -17,8 +17,5 @@ class KeywordCipher(MonoSubCipher):
 
     """
     def __init__(self, keyword, alphabet=None):
-        self.keyword = keyword
-        super().__init__(alphabet)
-
-    def _transform(self, alphabet):
-        return keyed(alphabet, self.keyword)
+        transform = lambda a: keyed(a, keyword)
+        super().__init__(transform, alphabet=alphabet)
