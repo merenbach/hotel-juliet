@@ -44,9 +44,6 @@ class TabulaRecta(TwoDimensionalTableau):
             lines.append('{0} | {1}'.format(k, row))
         return '\n'.join(lines)
 
-    # def keystream(self, passphrase):
-    #     return KEYSTREAM_GENERATOR(passphrase, self.alphabet)
-
     def _make_rows(self, alphabet):
         """ Create alphabets.
 

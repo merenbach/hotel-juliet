@@ -8,20 +8,9 @@ from utils import OneDimensionalTableau
 class MonoSubCipher(SubCipher):
     """ Monoalphabetic substitution transcoder.
 
-    Parameters
-    ----------
-    transform : callable
-        A function with one positional parameter to transform an alphabet.
-    alphabet : str, optional
-        A character set to use for transcoding.  Default `None`.
-
     """
-    def __init__(self, transform, alphabet=None):
-        self.transform = transform
-        super().__init__(alphabet)
-
     def _make_tableau(self, alphabet):
-        alphabet_ = self.transform(alphabet)
+        alphabet_ = self._transform(alphabet)
         return OneDimensionalTableau(alphabet, alphabet_)
 
     def _transform(self, alphabet):
