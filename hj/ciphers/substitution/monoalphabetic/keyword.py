@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .base import MonoSubCipher
-from utils import keyed
+from utils import DEFAULT_ALPHABET, keyed
 
 
 class KeywordCipher(MonoSubCipher):
@@ -13,12 +13,9 @@ class KeywordCipher(MonoSubCipher):
     keyword : str
         A keyword for transcoding.
     alphabet : str, optional
-        A character set to use for transcoding.  Default `None`.
+        A character set to use for transcoding.  Default from `utils`.
 
     """
-    def __init__(self, keyword, alphabet=None):
-        self.keyword = keyword
-        super().__init__(alphabet)
-
-    def _transform(self, alphabet):
-        return keyed(alphabet, self.keyword)
+    def __init__(self, keyword, alphabet=DEFAULT_ALPHABET):
+        alphabet_ = keyed(alphabet, keyword)
+        super().__init__(alphabet, alphabet_)

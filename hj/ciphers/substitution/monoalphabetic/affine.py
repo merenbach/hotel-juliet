@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .base import MonoSubCipher
-from utils import affined
+from utils import DEFAULT_ALPHABET, affined
 
 
 class AffineCipher(MonoSubCipher):
@@ -16,7 +16,7 @@ class AffineCipher(MonoSubCipher):
     offset : int
         An offset.
     alphabet : str, optional
-        A character set to use for transcoding.  Default `None`.
+        A character set to use for transcoding.  Default from `utils`.
 
     Notes
     -----
@@ -33,9 +33,6 @@ class AffineCipher(MonoSubCipher):
     solution that, when computed, reveals the whole ciphertext alphabet.
 
     """
-    def __init__(self, multiplier, offset, alphabet=None):
-        self.multiplier, self.offset = multiplier, offset
-        super().__init__(alphabet)
-
-    def _transform(self, alphabet):
-        return affined(alphabet, self.multiplier, self.offset)
+    def __init__(self, multiplier, offset, alphabet=DEFAULT_ALPHABET):
+        alphabet_ = affined(alphabet, multiplier, offset)
+        super().__init__(alphabet, alphabet_)

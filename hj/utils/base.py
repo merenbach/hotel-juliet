@@ -4,7 +4,6 @@
 from collections import OrderedDict
 from fractions import gcd
 from itertools import zip_longest, cycle, islice
-from string import ascii_uppercase as default_alphabet  # noqa
 
 
 def clever_cast(t, s):

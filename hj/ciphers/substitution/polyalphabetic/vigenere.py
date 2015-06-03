@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .base import PolySubCipher
-from utils import TabulaRecta
+from utils import DEFAULT_ALPHABET, TabulaRecta
 
 
 class VigenereCipher(PolySubCipher):
@@ -49,6 +49,7 @@ class VigenereCipher(PolySubCipher):
         self.key_autoclave = key_autoclave
         self.passphrase = passphrase
         super().__init__(alphabet)
+        self.tableau = self._make_tableau(alphabet or DEFAULT_ALPHABET)
 
     def _make_tableau(self, alphabet):
         """ Create a tabula recta for transcoding.

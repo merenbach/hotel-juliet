@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .base import MonoSubCipher
-from utils import lrotated
+from utils import DEFAULT_ALPHABET, lrotated
 
 
 class CaesarCipher(MonoSubCipher):
@@ -24,9 +24,6 @@ class CaesarCipher(MonoSubCipher):
     """
     DEFAULT_OFFSET = 3
 
-    def __init__(self, offset=DEFAULT_OFFSET, alphabet=None):
-        self.offset = offset
-        super().__init__(alphabet)
-
-    def _transform(self, alphabet):
-        return lrotated(alphabet, self.offset)
+    def __init__(self, offset=DEFAULT_OFFSET, alphabet=DEFAULT_ALPHABET):
+        alphabet_ = lrotated(alphabet, offset)
+        super().__init__(alphabet, alphabet_)

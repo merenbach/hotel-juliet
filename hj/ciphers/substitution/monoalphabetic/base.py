@@ -8,10 +8,17 @@ from utils import OneDimensionalTableau
 class MonoSubCipher(SubCipher):
     """ Monoalphabetic substitution transcoder.
 
+    Parameters
+    ----------
+    alphabet : str
+        A source character set to use for transcoding.
+    alphabet_ : str
+        A destination character set to use for transcoding.
+
     """
-    def _make_tableau(self, alphabet):
-        alphabet_ = self._transform(alphabet)
-        return OneDimensionalTableau(alphabet, alphabet_)
+    def __init__(self, alphabet, alphabet_):
+        super().__init__(alphabet)
+        self.tableau = OneDimensionalTableau(alphabet, alphabet_)
 
     def _transform(self, alphabet):
         """ Transform a character set for transcoding.

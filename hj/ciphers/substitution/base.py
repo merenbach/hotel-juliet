@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .. import Cipher
-from utils import unique, default_alphabet
+from utils import unique, DEFAULT_ALPHABET
 # from utils.base import grouper
 # [TODO] still need to implement grouping/blocks
 
@@ -32,8 +32,7 @@ class SubCipher(Cipher):
 
     def __init__(self, alphabet, nullchar=DEFAULT_NULLCHAR):
         super().__init__()
-        alphabet = unique(alphabet or default_alphabet)
-        self.tableau = self._make_tableau(alphabet)
+        alphabet = unique(alphabet or DEFAULT_ALPHABET)
         self.nullchar = nullchar
 
     def _make_tableau(self, alphabet):
