@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .vigenere import VigenereCipher
-from utils import GronsfeldTabulaRecta
+from utils import DEFAULT_ALPHABET, GronsfeldTabulaRecta
 
 
 class GronsfeldCipher(VigenereCipher):
@@ -24,5 +24,5 @@ class GronsfeldCipher(VigenereCipher):
     """
     TABULA_RECTA = GronsfeldTabulaRecta
 
-    def __init__(self, passphrase, alphabet=None):
+    def __init__(self, passphrase, alphabet=DEFAULT_ALPHABET):
         super().__init__(passphrase, alphabet=alphabet)

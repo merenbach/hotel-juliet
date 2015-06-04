@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .vigenere import VigenereCipher
-from utils import DellaPortaTabulaRecta
+from utils import DEFAULT_ALPHABET, DellaPortaTabulaRecta
 
 
 class DellaPortaCipher(VigenereCipher):
@@ -28,5 +28,5 @@ class DellaPortaCipher(VigenereCipher):
     """
     TABULA_RECTA = DellaPortaTabulaRecta
 
-    def __init__(self, passphrase, alphabet=None):
+    def __init__(self, passphrase, alphabet=DEFAULT_ALPHABET):
         super().__init__(passphrase, alphabet=alphabet)

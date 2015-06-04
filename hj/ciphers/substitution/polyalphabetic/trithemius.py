@@ -21,5 +21,5 @@ class TrithemiusCipher(VigenereCipher):
     specification, where the passphrase is fixed to the alphabet.
 
     """
-    def __init__(self, alphabet=None):
+    def __init__(self, alphabet=DEFAULT_ALPHABET):
         super().__init__(alphabet or DEFAULT_ALPHABET, alphabet=alphabet)

@@ -35,7 +35,7 @@ class VigenereCipher(PolySubCipher):
     """
     TABULA_RECTA = TabulaRecta
 
-    def __init__(self, passphrase, alphabet=None,
+    def __init__(self, passphrase, alphabet=DEFAULT_ALPHABET,
                  text_autoclave=False, key_autoclave=False):
         if text_autoclave and key_autoclave:
             raise ValueError('Only one of text or key autoclave may be set')

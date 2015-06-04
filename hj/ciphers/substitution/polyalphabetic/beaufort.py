@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .vigenere import VigenereCipher
-from utils import BeaufortTabulaRecta
+from utils import DEFAULT_ALPHABET, BeaufortTabulaRecta
 
 
 class BeaufortCipher(VigenereCipher):
@@ -31,5 +31,5 @@ class BeaufortCipher(VigenereCipher):
     """
     TABULA_RECTA = BeaufortTabulaRecta
 
-    def __init__(self, passphrase, alphabet=None):
+    def __init__(self, passphrase, alphabet=DEFAULT_ALPHABET):
         super().__init__(passphrase, alphabet=alphabet)
