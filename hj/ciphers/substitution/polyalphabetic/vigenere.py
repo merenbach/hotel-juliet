@@ -4,9 +4,14 @@
 from .base import PolySubCipher
 from utils import DEFAULT_ALPHABET, TabulaRecta
 
+# [TODO] still need to add keyed alphabets per Vigenere
+
 
 class VigenereCipher(PolySubCipher):
     """ THE Vigenere cipher, conceptual foundation of several other ciphers.
+
+    Despite its name, it was not created by Blaise de Vigenère, who instead
+    created an autokey cipher.
 
     Parameters
     ----------
@@ -31,22 +36,20 @@ class VigenereCipher(PolySubCipher):
     Notes
     -----
     Autoclave only makes sense for ciphers where the passphrase is shorter than
+    the actual cipher text.
 
     """
     TABULA_RECTA = TabulaRecta
 
-    def __init__(self, passphrase, alphabet=DEFAULT_ALPHABET,
-                 text_autoclave=False, key_autoclave=False):
-        if text_autoclave and key_autoclave:
-            raise ValueError('Only one of text or key autoclave may be set')
+    def __init__(self, passphrase, alphabet=DEFAULT_ALPHABET):
         if not passphrase:
             raise ValueError('A passphrase is required')
         # try:
         #     iter(passphrase):
         # except TypeError:
         #     raise TypeError('Passphrase must be iterable')
-        self.text_autoclave = text_autoclave
-        self.key_autoclave = key_autoclave
+        self.text_autoclave = False  # [TODO] remove need for this
+        self.key_autoclave = False  # [TODO] remove need for this
         self.passphrase = passphrase
         super().__init__(alphabet)
         self.tableau = self._make_tableau(alphabet or DEFAULT_ALPHABET)
@@ -76,18 +79,12 @@ class VigenereCipher(PolySubCipher):
     def _encode(self, s, strict):
         """ [TODO] kludgy shim for now to support `reverse` arg.
         """
-        passphrase = self.passphrase
-        if self.text_autoclave:
-            passphrase += s
-        return self._transcode(s, strict, passphrase, False)
+        return self._transcode(s, strict, self.passphrase, False)
 
     def _decode(self, s, strict):
         """ [TODO] kludgy shim for now to support `reverse` arg.
         """
-        passphrase = self.passphrase
-        if self.key_autoclave:
-            passphrase += s
-        return self._transcode(s, strict, passphrase, True)
+        return self._transcode(s, strict, self.passphrase, True)
 
     # def _transcode_char(self, passphrase, cipher_func, strict):
     #     """ Transcode a character.
@@ -217,3 +214,45 @@ class VigenereCipher(PolySubCipher):
             elif not strict:
                 output.extend(msg_char)
         return output
+
+
+class VigenereTextAutoclaveCipher(VigenereCipher):
+    """ An oft-overlooked autokey cipher invented by Blaise de Vigenère.
+
+    Notes
+    -----
+    In this autokey cipher, the plaintext is appended to the passphrase.
+    In Vigenère's original method, a single letter was used as a "primer,"
+    essentially a one-character passphrase, with the intent of encrypting
+    the message with itself (minus the last message character, of course).
+
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.text_autoclave = True  # [TODO] eliminate need for this
+
+    def _encode(self, s, strict):
+        """ [TODO] kludgy shim for now to support `reverse` arg.
+        """
+        return self._transcode(s, strict, self.passphrase + s, False)
+
+
+class VigenereKeyAutoclaveCipher(VigenereCipher):
+    """ An oft-overlooked autokey cipher invented by Blaise de Vigenère.
+
+    Notes
+    -----
+    In this autokey cipher, the ciphertext is appended to the passphrase.
+    In Vigenère's original method, a single letter was used as a "primer,"
+    essentially a one-character passphrase, with the intent of encrypting
+    the message with itself (minus the last message character, of course).
+
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.key_autoclave = True  # [TODO] eliminate need for this
+
+    def _decode(self, s, strict):
+        """ [TODO] kludgy shim for now to support `reverse` arg.
+        """
+        return self._transcode(s, strict, self.passphrase + s, True)

@@ -8,6 +8,13 @@ from utils import DEFAULT_ALPHABET
 class AtbashCipher(AffineCipher):
     """ Transcode based on reverse alphabet.
 
+    Attributes
+    ----------
+    DEFAULT_M : int
+        The multiplier for the affine cipher.
+    DEFAULT_B : int
+        The offset for the affine cipher.
+
     Parameters
     ----------
     alphabet : str, optional
@@ -21,6 +28,13 @@ class AtbashCipher(AffineCipher):
     multiplier yield the same outcome, without even needing to know the length
     of the alphabet.
 
+    Technically we could simply subclass a generic monoalphabetic substitution
+    cipher and invoke `super().__init__(alphabet, reversed(alphabet))`.  That's
+    less fun.  [TODO]?
+
     """
+    DEFAULT_M = (-1)
+    DEFAULT_B = (-1)
+
     def __init__(self, alphabet=DEFAULT_ALPHABET):
-        super().__init__(-1, -1, alphabet=alphabet)
+        super().__init__(self.DEFAULT_M, self.DEFAULT_B, alphabet=alphabet)

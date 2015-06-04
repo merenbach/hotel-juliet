@@ -95,38 +95,38 @@ class CipherTest(unittest.TestCase):
         self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, '', strict=True)
 
     def test_vigenere_text_autoclave(self):
-        c = VigenereCipher(self.PASSPHRASE[:5], text_autoclave=True)
+        c = VigenereTextAutoclaveCipher(self.PASSPHRASE[:5])
         self._transcode(c, self.MESSAGE_PLAIN, None, 'VGPLB, DSCWR!', strict=False)
         self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'VGPLBDSCWR', strict=True)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'TCHLB, DMKAC!', strict=False)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'TCHLBDMKAC', strict=True)
 
-        c = VigenereCipher('9OC33EarqAN!', text_autoclave=True)
+        c = VigenereTextAutoclaveCipher('9OC33EarqAN!')
         self._transcode(c, self.MESSAGE_PLAIN, None, 'VGPLB, DSCWR!', strict=False)
         self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'VGPLBDSCWR', strict=True)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'TCHLB, DMKAC!', strict=False)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'TCHLBDMKAC', strict=True)
 
-        c = VigenereCipher('b4dk3y', text_autoclave=True)
+        c = VigenereTextAutoclaveCipher('b4dk3y')
         self._transcode(c, self.MESSAGE_PLAIN, None, '', strict=False)
         self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, '', strict=True)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, None, '', strict=False)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, '', strict=True)
 
     def test_vigenere_key_autoclave(self):
-        c = VigenereCipher(self.PASSPHRASE[:5], key_autoclave=True)
+        c = VigenereKeyAutoclaveCipher(self.PASSPHRASE[:5])
         self._transcode(c, self.MESSAGE_PLAIN, None, 'VGPLB, RUGWE!', strict=False)
         self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'VGPLBRUGWE', strict=True)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'TCHLB, PKGAP!', strict=False)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'TCHLBPKGAP', strict=True)
 
-        c = VigenereCipher('9OC33EarqAN!', key_autoclave=True)
+        c = VigenereKeyAutoclaveCipher('9OC33EarqAN!')
         self._transcode(c, self.MESSAGE_PLAIN, None, 'VGPLB, RUGWE!', strict=False)
         self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'VGPLBRUGWE', strict=True)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'TCHLB, PKGAP!', strict=False)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'TCHLBPKGAP', strict=True)
 
-        c = VigenereCipher('b4dk3y', key_autoclave=True)
+        c = VigenereKeyAutoclaveCipher('b4dk3y')
         self._transcode(c, self.MESSAGE_PLAIN, None, '', strict=False)
         self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, '', strict=True)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, None, '', strict=False)
