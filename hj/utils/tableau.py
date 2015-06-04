@@ -16,6 +16,8 @@ class BaseTableau:
     -----
     The alphabet need not be string-based.
 
+    [TODO] turn into UserList subclass?
+
     """
     def __init__(self, alphabet):
         self.alphabet = alphabet
@@ -25,6 +27,30 @@ class BaseTableau:
 
     def __str__(self):
         return str(self.alphabet)
+
+    def contains(self, element):
+        """ Does this tableau contain a given character?
+
+        Parameters
+        ----------
+        element : data-type
+            Check this tableau for this character.
+
+        Returns
+        -------
+        out : bool
+            `True` if the element exists in this tableau, `False` otherwise.
+
+        Notes
+        -----
+        This equates with "can transcode": provided this returns `True`,
+        this tableau should be able to transcode the given character.
+
+        Some subclasses (e.g., key-based tableaux like the tabula recta)
+        may impose additional restrictions.
+
+        """
+        return element in self.alphabet
 
 
 class Tableau(BaseTableau):
