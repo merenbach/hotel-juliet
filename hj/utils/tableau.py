@@ -66,14 +66,14 @@ class Tableau(BaseTableau):
         alphabet = unique(alphabet)
         super().__init__(alphabet)
 
-    def encode(self, s, strict=False):
+    def encode(self, s, strict):
         """ Transcode forwards.
 
         Parameters
         ----------
         s : sequence
             A sequence to transcode.
-        strict : bool, optional
+        strict : bool
             `False` to return non-transcodable elements unchanged,
             `True` to replace with `None`.  Default `False`.
 
@@ -90,14 +90,14 @@ class Tableau(BaseTableau):
         """
         raise NotImplementedError
 
-    def decode(self, s, strict=False):
+    def decode(self, s, strict):
         """ Transcode backwards.
 
         Parameters
         ----------
         s : sequence
             A sequence to transcode.
-        strict : bool, optional
+        strict : bool
             `False` to return non-transcodable elements unchanged,
             `True` to replace with `None`.  Default `False`.
 
@@ -144,49 +144,51 @@ class OneDimensionalTableau(Tableau):
     def __str__(self):
         return 'PT: {}\nCT: {}'.format(self.alphabet, self.alphabet_)
 
-    def _transcode(self, s, xtable, lenient):
-        out = (xtable.get(c, lenient and c) for c in s)
-        return [c for c in out if c]
-
-    def encode(self, s, strict=False):
+    def encode(self, element, strict):
         """ Transcode forwards.
 
         Parameters
         ----------
-        s : sequence
-            A sequence to transcode.
-        strict : bool, optional
+        element : hashable data-type
+            An element to transcode.
+        strict : bool
             `False` to return non-transcodable elements unchanged,
             `True` to replace with `None`.  Default `False`.
 
         Returns
         -------
-        out : sequence
-            A transcoded copy of the given sequence `s`.
+        out : data-type
+            A transcoded copy (if possible) of the given element `e`.
 
         """
-        return self._transcode(s, self.a2b, not strict)
+        default = None
+        if not strict:
+            default = element
+        return self.a2b.get(element, default)
         # return map(self.a2b.get, s, s)
         # return s.translate(self.a2b)
 
-    def decode(self, s, strict=False):
+    def decode(self, element, strict):
         """ Transcode backwards.
 
         Parameters
         ----------
-        s : sequence
-            A sequence to transcode.
-        strict : bool, optional
+        element : hashable data-type
+            An element to transcode.
+        strict : bool
             `False` to return non-transcodable elements unchanged,
             `True` to replace with `None`.  Default `False`.
 
         Returns
         -------
-        out : sequence
-            A transcoded copy of the given sequence `s`.
+        out : data-type
+            A transcoded copy (if possible) of the given element `e`.
 
         """
-        return self._transcode(s, self.b2a, not strict)
+        default = None
+        if not strict:
+            default = element
+        return self.b2a.get(element, default)
         # return map(self.b2a.get, s, s)
         # return s.translate(self.b2a)
 
@@ -202,11 +204,9 @@ class TwoDimensionalTableau(OneDimensionalTableau):
         Rows for the tableau.
 
     """
-    # def __init__(self, alphabet, tableaux):
-    #     from string import ascii_uppercase
-    #     from utils import lrotated
-    #     t = [OneDimensionalTableau(alphabet, lrotated(ascii_uppercase, n)) for n in range(26)]
-    #     super().__init__(alphabet, t)
+    # def __init__(self, alphabet, alphabets_):
+    #     alphabet_ = [OneDimensionalTableau(alphabet, a_) for a_ in alphabets_] # noqa
+    #     super().__init__(alphabet, alphabet_)
     #
     # #     alphabets = self._make_rows(alphabet)
     # #     transcoders_list = [Transcoder(alphabet, ab_) for ab_ in alphabets]
@@ -217,18 +217,18 @@ class TwoDimensionalTableau(OneDimensionalTableau):
     # #     # self.a2b = str.maketrans(alphabet, alphabet_)
     # #     # self.b2a = str.maketrans(alphabet_, alphabet)
 
-    def encode(self, s, key, strict=False):
+    def encode(self, element, key, strict):
         """ Locate element within the grid.
 
         Parameters
         ----------
-        s : str
-            A string to transcode.
+        element : str
+            An element to transcode.
             Essentially a row header character on the left edge of the tableau.
         key : str
             The dictionary key of a transcoder.
             Essentially a row header character on the left edge of the tableau.
-        strict : bool, optional
+        strict : bool
             `False` to return non-transcodable elements unchanged,
             `True` to replace with `None`.  Default `False`.
 
@@ -244,20 +244,20 @@ class TwoDimensionalTableau(OneDimensionalTableau):
 
         """
         transcoder = self.data[key]
-        return transcoder.encode(s, strict=strict)
+        return transcoder.encode(element, strict)
 
-    def decode(self, s, key, strict=False):
+    def decode(self, element, key, strict):
         """ Locate element within the grid.
 
         Parameters
         ----------
-        s : str
-            A string to transcode.
+        element : str
+            An element to transcode.
             Essentially a row header character on the left edge of the tableau.
         key : str
             The dictionary key of a transcoder.
             Essentially a row header character on the left edge of the tableau.
-        strict : bool, optional
+        strict : bool
             `False` to return non-transcodable elements unchanged,
             `True` to replace with `None`.  Default `False`.
 
@@ -273,4 +273,4 @@ class TwoDimensionalTableau(OneDimensionalTableau):
 
         """
         transcoder = self.data[key]
-        return transcoder.decode(s, strict=strict)
+        return transcoder.decode(element, strict)

@@ -22,6 +22,8 @@ class VigenereCipher(PolySubCipher):
 
     """
     TABULA_RECTA = TabulaRecta
+    ENCODE_AUTOCLAVE = lambda self, plaintext, ciphertext: None
+    DECODE_AUTOCLAVE = lambda self, plaintext, ciphertext: None
 
     def __init__(self, passphrase, alphabet=DEFAULT_ALPHABET):
         if not passphrase:
@@ -59,12 +61,14 @@ class VigenereCipher(PolySubCipher):
     def _encode(self, s, strict):
         """ [TODO] kludgy shim for now to support `reverse` arg.
         """
-        return self._transcode(s, strict, self.tableau.encode, False)
+        return list(self._transcode(s, strict, self.tableau.encode,
+                    self.ENCODE_AUTOCLAVE))
 
     def _decode(self, s, strict):
         """ [TODO] kludgy shim for now to support `reverse` arg.
         """
-        return self._transcode(s, strict, self.tableau.decode, True)
+        return list(self._transcode(s, strict, self.tableau.decode,
+                    self.DECODE_AUTOCLAVE))
 
     def _cipher_keystream(self, cipher_func):
         """ Transcode a character.
@@ -102,7 +106,7 @@ class VigenereCipher(PolySubCipher):
                     # append to the keystream either a new character
                     # (in case of autoclave) or the current key character
                     # (in the case of normal transcoding)
-                    key.extend(food or k)  # [TODO] should be append
+                    key.append(food or k)
                     character = yield
     #         # # if we instead want to provide the used key char...
     #         # character = yield key_char
@@ -116,7 +120,7 @@ class VigenereCipher(PolySubCipher):
     #         # ## of cycling key) unless the current key character
     #         # ## was in the list of keys for the tableau
 
-    def _transcode(self, message, strict, cipher_func, reverse):
+    def _transcode(self, message, strict, cipher_func, keystream_extender):
         """ Transcode a message.
 
 
@@ -127,14 +131,14 @@ class VigenereCipher(PolySubCipher):
         reverse : bool
             `False` if we're encoding, `True` if we're decoding.
 
-        Returns
-        -------
-        out : list
-            The transcoded text.
+        Yields
+        ------
+        out : data-type
+            A transcoded character, if possible.  If not possible and `strict`
+            is `False`, the non-transcoded character will be returned.  If not
+            possible and `strict` is `True`, `None` will be returned instead.
 
         """
-        output = []
-
         # tcoder = self._transcode_char(passphrase, cipher_func, strict)
         # prime the generator
         # tcoder.send(None)
@@ -143,24 +147,17 @@ class VigenereCipher(PolySubCipher):
 
         transcoder.send(None)  # prime the keystream
         valid_char = self.tableau.contains
-        try:
-            for character in message:
-                # [NOTE] this is basically always true if `strict` is on
-                # returns None if key char not found in rows
-                # advance to next usable key char
-                tchar = valid_char(character) and transcoder.send(character)
-                if tchar:
-                    _key_extension = self._extend_keystream(character,
-                                                            tchar,
-                                                            reverse)
-                    transcoder.send(_key_extension)  # [TODO] better?
-                    output.extend(tchar)
-                elif not strict:
-                    output.extend(character)
-
-        except StopIteration:
-            pass
-        return output
+        for character in message:
+            # [NOTE] this is basically always true if `strict` is on
+            # returns None if key char not found in rows
+            # advance to next usable key char
+            tchar = valid_char(character) and transcoder.send(character)
+            if tchar:
+                _key_extension = keystream_extender(character, tchar)
+                transcoder.send(_key_extension)  # [TODO] better?
+                yield tchar
+            elif not strict:
+                yield character
 
     def _extend_keystream(self, plaintext, ciphertext, reverse):
         return None
@@ -180,8 +177,8 @@ class VigenereTextAutoclaveCipher(VigenereCipher):
     effect at all) unless the key is shorter than the text to be encrypted.
 
     """
-    def _extend_keystream(self, plaintext, ciphertext, reverse):
-        return reverse and ciphertext or plaintext
+    ENCODE_AUTOCLAVE = lambda self, plaintext, ciphertext: plaintext
+    DECODE_AUTOCLAVE = lambda self, plaintext, ciphertext: ciphertext
 
 
 class VigenereKeyAutoclaveCipher(VigenereCipher):
@@ -198,5 +195,5 @@ class VigenereKeyAutoclaveCipher(VigenereCipher):
     effect at all) unless the key is shorter than the text to be encrypted.
 
     """
-    def _extend_keystream(self, plaintext, ciphertext, reverse):
-        return reverse and plaintext or ciphertext
+    ENCODE_AUTOCLAVE = lambda self, plaintext, ciphertext: ciphertext
+    DECODE_AUTOCLAVE = lambda self, plaintext, ciphertext: plaintext
