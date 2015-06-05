@@ -59,12 +59,12 @@ class VigenereCipher(PolySubCipher):
     def _encode(self, s, strict):
         """ [TODO] kludgy shim for now to support `reverse` arg.
         """
-        return self._transcode(s, strict, self.passphrase, False)
+        return self._transcode(s, strict, self.tableau.encode, False)
 
     def _decode(self, s, strict):
         """ [TODO] kludgy shim for now to support `reverse` arg.
         """
-        return self._transcode(s, strict, self.passphrase, True)
+        return self._transcode(s, strict, self.tableau.decode, True)
 
     def _cipher_keystream(self, cipher_func):
         """ Transcode a character.
@@ -91,18 +91,18 @@ class VigenereCipher(PolySubCipher):
         """
         key = list(self.passphrase)
         character = yield
-        for key_char in key:
+        for k in key:
             try:
-                transcode_char = cipher_func(character, key_char, True)
+                transcode_char = cipher_func(character, k, strict=True)
             except KeyError:
                 pass
             else:
                 if transcode_char:  # character was transcodable!
-                    new_kchar = yield transcode_char
+                    food = yield transcode_char
                     # append to the keystream either a new character
                     # (in case of autoclave) or the current key character
                     # (in the case of normal transcoding)
-                    key.extend(new_kchar or key_char)  # [TODO] should be append
+                    key.extend(food or k)  # [TODO] should be append
                     character = yield
     #         # # if we instead want to provide the used key char...
     #         # character = yield key_char
@@ -116,7 +116,7 @@ class VigenereCipher(PolySubCipher):
     #         # ## of cycling key) unless the current key character
     #         # ## was in the list of keys for the tableau
 
-    def _transcode(self, message, strict, passphrase, reverse):
+    def _transcode(self, message, strict, cipher_func, reverse):
         """ Transcode a message.
 
 
@@ -135,35 +135,27 @@ class VigenereCipher(PolySubCipher):
         """
         output = []
 
-        cipher_func = self.tableau.decode if reverse else self.tableau.encode
-
         # tcoder = self._transcode_char(passphrase, cipher_func, strict)
         # prime the generator
         # tcoder.send(None)
 
+        transcoder = self._cipher_keystream(cipher_func)
 
-        keystream = self._cipher_keystream(cipher_func)
-
-        next(keystream)  # prime the keystream
+        transcoder.send(None)  # prime the keystream
+        valid_char = self.tableau.contains
         try:
             for character in message:
                 # [NOTE] this is basically always true if `strict` is on
                 # returns None if key char not found in rows
                 # advance to next usable key char
-                if self.tableau.contains(character):  # [TODO] if character in self.tableau
-                    tchar = keystream.send(character)
-                    if tchar:
-                        _key_extension = self._extend_keystream(character,
-                                                                tchar,
-                                                                reverse)
-                        keystream.send(_key_extension)  # [TODO] better?
-                        character = tchar
-                    # elif not strict:
-                    #     output.extend(character)
-                elif strict:
-                    character = None
-
-                if character:
+                tchar = valid_char(character) and transcoder.send(character)
+                if tchar:
+                    _key_extension = self._extend_keystream(character,
+                                                            tchar,
+                                                            reverse)
+                    transcoder.send(_key_extension)  # [TODO] better?
+                    output.extend(tchar)
+                elif not strict:
                     output.extend(character)
 
         except StopIteration:
