@@ -334,3 +334,25 @@ def roundrobin(*iterables):
 #         #         food = yield element
 #         #     seq.append(food)
 #         # seq.append(food or n)    # add integers, but not multichar strs
+
+def iterappendable(seed):
+    """ Generator whose core may be appended to.
+
+    Parameters
+    ----------
+    seed : iterable
+        An initial iterable.
+
+    Yields
+    -------
+    out : data-type
+        Next element of `seed`.
+    in : data-type
+        An element to append to `seed`.
+
+    """
+    seed = list(seed)
+    for s in seed:
+        food = yield s
+        if food is not None:
+            seed.append(food)

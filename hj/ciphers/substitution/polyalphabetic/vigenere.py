@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .base import PolySubCipher
-from utils import DEFAULT_ALPHABET, TabulaRecta
+from utils import DEFAULT_ALPHABET, TabulaRecta, iterappendable
 
 # [TODO] still need to add keyed alphabets per Vigenere
 
@@ -93,25 +93,28 @@ class VigenereCipher(PolySubCipher):
             the current keystream character.
 
         """
-        key = list(self.passphrase)
-        character = yield
-        for k in key:
-            transcode_char = None
-            while transcode_char is None:
+        keystream = iterappendable(self.passphrase)
+        food = msg_char = None
+        while True:
+            key_char = keystream.send(food)  # may raise StopIteration
+            food = x_msg_char = None
+            while x_msg_char is None:
                 try:
-                    transcode_char = cipher_func(character, k, True)
+                    x_msg_char = cipher_func(msg_char, key_char, True)
                 except KeyError:
+                    # invalid key char so advance
                     break
                 else:
-                    food = yield transcode_char
                     # [TODO] this conditional may be unnecessary
-                    if transcode_char:  # character was transcodable!
+                    if x_msg_char:  # character was transcodable!
+                        food = yield x_msg_char
                         # append to the keystream either a new character
                         # (in case of autoclave) or the current key character
                         # (in the case of normal transcoding)
+
                         # [TODO] may not need to be within conditional
-                        key.append(food or k)
-                    character = yield  # could also `yield k` to yield keychar
+                        food = food or key_char
+                    msg_char = yield  # could also `yield k` to yield keychar
 
     def _transcode(self, message, strict, cipher_func, keystream_extender):
         """ Transcode a message.

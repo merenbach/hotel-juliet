@@ -3,6 +3,7 @@
 
 import unittest
 from ciphers import *
+from utils import *
 
 # class AlphabetTest(unittest.TestCase):
 #     def test_rotate(self):
@@ -10,6 +11,27 @@ from ciphers import *
 #         for i in range(0, len(ab)):
 #             rot_left = ab.rotated(i)
 #             rot_right = ab.rotated(-i)
+
+
+class UtilsTest(unittest.TestCase):
+
+    PASSPHRASE = 'OCEANOGRAPHYWHAT'
+
+    def testIterAppendable(self):
+        iterator = iterappendable('')
+        self.assertEqual(''.join(iterator), '')
+
+        iterator = iterappendable(self.PASSPHRASE)
+        self.assertEqual(''.join(iterator), self.PASSPHRASE)
+
+        out = []
+        iterator = iterappendable(self.PASSPHRASE[0:2])
+        out.append(next(iterator))
+        out.append(iterator.send(self.PASSPHRASE[2]))
+        out.append(next(iterator))
+        out.append(iterator.send(self.PASSPHRASE))
+
+        self.assertEqual(out, ['O', 'C', 'E', self.PASSPHRASE])
 
 
 class CipherTest(unittest.TestCase):
@@ -93,6 +115,9 @@ class CipherTest(unittest.TestCase):
         self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, '', strict=True)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, None, '', strict=False)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, '', strict=True)
+
+        with self.assertRaises(ValueError):
+            VigenereCipher('')
 
     def test_vigenere_text_autoclave(self):
         c = VigenereTextAutoclaveCipher(self.PASSPHRASE[:5])
