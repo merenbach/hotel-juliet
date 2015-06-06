@@ -43,6 +43,7 @@ Handle translation in subclasses for cipher, then pass alphabet_ to super() inst
 autotranslate to upper case?
 - use dict of individual dicts instead of str.maketrans (which also makes dicts)? seems less efficient
     {'a': {'a':'q', 'b':'r'...
+  - test whether keys/alphas actually have to be strings
 
 
 ## Notes

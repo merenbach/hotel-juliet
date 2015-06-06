@@ -10,19 +10,19 @@ class GronsfeldCipher(VigenereCipher):
 
     Parameters
     ----------
-    passphrase : str
+    countersign : str
         An encryption/decryption key.
     alphabet : str, optional
         A character set to use for transcoding.  Default `None`.
 
     Notes
     -----
-    Since the passphrase is numeric, autoclave makes less sense here.
+    Since the countersign is numeric, autoclave makes less sense here.
     Technically, it can be made totally symmetric if a Beaufort tabula recta
     is used instead.
 
     """
     TABULA_RECTA = GronsfeldTabulaRecta
 
-    def __init__(self, passphrase, alphabet=DEFAULT_ALPHABET):
-        super().__init__(passphrase, alphabet=alphabet)
+    def __init__(self, countersign, alphabet=DEFAULT_ALPHABET):
+        super().__init__(countersign, alphabet=alphabet)

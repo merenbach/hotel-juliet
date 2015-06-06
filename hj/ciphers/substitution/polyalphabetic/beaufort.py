@@ -10,7 +10,7 @@ class BeaufortCipher(VigenereCipher):
 
     Parameters
     ----------
-    passphrase : str
+    countersign : str
         An encryption/decryption key.
     alphabet : str, optional
         A character set to use for transcoding.  Default `None`.
@@ -31,5 +31,5 @@ class BeaufortCipher(VigenereCipher):
     """
     TABULA_RECTA = BeaufortTabulaRecta
 
-    def __init__(self, passphrase, alphabet=DEFAULT_ALPHABET):
-        super().__init__(passphrase, alphabet=alphabet)
+    def __init__(self, countersign, alphabet=DEFAULT_ALPHABET):
+        super().__init__(countersign, alphabet=alphabet)

@@ -15,7 +15,7 @@ class VigenereCipher(PolySubCipher):
 
     Parameters
     ----------
-    passphrase : str
+    countersign : str
         An encryption/decryption key.
     alphabet : str
         A character set to use for transcoding.  Default `None`.
@@ -25,14 +25,14 @@ class VigenereCipher(PolySubCipher):
     ENCODE_AUTOCLAVE = lambda self, plaintext, ciphertext: None
     DECODE_AUTOCLAVE = lambda self, plaintext, ciphertext: None
 
-    def __init__(self, passphrase, alphabet=DEFAULT_ALPHABET):
-        if not passphrase:
-            raise ValueError('A passphrase is required')
+    def __init__(self, countersign, alphabet=DEFAULT_ALPHABET):
+        if not countersign:
+            raise ValueError('A countersign is required')
         # try:
-        #     iter(passphrase):
+        #     iter(countersign):
         # except TypeError:
-        #     raise TypeError('Passphrase must be iterable')
-        self.passphrase = passphrase
+        #     raise TypeError('countersign must be iterable')
+        self.countersign = countersign
         super().__init__(alphabet)
         self.tableau = self._make_tableau(alphabet or DEFAULT_ALPHABET)
 
@@ -70,13 +70,13 @@ class VigenereCipher(PolySubCipher):
         return self._transcode(s, strict, self.tableau.decode,
                                self.DECODE_AUTOCLAVE)
 
-    def _cipher_keystream(self, cipher_func):
+    def _cipher_keystream(self, cipher_func, strict):
         """ Transcode a character.
 
         Parameters
         ----------
-        passphrase : str
-            A passphrase to use for transcoding.
+        countersign : str
+            A countersign to use for transcoding.
         cipher_func : function
             A function (encode or decode) to use.
 
@@ -93,28 +93,22 @@ class VigenereCipher(PolySubCipher):
             the current keystream character.
 
         """
-        keystream = iterappendable(self.passphrase)
-        food = msg_char = None
+        keystream = iterappendable(self.countersign)
+        food = key_char = msg_char = None
         while True:
-            key_char = keystream.send(food)  # may raise StopIteration
-            food = x_msg_char = None
+            # may raise StopIteration
+            key_char = keystream.send(food or key_char)
+            x_msg_char = None
             while x_msg_char is None:
                 try:
                     x_msg_char = cipher_func(msg_char, key_char, True)
                 except KeyError:
-                    # invalid key char so advance
+                    key_char = food = None  # invalid key char so advance
                     break
                 else:
-                    # [TODO] this conditional may be unnecessary
-                    if x_msg_char:  # character was transcodable!
-                        food = yield x_msg_char
-                        # append to the keystream either a new character
-                        # (in case of autoclave) or the current key character
-                        # (in the case of normal transcoding)
-
-                        # [TODO] may not need to be within conditional
-                        food = food or key_char
-                    msg_char = yield  # could also `yield k` to yield keychar
+                    fallback = None if strict else msg_char
+                    food = yield x_msg_char or fallback
+                    msg_char = yield
 
     def _transcode(self, message, strict, cipher_func, keystream_extender):
         """ Transcode a message.
@@ -123,8 +117,6 @@ class VigenereCipher(PolySubCipher):
         ----------
         message : str
             A message to transcode.
-        reverse : bool
-            `False` if we're encoding, `True` if we're decoding.
 
         Yields
         ------
@@ -134,28 +126,30 @@ class VigenereCipher(PolySubCipher):
             possible and `strict` is `True`, `None` will be returned instead.
 
         """
-        transcoder = self._cipher_keystream(cipher_func)
+        transcoder = self._cipher_keystream(cipher_func, strict)
 
-        transcoder.send(None)  # prime the keystream
+        _key_extension = None
+        transcoder.send(None)
         for character in message:
-            tchar = transcoder.send(character)
-            if tchar:
-                _key_extension = keystream_extender(character, tchar)
-                transcoder.send(_key_extension)  # [TODO] better?
-                yield tchar
-            elif not strict:
-                yield character
+            transcoder.send(_key_extension)  # [TODO] better?
+
+            x_character = transcoder.send(character)
+            yield x_character
+            # keystream_extender = yield x_character
+
+            _key_extension = keystream_extender(character, x_character)
 
 
 class VigenereTextAutoclaveCipher(VigenereCipher):
-    """ An oft-overlooked autokey cipher invented by Blaise de Vigenère.
+    """ An oft-overlooked autokey cipher developed by Blaise de Vigenère.
 
     Notes
     -----
-    In this autokey cipher, the plaintext is appended to the passphrase.
+    In this autokey cipher, the plaintext is appended to the countersign.
     In Vigenère's original method, a single letter was used as a "primer,"
-    essentially a one-character passphrase, with the intent of encrypting
-    the message with itself (minus the last message character, of course).
+    essentially a one-character countersign, with the intent of encrypting
+    the message with (almost all) of itself.  It becomes much more effective
+    when the key length is more than a single character.
 
     The autokey mechanism offers no additional security (in fact, it has no
     effect at all) unless the key is shorter than the text to be encrypted.
@@ -166,14 +160,15 @@ class VigenereTextAutoclaveCipher(VigenereCipher):
 
 
 class VigenereKeyAutoclaveCipher(VigenereCipher):
-    """ An oft-overlooked autokey cipher invented by Blaise de Vigenère.
+    """ An oft-overlooked autokey cipher developed by Blaise de Vigenère.
 
     Notes
     -----
-    In this autokey cipher, the ciphertext is appended to the passphrase.
+    In this autokey cipher, the ciphertext is appended to the countersign.
     In Vigenère's original method, a single letter was used as a "primer,"
-    essentially a one-character passphrase, with the intent of encrypting
-    the message with itself (minus the last message character, of course).
+    essentially a one-character countersign, with the intent of encrypting
+    the message with (almost all) of itself.  It becomes much more effective
+    when the key length is more than a single character.
 
     The autokey mechanism offers no additional security (in fact, it has no
     effect at all) unless the key is shorter than the text to be encrypted.

@@ -169,7 +169,7 @@ class OneDimensionalTableau(Tableau):
         # return s.translate(self.b2a)
 
 
-class TwoDimensionalTableau(OneDimensionalTableau):
+class TwoDimensionalTableau(Tableau):
     """ Polyalphabetic tableau.
 
     Parameters

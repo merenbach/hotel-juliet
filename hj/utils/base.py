@@ -6,10 +6,10 @@ from fractions import gcd
 from itertools import zip_longest, cycle, islice
 
 
-def clever_cast(t, s):
-    if t is str:
-        s = ''.join(c for c in s)
-    return t(s)
+# def clever_cast(t, s):
+#     if t is str:
+#         s = ''.join(c for c in s)
+#     return t(s)
 
 # def at_modulo(seq, pos):
 #     """ Return the element at a given index in sequence, wrapping as needed.
@@ -35,33 +35,33 @@ def clever_cast(t, s):
 #         return seq[pos]
 
 
-def difference(minuend, subtrahend):
-    """ Subtract the characters in one string from those in another.
-
-    Parameters
-    ----------
-    minuend : str
-        A string from which to subtract.
-    subtrahend : str
-        A string to subtract.
-
-    Returns
-    -------
-    out : set
-        An unordered set consisting of remaining characters
-        once `subtrahend` is subtracted from `minuend`.
-    Returns
-    -------
-    out : generator
-        A generator expression for each element in the result.
-
-    Notes
-    -----
-    No apologies are made on the naming conventions for the variables.
-
-    """
-    remainder = set(minuend) - set(subtrahend)
-    return remainder
+# def difference(minuend, subtrahend):
+#     """ Subtract the characters in one string from those in another.
+#
+#     Parameters
+#     ----------
+#     minuend : str
+#         A string from which to subtract.
+#     subtrahend : str
+#         A string to subtract.
+#
+#     Returns
+#     -------
+#     out : set
+#         An unordered set consisting of remaining characters
+#         once `subtrahend` is subtracted from `minuend`.
+#     Returns
+#     -------
+#     out : generator
+#         A generator expression for each element in the result.
+#
+#     Notes
+#     -----
+#     No apologies are made on the naming conventions for the variables.
+#
+#     """
+#     remainder = set(minuend) - set(subtrahend)
+#     return remainder
 
 
 def lrotated(seq, offset):
@@ -173,14 +173,13 @@ def multiplied(multiplicand, multiplier):
         raise ValueError('Multiplier and alphabet length must be coprime.')
 
     positions = [(multiplier * n) % self_len for n in range(self_len)]
-    # positions = [(multiplier * n + offset) % self_len for n in range(self_len)]
-    return (multiplicand[n] for n in positions)
+    # positions = [(multiplier * n + offset) % self_len for n in range(self_len)]  # noqa
+    return [multiplicand[n] for n in positions]
 
 
 def affined(seq, multiplier, offset):
     newseq = lrotated(seq, offset)
-    newseq = multiplied(newseq, multiplier)
-    return clever_cast(type(seq), newseq)
+    return multiplied(newseq, multiplier)
 
 
 def unique(s):
@@ -197,7 +196,7 @@ def unique(s):
         A list copy of the original sequence with duplicate elements removed.
 
     """
-    return clever_cast(type(s), OrderedDict.fromkeys(s))
+    return list(OrderedDict.fromkeys(s))
 
 
 def keyed(seq, keyword):
@@ -336,7 +335,7 @@ def roundrobin(*iterables):
 #         # seq.append(food or n)    # add integers, but not multichar strs
 
 def iterappendable(seed):
-    """ Generator whose core may be appended to.
+    """ Generator whose iterable may be appended to.
 
     Parameters
     ----------
@@ -347,8 +346,8 @@ def iterappendable(seed):
     -------
     out : data-type
         Next element of `seed`.
-    in : data-type
-        An element to append to `seed`.
+    in : data-type, optional
+        An optional element to append to `seed`.
 
     """
     seed = list(seed)
