@@ -20,26 +20,26 @@ class MonoSubCipher(SubCipher):
         super().__init__(alphabet)
         self.tableau = OneDimensionalTableau(alphabet, alphabet_)
 
-    def _transform(self, alphabet):
-        """ Transform a character set for transcoding.
-
-        Parameters
-        ----------
-        alphabet : str
-            A character set to use for transcoding.
-
-        Returns
-        -------
-        out : str
-            A transformed version of the provided character set.
-
-        Raises
-        ------
-        NotImplementedError
-            If not overridden.
-
-        """
-        raise NotImplementedError
+    # def _transform(self, alphabet):
+    #     """ Transform a character set for transcoding.
+    #
+    #     Parameters
+    #     ----------
+    #     alphabet : str
+    #         A character set to use for transcoding.
+    #
+    #     Returns
+    #     -------
+    #     out : str
+    #         A transformed version of the provided character set.
+    #
+    #     Raises
+    #     ------
+    #     NotImplementedError
+    #         If not overridden.
+    #
+    #     """
+    #     raise NotImplementedError
 
     def _encode(self, s, strict):
         return [self.tableau.encode(c, strict) for c in s]

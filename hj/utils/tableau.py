@@ -28,30 +28,6 @@ class BaseTableau:
     def __str__(self):
         return str(self.alphabet)
 
-    def contains(self, element):
-        """ Does this tableau contain a given character?
-
-        Parameters
-        ----------
-        element : data-type
-            Check this tableau for this character.
-
-        Returns
-        -------
-        out : bool
-            `True` if the element exists in this tableau, `False` otherwise.
-
-        Notes
-        -----
-        This equates with "can transcode": provided this returns `True`,
-        this tableau should be able to transcode the given character.
-
-        Some subclasses (e.g., key-based tableaux like the tabula recta)
-        may impose additional restrictions.
-
-        """
-        return element in self.alphabet
-
 
 class Tableau(BaseTableau):
     """ Message alphabet is on top; key alphabet is on side.
@@ -75,7 +51,7 @@ class Tableau(BaseTableau):
             A sequence to transcode.
         strict : bool
             `False` to return non-transcodable elements unchanged,
-            `True` to replace with `None`.  Default `False`.
+            `True` to replace with `None`.
 
         Returns
         -------
@@ -99,7 +75,7 @@ class Tableau(BaseTableau):
             A sequence to transcode.
         strict : bool
             `False` to return non-transcodable elements unchanged,
-            `True` to replace with `None`.  Default `False`.
+            `True` to replace with `None`.
 
         Returns
         -------
@@ -158,7 +134,7 @@ class OneDimensionalTableau(Tableau):
         Returns
         -------
         out : data-type
-            A transcoded copy (if possible) of the given element `e`.
+            A transcoded copy (if possible) of the given element `element`.
 
         """
         default = None
@@ -182,7 +158,7 @@ class OneDimensionalTableau(Tableau):
         Returns
         -------
         out : data-type
-            A transcoded copy (if possible) of the given element `e`.
+            A transcoded copy (if possible) of the given element `element`.
 
         """
         default = None
@@ -230,12 +206,12 @@ class TwoDimensionalTableau(OneDimensionalTableau):
             Essentially a row header character on the left edge of the tableau.
         strict : bool
             `False` to return non-transcodable elements unchanged,
-            `True` to replace with `None`.  Default `False`.
+            `True` to replace with `None`.
 
         Returns
         -------
-        out : str
-            An encoded string, or `None` if no key transcoder could be found.
+        out : data-type
+            A transcoded copy (if possible) of the given element `element`.
 
         Raises
         ------
@@ -259,12 +235,12 @@ class TwoDimensionalTableau(OneDimensionalTableau):
             Essentially a row header character on the left edge of the tableau.
         strict : bool
             `False` to return non-transcodable elements unchanged,
-            `True` to replace with `None`.  Default `False`.
+            `True` to replace with `None`.
 
         Returns
         -------
-        out : str
-            A decoded string, or `None` if no key transcoder could be found.
+        out : data-type
+            A transcoded copy (if possible) of the given element `element`.
 
         Raises
         ------

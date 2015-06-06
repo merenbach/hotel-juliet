@@ -61,14 +61,14 @@ class VigenereCipher(PolySubCipher):
     def _encode(self, s, strict):
         """ [TODO] kludgy shim for now to support `reverse` arg.
         """
-        return list(self._transcode(s, strict, self.tableau.encode,
-                    self.ENCODE_AUTOCLAVE))
+        return self._transcode(s, strict, self.tableau.encode,
+                               self.ENCODE_AUTOCLAVE)
 
     def _decode(self, s, strict):
         """ [TODO] kludgy shim for now to support `reverse` arg.
         """
-        return list(self._transcode(s, strict, self.tableau.decode,
-                    self.DECODE_AUTOCLAVE))
+        return self._transcode(s, strict, self.tableau.decode,
+                               self.DECODE_AUTOCLAVE)
 
     def _cipher_keystream(self, cipher_func):
         """ Transcode a character.
@@ -96,29 +96,22 @@ class VigenereCipher(PolySubCipher):
         key = list(self.passphrase)
         character = yield
         for k in key:
-            try:
-                transcode_char = cipher_func(character, k, strict=True)
-            except KeyError:
-                pass
-            else:
-                if transcode_char:  # character was transcodable!
+            transcode_char = None
+            while transcode_char is None:
+                try:
+                    transcode_char = cipher_func(character, k, True)
+                except KeyError:
+                    break
+                else:
                     food = yield transcode_char
-                    # append to the keystream either a new character
-                    # (in case of autoclave) or the current key character
-                    # (in the case of normal transcoding)
-                    key.append(food or k)
-                    character = yield
-    #         # # if we instead want to provide the used key char...
-    #         # character = yield key_char
-    #         # new_kchar = yield cipher_func(character, key_char)
-    #         # # append to the keystream either a new character
-    #         # # (in case of autoclave) or the current key character
-    #         # # (in the case of normal transcoding)
-    #         # key.append(new_kchar or key_char)
-    #         # ## this might or might not be more robust or performant;
-    #         # ## it won't append to the key (even for default behavior
-    #         # ## of cycling key) unless the current key character
-    #         # ## was in the list of keys for the tableau
+                    # [TODO] this conditional may be unnecessary
+                    if transcode_char:  # character was transcodable!
+                        # append to the keystream either a new character
+                        # (in case of autoclave) or the current key character
+                        # (in the case of normal transcoding)
+                        # [TODO] may not need to be within conditional
+                        key.append(food or k)
+                    character = yield  # could also `yield k` to yield keychar
 
     def _transcode(self, message, strict, cipher_func, keystream_extender):
         """ Transcode a message.
@@ -138,19 +131,11 @@ class VigenereCipher(PolySubCipher):
             possible and `strict` is `True`, `None` will be returned instead.
 
         """
-        # tcoder = self._transcode_char(passphrase, cipher_func, strict)
-        # prime the generator
-        # tcoder.send(None)
-
         transcoder = self._cipher_keystream(cipher_func)
 
         transcoder.send(None)  # prime the keystream
-        valid_char = self.tableau.contains
         for character in message:
-            # [NOTE] this is basically always true if `strict` is on
-            # returns None if key char not found in rows
-            # advance to next usable key char
-            tchar = valid_char(character) and transcoder.send(character)
+            tchar = transcoder.send(character)
             if tchar:
                 _key_extension = keystream_extender(character, tchar)
                 transcoder.send(_key_extension)  # [TODO] better?
