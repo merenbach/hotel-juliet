@@ -158,9 +158,6 @@ class VigenereCipher(PolySubCipher):
             elif not strict:
                 yield character
 
-    def _extend_keystream(self, plaintext, ciphertext, reverse):
-        return None
-
 
 class VigenereTextAutoclaveCipher(VigenereCipher):
     """ An oft-overlooked autokey cipher invented by Blaise de Vigenère.
