@@ -90,7 +90,7 @@ class SubCipher(Cipher):
 
         """
         out = self._encode(s, strict=strict)
-        return ''.join(e for e in out if e)
+        return ''.join(e for e in out if e is not None)
 
     def decode(self, s, strict=False, block=0):
         """ Decode a message.
@@ -112,7 +112,7 @@ class SubCipher(Cipher):
 
         """
         out = self._decode(s, strict=strict)
-        return ''.join(e for e in out if e)
+        return ''.join(e for e in out if e is not None)
 
     # def unblockify(self, iterable, n, fillvalue=None):
     #     """ From itertools"""

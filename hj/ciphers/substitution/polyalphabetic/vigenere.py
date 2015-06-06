@@ -123,7 +123,6 @@ class VigenereCipher(PolySubCipher):
     def _transcode(self, message, strict, cipher_func, keystream_extender):
         """ Transcode a message.
 
-
         Parameters
         ----------
         message : str
