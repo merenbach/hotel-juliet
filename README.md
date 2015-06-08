@@ -32,18 +32,18 @@ The underlying frameworks are a bit of a playground for me right now.  The code 
       * Trithemius
       * Variant Beaufort
       * Vigenère
+      * Vigenère (text autokey)
+      * Vigenère (key autokey)
     * Transposition
       * Scytale (prototype)
 
-# [TODO]: Allow shifting a la
-    # http://rumkin.com/tools/cipher/caesar-keyed.php
+## Todo
 
-TODO:
-Handle translation in subclasses for cipher, then pass alphabet_ to super() instead of list of ops?
-autotranslate to upper case?
-- use dict of individual dicts instead of str.maketrans (which also makes dicts)? seems less efficient
-    {'a': {'a':'q', 'b':'r'...
-  - test whether keys/alphas actually have to be strings
+  - Allow shifting a la <http://rumkin.com/tools/cipher/caesar-keyed.php>
+  - Autotranslate to upper case?
+  - Test whether keys/alphas actually have to be strings
+  - Add keyed Vigenere
+  - Tests should account for non-string and non-sequence keys
 
 
 ## Notes

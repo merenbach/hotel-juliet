@@ -32,8 +32,8 @@ class VigenereCipher(PolySubCipher):
         #     iter(countersign):
         # except TypeError:
         #     raise TypeError('countersign must be iterable')
-        self.countersign = countersign
         super().__init__(alphabet)
+        self.countersign = countersign
         self.tableau = self._make_tableau(alphabet or DEFAULT_ALPHABET)
 
     def _make_tableau(self, alphabet):

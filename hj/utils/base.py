@@ -222,7 +222,7 @@ def keyed(seq, keyword):
     # uniqued seq + (self - seq)
     newseq = [element for element in keyword if element in seq]
     newseq += [element for element in seq]
-    return ''.join(unique(newseq))
+    return unique(newseq)
 
 
 # def union(a, b):
