@@ -5,6 +5,7 @@ from .tableau import OneDimensionalTableau, TwoDimensionalTableau
 from .base import lrotated, orotated
 from collections import OrderedDict
 from string import digits
+from itertools import cycle
 
 # [TODO] some way to match up transcodeable chars + usable key chars?
 #
@@ -15,6 +16,7 @@ from string import digits
 #
 #   OCEAN#OGR#APHYWH#AT#!I LOVEund4Da$eA
 #   STORM THE CASTLE AT #MIDNIG####H###T
+
 
 class TabulaRecta(TwoDimensionalTableau):
     """ Message alphabet is on top; key alphabet is on side.
@@ -33,6 +35,27 @@ class TabulaRecta(TwoDimensionalTableau):
         alphabets = self._make_rows(alphabet)
         transcoders_list = [OneDimensionalTableau(alphabet, ab_) for ab_ in alphabets]
         self.data = OrderedDict(zip(keys or alphabet, transcoders_list))
+
+    def keystream_from(self, seq, repeat=False):
+        """ Filter out characters that can't be used.
+
+        Parameters
+        ----------
+        seq : iterable
+            A sequence or iterator that yields elements.
+        repeat : bool
+            `True` to repeat keystream indefinitely,
+            `False` to terminate after one cycle.
+            Default `False`.
+
+        Returns
+        -------
+        out : generator
+            Each element in `seq` that is in the keys of this tabula recta.
+
+        """
+        keystream = (c for c in seq if c in self.data.keys())
+        return cycle(keystream) if repeat else keystream
 
     def __str__(self):
         alphabet = self.alphabet

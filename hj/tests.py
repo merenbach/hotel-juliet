@@ -17,21 +17,32 @@ class UtilsTest(unittest.TestCase):
 
     PASSPHRASE = 'OCEANOGRAPHYWHAT'
 
-    def testIterAppendable(self):
-        iterator = iterappendable('')
-        self.assertEqual(''.join(iterator), '')
+    def testLeftRotation(self):
+        s = 'HELLO, WORLD!'
+        expected_out = [
+            'HELLO, WORLD!',
+            'ELLO, WORLD!H',
+            'LLO, WORLD!HE',
+            'LO, WORLD!HEL',
+            'O, WORLD!HELL',
+            ', WORLD!HELLO',
+            ' WORLD!HELLO,',
+            'WORLD!HELLO, ',
+            'ORLD!HELLO, W',
+            'RLD!HELLO, WO',
+            'LD!HELLO, WOR',
+            'D!HELLO, WORL',
+            '!HELLO, WORLD',
+        ]
+        s_len = len(s)
+        out = [lrotated(s, i) for i in range(s_len)]
+        self.assertEqual(expected_out, out)
 
-        iterator = iterappendable(self.PASSPHRASE)
-        self.assertEqual(''.join(iterator), self.PASSPHRASE)
+        out = [lrotated(s, i + s_len) for i in range(s_len)]
+        self.assertEqual(expected_out, out)
 
-        out = []
-        iterator = iterappendable(self.PASSPHRASE[0:2])
-        out.append(next(iterator))
-        out.append(iterator.send(self.PASSPHRASE[2]))
-        out.append(next(iterator))
-        out.append(iterator.send(self.PASSPHRASE))
-
-        self.assertEqual(out, ['O', 'C', 'E', self.PASSPHRASE])
+        out = [lrotated(s, i - s_len) for i in range(s_len)]
+        self.assertEqual(expected_out, out)
 
 
 class CipherTest(unittest.TestCase):

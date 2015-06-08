@@ -193,7 +193,7 @@ def unique(s):
     Returns
     -------
     out : list
-        A list copy of the original sequence with duplicate elements removed.
+        A copy of the original sequence with duplicate elements removed.
 
     """
     return list(OrderedDict.fromkeys(s))
@@ -220,9 +220,9 @@ def keyed(seq, keyword):
     # [TODO] make this much, much better
     # filter elements not in `self` from `seq`
     # uniqued seq + (self - seq)
-    newseq = [element for element in keyword if element in seq]
-    newseq += [element for element in seq]
-    return unique(newseq)
+    filtered_keyword = [element for element in keyword if element in seq]
+    seq = list(seq)
+    return unique(filtered_keyword + seq)
 
 
 # def union(a, b):
@@ -308,50 +308,3 @@ def roundrobin(*iterables):
         except StopIteration:
             pending -= 1
             nexts = cycle(islice(nexts, pending))
-
-
-# def appendable_stream(seq):
-#     """ Return an infinite repeating stream that can be fed.
-#
-#     Parameters
-#     ----------
-#     seq : sequence
-#         A list, tuple, or string over which to iterate.
-#
-#     """
-#     # make a mutable copy
-#     seq = list(seq)
-#     while seq:
-#         for element in seq:
-#             food = yield element
-#             while food is not None:
-#                 seq.append(food)
-#                 food = yield
-#         # for element in seq:
-#         #     food = None
-#         #     while food is None:
-#         #         food = yield element
-#         #     seq.append(food)
-#         # seq.append(food or n)    # add integers, but not multichar strs
-
-def iterappendable(seed):
-    """ Generator whose iterable may be appended to.
-
-    Parameters
-    ----------
-    seed : iterable
-        An initial iterable.
-
-    Yields
-    -------
-    out : data-type
-        Next element of `seed`.
-    in : data-type, optional
-        An optional element to append to `seed`.
-
-    """
-    seed = list(seed)
-    for s in seed:
-        food = yield s
-        if food is not None:
-            seed.append(food)

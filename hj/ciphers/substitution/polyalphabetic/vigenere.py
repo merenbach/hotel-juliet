@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .base import PolySubCipher
-from utils import DEFAULT_ALPHABET, TabulaRecta, iterappendable
+from utils import DEFAULT_ALPHABET, TabulaRecta
 
 # [TODO] still need to add keyed alphabets per Vigenere
 
@@ -22,8 +22,6 @@ class VigenereCipher(PolySubCipher):
 
     """
     TABULA_RECTA = TabulaRecta
-    ENCODE_AUTOCLAVE = lambda self, plaintext, ciphertext: None
-    DECODE_AUTOCLAVE = lambda self, plaintext, ciphertext: None
 
     def __init__(self, countersign, alphabet=DEFAULT_ALPHABET):
         if not countersign:
@@ -58,19 +56,13 @@ class VigenereCipher(PolySubCipher):
         """
         return self.TABULA_RECTA(alphabet=alphabet)
 
-    def _encode(self, s, strict):
-        """ [TODO] kludgy shim for now to support `reverse` arg.
-        """
-        return self._transcode(s, strict, self.tableau.encode,
-                               self.ENCODE_AUTOCLAVE)
+    def _encode(self, s, strict, autoclave=None):
+        return self._transcoder(s, strict, self.tableau.encode, autoclave)
 
-    def _decode(self, s, strict):
-        """ [TODO] kludgy shim for now to support `reverse` arg.
-        """
-        return self._transcode(s, strict, self.tableau.decode,
-                               self.DECODE_AUTOCLAVE)
+    def _decode(self, s, strict, autoclave=None):
+        return self._transcoder(s, strict, self.tableau.decode, autoclave)
 
-    def _cipher_keystream(self, cipher_func, strict):
+    def _transcoder(self, message, strict, cipher_func, autoclave):
         """ Transcode a character.
 
         Parameters
@@ -82,62 +74,72 @@ class VigenereCipher(PolySubCipher):
 
         Yields
         -------
-        out : None
-            Waiting for message character.
-        in : str
-            The next message character.
-        out : str
+        out : data-type or None
             The transcoded message character.
-        in : str or None
-            Character to append to keystream, or None to simply append
-            the current keystream character.
 
         """
-        keystream = iterappendable(self.countersign)
-        food = key_char = msg_char = None
-        while True:
-            # may raise StopIteration
-            key_char = keystream.send(food or key_char)
-            x_msg_char = None
-            while x_msg_char is None:
-                try:
-                    x_msg_char = cipher_func(msg_char, key_char, True)
-                except KeyError:
-                    key_char = food = None  # invalid key char so advance
-                    break
-                else:
-                    fallback = None if strict else msg_char
-                    food = yield x_msg_char or fallback
-                    msg_char = yield
+        key = list(self.countersign)
+        keystream = self.tableau.keystream_from(key, repeat=True)
 
-    def _transcode(self, message, strict, cipher_func, keystream_extender):
-        """ Transcode a message.
+        def process_char(msg_char, key_char):
+            x_msg_char = cipher_func(msg_char, key_char, True)
+            success = x_msg_char is not None
 
-        Parameters
-        ----------
-        message : str
-            A message to transcode.
+            # this can be above *or* below later fallback/return block
+            if success and autoclave:  # check for x_msg_char *may* be omitted
+                food = autoclave(msg_char, x_msg_char)
+                key.append(food)
 
-        Yields
-        ------
-        out : data-type
-            A transcoded character, if possible.  If not possible and `strict`
-            is `False`, the non-transcoded character will be returned.  If not
-            possible and `strict` is `True`, `None` will be returned instead.
+            if strict:
+                msg_char = None  # no fallback
+            return x_msg_char or msg_char, success
 
-        """
-        transcoder = self._cipher_keystream(cipher_func, strict)
+        # msg_outer = False
+        msg_outer = True
 
-        _key_extension = None
-        transcoder.send(None)
-        for character in message:
-            transcoder.send(_key_extension)  # [TODO] better?
+        # both mechanisms--key outer and message outer--are the same length
+        # when optimized, so far, so it's not entirely straightforward which
+        # is superior, philosophically or otherwise
+        if msg_outer:
+            # PROS of this mechanism:
+            #   - no inner loop
+            #   - iterate over the message outside (more imp. philosophically
+            #     than the passphrase)
+            #   - fairly straightforward logic
+            #   - message needn't be an iterator
+            # CONS:
+            #   - `advance` bool required
+            # NOTES:
+            #   - key advancement in conditional, not loop
 
-            x_character = transcoder.send(character)
-            yield x_character
-            # keystream_extender = yield x_character
+            advance_key = True
+            for msg_char in message:
+                if advance_key is True:
+                    key_char = next(keystream)
 
-            _key_extension = keystream_extender(character, x_character)
+                x_msg_char, advance_key = process_char(msg_char, key_char)
+                yield x_msg_char
+
+        else:
+            # PROS:
+            #   - no initial keystream priming
+            # CONS:
+            #   - message needs to be an iterator
+            #   - inner loop
+            #   - less clear
+            # NOTES:
+            #  - message advancement and key advancement as loops
+            message = iter(message)
+
+            for key_char in keystream:
+                advance_key = False
+
+                # this inner loop advances the message char
+                # it avoids advancing the key until a key char is consumed
+                while advance_key is False:
+                    msg_char = next(message)
+                    x_msg_char, advance_key = process_char(msg_char, key_char)
+                    yield x_msg_char
 
 
 class VigenereTextAutoclaveCipher(VigenereCipher):
@@ -155,8 +157,13 @@ class VigenereTextAutoclaveCipher(VigenereCipher):
     effect at all) unless the key is shorter than the text to be encrypted.
 
     """
-    ENCODE_AUTOCLAVE = lambda self, plaintext, ciphertext: plaintext
-    DECODE_AUTOCLAVE = lambda self, plaintext, ciphertext: ciphertext
+    def _encode(self, s, strict):
+        autoclave = lambda plaintext, ciphertext: plaintext
+        return super()._encode(s, strict, autoclave=autoclave)
+
+    def _decode(self, s, strict):
+        autoclave = lambda plaintext, ciphertext: ciphertext
+        return super()._decode(s, strict, autoclave=autoclave)
 
 
 class VigenereKeyAutoclaveCipher(VigenereCipher):
@@ -174,5 +181,10 @@ class VigenereKeyAutoclaveCipher(VigenereCipher):
     effect at all) unless the key is shorter than the text to be encrypted.
 
     """
-    ENCODE_AUTOCLAVE = lambda self, plaintext, ciphertext: ciphertext
-    DECODE_AUTOCLAVE = lambda self, plaintext, ciphertext: plaintext
+    def _encode(self, s, strict):
+        autoclave = lambda plaintext, ciphertext: ciphertext
+        return super()._encode(s, strict, autoclave=autoclave)
+
+    def _decode(self, s, strict):
+        autoclave = lambda plaintext, ciphertext: plaintext
+        return super()._decode(s, strict, autoclave=autoclave)
