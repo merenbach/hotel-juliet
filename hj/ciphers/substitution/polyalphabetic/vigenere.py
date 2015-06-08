@@ -62,6 +62,17 @@ class VigenereCipher(PolySubCipher):
     def _decode(self, s, strict, autoclave=None):
         return self._transcoder(s, strict, self.tableau.decode, autoclave)
 
+    def _transcode_char(self, msg_char, key_char, strict, cipher_func):
+        """ Transcode a single character.
+
+        """
+        x_msg_char = cipher_func(msg_char, key_char, True)
+        success = x_msg_char is not None
+
+        if strict:
+            msg_char = None  # no fallback
+        return x_msg_char or msg_char, success
+
     def _transcoder(self, message, strict, cipher_func, autoclave):
         """ Transcode a character.
 
@@ -78,21 +89,7 @@ class VigenereCipher(PolySubCipher):
             The transcoded message character.
 
         """
-        key = list(self.countersign)
-        keystream = self.tableau.keystream_from(key, repeat=True)
-
-        def process_char(msg_char, key_char):
-            x_msg_char = cipher_func(msg_char, key_char, True)
-            success = x_msg_char is not None
-
-            # this can be above *or* below later fallback/return block
-            if success and autoclave:  # check for x_msg_char *may* be omitted
-                food = autoclave(msg_char, x_msg_char)
-                key.append(food)
-
-            if strict:
-                msg_char = None  # no fallback
-            return x_msg_char or msg_char, success
+        keystream = self.tableau.keystream_from(self.countersign)
 
         # msg_outer = False
         msg_outer = True
@@ -112,13 +109,18 @@ class VigenereCipher(PolySubCipher):
             # NOTES:
             #   - key advancement in conditional, not loop
 
-            advance_key = True
+            advance_key, food = True, None
             for msg_char in message:
                 if advance_key is True:
-                    key_char = next(keystream)
+                    key_char = keystream.send(food)
 
-                x_msg_char, advance_key = process_char(msg_char, key_char)
+                x_msg_char, advance_key = self._transcode_char(msg_char, key_char, strict, cipher_func)
                 yield x_msg_char
+
+                if advance_key is True and autoclave is not None:
+                    food = autoclave(msg_char, x_msg_char)
+                else:
+                    food = key_char
 
         else:
             # PROS:

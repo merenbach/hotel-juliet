@@ -44,6 +44,22 @@ class UtilsTest(unittest.TestCase):
         out = [lrotated(s, i - s_len) for i in range(s_len)]
         self.assertEqual(expected_out, out)
 
+    def testIterAppendable(self):
+        iterator = appendable('')
+        self.assertEqual(''.join(iterator), '')
+
+        iterator = appendable(self.PASSPHRASE)
+        self.assertEqual(''.join(iterator), self.PASSPHRASE)
+
+        out = []
+        iterator = appendable(self.PASSPHRASE[0:2])
+        out.append(next(iterator))
+        out.append(iterator.send(self.PASSPHRASE[2]))
+        out.append(next(iterator))
+        out.append(iterator.send(self.PASSPHRASE))
+
+        self.assertEqual(out, ['O', 'C', 'E', self.PASSPHRASE])
+
 
 class CipherTest(unittest.TestCase):
 

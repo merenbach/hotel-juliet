@@ -308,3 +308,27 @@ def roundrobin(*iterables):
         except StopIteration:
             pending -= 1
             nexts = cycle(islice(nexts, pending))
+
+
+def appendable(seq):
+    """ Generator that may be appended to.
+
+    Parameters
+    ----------
+    seq : iterable
+        A sequence or iterator that yields elements.
+
+    Yields
+    ------
+    out : data-type
+        Each character in seq.
+    in : data-type
+        If not `None`, a new element to append to `seq`.
+
+    """
+    seq = list(seq)
+
+    for element in seq:
+        food = yield element
+        if food is not None:
+            seq.append(food)
