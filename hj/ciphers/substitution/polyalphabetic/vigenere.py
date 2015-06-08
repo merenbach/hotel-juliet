@@ -57,31 +57,29 @@ class VigenereCipher(PolySubCipher):
         return self.TABULA_RECTA(alphabet=alphabet)
 
     def _encode(self, s, strict, autoclave=None):
-        return self._transcoder(s, strict, self.tableau.encode, autoclave)
+        return self._transcoder(s, strict, self.countersign,
+                                self.tableau.encode, autoclave)
 
     def _decode(self, s, strict, autoclave=None):
-        return self._transcoder(s, strict, self.tableau.decode, autoclave)
+        return self._transcoder(s, strict, self.countersign,
+                                self.tableau.decode, autoclave)
 
-    def _transcode_char(self, msg_char, key_char, strict, cipher_func):
-        """ Transcode a single character.
-
-        """
-        x_msg_char = cipher_func(msg_char, key_char, True)
-        success = x_msg_char is not None
-
-        if strict:
-            msg_char = None  # no fallback
-        return x_msg_char or msg_char, success
-
-    def _transcoder(self, message, strict, cipher_func, autoclave):
+    def _transcoder(self, message, strict, countersign,
+                    cipher_func, autoclave):
         """ Transcode a character.
 
         Parameters
         ----------
+        message : str
+            A message to transcode.
+        strict : bool
+            `True` to strip non-transcodeable characters, `False` otherwise.
         countersign : str
-            A countersign to use for transcoding.
+            An encryption/decryption key.
         cipher_func : function
             A function (encode or decode) to use.
+        autoclave : function
+            A function for autoclaving.
 
         Yields
         -------
@@ -89,59 +87,90 @@ class VigenereCipher(PolySubCipher):
             The transcoded message character.
 
         """
-        keystream = self.tableau.keystream_from(self.countersign)
+        keystream = self.tableau.keystream_from(countersign)
+        fallback = lambda c: None if strict else c
 
         # msg_outer = False
-        msg_outer = True
+        # msg_outer = True
 
         # both mechanisms--key outer and message outer--are the same length
         # when optimized, so far, so it's not entirely straightforward which
         # is superior, philosophically or otherwise
-        if msg_outer:
-            # PROS of this mechanism:
-            #   - no inner loop
-            #   - iterate over the message outside (more imp. philosophically
-            #     than the passphrase)
-            #   - fairly straightforward logic
-            #   - message needn't be an iterator
-            # CONS:
-            #   - `advance` bool required
-            # NOTES:
-            #   - key advancement in conditional, not loop
+        # if msg_outer:
+        # PROS of this mechanism:
+        #   - no inner loop
+        #   - iterate over the message outside (more imp. philosophically
+        #     than the passphrase)
+        #   - fairly straightforward logic
+        #   - message needn't be an iterator
+        # CONS:
+        #   - `advance` bool required
+        # NOTES:
+        #   - key advancement in conditional, not loop
 
-            advance_key, food = True, None
-            for msg_char in message:
-                if advance_key is True:
+        advance_key, food = True, None
+
+        # if advance_key:
+        #     key_char = keystream.send(food)
+        #     keystream.send('aoeu')
+        #     advance_key, food = False, None
+        # message = iter(message)
+        # while True:
+        # key_char = keystream.send(food)
+        for msg_char in message:
+
+            x_msg_char = None
+            while x_msg_char is None:
+                if advance_key:
                     key_char = keystream.send(food)
+                    advance_key, food = False, None
 
-                x_msg_char, advance_key = self._transcode_char(msg_char, key_char, strict, cipher_func)
-                yield x_msg_char
-
-                if advance_key is True and autoclave is not None:
-                    food = autoclave(msg_char, x_msg_char)
+                try:
+                    x_msg_char = cipher_func(msg_char, key_char, True)
+                except KeyError:
+                    advance_key = True
                 else:
+                    if x_msg_char is None:
+                        x_msg_char = fallback(msg_char)
+                        break  # not required if we advance msg_char above
+            else:
+                # character was successfully transcoded
+                if not autoclave:
                     food = key_char
+                else:
+                    food = autoclave(msg_char, x_msg_char)
+                advance_key = True
 
-        else:
-            # PROS:
-            #   - no initial keystream priming
-            # CONS:
-            #   - message needs to be an iterator
-            #   - inner loop
-            #   - less clear
-            # NOTES:
-            #  - message advancement and key advancement as loops
-            message = iter(message)
+            # yield the transcoded message character
+            yield x_msg_char
 
-            for key_char in keystream:
-                advance_key = False
-
-                # this inner loop advances the message char
-                # it avoids advancing the key until a key char is consumed
-                while advance_key is False:
-                    msg_char = next(message)
-                    x_msg_char, advance_key = process_char(msg_char, key_char)
-                    yield x_msg_char
+        # # PROS:
+        # #   - no initial keystream priming
+        # # CONS:
+        # #   - message needs to be an iterator
+        # #   - inner loop
+        # #   - less clear
+        # # NOTES:
+        # #  - message advancement and key advancement as loops
+        # message = iter(message)
+        #
+        # for key_char in keystream:
+        #     advance_key = False
+        #
+        #     # this inner loop advances the message char
+        #     # it avoids advancing the key until a key char is consumed
+        #     while advance_key is False:
+        #         msg_char = next(message)
+        #         x_msg_char = cipher_func(msg_char, key_char, True)
+        #         if x_msg_char is not None:
+        #             yield x_msg_char
+        #         else:
+        #             yield fallback(msg_char)
+        #             if not autoclave:
+        #                 food = key_char
+        #             else:
+        #                 food = autoclave(msg_char, x_msg_char)
+        #             keystream.append(food)
 
 
 class VigenereTextAutoclaveCipher(VigenereCipher):

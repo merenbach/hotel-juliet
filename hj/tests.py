@@ -120,6 +120,7 @@ class CipherTest(unittest.TestCase):
     def test_scytale(self):
         c = ScytaleCipher(4)
         self._transcode(c, self.MESSAGE_PLAIN, None, 'HOO!E,RXL LXLWDX', strict=False)
+        # self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'HOOERXLLXLWDX', strict=True)
         # self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'VGPLBKUILS', strict=True)
         # self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'TCHLB, IIALO!', strict=False)
         # self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'TCHLBIIALO', strict=True)

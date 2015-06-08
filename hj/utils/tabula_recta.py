@@ -50,7 +50,8 @@ class TabulaRecta(TwoDimensionalTableau):
             This keystream may be appended to with `.send(food)`
 
         """
-        keystream = (c for c in seq if c in self.data.keys())
+        # keystream = (c for c in seq if c in self.data.keys())
+        keystream = seq
         return appendable(keystream)
 
     def __str__(self):
