@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .base import unique
+from collections import OrderedDict
 
 
 class BaseTableau:
@@ -194,17 +195,17 @@ class TwoDimensionalTableau(ZeroDimensionalTableau):
     ----------
     alphabet : sequence
         An alphabet for the tableau.  Duplicate elements will be removed.
-    tableaux : sequence of `OneDimensionalTableau`
-        Rows for the tableau.
+    alphabets_ : sequence
+        An iterable of alphabets.
 
     """
-    # def __init__(self, alphabet, alphabets_):
-    #     alphabet_ = [OneDimensionalTableau(alphabet, a_) for a_ in alphabets_] # noqa
-    #     super().__init__(alphabet, alphabet_)
+    def __init__(self, alphabet, alphabets_):
+        super().__init__(alphabet)
+        self.alphabets_ = alphabets_
     #
     # #     alphabets = self._make_rows(alphabet)
     # #     transcoders_list = [Transcoder(alphabet, ab_) for ab_ in alphabets]
-    # #     self.data = OrderedDict(zip(keys or alphabet, transcoders_list))
+    # #     self.alphabets_ = OrderedDict(zip(keys or alphabet, transcoders_list))
     # #     self.alphabet_ = unique(alphabet_)
     # #     self.a2b = dict(zip(alphabet, alphabet_))
     # #     self.b2a = dict(zip(alphabet_, alphabet))
@@ -237,7 +238,7 @@ class TwoDimensionalTableau(ZeroDimensionalTableau):
             If no tableau could be found for the given key.
 
         """
-        transcoder = self.data[key]
+        transcoder = self.alphabets_[key]
         return transcoder.encode(element, strict)
 
     def decode(self, element, key, strict):
@@ -266,5 +267,5 @@ class TwoDimensionalTableau(ZeroDimensionalTableau):
             If no tableau could be found for the given key.
 
         """
-        transcoder = self.data[key]
+        transcoder = self.alphabets_[key]
         return transcoder.decode(element, strict)

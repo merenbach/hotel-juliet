@@ -29,12 +29,11 @@ class TabulaRecta(TwoDimensionalTableau):
 
     """
     def __init__(self, alphabet, keys=None):
-        super().__init__(alphabet)
-        # alphabet = self.alphabet
         alphabets_ = self._make_rows(alphabet)
         transcoders_list = [OneDimensionalTableau(alphabet, alphabet_)
                             for alphabet_ in alphabets_]
-        self.data = OrderedDict(zip(keys or alphabet, transcoders_list))
+        alphabets_ = OrderedDict(zip(keys or alphabet, transcoders_list))
+        super().__init__(alphabet, alphabets_)
 
     def keystream_from(self, seq):
         """ Generator that filter out key characters that can't be used.
@@ -51,7 +50,7 @@ class TabulaRecta(TwoDimensionalTableau):
             This keystream may be appended to with `.send(food)`
 
         """
-        # keystream = (c for c in seq if c in self.data.keys())
+        # keystream = (c for c in seq if c in self.alphabets_.keys())
         keystream = seq
         return appendable(keystream)
 
@@ -60,7 +59,7 @@ class TabulaRecta(TwoDimensionalTableau):
         lines = []
         lines.append('  | ' + ' '.join(alphabet))
         lines.append('--+' + '-' * len(alphabet) * 2)
-        for k, v in self.data.items():
+        for k, v in self.alphabets_.items():
             row = ' '.join(v.alphabet_)
             lines.append('{0} | {1}'.format(k, row))
         return '\n'.join(lines)
@@ -123,7 +122,7 @@ class DellaPortaTabulaRecta(TabulaRecta):
         lines.append('     | ' + ' '.join(alphabet))
         lines.append('-----+' + '-' * len(alphabet) * 2)
         cur_header = None
-        for i, (k, v) in enumerate(self.data.items()):
+        for i, (k, v) in enumerate(self.alphabets_.items()):
             if i % 2 == 0:
                 cur_header = k
             elif i % 2 == 1:
@@ -189,7 +188,7 @@ class DellaPortaTabulaRecta(TabulaRecta):
 #         super().__init__(rows)
 #
 #     def get(self, row, col):
-#         transcoder = self.data.get(row)
+#         transcoder = self.alphabets_.get(row)
 #         return transcoder and transcoder.get(col)
 #
 #     def __repr__(self):
@@ -197,7 +196,7 @@ class DellaPortaTabulaRecta(TabulaRecta):
 #         lines = []
 #         lines.append('  | ' + ' '.join(str(i) for i in self.keys))
 #         lines.append('--+' + '-' * len(alphabet) * 2)
-#         for k, v in self.data.items():
+#         for k, v in self.alphabets_.items():
 #             row = ' '.join(v.values())
 #             lines.append('{0} | {1}'.format(k, row))
 #         return '\n'.join(lines)
