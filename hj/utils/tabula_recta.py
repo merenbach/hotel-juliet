@@ -30,9 +30,10 @@ class TabulaRecta(TwoDimensionalTableau):
     """
     def __init__(self, alphabet, keys=None):
         super().__init__(alphabet)
-        alphabet = self.alphabet
-        alphabets = self._make_rows(alphabet)
-        transcoders_list = [OneDimensionalTableau(alphabet, ab_) for ab_ in alphabets]
+        # alphabet = self.alphabet
+        alphabets_ = self._make_rows(alphabet)
+        transcoders_list = [OneDimensionalTableau(alphabet, alphabet_)
+                            for alphabet_ in alphabets_]
         self.data = OrderedDict(zip(keys or alphabet, transcoders_list))
 
     def keystream_from(self, seq):

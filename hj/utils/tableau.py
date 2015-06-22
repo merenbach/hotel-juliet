@@ -29,8 +29,8 @@ class BaseTableau:
         return str(self.alphabet)
 
 
-class Tableau(BaseTableau):
-    """ Message alphabet is on top; key alphabet is on side.
+class ZeroDimensionalTableau(BaseTableau):
+    """ Tableau with only an alphabet.
 
     Parameters
     ----------
@@ -91,7 +91,7 @@ class Tableau(BaseTableau):
         raise NotImplementedError
 
 
-class OneDimensionalTableau(Tableau):
+class OneDimensionalTableau(ZeroDimensionalTableau):
     """ Monoalphabetic tableau.
 
     Parameters
@@ -136,6 +136,15 @@ class OneDimensionalTableau(Tableau):
         out : data-type
             A transcoded copy (if possible) of the given element `element`.
 
+        Notes
+        -----
+        If the two alphabets do not have identical character sets, the `strict`
+        flag may behave differently based on whether encoding or decoding is
+        occurring.  For instance, if this tableau simply converts uppercase to
+        lowercase (A => a, B => b) and back again, trying to encode a lowercase
+        message (or decode an uppercase one) will result in an empty output
+        since no elements were transcodeable.
+
         """
         default = None
         if not strict:
@@ -155,6 +164,15 @@ class OneDimensionalTableau(Tableau):
             `False` to return non-transcodable elements unchanged,
             `True` to replace with `None`.  Default `False`.
 
+        Notes
+        -----
+        If the two alphabets do not have identical character sets, the `strict`
+        flag may behave differently based on whether encoding or decoding is
+        occurring.  For instance, if this tableau simply converts uppercase to
+        lowercase (A => a, B => b) and back again, trying to encode a lowercase
+        message (or decode an uppercase one) will result in an empty output
+        since no elements were transcodeable.
+
         Returns
         -------
         out : data-type
@@ -169,7 +187,7 @@ class OneDimensionalTableau(Tableau):
         # return s.translate(self.b2a)
 
 
-class TwoDimensionalTableau(Tableau):
+class TwoDimensionalTableau(ZeroDimensionalTableau):
     """ Polyalphabetic tableau.
 
     Parameters

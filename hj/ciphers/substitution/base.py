@@ -70,6 +70,54 @@ class SubCipher(Cipher):
         # [TODO] maybe improve this
         return str(self.tableau)
 
+    def _encode(self, s, strict=False):
+        """ Encode a message.
+
+        Parameters
+        ----------
+        s : str
+            A message to transcode.
+        strict : bool, optional
+            `True` to strip non-transcodeable characters from the message,
+            `False` otherwise.
+
+        Returns
+        -------
+        out : iterable
+            A transcoded iterable (string, list, generator, etc.).
+
+        Raises
+        ------
+        NotImplementedError
+            If not overridden.
+
+        """
+        raise NotImplementedError
+
+    def _decode(self, s, strict=False):
+        """ Decode a message.
+
+        Parameters
+        ----------
+        s : str
+            A message to transcode.
+        strict : bool, optional
+            `True` to strip non-transcodeable characters from the message,
+            `False` otherwise.
+
+        Returns
+        -------
+        out : iterable
+            A transcoded iterable (string, list, generator, etc.).
+
+        Raises
+        ------
+        NotImplementedError
+            If not overridden.
+
+        """
+        raise NotImplementedError
+
     def encode(self, s, strict=False, block=0):
         """ Encode a message.
 
