@@ -121,6 +121,41 @@ class OneDimensionalTableau(ZeroDimensionalTableau):
     def __str__(self):
         return 'PT: {}\nCT: {}'.format(self.alphabet, self.alphabet_)
 
+    def _transcode(self, element, strict, table):
+        """ Transcode forwards.
+
+        Parameters
+        ----------
+        element : hashable data-type
+            An element to transcode.
+        strict : bool
+            `False` to return non-transcodable elements unchanged,
+            `True` to replace with `None`.  Default `False`.
+        table : dict or dict-like
+            A dict to handle translation.
+
+        Returns
+        -------
+        out : data-type
+            A transcoded copy (if possible) of the given element `element`.
+
+        Notes
+        -----
+        If the two alphabets do not have identical character sets, the `strict`
+        flag may behave differently based on whether encoding or decoding is
+        occurring.  For instance, if this tableau simply converts uppercase to
+        lowercase (A => a, B => b) and back again, trying to encode a lowercase
+        message (or decode an uppercase one) will result in an empty output
+        since no elements were transcodeable.
+
+        """
+        default = None
+        if not strict:
+            default = element
+        return table.get(element, default)
+        # return map(table.get, element, default)
+        # return element.translate(table)
+
     def encode(self, element, strict):
         """ Transcode forwards.
 
@@ -147,12 +182,7 @@ class OneDimensionalTableau(ZeroDimensionalTableau):
         since no elements were transcodeable.
 
         """
-        default = None
-        if not strict:
-            default = element
-        return self.a2b.get(element, default)
-        # return map(self.a2b.get, s, s)
-        # return s.translate(self.a2b)
+        return self._transcode(element, strict, self.a2b)
 
     def decode(self, element, strict):
         """ Transcode backwards.
@@ -180,12 +210,7 @@ class OneDimensionalTableau(ZeroDimensionalTableau):
             A transcoded copy (if possible) of the given element `element`.
 
         """
-        default = None
-        if not strict:
-            default = element
-        return self.b2a.get(element, default)
-        # return map(self.b2a.get, s, s)
-        # return s.translate(self.b2a)
+        return self._transcode(element, strict, self.b2a)
 
 
 class TwoDimensionalTableau(ZeroDimensionalTableau):
