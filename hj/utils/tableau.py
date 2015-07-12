@@ -172,15 +172,6 @@ class OneDimensionalTableau(ZeroDimensionalTableau):
         out : data-type
             A transcoded copy (if possible) of the given element `element`.
 
-        Notes
-        -----
-        If the two alphabets do not have identical character sets, the `strict`
-        flag may behave differently based on whether encoding or decoding is
-        occurring.  For instance, if this tableau simply converts uppercase to
-        lowercase (A => a, B => b) and back again, trying to encode a lowercase
-        message (or decode an uppercase one) will result in an empty output
-        since no elements were transcodeable.
-
         """
         return self._transcode(element, strict, self.a2b)
 
@@ -194,15 +185,6 @@ class OneDimensionalTableau(ZeroDimensionalTableau):
         strict : bool
             `False` to return non-transcodable elements unchanged,
             `True` to replace with `None`.  Default `False`.
-
-        Notes
-        -----
-        If the two alphabets do not have identical character sets, the `strict`
-        flag may behave differently based on whether encoding or decoding is
-        occurring.  For instance, if this tableau simply converts uppercase to
-        lowercase (A => a, B => b) and back again, trying to encode a lowercase
-        message (or decode an uppercase one) will result in an empty output
-        since no elements were transcodeable.
 
         Returns
         -------
