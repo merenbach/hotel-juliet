@@ -365,3 +365,8 @@ def transform_with_dict(d, key, strict):
         success = key in d
 
     return d.get(key, key), success
+    # return d.get(key, key), key in d if strict else True
+    # try:
+    #     return d[key], True
+    # except KeyError:
+    #     return key, not strict
