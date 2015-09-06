@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .. import SubCipher
-from utils import OneDimensionalTableau
+from utils import MonoalphabeticTableau
 
 
 class MonoSubCipher(SubCipher):
@@ -18,31 +18,12 @@ class MonoSubCipher(SubCipher):
     """
     def __init__(self, alphabet, alphabet_):
         super().__init__(alphabet)
-        self.tableau = OneDimensionalTableau(alphabet, alphabet_)
-
-    # def _transform(self, alphabet):
-    #     """ Transform a character set for transcoding.
-    #
-    #     Parameters
-    #     ----------
-    #     alphabet : str
-    #         A character set to use for transcoding.
-    #
-    #     Returns
-    #     -------
-    #     out : str
-    #         A transformed version of the provided character set.
-    #
-    #     Raises
-    #     ------
-    #     NotImplementedError
-    #         If not overridden.
-    #
-    #     """
-    #     raise NotImplementedError
+        self.tableau = MonoalphabeticTableau(alphabet, alphabet_)
 
     def _encode(self, s, strict):
-        return (self.tableau.encode(c, strict) for c in s)
+        out = (self.tableau.encode(e, strict) for e in s)
+        return (e for e, success in out if success)
 
     def _decode(self, s, strict):
-        return (self.tableau.decode(c, strict) for c in s)
+        out = (self.tableau.decode(e, strict) for e in s)
+        return (e for e, success in out if success)

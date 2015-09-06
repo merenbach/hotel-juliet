@@ -88,7 +88,6 @@ class VigenereCipher(PolySubCipher):
 
         """
         keystream = self.tableau.keystream_from(countersign)
-        fallback = lambda c: None if strict else c
 
         # msg_outer = False
         # msg_outer = True
@@ -119,19 +118,24 @@ class VigenereCipher(PolySubCipher):
         # key_char = keystream.send(food)
         for msg_char in message:
 
-            x_msg_char = None
-            while x_msg_char is None:
+            success = False
+            while not success:
                 if advance_key:
                     key_char = keystream.send(food)
                     advance_key, food = False, None
 
                 try:
-                    x_msg_char = cipher_func(msg_char, key_char, True)
+                    x_msg_char, success = cipher_func(msg_char, key_char, True)
                 except KeyError:
+                    # skip this character--not valid in key
                     advance_key = True
                 else:
-                    if x_msg_char is None:
-                        x_msg_char = fallback(msg_char)
+                    if not success:
+                        # if not strict, x_msg_char is already set to msg_char
+                        # thanks to cipher_func
+                        if strict:
+                            x_msg_char = None
+
                         break  # not required if we advance msg_char above
             else:
                 # character was successfully transcoded
@@ -161,8 +165,8 @@ class VigenereCipher(PolySubCipher):
         #     # it avoids advancing the key until a key char is consumed
         #     while advance_key is False:
         #         msg_char = next(message)
-        #         x_msg_char = cipher_func(msg_char, key_char, True)
-        #         if x_msg_char is not None:
+        #         x_msg_char, success = cipher_func(msg_char, key_char, True)
+        #         if success:
         #             yield x_msg_char
         #         else:
         #             yield fallback(msg_char)

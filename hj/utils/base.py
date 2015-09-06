@@ -182,7 +182,7 @@ def affined(seq, multiplier, offset):
     return multiplied(newseq, multiplier)
 
 
-def unique(s):
+def unique_list(s):
     """ Get unique items in sequence, preserving order.
 
     Parameters
@@ -222,7 +222,7 @@ def keyed(seq, keyword):
     # uniqued seq + (self - seq)
     filtered_keyword = [element for element in keyword if element in seq]
     seq = list(seq)
-    return unique(filtered_keyword + seq)
+    return unique_list(filtered_keyword + seq)
 
 
 # def union(a, b):
@@ -330,5 +330,38 @@ def appendable(seq):
 
     for element in seq:
         food = yield element
+        # [TODO] checking for `None` here is a philosophical problem for me...
         if food is not None:
             seq.append(food)
+
+
+def transform_with_dict(d, key, strict):
+    """ Retrieve item from dictionary with success flag.
+
+    Parameters
+    ----------
+    d : dict
+        A dictionary from which to retrieve.
+    key : object
+        A key for which to retrieve the corresponding value form the dict.
+    strict : bool, optional
+        `True` to omit elements that could not be transformed,
+        `False` to include them unchanged.
+
+    Returns
+    -------
+    out : object
+        The element for the given key, if found, or the element itself.
+    out : bool
+        `True` if the element was located successfully, `False` otherwise.
+
+    """
+    # #### [TODO]: improve this
+    if not strict:
+        # always successful if strict mode disabled!
+        success = True
+    else:
+        # only successful if transcoding possible
+        success = key in d
+
+    return d.get(key, key), success
