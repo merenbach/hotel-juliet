@@ -120,6 +120,7 @@ class VigenereCipher(PolySubCipher):
 
             success = False
             while not success:
+                could_transcode = False
                 if advance_key:
                     key_char = keystream.send(food)
                     advance_key, food = False, None
@@ -127,33 +128,29 @@ class VigenereCipher(PolySubCipher):
                 try:
                     x_msg_char = cipher_func(msg_char, key_char)
                     if x_msg_char != []:
-                        success = True
                         x_msg_char = x_msg_char[0]
-                    else:
-                        success = False
+                        could_transcode = True
+
                 except KeyError:
                     # skip this character--not valid in key
                     advance_key = True
+
                 else:
-                    if not success:
+                    if could_transcode:
+                        yield x_msg_char
+
+                        # character was successfully transcoded
+                        if not autoclave:
+                            food = key_char
+                        else:
+                            food = autoclave(msg_char, x_msg_char)
+                        advance_key = True
+                    elif not strict:
                         # if not strict, x_msg_char is already set to msg_char
                         # thanks to cipher_func
-                        if strict:
-                            x_msg_char = None
-                        else:
-                            x_msg_char = msg_char
+                        yield msg_char
+                    success = True
 
-                        break  # not required if we advance msg_char above
-            else:
-                # character was successfully transcoded
-                if not autoclave:
-                    food = key_char
-                else:
-                    food = autoclave(msg_char, x_msg_char)
-                advance_key = True
-
-            # yield the transcoded message character
-            yield x_msg_char
 
         # # PROS:
         # #   - no initial keystream priming
