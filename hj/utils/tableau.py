@@ -67,18 +67,23 @@ class MonoalphabeticTableau:
     def __str__(self):
         return 'PT: {}\nCT: {}'.format(self.a, self.b)
 
-    def _transcode(self, xtable, seq, lenient):
-        """ Transcode forwards.
+    def _transcode(self, seq, lenient, xtable):
+        """ Generator to transcode.
 
         Parameters
         ----------
-        element : hashable data-type
-            An element to transcode.
+        seq : iterable
+            An iterable of elements to transcode.
+        lenient : bool
+            `False` to skip non-transcodable elements,
+            `True` to yield them unchanged.
+        xtable : dict
+            A one-way table mapping elements to elements.
 
-        Returns
+        Yields
         -------
         out : data-type
-            A transcoded copy (if possible) of the given element `element`.
+            The transcoded counterparts, if possible, of the input sequence.
 
         """
         for element in seq:
@@ -93,8 +98,8 @@ class MonoalphabeticTableau:
 
         Parameters
         ----------
-        element : hashable data-type
-            An element to transcode.
+        seq : iterable
+            An iterable of elements to transcode.
 
         Returns
         -------
@@ -102,15 +107,15 @@ class MonoalphabeticTableau:
             A transcoded copy (if possible) of the given element `element`.
 
         """
-        return self._transcode(self.a2b, seq, lenient)
+        return self._transcode(seq, lenient, self.a2b)
 
     def decode(self, seq, lenient):
         """ Transcode backwards.
 
         Parameters
         ----------
-        element : hashable data-type
-            An element to transcode.
+        seq : iterable
+            An iterable of elements to transcode.
 
         Returns
         -------
@@ -118,7 +123,7 @@ class MonoalphabeticTableau:
             A transcoded copy (if possible) of the given element `element`.
 
         """
-        return self._transcode(self.b2a, seq, lenient)
+        return self._transcode(seq, lenient, self.b2a)
 
 
 class TwoDimensionalTableau(object):
