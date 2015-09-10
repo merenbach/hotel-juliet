@@ -119,37 +119,47 @@ class VigenereCipher(PolySubCipher):
         for msg_char in message:
 
             success = False
-            while not success:
-                could_transcode = False
-                if advance_key:
+            could_transcode = False
+
+            while True:
+                if advance_key is True:
                     key_char = keystream.send(food)
-                    advance_key, food = False, None
+                    # advance_key, food = False, None
+                    food = None
 
                 try:
-                    x_msg_char = cipher_func(msg_char, key_char)
+                    x_msg_char = list(cipher_func(msg_char, key_char))
                     if x_msg_char != []:
                         x_msg_char = x_msg_char[0]
                         could_transcode = True
 
                 except KeyError:
                     # skip this character--not valid in key
-                    advance_key = True
+                    # advance_key = True
+                    pass
 
                 else:
-                    if could_transcode:
-                        yield x_msg_char
+                    advance_key = False
+                    break
 
-                        # character was successfully transcoded
-                        if not autoclave:
-                            food = key_char
-                        else:
-                            food = autoclave(msg_char, x_msg_char)
-                        advance_key = True
-                    elif not strict:
-                        # if not strict, x_msg_char is already set to msg_char
-                        # thanks to cipher_func
-                        yield msg_char
-                    success = True
+            if could_transcode:
+                out_char = x_msg_char
+                # character was successfully transcoded
+                if not autoclave:
+                    food = key_char
+                else:
+                    food = autoclave(msg_char, x_msg_char)
+                advance_key = True
+                success = True
+
+            elif not strict:
+                # if not strict, x_msg_char is already set to msg_char
+                # thanks to cipher_func
+                out_char = msg_char
+                success = True
+
+            if success:
+                yield out_char
 
 
         # # PROS:

@@ -144,7 +144,7 @@ class TwoDimensionalTableau(object):
     # #     # self.a2b = str.maketrans(alphabet, alphabet_)
     # #     # self.b2a = str.maketrans(alphabet_, alphabet)
 
-    def encode(self, element, key):
+    def encode(self, seq, key):
         """ Locate element within the grid.
 
         Parameters
@@ -168,9 +168,9 @@ class TwoDimensionalTableau(object):
 
         """
         transcoder = self.alphabets_[key]
-        return list(transcoder.encode([element], False))
+        return transcoder.encode(seq, False)
 
-    def decode(self, element, key):
+    def decode(self, seq, key):
         """ Locate element within the grid.
 
         Parameters
@@ -194,4 +194,4 @@ class TwoDimensionalTableau(object):
 
         """
         transcoder = self.alphabets_[key]
-        return list(transcoder.decode([element], False))
+        return transcoder.decode(seq, False)
