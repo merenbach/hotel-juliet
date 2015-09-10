@@ -1,10 +1,41 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from .base import unique_list, transform_with_dict
+from .base import unique_list
+
+# # [TODO]--instead of passing "strict" around, how about just returning a
+# wrapper for the non-transcodeable element and the original caller can
+# determine what to do with it?
 
 
-class MonoalphabeticTableau(object):
+# class TranslationTable:
+#     def __init__(self, xtable):
+#         """ xtable is a dict"""
+#         self.xtable = xtable
+#
+#     def _transform(self, element, strict):
+#         try:
+#             return self.xtable[element]
+#         except KeyError:
+#             if not strict:
+#                 return element
+#             else:
+#                 raise
+#
+#     def transform(self, element, strict):
+#         return self._transform(element, strict)
+#
+#
+# class NonTranscodeableElement:
+#     """ Mark elements that could not be transcoded; what happens to these is at
+#         the presentation layer.
+#
+#     """
+#     def __init__(self, element):
+#         self.element = element
+
+
+class MonoalphabeticTableau:
     """ Monoalphabetic tableau.
 
     Parameters
@@ -36,16 +67,13 @@ class MonoalphabeticTableau(object):
     def __str__(self):
         return 'PT: {}\nCT: {}'.format(self.a, self.b)
 
-    def encode(self, element, strict):
+    def _transcode(self, xtable, seq, lenient):
         """ Transcode forwards.
 
         Parameters
         ----------
         element : hashable data-type
             An element to transcode.
-        strict : bool
-            `False` to return non-transcodable elements unchanged,
-            `True` to replace with `None`.  Default `False`.
 
         Returns
         -------
@@ -53,18 +81,36 @@ class MonoalphabeticTableau(object):
             A transcoded copy (if possible) of the given element `element`.
 
         """
-        return transform_with_dict(self.a2b, element, strict)
+        for element in seq:
+            try:
+                yield xtable[element]
+            except KeyError:
+                if lenient:
+                    yield element
 
-    def decode(self, element, strict):
+    def encode(self, seq, lenient):
+        """ Transcode forwards.
+
+        Parameters
+        ----------
+        element : hashable data-type
+            An element to transcode.
+
+        Returns
+        -------
+        out : data-type
+            A transcoded copy (if possible) of the given element `element`.
+
+        """
+        return self._transcode(self.a2b, seq, lenient)
+
+    def decode(self, seq, lenient):
         """ Transcode backwards.
 
         Parameters
         ----------
         element : hashable data-type
             An element to transcode.
-        strict : bool
-            `False` to return non-transcodable elements unchanged,
-            `True` to replace with `None`.  Default `False`.
 
         Returns
         -------
@@ -72,7 +118,7 @@ class MonoalphabeticTableau(object):
             A transcoded copy (if possible) of the given element `element`.
 
         """
-        return transform_with_dict(self.b2a, element, strict)
+        return self._transcode(self.b2a, seq, lenient)
 
 
 class TwoDimensionalTableau(object):
@@ -98,7 +144,7 @@ class TwoDimensionalTableau(object):
     # #     # self.a2b = str.maketrans(alphabet, alphabet_)
     # #     # self.b2a = str.maketrans(alphabet_, alphabet)
 
-    def encode(self, element, key, strict):
+    def encode(self, element, key):
         """ Locate element within the grid.
 
         Parameters
@@ -109,9 +155,6 @@ class TwoDimensionalTableau(object):
         key : str
             The dictionary key of a transcoder.
             Essentially a row header character on the left edge of the tableau.
-        strict : bool
-            `False` to return non-transcodable elements unchanged,
-            `True` to replace with `None`.
 
         Returns
         -------
@@ -125,9 +168,9 @@ class TwoDimensionalTableau(object):
 
         """
         transcoder = self.alphabets_[key]
-        return transcoder.encode(element, strict)
+        return list(transcoder.encode([element], False))
 
-    def decode(self, element, key, strict):
+    def decode(self, element, key):
         """ Locate element within the grid.
 
         Parameters
@@ -138,9 +181,6 @@ class TwoDimensionalTableau(object):
         key : str
             The dictionary key of a transcoder.
             Essentially a row header character on the left edge of the tableau.
-        strict : bool
-            `False` to return non-transcodable elements unchanged,
-            `True` to replace with `None`.
 
         Returns
         -------
@@ -154,4 +194,4 @@ class TwoDimensionalTableau(object):
 
         """
         transcoder = self.alphabets_[key]
-        return transcoder.decode(element, strict)
+        return list(transcoder.decode([element], False))

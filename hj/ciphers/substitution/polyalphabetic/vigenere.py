@@ -125,7 +125,12 @@ class VigenereCipher(PolySubCipher):
                     advance_key, food = False, None
 
                 try:
-                    x_msg_char, success = cipher_func(msg_char, key_char, True)
+                    x_msg_char = cipher_func(msg_char, key_char)
+                    if x_msg_char != []:
+                        success = True
+                        x_msg_char = x_msg_char[0]
+                    else:
+                        success = False
                 except KeyError:
                     # skip this character--not valid in key
                     advance_key = True
@@ -135,6 +140,8 @@ class VigenereCipher(PolySubCipher):
                         # thanks to cipher_func
                         if strict:
                             x_msg_char = None
+                        else:
+                            x_msg_char = msg_char
 
                         break  # not required if we advance msg_char above
             else:

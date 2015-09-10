@@ -21,9 +21,7 @@ class MonoSubCipher(SubCipher):
         self.tableau = MonoalphabeticTableau(alphabet, alphabet_)
 
     def _encode(self, s, strict):
-        out = (self.tableau.encode(e, strict) for e in s)
-        return (e for e, success in out if success)
+        return self.tableau.encode(s, not strict)
 
     def _decode(self, s, strict):
-        out = (self.tableau.decode(e, strict) for e in s)
-        return (e for e, success in out if success)
+        return self.tableau.decode(s, not strict)
