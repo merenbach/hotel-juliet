@@ -104,7 +104,7 @@ class MonoalphabeticTableau:
         Returns
         -------
         out : data-type
-            A transcoded copy (if possible) of the given element `element`.
+            The transcoded counterparts, if possible, of the input sequence.
 
         """
         return self._transcode(seq, lenient, self.a2b)
@@ -120,7 +120,7 @@ class MonoalphabeticTableau:
         Returns
         -------
         out : data-type
-            A transcoded copy (if possible) of the given element `element`.
+            The transcoded counterparts, if possible, of the input sequence.
 
         """
         return self._transcode(seq, lenient, self.b2a)

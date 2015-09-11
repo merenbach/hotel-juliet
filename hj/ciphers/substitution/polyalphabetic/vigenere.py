@@ -116,50 +116,114 @@ class VigenereCipher(PolySubCipher):
         # message = iter(message)
         # while True:
         # key_char = keystream.send(food)
-        for msg_char in message:
+        # keyset = set(countersign)
+        # msgset = set(message)
+        # valid_keychars = keyset & msgset
 
-            success = False
-            could_transcode = False
+        def msg_wrapper(m):
+            yield from m
 
-            while True:
-                if advance_key is True:
-                    key_char = keystream.send(food)
-                    # advance_key, food = False, None
-                    food = None
+        def key_wrapper(k):
+            yield from k
 
+        # wrapped_msg = msg_wrapper(message)
+        # wrapped_key = key_wrapper(countersign)
+        wrapped_msg = iter(message)
+        wrapped_key = iter(countersign)
+
+
+        need_next_msg = True
+        need_next_key = True
+
+
+        csign = list(countersign)
+        wrapped_key = iter(csign)
+
+        while True:
+
+            # advance semicircular message "gear"
+            if need_next_msg:
                 try:
-                    x_msg_char = list(cipher_func(msg_char, key_char))
-                    if x_msg_char != []:
-                        x_msg_char = x_msg_char[0]
-                        could_transcode = True
-
-                except KeyError:
-                    # skip this character--not valid in key
-                    # advance_key = True
-                    pass
-
-                else:
-                    advance_key = False
+                    msg_char = next(wrapped_msg)
+                    need_next_msg = False
+                except StopIteration:
                     break
 
-            if could_transcode:
-                out_char = x_msg_char
-                # character was successfully transcoded
-                if not autoclave:
-                    food = key_char
+            # advance circular key "gear"
+            if need_next_key:
+                try:
+                    key_char = next(wrapped_key)
+                    need_next_key = False
+                except StopIteration:
+                    break
+
+            try:
+                x_msg_char = list(cipher_func(msg_char, key_char))
+            except KeyError:
+                # skip this character--not valid in key
+                need_next_key = True
+                need_next_msg = False
+            else:
+                need_next_msg = True
+                need_next_key = False
+
+                if x_msg_char != []:
+                    x_msg_char = x_msg_char[0]
+                    need_next_key = True
+                    yield x_msg_char
+                elif not strict:
+                    yield msg_char
+
+                if autoclave:
+                    csign += autoclave(msg_char, x_msg_char)
                 else:
-                    food = autoclave(msg_char, x_msg_char)
-                advance_key = True
-                success = True
+                    csign += key_char
+                    # else: pass
 
-            elif not strict:
-                # if not strict, x_msg_char is already set to msg_char
-                # thanks to cipher_func
-                out_char = msg_char
-                success = True
+                    #     if not autoclave:
+                    #         food = key_char
+                    #     else:
+                    #         food = autoclave(msg_char, x_msg_char)
 
-            if success:
-                yield out_char
+            # while True:
+            #     if advance_key is True:
+            #         key_char = keystream.send(food)
+            #         # advance_key, food = False, None
+            #         food = None
+
+            #     try:
+            #         x_msg_char = list(cipher_func(msg_char, key_char))
+            #         if x_msg_char != []:
+            #             x_msg_char = x_msg_char[0]
+            #             could_transcode = True
+            #
+            #     except KeyError:
+            #         # skip this character--not valid in key
+            #         # advance_key = True
+            #         pass
+            #     else:
+            #         break
+            #
+            # advance_key = False
+            #
+            # if could_transcode:
+            #     out_char = x_msg_char
+            #     # character was successfully transcoded
+            #     if not autoclave:
+            #         food = key_char
+            #     else:
+            #         food = autoclave(msg_char, x_msg_char)
+            #     advance_key = True
+            #     success = True
+            #
+            # elif not strict:
+            #     # if not strict, x_msg_char is already set to msg_char
+            #     # thanks to cipher_func
+            #     out_char = msg_char
+            #     success = True
+
+            # if success:
+            #     yield out_char
 
 
         # # PROS:
