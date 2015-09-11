@@ -45,18 +45,20 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(expected_out, out)
 
     def testIterAppendable(self):
-        iterator = appendable('')
+        iterator = IterWrapper('')
         self.assertEqual(''.join(iterator), '')
 
-        iterator = appendable(self.PASSPHRASE)
+        iterator = IterWrapper(self.PASSPHRASE)
         self.assertEqual(''.join(iterator), self.PASSPHRASE)
 
         out = []
-        iterator = appendable(self.PASSPHRASE[0:2])
+        iterator = IterWrapper(self.PASSPHRASE[0:2])
         out.append(next(iterator))
-        out.append(iterator.send(self.PASSPHRASE[2]))
+        iterator.append(self.PASSPHRASE[2])
         out.append(next(iterator))
-        out.append(iterator.send(self.PASSPHRASE))
+        out.append(next(iterator))
+        iterator.append(self.PASSPHRASE)
+        out.append(next(iterator))
 
         self.assertEqual(out, ['O', 'C', 'E', self.PASSPHRASE])
 

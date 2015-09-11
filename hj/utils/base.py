@@ -310,8 +310,8 @@ def roundrobin(*iterables):
             nexts = cycle(islice(nexts, pending))
 
 
-def appendable(seq):
-    """ Generator that may be appended to.
+class IterWrapper:
+    """ A generator that can be appended to with a special method.
 
     Parameters
     ----------
@@ -321,15 +321,27 @@ def appendable(seq):
     Yields
     ------
     out : data-type
-        Each character in seq.
-    in : data-type
-        If not `None`, a new element to append to `seq`.
+        The next element from `seq`.
+
+    Raises
+    ------
+    StopIteration
+        If all elements are exhausted from `seq`.
 
     """
-    seq = list(seq)
+    def __init__(self, seq):
+        self.seq = list(seq)
+        self.iterator = iter(self.seq)
 
-    for element in seq:
-        food = yield element
-        # [TODO] checking for `None` here is a philosophical problem for me...
-        if food is not None:
-            seq.append(food)
+    def append(self, element):
+        self.seq.append(element)
+
+    # def extend(self, seq):
+    #     self.seq.extend(seq)
+
+    def __iter__(self):
+        return self
+        # return self.iterator
+
+    def __next__(self):
+        return next(self.iterator)

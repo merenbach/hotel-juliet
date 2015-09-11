@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .tableau import MonoalphabeticTableau, TwoDimensionalTableau
-from .base import appendable, lrotated, orotated
+from .base import lrotated, orotated
 from collections import OrderedDict
 from string import digits
 
@@ -35,24 +35,24 @@ class TabulaRecta(TwoDimensionalTableau):
         alphabets_ = OrderedDict(zip(keys or alphabet, transcoders_list))
         super().__init__(alphabet, alphabets_)
 
-    def keystream_from(self, seq):
-        """ Generator that filter out key characters that can't be used.
-
-        Parameters
-        ----------
-        seq : iterable
-            A sequence or iterator that yields elements.
-
-        Returns
-        -------
-        out : generator
-            Each element in `seq` that is in the keys of this tabula recta.
-            This keystream may be appended to with `.send(food)`
-
-        """
-        # keystream = (c for c in seq if c in self.alphabets_.keys())
-        keystream = seq
-        return appendable(keystream)
+    # def keystream_from(self, seq):
+    #     """ Generator that filter out key characters that can't be used.
+    #
+    #     Parameters
+    #     ----------
+    #     seq : iterable
+    #         A sequence or iterator that yields elements.
+    #
+    #     Returns
+    #     -------
+    #     out : generator
+    #         Each element in `seq` that is in the keys of this tabula recta.
+    #         This keystream may be appended to with `.send(food)`
+    #
+    #     """
+    #     # keystream = (c for c in seq if c in self.alphabets_.keys())
+    #     keystream = seq
+    #     return appendable(keystream)
 
     def __str__(self):
         alphabet = self.alphabet

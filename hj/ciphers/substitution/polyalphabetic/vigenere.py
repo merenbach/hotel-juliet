@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .base import PolySubCipher
-from utils import DEFAULT_ALPHABET, TabulaRecta
+from utils import DEFAULT_ALPHABET, TabulaRecta, IterWrapper
 
 # [TODO] still need to add keyed alphabets per Vigenere
 
@@ -87,8 +87,6 @@ class VigenereCipher(PolySubCipher):
             The transcoded message character.
 
         """
-        keystream = self.tableau.keystream_from(countersign)
-
         # msg_outer = False
         # msg_outer = True
 
@@ -123,21 +121,12 @@ class VigenereCipher(PolySubCipher):
         def msg_wrapper(m):
             yield from m
 
-        def key_wrapper(k):
-            yield from k
-
-        # wrapped_msg = msg_wrapper(message)
-        # wrapped_key = key_wrapper(countersign)
-        wrapped_msg = iter(message)
-        wrapped_key = iter(countersign)
-
 
         need_next_msg = True
         need_next_key = True
 
-
-        csign = list(countersign)
-        wrapped_key = iter(csign)
+        wrapped_key = IterWrapper(countersign)
+        wrapped_msg = iter(message)
 
         while True:
 
@@ -145,45 +134,52 @@ class VigenereCipher(PolySubCipher):
             if need_next_msg:
                 try:
                     msg_char = next(wrapped_msg)
-                    need_next_msg = False
                 except StopIteration:
                     break
+                else:
+                    need_next_msg = False
 
             # advance circular key "gear"
             if need_next_key:
                 try:
                     key_char = next(wrapped_key)
-                    need_next_key = False
                 except StopIteration:
                     break
+                else:
+                    need_next_key = False
 
-            try:
-                x_msg_char = list(cipher_func(msg_char, key_char))
-            except KeyError:
+            def transcode_it():
+                try:
+                    return list(cipher_func(msg_char, key_char)), True
+                except KeyError:
+                    # skip this character--not valid in key
+                    return None, False
+
+            x_msg_char, valid_keychar = transcode_it()
+            if not valid_keychar:
                 # skip this character--not valid in key
                 need_next_key = True
-                need_next_msg = False
             else:
+                # consume next message character in next loop
                 need_next_msg = True
-                need_next_key = False
 
                 if x_msg_char != []:
                     x_msg_char = x_msg_char[0]
                     need_next_key = True
                     yield x_msg_char
+
+                    # this can be here since key won't advance if transcoding
+                    # was not successful or if key character was valid
+                    if autoclave:
+                        wrapped_key.append(autoclave(msg_char, x_msg_char))
+                    else:
+                        wrapped_key.append(key_char)
+
                 elif not strict:
+                    # key character wasn't used to transcode, but we're not
+                    # in strict mode if we're here, so don't advance key
                     yield msg_char
-
-                if autoclave:
-                    csign += autoclave(msg_char, x_msg_char)
-                else:
-                    csign += key_char
-                    # else: pass
-
-                    #     if not autoclave:
-                    #         food = key_char
-                    #     else:
-                    #         food = autoclave(msg_char, x_msg_char)
+                # else: pass
 
             # while True:
             #     if advance_key is True:
