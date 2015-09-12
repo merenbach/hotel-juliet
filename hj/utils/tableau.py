@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from .base import unique_list
+from .base import transcoder_stream, unique_list
 
 # # [TODO]--instead of passing "strict" around, how about just returning a
 # wrapper for the non-transcodeable element and the original caller can
@@ -67,33 +67,7 @@ class MonoalphabeticTableau:
     def __str__(self):
         return 'PT: {}\nCT: {}'.format(self.a, self.b)
 
-    def _transcode(self, seq, lenient, xtable):
-        """ Generator to transcode.
-
-        Parameters
-        ----------
-        seq : iterable
-            An iterable of elements to transcode.
-        lenient : bool
-            `False` to skip non-transcodable elements,
-            `True` to yield them unchanged.
-        xtable : dict
-            A one-way table mapping elements to elements.
-
-        Yields
-        -------
-        out : data-type
-            The transcoded counterparts, if possible, of the input sequence.
-
-        """
-        for element in seq:
-            try:
-                yield xtable[element]
-            except KeyError:
-                if lenient:
-                    yield element
-
-    def encode(self, seq, lenient):
+    def encode(self, seq, strict):
         """ Transcode forwards.
 
         Parameters
@@ -107,9 +81,9 @@ class MonoalphabeticTableau:
             The transcoded counterparts, if possible, of the input sequence.
 
         """
-        return self._transcode(seq, lenient, self.a2b)
+        return transcoder_stream(self.a2b, seq, strict)
 
-    def decode(self, seq, lenient):
+    def decode(self, seq, strict):
         """ Transcode backwards.
 
         Parameters
@@ -123,7 +97,7 @@ class MonoalphabeticTableau:
             The transcoded counterparts, if possible, of the input sequence.
 
         """
-        return self._transcode(seq, lenient, self.b2a)
+        return transcoder_stream(self.b2a, seq, strict)
 
 
 class TwoDimensionalTableau(object):
@@ -173,7 +147,7 @@ class TwoDimensionalTableau(object):
 
         """
         transcoder = self.alphabets_[key]
-        return transcoder.encode(seq, False)
+        return transcoder.encode(seq, True)
 
     def decode(self, seq, key):
         """ Locate element within the grid.
@@ -199,4 +173,4 @@ class TwoDimensionalTableau(object):
 
         """
         transcoder = self.alphabets_[key]
-        return transcoder.decode(seq, False)
+        return transcoder.decode(seq, True)

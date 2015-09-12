@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import collections
 from collections import OrderedDict
 from fractions import gcd
 from itertools import zip_longest, cycle, islice
@@ -310,7 +311,7 @@ def roundrobin(*iterables):
             nexts = cycle(islice(nexts, pending))
 
 
-class IterWrapper:
+class IterWrapper(collections.Iterator):
     """ A generator that can be appended to with a special method.
 
     Parameters
@@ -331,17 +332,80 @@ class IterWrapper:
     """
     def __init__(self, seq):
         self.seq = list(seq)
+        self.reset()
+
+        # self.append = seq.append  # [TODO]efficient but abstruse
+        # self.extend = seq.extend
+
+    def append(self, obj):
+        self.seq.append(obj)
+
+    # def extend(self, obj):
+    #     self.seq.extend(obj)
+
+    def reset(self):
         self.iterator = iter(self.seq)
-
-    def append(self, element):
-        self.seq.append(element)
-
-    # def extend(self, seq):
-    #     self.seq.extend(seq)
-
-    def __iter__(self):
-        return self
-        # return self.iterator
 
     def __next__(self):
         return next(self.iterator)
+
+# def iter_wrapper(seq):
+#     def inner_generator(c):
+#         yield from c
+#     listified = list(seq)
+#     def appendify(element):
+#         listified.append(element)
+#     gengen = inner_generator(listified)
+#     gengen.append = appendify  # can't add method to generator... weak
+#     return gengen
+
+# def appendable(seq):
+#     """ Generator that may be appended to.
+#
+#     Parameters
+#     ----------
+#     seq : iterable
+#         A sequence or iterator that yields elements.
+#
+#     Yields
+#     ------
+#     out : data-type
+#         Each character in seq.
+#     in : data-type
+#         If not `None`, a new element to append to `seq`.
+#
+#     """
+#     seq = list(seq)
+#
+#     for element in seq:
+#         yield element
+#         food = yield
+#         # [TODO] checking for `None` here is a philosophical problem for me..
+#         seq.append(food)
+
+
+def transcoder_stream(xtable, seq, strict):
+    """ Generator to transcode.
+
+    Parameters
+    ----------
+    xtable : dict
+        A one-way table mapping elements to elements.
+    seq : iterable
+        An iterable of elements to transcode.
+    strict : bool
+        `True` to skip non-transcodable elements,
+        `False` to yield them unchanged.
+
+    Yields
+    -------
+    out : data-type
+        The transcoded counterparts, if possible, of the input sequence.
+
+    """
+    for element in seq:
+        try:
+            yield xtable[element]
+        except KeyError:
+            if not strict:
+                yield element
