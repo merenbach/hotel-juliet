@@ -317,7 +317,7 @@ class IterWrapper(collections.Iterator):
     Parameters
     ----------
     seq : iterable
-        A sequence or iterator that yields elements.
+        A sequence or iterable.
 
     Yields
     ------
@@ -334,16 +334,21 @@ class IterWrapper(collections.Iterator):
         self.seq = list(seq)
         self.reset()
 
-        # self.append = seq.append  # [TODO]efficient but abstruse
-        # self.extend = seq.extend
-
     def append(self, obj):
+        """ Append to the sequence.
+
+        Parameters
+        ----------
+        obj : data-type
+            An element to append to the sequence being iterated.
+
+        """
         self.seq.append(obj)
 
-    # def extend(self, obj):
-    #     self.seq.extend(obj)
-
     def reset(self):
+        """ Reset this iterator to the first element.
+
+        """
         self.iterator = iter(self.seq)
 
     def __next__(self):
@@ -416,7 +421,7 @@ class TranscoderStream:
         return self.p(delimiter=',\n ', keyvalsep=' => ')
 
     def __repr__(self):
-        return self.p()
+        return '{}: {}'.format(self.__class__.__name__, self.p())
 
     def p(self, delimiter=', ', keyvalsep=': '):
         """ Printable version of this instance.

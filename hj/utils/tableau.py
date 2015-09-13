@@ -58,7 +58,7 @@ class MonoalphabeticTableau:
         return self.a2b.p(delimiter=',\n ', keyvalsep=' <=> ')
 
     def __repr__(self):
-        return repr(self.a2b)
+        return '{}: {}'.format(self.__class__.__name__, self.a2b.p())
 
     def encode(self, seq, strict):
         """ Transcode forwards.
@@ -67,6 +67,9 @@ class MonoalphabeticTableau:
         ----------
         seq : iterable
             An iterable of elements to transcode.
+        strict : bool
+            `True` to skip non-transcodable elements,
+            `False` to yield them unchanged.
 
         Returns
         -------
@@ -83,6 +86,9 @@ class MonoalphabeticTableau:
         ----------
         seq : iterable
             An iterable of elements to transcode.
+        strict : bool
+            `True` to skip non-transcodable elements,
+            `False` to yield them unchanged.
 
         Returns
         -------
