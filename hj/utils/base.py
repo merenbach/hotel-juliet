@@ -399,11 +399,44 @@ class TranscoderStream:
     ValueError
         If `a` and `b` differ in length.
 
+    Notes
+    -----
+    A collections.OrderedDict is used to store the translation table, once
+    generated.  This isn't strictly necessary for the class to function
+    correctly.  Instead, it facilitates testing and troubleshooting.
+
     """
     def __init__(self, a, b):
-        if len(a) != len(b):
+        a_, b_ = OrderedDict.fromkeys(a), OrderedDict.fromkeys(b)
+        if len(a_) != len(b_):
             raise ValueError('the first two parameters must have equal length')
-        self.xtable = dict(zip(a, b))
+        self.xtable = OrderedDict(zip(a_, b_))  # preserve order
+
+    def __str__(self):
+        return self.p(delimiter=',\n ', keyvalsep=' => ')
+
+    def __repr__(self):
+        return self.p()
+
+    def p(self, delimiter=', ', keyvalsep=': '):
+        """ Printable version of this instance.
+
+        Parameters
+        ----------
+        delimiter : str
+            A separator to insert between successive entries.
+        keyvalsep : str
+            A separator between keys and values.
+
+        Returns
+        -------
+        out : str
+            A formatted string representing the contents of this instance.
+
+        """
+        table = delimiter.join("'{}'{}'{}'".format(str(k), keyvalsep, str(v))
+                               for k, v in self.xtable.items())
+        return '{{{}}}'.format(table)
 
     def transcode(self, seq, strict):
         """ Generator to transcode.

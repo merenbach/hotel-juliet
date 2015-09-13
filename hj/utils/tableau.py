@@ -48,24 +48,17 @@ class MonoalphabeticTableau:
     Notes
     -----
     The `encode` and `decode` methods, in conjunction with the `a2b` and `b2a`
-    dictionaries, function very much like `str.translate` with the output of
-    `str.maketrans`.  An alternative implementation is included, commented-out,
-    for anyone interested.
+    dictionaries, function similarly to `str.maketrans` with `str.translate`.
 
     """
     def __init__(self, a, b):
-        a, b = unique_list(a), unique_list(b)
-        # if len(a) != len(b):
-        #   raise ValueError('the first two parameters must have equal length')
-        # raise ValueError('the first two parameters must have equal number '
-        #                  'of distinct elements')
-        self.a, self.b = a, b
         self.a2b, self.b2a = TranscoderStream(a, b), TranscoderStream(b, a)
-        # self.a2b = str.maketrans(alphabet, alphabet_)
-        # self.b2a = str.maketrans(alphabet_, alphabet)
 
     def __str__(self):
-        return 'PT: {}\nCT: {}'.format(self.a, self.b)
+        return self.a2b.p(delimiter=',\n ', keyvalsep=' <=> ')
+
+    def __repr__(self):
+        return repr(self.a2b)
 
     def encode(self, seq, strict):
         """ Transcode forwards.
@@ -100,7 +93,7 @@ class MonoalphabeticTableau:
         return self.b2a.transcode(seq, strict)
 
 
-class TwoDimensionalTableau(object):
+class TwoDimensionalTableau:
     """ Polyalphabetic tableau.
 
     Parameters

@@ -105,8 +105,6 @@ class VigenereCipher(PolySubCipher):
         # NOTES:
         #   - key advancement in conditional, not loop
 
-        advance_key, food = True, None
-
         # if advance_key:
         #     key_char = keystream.send(food)
         #     keystream.send('aoeu')

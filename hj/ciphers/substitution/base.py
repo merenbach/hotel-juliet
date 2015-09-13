@@ -30,9 +30,8 @@ class SubCipher(Cipher):
     """
     DEFAULT_NULLCHAR = 'X'
 
-    def __init__(self, alphabet, nullchar=DEFAULT_NULLCHAR):
+    def __init__(self, nullchar=DEFAULT_NULLCHAR):
         super().__init__()
-        alphabet = unique_list(alphabet)
         self.nullchar = nullchar
 
     def _make_tableau(self, alphabet):
@@ -70,14 +69,14 @@ class SubCipher(Cipher):
         # [TODO] maybe improve this
         return str(self.tableau)
 
-    def _encode(self, s, strict=False):
+    def _encode(self, s, strict):
         """ Encode a message.
 
         Parameters
         ----------
         s : str
             A message to transcode.
-        strict : bool, optional
+        strict : bool
             `True` to strip non-transcodeable characters from the message,
             `False` otherwise.
 
@@ -94,14 +93,14 @@ class SubCipher(Cipher):
         """
         raise NotImplementedError
 
-    def _decode(self, s, strict=False):
+    def _decode(self, s, strict):
         """ Decode a message.
 
         Parameters
         ----------
         s : str
             A message to transcode.
-        strict : bool, optional
+        strict : bool
             `True` to strip non-transcodeable characters from the message,
             `False` otherwise.
 
@@ -137,8 +136,8 @@ class SubCipher(Cipher):
             The encoded message.
 
         """
-        out = self._encode(s, strict=strict)
-        return ''.join(e for e in out if e is not None)
+        out = self._encode(s, strict)
+        return ''.join(out)
 
     def decode(self, s, strict=False, block=0):
         """ Decode a message.
@@ -159,8 +158,8 @@ class SubCipher(Cipher):
             The decoded message.
 
         """
-        out = self._decode(s, strict=strict)
-        return ''.join(e for e in out if e is not None)
+        out = self._decode(s, strict)
+        return ''.join(out)
 
     # def unblockify(self, iterable, n, fillvalue=None):
     #     """ From itertools"""

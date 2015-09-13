@@ -17,7 +17,7 @@ class MonoSubCipher(SubCipher):
 
     """
     def __init__(self, alphabet, alphabet_):
-        super().__init__(alphabet)
+        super().__init__()
         self.tableau = MonoalphabeticTableau(alphabet, alphabet_)
 
     def _encode(self, s, strict):
