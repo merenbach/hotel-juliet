@@ -384,28 +384,47 @@ class IterWrapper(collections.Iterator):
 #         seq.append(food)
 
 
-def transcoder_stream(xtable, seq, strict):
-    """ Generator to transcode.
+class TranscoderStream:
+    """ Transcode one-way based on a table mapping elements to elements.
 
     Parameters
     ----------
-    xtable : dict
-        A one-way table mapping elements to elements.
-    seq : iterable
-        An iterable of elements to transcode.
-    strict : bool
-        `True` to skip non-transcodable elements,
-        `False` to yield them unchanged.
+    a : iterable
+        An iterable or sequence for source elements.
+    b : iterable
+        An iterable or sequence for target elements.
 
-    Yields
-    -------
-    out : data-type
-        The transcoded counterparts, if possible, of the input sequence.
+    Raises
+    ------
+    ValueError
+        If `a` and `b` differ in length.
 
     """
-    for element in seq:
-        try:
-            yield xtable[element]
-        except KeyError:
-            if not strict:
-                yield element
+    def __init__(self, a, b):
+        if len(a) != len(b):
+            raise ValueError('the first two parameters must have equal length')
+        self.xtable = dict(zip(a, b))
+
+    def transcode(self, seq, strict):
+        """ Generator to transcode.
+
+        Parameters
+        ----------
+        seq : iterable
+            An iterable of elements to transcode.
+        strict : bool
+            `True` to skip non-transcodable elements,
+            `False` to yield them unchanged.
+
+        Yields
+        -------
+        out : data-type
+            The transcoded counterparts, if possible, of the input sequence.
+
+        """
+        for element in seq:
+            try:
+                yield self.xtable[element]
+            except KeyError:
+                if not strict:
+                    yield element

@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from .base import transcoder_stream, unique_list
+from .base import TranscoderStream, unique_list
 
 # # [TODO]--instead of passing "strict" around, how about just returning a
 # wrapper for the non-transcodeable element and the original caller can
@@ -55,12 +55,12 @@ class MonoalphabeticTableau:
     """
     def __init__(self, a, b):
         a, b = unique_list(a), unique_list(b)
-        if len(a) != len(b):
-            raise ValueError('the first two parameters must have equal length')
-            # raise ValueError('the first two parameters must have equal number '
-            #                  'of distinct elements')
+        # if len(a) != len(b):
+        #   raise ValueError('the first two parameters must have equal length')
+        # raise ValueError('the first two parameters must have equal number '
+        #                  'of distinct elements')
         self.a, self.b = a, b
-        self.a2b, self.b2a = dict(zip(a, b)), dict(zip(b, a))
+        self.a2b, self.b2a = TranscoderStream(a, b), TranscoderStream(b, a)
         # self.a2b = str.maketrans(alphabet, alphabet_)
         # self.b2a = str.maketrans(alphabet_, alphabet)
 
@@ -81,7 +81,7 @@ class MonoalphabeticTableau:
             The transcoded counterparts, if possible, of the input sequence.
 
         """
-        return transcoder_stream(self.a2b, seq, strict)
+        return self.a2b.transcode(seq, strict)
 
     def decode(self, seq, strict):
         """ Transcode backwards.
@@ -97,7 +97,7 @@ class MonoalphabeticTableau:
             The transcoded counterparts, if possible, of the input sequence.
 
         """
-        return transcoder_stream(self.b2a, seq, strict)
+        return self.b2a.transcode(seq, strict)
 
 
 class TwoDimensionalTableau(object):
