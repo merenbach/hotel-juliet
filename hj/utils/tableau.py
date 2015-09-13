@@ -3,37 +3,6 @@
 
 from .base import TranscoderStream, unique_list
 
-# # [TODO]--instead of passing "strict" around, how about just returning a
-# wrapper for the non-transcodeable element and the original caller can
-# determine what to do with it?
-
-
-# class TranslationTable:
-#     def __init__(self, xtable):
-#         """ xtable is a dict"""
-#         self.xtable = xtable
-#
-#     def _transform(self, element, strict):
-#         try:
-#             return self.xtable[element]
-#         except KeyError:
-#             if not strict:
-#                 return element
-#             else:
-#                 raise
-#
-#     def transform(self, element, strict):
-#         return self._transform(element, strict)
-#
-#
-# class NonTranscodeableElement:
-#     """ Mark elements that could not be transcoded; what happens to these is at
-#         the presentation layer.
-#
-#     """
-#     def __init__(self, element):
-#         self.element = element
-
 
 class MonoalphabeticTableau:
     """ Monoalphabetic tableau.

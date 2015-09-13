@@ -41,16 +41,20 @@ The underlying frameworks are a bit of a playground for me right now.  The code 
 
   - Allow shifting a la <http://rumkin.com/tools/cipher/caesar-keyed.php>
   - Autotranslate to upper case?
-  - Test whether keys/alphas actually have to be strings
-  - Add keyed Vigenere
-  - Tests should account for non-string and non-sequence keys
+  - Handle block grouping and nulls again.
+  - Test whether keys/alphas actually have to be strings.
+  - Add keyed Vigenere.
+  - Tests should account for non-string and non-sequence keys.
+  - Instead of passing "strict" around, how about just returning a
+    wrapper for the non-transcodeable element and the original caller can
+    determine what to do with it?
+
 
 
 ## Notes
 
-* This project uses the [NumPy/SciPy] [3] documentation style.
-
-* More robust tests are needed on everything, including utility classes (alphabet, flexible sequence mixin, etc.).
+  * This project endeavors to use the [NumPy/SciPy] [3] documentation style.
+  * More robust tests are needed on everything, including utility classes (alphabet, flexible sequence mixin, etc.).
 
 
   [3]: https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt

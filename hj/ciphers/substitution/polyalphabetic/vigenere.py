@@ -116,10 +116,6 @@ class VigenereCipher(PolySubCipher):
         # msgset = set(message)
         # valid_keychars = keyset & msgset
 
-        def msg_wrapper(m):
-            yield from m
-
-
         need_next_msg = True
         need_next_key = True
 
@@ -148,12 +144,16 @@ class VigenereCipher(PolySubCipher):
 
             def transcode_it():
                 try:
-                    return list(cipher_func(msg_char, key_char)), True
+                    x_msg_char = next(cipher_func(msg_char, key_char))
+                except StopIteration:
+                    return None, True, False
                 except KeyError:
                     # skip this character--not valid in key
-                    return None, False
+                    return None, False, False
+                else:
+                    return x_msg_char, True, True
 
-            x_msg_char, valid_keychar = transcode_it()
+            x_msg_char, valid_keychar, valid_msgchar = transcode_it()
             if not valid_keychar:
                 # skip this character--not valid in key
                 need_next_key = True
@@ -161,17 +161,17 @@ class VigenereCipher(PolySubCipher):
                 # consume next message character in next loop
                 need_next_msg = True
 
-                if x_msg_char != []:
-                    x_msg_char = x_msg_char[0]
+                if valid_msgchar:
                     need_next_key = True
                     yield x_msg_char
 
                     # this can be here since key won't advance if transcoding
-                    # was not successful or if key character was valid
+                    # was not successful
                     if autoclave:
-                        wrapped_key.append(autoclave(msg_char, x_msg_char))
+                        add_char = autoclave(msg_char, x_msg_char)
                     else:
-                        wrapped_key.append(key_char)
+                        add_char = key_char
+                    wrapped_key.append(add_char)
 
                 elif not strict:
                     # key character wasn't used to transcode, but we're not
