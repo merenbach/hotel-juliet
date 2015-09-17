@@ -344,7 +344,7 @@ class IterWrapper:
     def __init__(self, seq):
         self.seq = list(seq)
         self.reset()
-        self.prime()
+        self.advance()
 
     def append(self, obj):
         """ Append to the sequence.
@@ -376,6 +376,10 @@ class IterWrapper:
         if self.should_advance:
             self.cursor = next(self.iterator)
             self.should_advance = False
+
+    def advance(self):
+        self.prime()
+        self.ratchet()
 
     # def __next__(self):
     #     return next(self.iterator)

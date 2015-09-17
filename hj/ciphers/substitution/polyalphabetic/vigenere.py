@@ -121,30 +121,29 @@ class VigenereCipher(PolySubCipher):
 
         while True:
 
-            # advance semicircular message "gear" if it's primed
-            wrapped_msg.ratchet()
-
-            # advance circular key "gear" if it's primed
-            wrapped_key.ratchet()
+            # # advance semicircular message "gear" if it's primed
+            # wrapped_msg.ratchet()
+            #
+            # # advance circular key "gear" if it's primed
+            # wrapped_key.ratchet()
 
             def transcode_it():
                 try:
                     x_msg_char = next(cipher_func(wrapped_msg.cursor,
                                       wrapped_key.cursor))
                 except StopIteration:
+                    # skip this msg character--not valid in msg
                     return None, True, False
                 except KeyError:
-                    # skip this character--not valid in key
+                    # skip this key character--not valid in key
                     return None, False, False
                 else:
+                    # transcoding was successful
                     return x_msg_char, True, True
 
             x_msg_char, valid_keychar, valid_msgchar = transcode_it()
-            if valid_msgchar or not valid_keychar:
-                wrapped_key.prime()
             if valid_keychar:
                 # consume next message character in next loop
-                wrapped_msg.prime()
 
                 if valid_msgchar:
                     yield x_msg_char
@@ -157,10 +156,17 @@ class VigenereCipher(PolySubCipher):
                         add_char = wrapped_key.cursor
                     wrapped_key.append(add_char)
 
+                    wrapped_key.advance()
+
                 elif not strict:
                     # key character wasn't used to transcode, but we're not
                     # in strict mode if we're here, so don't advance key
                     yield wrapped_msg.cursor
+
+                wrapped_msg.advance()
+            else:
+                wrapped_key.advance()
+
                 # else: pass
 
             # while True:
