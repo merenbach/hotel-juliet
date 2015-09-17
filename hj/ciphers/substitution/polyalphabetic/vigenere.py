@@ -116,27 +116,21 @@ class VigenereCipher(PolySubCipher):
         # msgset = set(message)
         # valid_keychars = keyset & msgset
 
-        need_next_msg = True
-        need_next_key = True
-
         wrapped_key = IterWrapper(countersign)
-        wrapped_msg = iter(message)
+        wrapped_msg = IterWrapper(message)
 
         while True:
 
-            # advance semicircular message "gear"
-            if need_next_msg:
-                msg_char = next(wrapped_msg)
-                need_next_msg = False
+            # advance semicircular message "gear" if it's primed
+            wrapped_msg.ratchet()
 
-            # advance circular key "gear"
-            if need_next_key:
-                key_char = next(wrapped_key)
-                need_next_key = False
+            # advance circular key "gear" if it's primed
+            wrapped_key.ratchet()
 
             def transcode_it():
                 try:
-                    x_msg_char = next(cipher_func(msg_char, key_char))
+                    x_msg_char = next(cipher_func(wrapped_msg.cursor,
+                                      wrapped_key.cursor))
                 except StopIteration:
                     return None, True, False
                 except KeyError:
@@ -146,10 +140,11 @@ class VigenereCipher(PolySubCipher):
                     return x_msg_char, True, True
 
             x_msg_char, valid_keychar, valid_msgchar = transcode_it()
-            need_next_key = valid_msgchar or not valid_keychar
+            if valid_msgchar or not valid_keychar:
+                wrapped_key.prime()
             if valid_keychar:
                 # consume next message character in next loop
-                need_next_msg = True
+                wrapped_msg.prime()
 
                 if valid_msgchar:
                     yield x_msg_char
@@ -157,15 +152,15 @@ class VigenereCipher(PolySubCipher):
                     # this can be here since key won't advance if transcoding
                     # was not successful
                     if autoclave:
-                        add_char = autoclave(msg_char, x_msg_char)
+                        add_char = autoclave(wrapped_msg.cursor, x_msg_char)
                     else:
-                        add_char = key_char
+                        add_char = wrapped_key.cursor
                     wrapped_key.append(add_char)
 
                 elif not strict:
                     # key character wasn't used to transcode, but we're not
                     # in strict mode if we're here, so don't advance key
-                    yield msg_char
+                    yield wrapped_msg.cursor
                 # else: pass
 
             # while True:

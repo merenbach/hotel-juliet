@@ -311,7 +311,7 @@ def roundrobin(*iterables):
             nexts = cycle(islice(nexts, pending))
 
 
-class IterWrapper(collections.Iterator):
+class IterWrapper:
     """ A generator that can be appended to with a special method.
 
     Parameters
@@ -329,10 +329,22 @@ class IterWrapper(collections.Iterator):
     StopIteration
         If all elements are exhausted from `seq`.
 
+    Notes
+    -----
+    TODO: update this info...
+
+    Use the .cursor attribute to retrieve current position...
+    also cursor isn't available until ratchet() is called at least once...
+    need some tests...
+
+    TODO: replace ratcheting system with plain advancement system?
+
+
     """
     def __init__(self, seq):
         self.seq = list(seq)
         self.reset()
+        self.prime()
 
     def append(self, obj):
         """ Append to the sequence.
@@ -351,8 +363,22 @@ class IterWrapper(collections.Iterator):
         """
         self.iterator = iter(self.seq)
 
-    def __next__(self):
-        return next(self.iterator)
+    def prime(self):
+        """ Prime this wrapper for advancing.
+
+        """
+        self.should_advance = True
+
+    def ratchet(self):
+        """ Advance this wrapper, but only if primed.
+
+        """
+        if self.should_advance:
+            self.cursor = next(self.iterator)
+            self.should_advance = False
+
+    # def __next__(self):
+    #     return next(self.iterator)
 
 # def iter_wrapper(seq):
 #     def inner_generator(c):
