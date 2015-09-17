@@ -126,21 +126,13 @@ class VigenereCipher(PolySubCipher):
 
             # advance semicircular message "gear"
             if need_next_msg:
-                try:
-                    msg_char = next(wrapped_msg)
-                except StopIteration:
-                    break
-                else:
-                    need_next_msg = False
+                msg_char = next(wrapped_msg)
+                need_next_msg = False
 
             # advance circular key "gear"
             if need_next_key:
-                try:
-                    key_char = next(wrapped_key)
-                except StopIteration:
-                    break
-                else:
-                    need_next_key = False
+                key_char = next(wrapped_key)
+                need_next_key = False
 
             def transcode_it():
                 try:
@@ -154,15 +146,12 @@ class VigenereCipher(PolySubCipher):
                     return x_msg_char, True, True
 
             x_msg_char, valid_keychar, valid_msgchar = transcode_it()
-            if not valid_keychar:
-                # skip this character--not valid in key
-                need_next_key = True
-            else:
+            need_next_key = valid_msgchar or not valid_keychar
+            if valid_keychar:
                 # consume next message character in next loop
                 need_next_msg = True
 
                 if valid_msgchar:
-                    need_next_key = True
                     yield x_msg_char
 
                     # this can be here since key won't advance if transcoding
