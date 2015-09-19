@@ -159,7 +159,7 @@ class BaseVigenereCipher(PolySubCipher):
                                              wrapped_key.cursor)
             except KeyError:
                 # skip this key character--not valid in key
-                wrapped_key.advance(append=False)
+                wrapped_key.advance()
             else:
                 try:
                     x_msg_char = next(x_msg_char_gen)
@@ -174,7 +174,7 @@ class BaseVigenereCipher(PolySubCipher):
 
                     # this can be here since key won't advance if transcoding
                     # was not successful
-                    wrapped_key.append(key_food or wrapped_key.cursor)
+                    wrapped_key.append(key_food)
 
                     wrapped_key.advance()
 

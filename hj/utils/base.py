@@ -382,7 +382,7 @@ class IterWrapper:
             An element to append to the sequence being iterated.
 
         """
-        self.to_append = obj
+        self.to_append = obj or self.cursor
 
     def _prime(self):
         """ Prime this wrapper for advancing.
@@ -390,21 +390,18 @@ class IterWrapper:
         """
         self._should_advance = True
 
-    def _ratchet(self, append):
+    def _ratchet(self):
         """ Advance this wrapper, but only if primed.
 
         """
         if self._should_advance:
-            if append:
-                self.cursor = self.iterator.send(self.to_append)
-            else:
-                self.cursor = next(self.iterator)
+            self.cursor = self.iterator.send(self.to_append)
             self._should_advance = False
             self.to_append = []
 
-    def advance(self, append=True):
+    def advance(self):
         self._prime()
-        self._ratchet(append=append)
+        self._ratchet()
 
     # def __next__(self):
     #     return next(self.iterator)
