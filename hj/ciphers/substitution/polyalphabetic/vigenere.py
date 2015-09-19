@@ -7,8 +7,8 @@ from utils import DEFAULT_ALPHABET, TabulaRecta, IterWrapper
 # [TODO] still need to add keyed alphabets per Vigenere
 
 
-class VigenereCipher(PolySubCipher):
-    """ THE Vigenere cipher, conceptual foundation of several other ciphers.
+class BaseVigenereCipher(PolySubCipher):
+    """ Base class for THE Vigenere cipher.
 
     Despite its name, it was not created by Blaise de Vigenère, who instead
     created an autokey cipher.
@@ -22,7 +22,6 @@ class VigenereCipher(PolySubCipher):
 
     """
     TABULA_RECTA = TabulaRecta
-    AUTOCLAVE = False
 
     def __init__(self, countersign, alphabet=DEFAULT_ALPHABET):
         if not countersign:
@@ -57,15 +56,27 @@ class VigenereCipher(PolySubCipher):
         """
         return self.TABULA_RECTA(alphabet=alphabet)
 
+    # def _encode(self, s, strict):
+    #     generator = self._transcoder(s, strict, self.countersign,
+    #                                  self.tableau.encode)
+    #     yield from generator
     def _encode(self, s, strict):
         generator = self._transcoder(s, strict, self.countersign,
                                      self.tableau.encode)
         yield from generator
+        # food = None
+        # while True:
+        #     e_transcoded, e_raw = generator.send(food)
+        #     food = yield e_transcoded, e_raw
 
     def _decode(self, s, strict):
         generator = self._transcoder(s, strict, self.countersign,
                                      self.tableau.decode)
         yield from generator
+        # food = None
+        # while True:
+        #     e_transcoded, e_raw = generator.send(food)
+        #     food = yield e_transcoded, e_raw
 
     # def _encode(self, s, strict):
     #     generator = self._transcoder(s, strict, self.countersign,
@@ -157,21 +168,13 @@ class VigenereCipher(PolySubCipher):
                     if not strict:
                         # key character wasn't used to transcode, but we're not
                         # in strict mode if we're here, so don't advance key
-                        if not self.AUTOCLAVE:
-                            yield wrapped_msg.cursor
-                        else:
-                            yield wrapped_msg.cursor, None
+                        yield wrapped_msg.cursor, None
                 else:
-                    if not self.AUTOCLAVE:
-                        yield x_msg_char
+                    key_food = yield x_msg_char, wrapped_msg.cursor
 
-                        # this can be here since key won't advance if transcoding
-                        # was not successful
-                        key_food = wrapped_key.cursor
-                    else:
-                        key_food = yield x_msg_char, wrapped_msg.cursor
-                    
-                    wrapped_key.append(key_food)
+                    # this can be here since key won't advance if transcoding
+                    # was not successful
+                    wrapped_key.append(key_food or wrapped_key.cursor)
 
                     wrapped_key.advance()
 
@@ -248,8 +251,32 @@ class VigenereCipher(PolySubCipher):
         #                 food = autoclave(msg_char, x_msg_char)
         #             keystream.append(food)
 
+class VigenereCipher(BaseVigenereCipher):
+    """ THE Vigenere cipher, conceptual foundation of several other ciphers.
 
-class VigenereTextAutoclaveCipher(VigenereCipher):
+    Despite its name, it was not created by Blaise de Vigenère, who instead
+    created an autokey cipher.
+
+    Parameters
+    ----------
+    countersign : str
+        An encryption/decryption key.
+    alphabet : str
+        A character set to use for transcoding.  Default `None`.
+
+    """
+    def _encode(self, s, strict):
+        generator = super()._encode(s, strict)
+        for e_transcoded, __ in generator:
+            yield e_transcoded
+
+    def _decode(self, s, strict):
+        generator = super()._decode(s, strict)
+        for e_transcoded, __ in generator:
+            yield e_transcoded
+
+
+class VigenereTextAutoclaveCipher(BaseVigenereCipher):
     """ An oft-overlooked autokey cipher developed by Blaise de Vigenère.
 
     Notes
@@ -264,15 +291,13 @@ class VigenereTextAutoclaveCipher(VigenereCipher):
     effect at all) unless the key is shorter than the text to be encrypted.
 
     """
-    AUTOCLAVE = True
-
     def _encode(self, s, strict):
         food = None
         generator = super()._encode(s, strict)
         while True:
             e_transcoded, e_raw = generator.send(food)
             yield e_transcoded
-            food = e_raw
+            food = [e_raw]
 
     def _decode(self, s, strict):
         food = None
@@ -280,10 +305,10 @@ class VigenereTextAutoclaveCipher(VigenereCipher):
         while True:
             e_transcoded, e_raw = generator.send(food)
             yield e_transcoded
-            food = e_transcoded
+            food = [e_transcoded]
 
 
-class VigenereKeyAutoclaveCipher(VigenereCipher):
+class VigenereKeyAutoclaveCipher(BaseVigenereCipher):
     """ An oft-overlooked autokey cipher developed by Blaise de Vigenère.
 
     Notes
@@ -298,15 +323,13 @@ class VigenereKeyAutoclaveCipher(VigenereCipher):
     effect at all) unless the key is shorter than the text to be encrypted.
 
     """
-    AUTOCLAVE = True
-
     def _encode(self, s, strict):
         food = None
         generator = super()._encode(s, strict)
         while True:
             e_transcoded, e_raw = generator.send(food)
             yield e_transcoded
-            food = e_transcoded
+            food = [e_transcoded]
 
     def _decode(self, s, strict):
         food = None
@@ -314,4 +337,4 @@ class VigenereKeyAutoclaveCipher(VigenereCipher):
         while True:
             e_transcoded, e_raw = generator.send(food)
             yield e_transcoded
-            food = e_raw
+            food = [e_raw]

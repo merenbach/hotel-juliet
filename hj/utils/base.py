@@ -382,7 +382,7 @@ class IterWrapper:
             An element to append to the sequence being iterated.
 
         """
-        self.to_append = [obj]
+        self.to_append = obj
 
     def _prime(self):
         """ Prime this wrapper for advancing.
