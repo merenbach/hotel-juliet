@@ -127,25 +127,25 @@ class VigenereCipher(PolySubCipher):
             # # advance circular key "gear" if it's primed
             # wrapped_key.ratchet()
 
-            def transcode_it():
+            # custom errors, plz! raise an error and don't return a generator
+            try:
+                x_msg_char_gen = cipher_func(wrapped_msg.cursor,
+                                             wrapped_key.cursor)
+            except KeyError:
+                # skip this key character--not valid in key
+                wrapped_key.advance()
+            else:
                 try:
-                    x_msg_char = next(cipher_func(wrapped_msg.cursor,
-                                      wrapped_key.cursor))
+                    x_msg_char = next(x_msg_char_gen)
                 except StopIteration:
                     # skip this msg character--not valid in msg
-                    return None, True, False
-                except KeyError:
-                    # skip this key character--not valid in key
-                    return None, False, False
+                    # if not strict:
+                    #     yield wrapped_msg.cursor
+                    if not strict:
+                        # key character wasn't used to transcode, but we're not
+                        # in strict mode if we're here, so don't advance key
+                        yield wrapped_msg.cursor
                 else:
-                    # transcoding was successful
-                    return x_msg_char, True, True
-
-            x_msg_char, valid_keychar, valid_msgchar = transcode_it()
-            if valid_keychar:
-                # consume next message character in next loop
-
-                if valid_msgchar:
                     yield x_msg_char
 
                     # this can be here since key won't advance if transcoding
@@ -154,18 +154,12 @@ class VigenereCipher(PolySubCipher):
                         add_char = autoclave(wrapped_msg.cursor, x_msg_char)
                     else:
                         add_char = wrapped_key.cursor
+
                     wrapped_key.append(add_char)
 
                     wrapped_key.advance()
 
-                elif not strict:
-                    # key character wasn't used to transcode, but we're not
-                    # in strict mode if we're here, so don't advance key
-                    yield wrapped_msg.cursor
-
                 wrapped_msg.advance()
-            else:
-                wrapped_key.advance()
 
                 # else: pass
 

@@ -311,6 +311,33 @@ def roundrobin(*iterables):
             nexts = cycle(islice(nexts, pending))
 
 
+def extendable_iterator(seq):
+    """ Generator that may be appended to.
+
+    Parameters
+    ----------
+    seq : iterable
+        A sequence or iterator that yields elements.
+
+    Yields
+    ------
+    out : data-type
+        An element from seq.
+    in : iterable
+        If not falsy, a sequence of elements to append to `seq`.
+
+    Raises
+    ------
+    TypeError
+        If generator input is neither falsy nor iterable.
+
+    """
+    seq = list(seq)
+    for element in seq:
+        food = yield element
+        seq.extend(food or [])
+
+
 class IterWrapper:
     """ A generator that can be appended to with a special method.
 
@@ -342,8 +369,8 @@ class IterWrapper:
 
     """
     def __init__(self, seq):
-        self.seq = list(seq)
-        self.reset()
+        self.iterator = extendable_iterator(seq)
+        self.to_append = None
         self.advance()
 
     def append(self, obj):
@@ -355,31 +382,26 @@ class IterWrapper:
             An element to append to the sequence being iterated.
 
         """
-        self.seq.append(obj)
+        self.to_append = [obj]
 
-    def reset(self):
-        """ Reset this iterator to the first element.
-
-        """
-        self.iterator = iter(self.seq)
-
-    def prime(self):
+    def _prime(self):
         """ Prime this wrapper for advancing.
 
         """
-        self.should_advance = True
+        self._should_advance = True
 
-    def ratchet(self):
+    def _ratchet(self):
         """ Advance this wrapper, but only if primed.
 
         """
-        if self.should_advance:
-            self.cursor = next(self.iterator)
-            self.should_advance = False
+        if self._should_advance:
+            self.cursor = self.iterator.send(self.to_append)
+            self._should_advance = False
+            self.to_append = []
 
     def advance(self):
-        self.prime()
-        self.ratchet()
+        self._prime()
+        self._ratchet()
 
     # def __next__(self):
     #     return next(self.iterator)
@@ -393,30 +415,6 @@ class IterWrapper:
 #     gengen = inner_generator(listified)
 #     gengen.append = appendify  # can't add method to generator... weak
 #     return gengen
-
-# def appendable(seq):
-#     """ Generator that may be appended to.
-#
-#     Parameters
-#     ----------
-#     seq : iterable
-#         A sequence or iterator that yields elements.
-#
-#     Yields
-#     ------
-#     out : data-type
-#         Each character in seq.
-#     in : data-type
-#         If not `None`, a new element to append to `seq`.
-#
-#     """
-#     seq = list(seq)
-#
-#     for element in seq:
-#         yield element
-#         food = yield
-#         # [TODO] checking for `None` here is a philosophical problem for me..
-#         seq.append(food)
 
 
 class TranscoderStream:
