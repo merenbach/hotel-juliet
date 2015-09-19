@@ -44,7 +44,7 @@ class UtilsTest(unittest.TestCase):
         out = [lrotated(s, i - s_len) for i in range(s_len)]
         self.assertEqual(expected_out, out)
 
-    def testIterextendable_iterator(self):
+    def testExtendableIterator(self):
         iterator = extendable_iterator('')
         self.assertEqual(''.join(iterator), '')
 
