@@ -390,18 +390,21 @@ class IterWrapper:
         """
         self._should_advance = True
 
-    def _ratchet(self):
+    def _ratchet(self, append):
         """ Advance this wrapper, but only if primed.
 
         """
         if self._should_advance:
-            self.cursor = self.iterator.send(self.to_append)
+            if append:
+                self.cursor = self.iterator.send(self.to_append)
+            else:
+                self.cursor = next(self.iterator)
             self._should_advance = False
             self.to_append = []
 
-    def advance(self):
+    def advance(self, append=True):
         self._prime()
-        self._ratchet()
+        self._ratchet(append=append)
 
     # def __next__(self):
     #     return next(self.iterator)

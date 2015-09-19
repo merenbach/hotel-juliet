@@ -22,6 +22,7 @@ class VigenereCipher(PolySubCipher):
 
     """
     TABULA_RECTA = TabulaRecta
+    AUTOCLAVE = False
 
     def __init__(self, countersign, alphabet=DEFAULT_ALPHABET):
         if not countersign:
@@ -56,16 +57,32 @@ class VigenereCipher(PolySubCipher):
         """
         return self.TABULA_RECTA(alphabet=alphabet)
 
-    def _encode(self, s, strict, autoclave=None):
-        return self._transcoder(s, strict, self.countersign,
-                                self.tableau.encode, autoclave)
+    def _encode(self, s, strict):
+        generator = self._transcoder(s, strict, self.countersign,
+                                     self.tableau.encode)
+        yield from generator
 
-    def _decode(self, s, strict, autoclave=None):
-        return self._transcoder(s, strict, self.countersign,
-                                self.tableau.decode, autoclave)
+    def _decode(self, s, strict):
+        generator = self._transcoder(s, strict, self.countersign,
+                                     self.tableau.decode)
+        yield from generator
+
+    # def _encode(self, s, strict):
+    #     generator = self._transcoder(s, strict, self.countersign,
+    #                                  self.tableau.encode)
+    #     while True:
+    #         e_transcoded, __ = generator.send(None)
+    #         yield e_transcoded
+    #
+    # def _decode(self, s, strict):
+    #     generator = self._transcoder(s, strict, self.countersign,
+    #                                  self.tableau.decode)
+    #     while True:
+    #         e_transcoded, __ = generator.send(None)
+    #         yield e_transcoded
 
     def _transcoder(self, message, strict, countersign,
-                    cipher_func, autoclave):
+                    cipher_func):
         """ Transcode a character.
 
         Parameters
@@ -78,8 +95,6 @@ class VigenereCipher(PolySubCipher):
             An encryption/decryption key.
         cipher_func : function
             A function (encode or decode) to use.
-        autoclave : function
-            A function for autoclaving.
 
         Yields
         -------
@@ -133,29 +148,30 @@ class VigenereCipher(PolySubCipher):
                                              wrapped_key.cursor)
             except KeyError:
                 # skip this key character--not valid in key
-                wrapped_key.advance()
+                wrapped_key.advance(append=False)
             else:
                 try:
                     x_msg_char = next(x_msg_char_gen)
                 except StopIteration:
                     # skip this msg character--not valid in msg
-                    # if not strict:
-                    #     yield wrapped_msg.cursor
                     if not strict:
                         # key character wasn't used to transcode, but we're not
                         # in strict mode if we're here, so don't advance key
-                        yield wrapped_msg.cursor
+                        if not self.AUTOCLAVE:
+                            yield wrapped_msg.cursor
+                        else:
+                            yield wrapped_msg.cursor, None
                 else:
-                    yield x_msg_char
+                    if not self.AUTOCLAVE:
+                        yield x_msg_char
 
-                    # this can be here since key won't advance if transcoding
-                    # was not successful
-                    if autoclave:
-                        add_char = autoclave(wrapped_msg.cursor, x_msg_char)
+                        # this can be here since key won't advance if transcoding
+                        # was not successful
+                        key_food = wrapped_key.cursor
                     else:
-                        add_char = wrapped_key.cursor
-
-                    wrapped_key.append(add_char)
+                        key_food = yield x_msg_char, wrapped_msg.cursor
+                    
+                    wrapped_key.append(key_food)
 
                     wrapped_key.advance()
 
@@ -248,13 +264,23 @@ class VigenereTextAutoclaveCipher(VigenereCipher):
     effect at all) unless the key is shorter than the text to be encrypted.
 
     """
+    AUTOCLAVE = True
+
     def _encode(self, s, strict):
-        autoclave = lambda plaintext, ciphertext: plaintext
-        return super()._encode(s, strict, autoclave=autoclave)
+        food = None
+        generator = super()._encode(s, strict)
+        while True:
+            e_transcoded, e_raw = generator.send(food)
+            yield e_transcoded
+            food = e_raw
 
     def _decode(self, s, strict):
-        autoclave = lambda plaintext, ciphertext: ciphertext
-        return super()._decode(s, strict, autoclave=autoclave)
+        food = None
+        generator = super()._decode(s, strict)
+        while True:
+            e_transcoded, e_raw = generator.send(food)
+            yield e_transcoded
+            food = e_transcoded
 
 
 class VigenereKeyAutoclaveCipher(VigenereCipher):
@@ -272,10 +298,20 @@ class VigenereKeyAutoclaveCipher(VigenereCipher):
     effect at all) unless the key is shorter than the text to be encrypted.
 
     """
+    AUTOCLAVE = True
+
     def _encode(self, s, strict):
-        autoclave = lambda plaintext, ciphertext: ciphertext
-        return super()._encode(s, strict, autoclave=autoclave)
+        food = None
+        generator = super()._encode(s, strict)
+        while True:
+            e_transcoded, e_raw = generator.send(food)
+            yield e_transcoded
+            food = e_transcoded
 
     def _decode(self, s, strict):
-        autoclave = lambda plaintext, ciphertext: plaintext
-        return super()._decode(s, strict, autoclave=autoclave)
+        food = None
+        generator = super()._decode(s, strict)
+        while True:
+            e_transcoded, e_raw = generator.send(food)
+            yield e_transcoded
+            food = e_raw
