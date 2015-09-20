@@ -174,9 +174,7 @@ class BaseVigenereCipher(PolySubCipher):
 
                     # this can be here since key won't advance if transcoding
                     # was not successful
-                    wrapped_key.append(key_food)
-
-                    wrapped_key.advance()
+                    wrapped_key.advance(key_food or wrapped_key.cursor)
 
                 wrapped_msg.advance()
 

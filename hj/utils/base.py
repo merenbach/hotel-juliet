@@ -370,38 +370,10 @@ class IterWrapper:
     """
     def __init__(self, seq):
         self.iterator = extendable_iterator(seq)
-        self.to_append = None
         self.advance()
 
-    def append(self, obj):
-        """ Append to the sequence.
-
-        Parameters
-        ----------
-        obj : data-type
-            An element to append to the sequence being iterated.
-
-        """
-        self.to_append = obj or self.cursor
-
-    def _prime(self):
-        """ Prime this wrapper for advancing.
-
-        """
-        self._should_advance = True
-
-    def _ratchet(self):
-        """ Advance this wrapper, but only if primed.
-
-        """
-        if self._should_advance:
-            self.cursor = self.iterator.send(self.to_append)
-            self._should_advance = False
-            self.to_append = []
-
-    def advance(self):
-        self._prime()
-        self._ratchet()
+    def advance(self, extend=None):
+        self.cursor = self.iterator.send(extend)
 
     # def __next__(self):
     #     return next(self.iterator)
