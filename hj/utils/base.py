@@ -3,7 +3,7 @@
 
 import collections
 from collections import OrderedDict
-from fractions import gcd
+from math import gcd
 from itertools import zip_longest, cycle, islice
 
 
@@ -338,7 +338,7 @@ def extendable_iterator(seq):
         seq.extend(food or [])
 
 
-class IterWrapper:
+class IterWrapper(collections.Generator):
     """ A generator that can be appended to with a special method.
 
     Parameters
@@ -370,13 +370,20 @@ class IterWrapper:
     """
     def __init__(self, seq):
         self.iterator = extendable_iterator(seq)
-        self.advance()
 
-    def advance(self, extend=None):
-        self.cursor = self.iterator.send(extend)
+    def send(self, value):
+        self.cursor = self.iterator.send(value)
+        return self.cursor
 
-    # def __next__(self):
-    #     return next(self.iterator)
+    def throw(self, typ, val=None, tb=None):
+        return self.iterator.throw(typ, val=val, tb=tb)
+
+    def current(self):
+        try:
+            return self.cursor
+        except AttributeError:
+            # we haven't returned anything yet
+            return next(self)
 
 # def iter_wrapper(seq):
 #     def inner_generator(c):

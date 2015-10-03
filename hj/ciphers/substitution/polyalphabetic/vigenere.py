@@ -155,11 +155,11 @@ class BaseVigenereCipher(PolySubCipher):
 
             # custom errors, plz! raise an error and don't return a generator
             try:
-                x_msg_char_gen = cipher_func(wrapped_msg.cursor,
-                                             wrapped_key.cursor)
+                x_msg_char_gen = cipher_func(wrapped_msg.current(),
+                                             wrapped_key.current())
             except KeyError:
                 # skip this key character--not valid in key
-                wrapped_key.advance()
+                wrapped_key.send(None)
             else:
                 try:
                     x_msg_char = next(x_msg_char_gen)
@@ -168,15 +168,15 @@ class BaseVigenereCipher(PolySubCipher):
                     if not strict:
                         # key character wasn't used to transcode, but we're not
                         # in strict mode if we're here, so don't advance key
-                        yield wrapped_msg.cursor, None
+                        yield wrapped_msg.current(), None
                 else:
-                    key_food = yield x_msg_char, wrapped_msg.cursor
+                    key_food = yield x_msg_char, wrapped_msg.current()
 
                     # this can be here since key won't advance if transcoding
                     # was not successful
-                    wrapped_key.advance(key_food or wrapped_key.cursor)
+                    wrapped_key.send(key_food or wrapped_key.current())
 
-                wrapped_msg.advance()
+                wrapped_msg.send(None)
 
                 # else: pass
 
