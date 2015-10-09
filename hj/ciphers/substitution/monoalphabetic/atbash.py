@@ -28,9 +28,8 @@ class AtbashCipher(AffineCipher):
     multiplier yield the same outcome, without even needing to know the length
     of the alphabet.
 
-    Technically we could simply subclass a generic monoalphabetic substitution
-    cipher and invoke `super().__init__(alphabet, reversed(alphabet))`.  That's
-    less fun.  [TODO]?
+    Technically we could simply subclass the generic MonoSubCipher class and
+    invoke `super().__init__(alphabet, alphabet[::-1])`.
 
     """
     DEFAULT_M = (-1)

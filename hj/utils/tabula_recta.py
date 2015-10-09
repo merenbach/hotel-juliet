@@ -1,10 +1,12 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from .tableau import MonoalphabeticTableau, TwoDimensionalTableau
+from utils import OneWayTranscoder
 from .base import lrotated, orotated
 from collections import OrderedDict
 from string import digits
+from ciphers.substitution.monoalphabetic import MonoSubCipher
+from ciphers.substitution.monoalphabetic import CaesarCipher
 
 # [TODO] some way to match up transcodeable chars + usable key chars?
 #
@@ -17,7 +19,7 @@ from string import digits
 #   STORM THE CASTLE AT #MIDNIG####H###T
 
 
-class TabulaRecta(TwoDimensionalTableau):
+class TabulaRecta:
     """ Message alphabet is on top; key alphabet is on side.
 
     Parameters
@@ -29,11 +31,72 @@ class TabulaRecta(TwoDimensionalTableau):
 
     """
     def __init__(self, alphabet, keys=None):
+        self.alphabet = alphabet
+        self.keys = keys
         alphabets_ = self._make_rows(alphabet)
-        transcoders_list = [MonoalphabeticTableau(alphabet, alphabet_)
-                            for alphabet_ in alphabets_]
-        alphabets_ = OrderedDict(zip(keys or alphabet, transcoders_list))
-        super().__init__(alphabet, alphabets_)
+        self.alphabets_ = alphabets_
+        # transcoders_list = [CaesarCipher(n, alphabet=alphabet)
+        #                     for n, __ in enumerate(alphabet)]
+        alphabets_ = alphabets_[0:len(keys or alphabets_)]
+        self.key_table = OneWayTranscoder(keys or alphabet, alphabets_)
+
+    def encode(self, seq, key):
+        """ Locate element within the grid.
+
+        Parameters
+        ----------
+        element : str
+            An element to transcode.
+            Essentially a row header character on the left edge of the tableau.
+        key : str
+            The dictionary key of a transcoder.
+            Essentially a row header character on the left edge of the tableau.
+
+        Returns
+        -------
+        out : data-type
+            A transcoded copy (if possible) of the given element `element`.
+
+        Raises
+        ------
+        KeyError
+            If no tableau could be found for the given key.
+
+        """
+        transcoder = self.key_table.transcode([key], True)
+        try:
+            return next(transcoder)._encode(seq, True)
+        except StopIteration:
+            raise KeyError
+
+    def decode(self, seq, key):
+        """ Locate element within the grid.
+
+        Parameters
+        ----------
+        element : str
+            An element to transcode.
+            Essentially a row header character on the left edge of the tableau.
+        key : str
+            The dictionary key of a transcoder.
+            Essentially a row header character on the left edge of the tableau.
+
+        Returns
+        -------
+        out : data-type
+            A transcoded copy (if possible) of the given element `element`.
+
+        Raises
+        ------
+        KeyError
+            If no tableau could be found for the given key.
+
+        """
+        transcoder = self.key_table.transcode([key], True)
+        try:
+            return next(transcoder)._decode(seq, True)
+        except StopIteration:
+            raise KeyError
 
     # def keystream_from(self, seq):
     #     """ Generator that filter out key characters that can't be used.
@@ -59,8 +122,8 @@ class TabulaRecta(TwoDimensionalTableau):
         lines = []
         lines.append('  | ' + ' '.join(alphabet))
         lines.append('--+' + '-' * len(alphabet) * 2)
-        for k, v in self.alphabets_.items():
-            row = ' '.join(v.alphabet_)
+        for k, v in zip(self.keys or alphabet, self.alphabets_):
+            row = ' '.join(v.a2b.xtable.values())
             lines.append('{0} | {1}'.format(k, row))
         return '\n'.join(lines)
 
@@ -73,8 +136,11 @@ class TabulaRecta(TwoDimensionalTableau):
             An ordered collection of character sets.
 
         """
-        return [lrotated(alphabet, i) for i in range(len(alphabet))]
+        # abets = [lrotated(alphabet, i) for i in range(len(alphabet))]
+        # return [MonoSubCipher(alphabet, alphabet_) for alphabet_ in abets]
         # return [lrotated(alphabet, i) for i, _ in enumerate(alphabet)]
+        return [CaesarCipher(i, alphabet=alphabet) for i in
+                range(len(alphabet))]
 
 
 class GronsfeldTabulaRecta(TabulaRecta):
@@ -100,12 +166,20 @@ class BeaufortTabulaRecta(TabulaRecta):
 
     """
     def __init__(self, alphabet):
-        super().__init__(alphabet, keys=reversed(alphabet))
+        super().__init__(alphabet, keys=(alphabet[::-1]))
 
     def _make_rows(self, alphabet):
-        return super()._make_rows(alphabet[::-1])
+        # abets = [lrotated(alphabet, i) for i in range(len(alphabet))]
+        # n = super()._make_rows(alphabet[::-1])
+        # print(n)
+        # return n
+        # return list(reversed(n))
+        abets = [lrotated(alphabet[::-1], i) for i in range(len(alphabet))]
+        return [MonoSubCipher(alphabet, alphabet_) for alphabet_ in abets]
+        # return [AtbashCipher(alphabet=alphabet) for i, __ in enumerate(alphabet)]
 
 
+# TODO: this is actually a reciprocal table...
 class DellaPortaTabulaRecta(TabulaRecta):
     """ Porta cipher version, doubling up rows and symmetrically rotating.
 
@@ -131,8 +205,9 @@ class DellaPortaTabulaRecta(TabulaRecta):
         return '\n'.join(lines)
 
     def _make_rows(self, alphabet):
-        alphabet = lrotated(alphabet, len(alphabet) // 2)
-        return [orotated(alphabet, i // 2) for i in range(len(alphabet))]
+        alphabet2 = lrotated(alphabet, len(alphabet) // 2)
+        abets = [orotated(alphabet2, i // 2) for i in range(len(alphabet))]
+        return [MonoSubCipher(alphabet, alphabet_) for alphabet_ in abets]
 
 
     #

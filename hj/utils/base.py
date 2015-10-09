@@ -178,7 +178,7 @@ def multiplied(multiplicand, multiplier):
     return [multiplicand[n] for n in positions]
 
 
-def affined(seq, multiplier, offset):
+def affine_transform(seq, multiplier, offset):
     newseq = lrotated(seq, offset)
     return multiplied(newseq, multiplier)
 
@@ -397,7 +397,7 @@ class IterWrapper(collections.Generator):
 
 
 class OneWayTranscoder:
-    """ Transcode one-way based on a table mapping elements to elements.
+    """ Transcode one way based on a table mapping elements to elements.
 
     Parameters
     ----------
@@ -450,6 +450,30 @@ class OneWayTranscoder:
                                for k, v in self.xtable.items())
         return '{{{}}}'.format(table)
 
+    def _transcode(self, element, strict):
+        """ Generator to transcode.
+
+        Parameters
+        ----------
+        element : object
+            An object to transcode.
+        strict : bool
+            `True` to skip non-transcodable elements,
+            `False` to yield them unchanged.
+
+        Yields
+        -------
+        out : object
+            The transcoded counterpart, if possible, of the input,
+            or the input itself if `strict` is `False`.
+
+        """
+        try:
+            yield self.xtable[element]
+        except KeyError:
+            if not strict:
+                yield element
+
     def transcode(self, seq, strict):
         """ Generator to transcode.
 
@@ -464,12 +488,9 @@ class OneWayTranscoder:
         Yields
         -------
         out : tuple
-            The next transcoded counterpart, if possible, of the input.
+            The next transcoded counterpart, if possible, of the input,
+            or the input itself if `strict` is `False`.
 
         """
         for element in seq:
-            try:
-                yield self.xtable[element]
-            except KeyError:
-                if not strict:
-                    yield element
+            yield from self._transcode(element, strict)

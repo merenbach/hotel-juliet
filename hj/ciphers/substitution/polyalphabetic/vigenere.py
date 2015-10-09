@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from .base import PolySubCipher
-from utils import DEFAULT_ALPHABET, TabulaRecta, IterWrapper
+from utils import DEFAULT_ALPHABET, IterWrapper
+from utils.tabula_recta import TabulaRecta
 
 # [TODO] still need to add keyed alphabets per Vigenere
 
@@ -61,18 +62,16 @@ class BaseVigenereCipher(PolySubCipher):
     #                                  self.tableau.encode)
     #     yield from generator
     def _encode(self, s, strict):
-        generator = self._transcoder(s, strict, self.countersign,
-                                     self.tableau.encode)
-        yield from generator
+        return self._transcoder(s, strict, self.countersign,
+                                self.tableau.encode)
         # food = None
         # while True:
         #     e_transcoded, e_raw = generator.send(food)
         #     food = yield e_transcoded, e_raw
 
     def _decode(self, s, strict):
-        generator = self._transcoder(s, strict, self.countersign,
-                                     self.tableau.decode)
-        yield from generator
+        return self._transcoder(s, strict, self.countersign,
+                                self.tableau.decode)
         # food = None
         # while True:
         #     e_transcoded, e_raw = generator.send(food)
@@ -146,37 +145,41 @@ class BaseVigenereCipher(PolySubCipher):
         wrapped_msg = IterWrapper(message)
 
         while True:
-
-            # # advance semicircular message "gear" if it's primed
-            # wrapped_msg.ratchet()
-            #
-            # # advance circular key "gear" if it's primed
-            # wrapped_key.ratchet()
-
-            # custom errors, plz! raise an error and don't return a generator
             try:
-                x_msg_char_gen = cipher_func(wrapped_msg.current(),
-                                             wrapped_key.current())
-            except KeyError:
-                # skip this key character--not valid in key
-                wrapped_key.send(None)
-            else:
+
+                # # advance semicircular message "gear" if it's primed
+                # wrapped_msg.ratchet()
+                #
+                # # advance circular key "gear" if it's primed
+                # wrapped_key.ratchet()
+
+                # custom errors, plz! raise an error and don't return a generator
                 try:
-                    x_msg_char = next(x_msg_char_gen)
-                except StopIteration:
-                    # skip this msg character--not valid in msg
-                    if not strict:
-                        # key character wasn't used to transcode, but we're not
-                        # in strict mode if we're here, so don't advance key
-                        yield wrapped_msg.current(), None
+                    x_msg_char_gen = cipher_func(wrapped_msg.current(),
+                                                 wrapped_key.current())
+                except KeyError:
+                    # skip this key character--not valid in key
+                    wrapped_key.send(None)
                 else:
-                    key_food = yield x_msg_char, wrapped_msg.current()
+                    # yield from x_msg_char_gen
+                    try:
+                        x_msg_char = next(x_msg_char_gen)
+                    except StopIteration:
+                        # skip this msg character--not valid in msg
+                        if not strict:
+                            # key character wasn't used to transcode, but we're not
+                            # in strict mode if we're here, so don't advance key
+                            yield wrapped_msg.current(), None
+                    else:
+                        key_food = yield x_msg_char, wrapped_msg.current()
 
-                    # this can be here since key won't advance if transcoding
-                    # was not successful
-                    wrapped_key.send(key_food or wrapped_key.current())
+                        # this can be here since key won't advance if transcoding
+                        # was not successful
+                        wrapped_key.send(key_food or wrapped_key.current())
 
-                wrapped_msg.send(None)
+                    wrapped_msg.send(None)
+            except StopIteration:
+                return
 
                 # else: pass
 
@@ -265,13 +268,23 @@ class VigenereCipher(BaseVigenereCipher):
     """
     def _encode(self, s, strict):
         generator = super()._encode(s, strict)
-        for e_transcoded, __ in generator:
-            yield e_transcoded
+        while True:
+            try:
+                e_transcoded, __ = next(generator)
+            except StopIteration:
+                return
+            else:
+                yield e_transcoded
 
     def _decode(self, s, strict):
         generator = super()._decode(s, strict)
-        for e_transcoded, __ in generator:
-            yield e_transcoded
+        while True:
+            try:
+                e_transcoded, __ = next(generator)
+            except StopIteration:
+                return
+            else:
+                yield e_transcoded
 
 
 class VigenereTextAutoclaveCipher(BaseVigenereCipher):
@@ -293,17 +306,25 @@ class VigenereTextAutoclaveCipher(BaseVigenereCipher):
         food = None
         generator = super()._encode(s, strict)
         while True:
-            e_transcoded, e_raw = generator.send(food)
-            yield e_transcoded
-            food = [e_raw]
+            try:
+                e_transcoded, e_raw = generator.send(food)
+            except StopIteration:
+                return
+            else:
+                yield e_transcoded
+                food = [e_raw]
 
     def _decode(self, s, strict):
         food = None
         generator = super()._decode(s, strict)
         while True:
-            e_transcoded, e_raw = generator.send(food)
-            yield e_transcoded
-            food = [e_transcoded]
+            try:
+                e_transcoded, e_raw = generator.send(food)
+            except StopIteration:
+                return
+            else:
+                yield e_transcoded
+                food = [e_transcoded]
 
 
 class VigenereKeyAutoclaveCipher(BaseVigenereCipher):
@@ -325,14 +346,22 @@ class VigenereKeyAutoclaveCipher(BaseVigenereCipher):
         food = None
         generator = super()._encode(s, strict)
         while True:
-            e_transcoded, e_raw = generator.send(food)
-            yield e_transcoded
-            food = [e_transcoded]
+            try:
+                e_transcoded, e_raw = generator.send(food)
+            except StopIteration:
+                return
+            else:
+                yield e_transcoded
+                food = [e_transcoded]
 
     def _decode(self, s, strict):
         food = None
         generator = super()._decode(s, strict)
         while True:
-            e_transcoded, e_raw = generator.send(food)
-            yield e_transcoded
-            food = [e_raw]
+            try:
+                e_transcoded, e_raw = generator.send(food)
+            except StopIteration:
+                return
+            else:
+                yield e_transcoded
+                food = [e_raw]

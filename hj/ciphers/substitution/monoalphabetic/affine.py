@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .base import MonoSubCipher
-from utils import DEFAULT_ALPHABET, affined
+from utils import DEFAULT_ALPHABET, affine_transform
 
 
 class AffineCipher(MonoSubCipher):
@@ -34,5 +34,5 @@ class AffineCipher(MonoSubCipher):
 
     """
     def __init__(self, multiplier, offset, alphabet=DEFAULT_ALPHABET):
-        alphabet_ = affined(alphabet, multiplier, offset)
+        alphabet_ = affine_transform(alphabet, multiplier, offset)
         super().__init__(alphabet, alphabet_)

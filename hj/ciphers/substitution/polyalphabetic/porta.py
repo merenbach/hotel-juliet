@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from .vigenere import VigenereCipher
-from utils import DEFAULT_ALPHABET, DellaPortaTabulaRecta
+from utils import DEFAULT_ALPHABET
+from utils.tabula_recta import DellaPortaTabulaRecta
 
 
 class DellaPortaCipher(VigenereCipher):

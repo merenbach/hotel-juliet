@@ -34,33 +34,6 @@ class SubCipher(Cipher):
         super().__init__()
         self.nullchar = nullchar
 
-    def _make_tableau(self, alphabet):
-        """ Create a tableau for transcoding.
-
-        Parameters
-        ----------
-        alphabet : sequence
-            A character set to use for transcoding.
-
-        Returns
-        -------
-        out : data-type
-            A tableau to use for transcoding.
-
-        Raises
-        ------
-        NotImplementedError
-            If not overridden.
-
-        Notes
-        -----
-        Since this is invoked by `__init__()` before instance is totally
-        initialized, please don't perform any operations that expect a fully
-        constructed instance.
-
-        """
-        raise NotImplementedError
-
     def __repr__(self):
         # [TODO] maybe improve this
         return repr(self.tableau)
