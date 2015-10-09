@@ -17,7 +17,7 @@ class CaesarCipher(MonoSubCipher):
     Parameters
     ----------
     offset : int, optional
-        An integer offset for transcoding.  Default `3`.
+        An integer offset for transcoding.  Default `DEFAULT_OFFSET`.
     alphabet : str, optional
         A character set to use for transcoding.  Default from `utils`.
 

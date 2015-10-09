@@ -396,7 +396,7 @@ class IterWrapper(collections.Generator):
 #     return gengen
 
 
-class TranscoderStream:
+class OneWayTranscoder:
     """ Transcode one-way based on a table mapping elements to elements.
 
     Parameters
@@ -463,8 +463,8 @@ class TranscoderStream:
 
         Yields
         -------
-        out : data-type
-            The transcoded counterparts, if possible, of the input sequence.
+        out : tuple
+            The next transcoded counterpart, if possible, of the input.
 
         """
         for element in seq:
