@@ -18,6 +18,21 @@ from ciphers.substitution.monoalphabetic import CaesarCipher
 #   OCEAN#OGR#APHYWH#AT#!I LOVEund4Da$eA
 #   STORM THE CASTLE AT #MIDNIG####H###T
 
+class TabulaRectaError(Exception):
+    def __init__(self, element):
+        self.element = element
+
+class InvalidKeyElement(TabulaRectaError):
+    """ Key character not in key alphabet.
+
+    """
+    pass
+
+class InvalidMessageElement(TabulaRectaError):
+    """ Message character not in message alphabet.
+
+    """
+    pass
 
 class TabulaRecta:
     """ Message alphabet is on top; key alphabet is on side.
@@ -63,8 +78,12 @@ class TabulaRecta:
             If no tableau could be found for the given key.
 
         """
-        transcoder = self.key_table.translate(key, True)
-        return transcoder._encode(seq, True)
+        try:
+            transcoder = self.key_table.translate(key, True)
+        except KeyError:
+            raise InvalidKeyElement(key)
+        else:
+            return transcoder._encode(seq, True)
 
     def decode(self, seq, key):
         """ Locate element within the grid.
@@ -89,8 +108,12 @@ class TabulaRecta:
             If no tableau could be found for the given key.
 
         """
-        transcoder = self.key_table.translate(key, True)
-        return transcoder._decode(seq, True)
+        try:
+            transcoder = self.key_table.translate(key, True)
+        except KeyError:
+            raise InvalidKeyElement(key)
+        else:
+            return transcoder._decode(seq, True)
 
     def __str__(self):
         alphabet = self.alphabet

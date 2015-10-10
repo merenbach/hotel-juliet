@@ -3,7 +3,7 @@
 
 from .base import PolySubCipher
 from utils import DEFAULT_ALPHABET, IterWrapper
-from utils.tabula_recta import TabulaRecta
+from utils.tabula_recta import TabulaRecta, InvalidKeyElement, InvalidMessageElement
 
 # [TODO] still need to add keyed alphabets per Vigenere
 
@@ -144,6 +144,11 @@ class BaseVigenereCipher(PolySubCipher):
         wrapped_key = IterWrapper(countersign)
         wrapped_msg = IterWrapper(message)
 
+        # class TranscodeAttempt:
+        #     def __init__(self, msg_char, key_char):
+        #         self.key_char = key_char
+        #         self.msg_char = msg_char
+
         while True:
             try:
 
@@ -154,26 +159,37 @@ class BaseVigenereCipher(PolySubCipher):
                 # wrapped_key.ratchet()
 
                 # custom errors, plz! raise an error and don't return a generator
-                try:
-                    x_msg_char = cipher_func(wrapped_msg.read(),
-                                             wrapped_key.read())
-                except KeyError:
-                    # skip this key character--not valid in key
-                    wrapped_key.advance()
-                else:
-                    # yield from x_msg_char_gen
-                    if len(x_msg_char) > 0:
-                        key_food = yield x_msg_char.pop(), wrapped_msg.read()
+                key_char = wrapped_key.read()
+                msg_char = wrapped_msg.read()
 
-                        # this can be here since key won't advance if transcoding
-                        # was not successful
-                        wrapped_key.advance(key_food or wrapped_key.read())
-                    elif not strict:
-                        # key character wasn't used to transcode, but we're not
-                        # in strict mode if we're here, so don't advance key
-                        yield wrapped_msg.read(), None
+                try:
+
+                    try:
+                        x_msg_char = cipher_func(msg_char, key_char).pop()
+                    except IndexError:
+                        raise InvalidMessageElement(msg_char)
+
+                except InvalidKeyElement:
+                    # skip this key character--not valid in key alphabet
+                    wrapped_key.advance()
+
+                except InvalidMessageElement as e:
+                    if not strict:
+                        # yield e.element, None
+                        yield msg_char, None
+
+                    # skip this message character--not valid in message alphabet
+                    wrapped_msg.advance()
+
+                else:
+                    key_food = yield x_msg_char, msg_char
+
+                    # this can be here since key won't advance if transcoding
+                    # was not successful
+                    wrapped_key.advance(key_food or key_char)
 
                     wrapped_msg.advance()
+
             except StopIteration:
                 return
 

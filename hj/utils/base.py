@@ -364,9 +364,6 @@ class IterWrapper:
     also cursor isn't available until ratchet() is called at least once...
     need some tests...
 
-    TODO: replace ratcheting system with plain advancement system?
-
-
     """
     def __init__(self, seq):
         self.iterator = extendable_iterator(seq)
@@ -381,16 +378,6 @@ class IterWrapper:
             # we haven't returned anything yet
             self.advance()
             return self.read()
-
-# def iter_wrapper(seq):
-#     def inner_generator(c):
-#         yield from c
-#     listified = list(seq)
-#     def appendify(element):
-#         listified.append(element)
-#     gengen = inner_generator(listified)
-#     gengen.append = appendify  # can't add method to generator... weak
-#     return gengen
 
 
 class OneWayTranscoder:
