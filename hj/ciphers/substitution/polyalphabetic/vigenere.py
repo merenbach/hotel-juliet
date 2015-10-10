@@ -155,29 +155,25 @@ class BaseVigenereCipher(PolySubCipher):
 
                 # custom errors, plz! raise an error and don't return a generator
                 try:
-                    x_msg_char_gen = cipher_func(wrapped_msg.current(),
-                                                 wrapped_key.current())
+                    x_msg_char = cipher_func(wrapped_msg.read(),
+                                             wrapped_key.read())
                 except KeyError:
                     # skip this key character--not valid in key
-                    wrapped_key.send(None)
+                    wrapped_key.advance()
                 else:
                     # yield from x_msg_char_gen
-                    try:
-                        x_msg_char = next(x_msg_char_gen)
-                    except StopIteration:
-                        # skip this msg character--not valid in msg
-                        if not strict:
-                            # key character wasn't used to transcode, but we're not
-                            # in strict mode if we're here, so don't advance key
-                            yield wrapped_msg.current(), None
-                    else:
-                        key_food = yield x_msg_char, wrapped_msg.current()
+                    if len(x_msg_char) > 0:
+                        key_food = yield x_msg_char.pop(), wrapped_msg.read()
 
                         # this can be here since key won't advance if transcoding
                         # was not successful
-                        wrapped_key.send(key_food or wrapped_key.current())
+                        wrapped_key.advance(key_food or wrapped_key.read())
+                    elif not strict:
+                        # key character wasn't used to transcode, but we're not
+                        # in strict mode if we're here, so don't advance key
+                        yield wrapped_msg.read(), None
 
-                    wrapped_msg.send(None)
+                    wrapped_msg.advance()
             except StopIteration:
                 return
 

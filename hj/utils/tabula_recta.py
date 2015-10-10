@@ -63,11 +63,8 @@ class TabulaRecta:
             If no tableau could be found for the given key.
 
         """
-        transcoder = self.key_table.transcode([key], True)
-        try:
-            return next(transcoder)._encode(seq, True)
-        except StopIteration:
-            raise KeyError
+        transcoder = self.key_table.translate(key, True)
+        return transcoder._encode(seq, True)
 
     def decode(self, seq, key):
         """ Locate element within the grid.
@@ -92,30 +89,8 @@ class TabulaRecta:
             If no tableau could be found for the given key.
 
         """
-        transcoder = self.key_table.transcode([key], True)
-        try:
-            return next(transcoder)._decode(seq, True)
-        except StopIteration:
-            raise KeyError
-
-    # def keystream_from(self, seq):
-    #     """ Generator that filter out key characters that can't be used.
-    #
-    #     Parameters
-    #     ----------
-    #     seq : iterable
-    #         A sequence or iterator that yields elements.
-    #
-    #     Returns
-    #     -------
-    #     out : generator
-    #         Each element in `seq` that is in the keys of this tabula recta.
-    #         This keystream may be appended to with `.send(food)`
-    #
-    #     """
-    #     # keystream = (c for c in seq if c in self.alphabets_.keys())
-    #     keystream = seq
-    #     return appendable(keystream)
+        transcoder = self.key_table.translate(key, True)
+        return transcoder._decode(seq, True)
 
     def __str__(self):
         alphabet = self.alphabet

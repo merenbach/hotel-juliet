@@ -338,7 +338,7 @@ def extendable_iterator(seq):
         seq.extend(food or [])
 
 
-class IterWrapper(collections.Generator):
+class IterWrapper:
     """ A generator that can be appended to with a special method.
 
     Parameters
@@ -371,19 +371,16 @@ class IterWrapper(collections.Generator):
     def __init__(self, seq):
         self.iterator = extendable_iterator(seq)
 
-    def send(self, value):
+    def advance(self, value=None):
         self.cursor = self.iterator.send(value)
-        return self.cursor
 
-    def throw(self, typ, val=None, tb=None):
-        return self.iterator.throw(typ, val=val, tb=tb)
-
-    def current(self):
+    def read(self):
         try:
             return self.cursor
         except AttributeError:
             # we haven't returned anything yet
-            return next(self)
+            self.advance()
+            return self.read()
 
 # def iter_wrapper(seq):
 #     def inner_generator(c):
@@ -450,13 +447,44 @@ class OneWayTranscoder:
                                for k, v in self.xtable.items())
         return '{{{}}}'.format(table)
 
-    def _transcode(self, element, strict):
+    def translate(self, element, strict):
         """ Generator to transcode.
 
         Parameters
         ----------
-        element : object
-            An object to transcode.
+        seq : iterable
+            An iterable of elements to transcode.
+        strict : bool
+            `True` to skip non-transcodable elements,
+            `False` to yield them unchanged.
+
+        Yields
+        -------
+        out : tuple
+            The next transcoded counterpart, if possible, of the input,
+            or the input itself if `strict` is `False`.
+
+        """
+        try:
+            return self.xtable[element]
+        except KeyError:
+            if not strict:
+                return element
+            else:
+                raise
+        # if strict and element not in self.xtable:
+        #     raise KeyError
+        # else:
+        #     return self.xtable.get(element, element)
+
+
+    def _transcode(self, seq, strict):
+        """ Generator to transcode.
+
+        Parameters
+        ----------
+        seq : object
+            A sequence of objects to transcode.
         strict : bool
             `True` to skip non-transcodable elements,
             `False` to yield them unchanged.
@@ -468,11 +496,11 @@ class OneWayTranscoder:
             or the input itself if `strict` is `False`.
 
         """
-        try:
-            yield self.xtable[element]
-        except KeyError:
-            if not strict:
-                yield element
+        for element in seq:
+            try:
+                yield self.translate(element, strict)
+            except KeyError:
+                pass
 
     def transcode(self, seq, strict):
         """ Generator to transcode.
@@ -492,5 +520,4 @@ class OneWayTranscoder:
             or the input itself if `strict` is `False`.
 
         """
-        for element in seq:
-            yield from self._transcode(element, strict)
+        return list(self._transcode(seq, strict))
