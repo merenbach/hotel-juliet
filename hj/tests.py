@@ -4,6 +4,7 @@
 import unittest
 from ciphers import *
 from utils import *
+import string
 
 # class AlphabetTest(unittest.TestCase):
 #     def test_rotate(self):
@@ -59,6 +60,30 @@ class UtilsTest(unittest.TestCase):
         out.append(iterator.send([self.PASSPHRASE]))
 
         self.assertEqual(out, ['O', 'C', 'E', self.PASSPHRASE])
+
+    # def testEqualLengthZip(self):
+    #     a = string.ascii_uppercase
+    #     b = string.ascii_lowercase
+    #     c = 'another string w/length 26'
+    #     d = 'a string of some other length'
+    #
+    #     self.assertEqual(list(ezip(a, a)), list(zip(a, a)))
+    #     self.assertEqual(list(ezip(a, b)), list(zip(a, b)))
+    #     self.assertEqual(list(ezip(a, c, c)), list(zip(a, c, c)))
+    #     self.assertEqual(list(ezip(a, b, c)), list(zip(a, b, c)))
+    #
+    #     # test raising of ValueError with unequal alphabets
+    #     with self.assertRaises(ValueError):
+    #         MonoSubCipher(a, c)
+    #
+    #     with self.assertRaises(ValueError):
+    #         MonoSubCipher(c, d)
+    #
+    #     with self.assertRaises(ValueError):
+    #         ezip(c, d)
+    #
+    #     with self.assertRaises(ValueError):
+    #         ezip(a, b, c, d)
 
 
 class CipherTest(unittest.TestCase):

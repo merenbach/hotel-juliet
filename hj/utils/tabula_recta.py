@@ -1,7 +1,6 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from utils import OneWayTranscoder
 from .base import lrotated, orotated
 from collections import OrderedDict
 from string import digits
@@ -36,8 +35,7 @@ class TabulaRecta:
         self.alphabets_ = alphabets_
         # transcoders_list = [CaesarCipher(n, alphabet=alphabet)
         #                     for n, __ in enumerate(alphabet)]
-        alphabets_ = alphabets_[0:len(keys or alphabets_)]
-        self.key_table = OneWayTranscoder(keys or alphabet, alphabets_)
+        self.key_table = OrderedDict(zip(keys or alphabet, alphabets_))
 
     def encode(self, seq, key):
         """ Locate element within the grid.

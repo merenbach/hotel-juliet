@@ -338,56 +338,25 @@ def extendable_iterator(seq):
         seq.extend(food or [])
 
 
-class OneWayTranscoder(OrderedDict):
-    """ Map keys to values precisely, retaining ordering.
+def ezip(*args):
+    """ Zip equal-length iterables together.
 
     Parameters
     ----------
-    a : iterable
-        An iterable or sequence for source elements.
-    b : iterable
-        An iterable or sequence for target elements.
+    args : packed sequence of iterables
+        A sequence of iterables to zip.
 
     Raises
     ------
     ValueError
-        If `a` and `b` differ in length.
+        If any iterables differ in length from the others.
 
     Notes
     -----
-    A collections.OrderedDict is used to store the translation table, once
-    generated.  This isn't strictly necessary for the class to function
-    correctly.  Instead, it facilitates testing and troubleshooting.
+    All passed iterables must be finite and equal in length.
 
     """
-    def __init__(self, a, b):
-        a_, b_ = OrderedDict.fromkeys(a), OrderedDict.fromkeys(b)
-        if len(a_) != len(b_):
-            raise ValueError('the first two parameters must have equal length')
-        super().__init__(zip(a_, b_))
-
-    def __str__(self):
-        return self.p(delimiter=',\n ', keyvalsep=' => ')
-
-    def __repr__(self):
-        return '{}: {}'.format(self.__class__.__name__, self.p())
-
-    def p(self, delimiter=', ', keyvalsep=': '):
-        """ Printable version of this instance.
-
-        Parameters
-        ----------
-        delimiter : str
-            A separator to insert between successive entries.
-        keyvalsep : str
-            A separator between keys and values.
-
-        Returns
-        -------
-        out : str
-            A formatted string representing the contents of this instance.
-
-        """
-        table = delimiter.join("'{}'{}'{}'".format(str(k), keyvalsep, str(v))
-                               for k, v in self.xtable.items())
-        return '{{{}}}'.format(table)
+    arg_lens = set(len(a) for a in args)
+    if len(arg_lens) != 1:
+        raise ValueError('all arguments must have equal length')
+    return zip(*args)

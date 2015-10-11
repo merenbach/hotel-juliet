@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from .. import SubCipher
-from utils import OneWayTranscoder
 from collections import OrderedDict
 
 
@@ -19,7 +18,7 @@ class MonoSubCipher(SubCipher):
     """
     def __init__(self, a, b):
         super().__init__(a)
-        self.a2b, self.b2a = OneWayTranscoder(a, b), OneWayTranscoder(b, a)
+        self.a2b, self.b2a = OrderedDict(zip(a, b)), OrderedDict(zip(b, a))
 
     def __str__(self):
         return self.a2b.p(delimiter=',\n ', keyvalsep=' <=> ')

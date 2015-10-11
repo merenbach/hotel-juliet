@@ -112,14 +112,14 @@ class BaseVigenereCipher(PolySubCipher):
         for msg_char in message:
             x_msg_char_out = cipher_func(msg_char, key_char)
 
-            try:
-                x_msg_char = list(x_msg_char_out).pop()
-
-            except IndexError:
+            if len(x_msg_char_out) == 0:
+                # mesage char not transcodeable
+                # strict must be off, or this character wouldn't still be here
+                # yield the raw character
                 yield msg_char, None
 
             else:
-                key_food = yield x_msg_char, msg_char
+                key_food = yield x_msg_char_out, msg_char
 
                 # this can be here since key won't advance if transcoding
                 # was not successful
