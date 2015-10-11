@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .base import PolySubCipher
-from utils import DEFAULT_ALPHABET, IterWrapper, extendable_iterator
+from utils import DEFAULT_ALPHABET, extendable_iterator
 from utils.tabula_recta import TabulaRecta
 
 # [TODO] still need to add keyed alphabets per Vigenere
@@ -106,31 +106,22 @@ class BaseVigenereCipher(PolySubCipher):
         # msgset = set(message)
         # valid_keychars = keyset & msgset
 
-        # this obviates the need for "except InvalidKeyElement"
-        # countersign = (c for c in countersign if c in self.tableau.keys)
+        wrapped_key = extendable_iterator(countersign)
 
-        wrapped_key = IterWrapper(countersign)
-        wrapped_key2 = extendable_iterator(countersign)
-        key_char = None
+        try:
+            key_char = wrapped_key.send(None)
+        except StopIteration:
+            return
 
+        # iterate over (finite!) message in outer loop with standard "for"
         for msg_char in message:
             try:
-
-                # # advance semicircular message "gear" if it's primed
-                # wrapped_msg.ratchet()
-                #
-                # # advance circular key "gear" if it's primed
-                # wrapped_key.ratchet()
-
-                # custom errors, plz! raise an error and don't return a generator
-                key_char = wrapped_key.read()
-                # msg_char = wrapped_msg.read()
-
                 x_msg_char_out = cipher_func(msg_char, key_char)
+
                 try:
                     x_msg_char = list(x_msg_char_out).pop()
+
                 except IndexError:
-                    # yield e.element, None
                     yield msg_char, None
 
                 else:
@@ -138,13 +129,10 @@ class BaseVigenereCipher(PolySubCipher):
 
                     # this can be here since key won't advance if transcoding
                     # was not successful
-                    wrapped_key.advance(key_food or key_char)
-                    # key_char = wrapped_key2.send(key_food or key_char)
+                    key_char = wrapped_key.send(key_food or key_char)
 
             except StopIteration:
                 return
-
-                # else: pass
 
             # while True:
             #     if advance_key is True:
@@ -269,28 +257,26 @@ class VigenereTextAutoclaveCipher(BaseVigenereCipher):
 
     """
     def _encode(self, s):
-        food = None
         generator = super()._encode(s)
-        while True:
-            try:
+        try:
+            food = None
+            while True:
                 e_after, e_before = generator.send(food)
-            except StopIteration:
-                return
-            else:
-                yield e_after
                 food = [e_before]
+                yield e_after
+        except StopIteration:
+            return
 
     def _decode(self, s):
-        food = None
         generator = super()._decode(s)
-        while True:
-            try:
-                e_after, e_before = generator.send(food)
-            except StopIteration:
-                return
-            else:
-                yield e_after
+        try:
+            food = None
+            while True:
+                e_after, __ = generator.send(food)
                 food = [e_after]
+                yield e_after
+        except StopIteration:
+            return
 
 
 class VigenereKeyAutoclaveCipher(BaseVigenereCipher):
@@ -309,25 +295,23 @@ class VigenereKeyAutoclaveCipher(BaseVigenereCipher):
 
     """
     def _encode(self, s):
-        food = None
         generator = super()._encode(s)
-        while True:
-            try:
-                e_after, e_before = generator.send(food)
-            except StopIteration:
-                return
-            else:
-                yield e_after
+        try:
+            food = None
+            while True:
+                e_after, __ = generator.send(food)
                 food = [e_after]
+                yield e_after
+        except StopIteration:
+            return
 
     def _decode(self, s):
-        food = None
         generator = super()._decode(s)
-        while True:
-            try:
+        try:
+            food = None
+            while True:
                 e_after, e_before = generator.send(food)
-            except StopIteration:
-                return
-            else:
-                yield e_after
                 food = [e_before]
+                yield e_after
+        except StopIteration:
+            return

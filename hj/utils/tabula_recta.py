@@ -62,12 +62,7 @@ class TabulaRecta:
             If no tableau could be found for the given key.
 
         """
-        try:
-            transcoder = self.key_table[key]
-        except KeyError:
-            raise IndexError
-        else:
-            return transcoder.encode(seq, strict=True)
+        return self.key_table[key].encode(seq, strict=True)
 
     def decode(self, seq, key):
         """ Locate element within the grid.
@@ -92,12 +87,7 @@ class TabulaRecta:
             If no tableau could be found for the given key.
 
         """
-        try:
-            transcoder = self.key_table[key]
-        except KeyError:
-            raise IndexError
-        else:
-            return transcoder.decode(seq, strict=True)
+        return self.key_table[key].decode(seq, strict=True)
 
     def __str__(self):
         alphabet = self.alphabet

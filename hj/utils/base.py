@@ -338,48 +338,6 @@ def extendable_iterator(seq):
         seq.extend(food or [])
 
 
-class IterWrapper:
-    """ A generator that can be appended to with a special method.
-
-    Parameters
-    ----------
-    seq : iterable
-        A sequence or iterable.
-
-    Yields
-    ------
-    out : data-type
-        The next element from `seq`.
-
-    Raises
-    ------
-    StopIteration
-        If all elements are exhausted from `seq`.
-
-    Notes
-    -----
-    TODO: update this info...
-
-    Use the .cursor attribute to retrieve current position...
-    also cursor isn't available until ratchet() is called at least once...
-    need some tests...
-
-    """
-    def __init__(self, seq):
-        self.iterator = extendable_iterator(seq)
-
-    def advance(self, value=None):
-        self.cursor = self.iterator.send(value)
-
-    def read(self):
-        try:
-            return self.cursor
-        except AttributeError:
-            # we haven't returned anything yet
-            self.advance()
-            return self.read()
-
-
 class OneWayTranscoder(OrderedDict):
     """ Map keys to values precisely, retaining ordering.
 
