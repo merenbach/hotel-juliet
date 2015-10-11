@@ -380,7 +380,7 @@ class IterWrapper:
             return self.read()
 
 
-class OneWayTranscoder:
+class OneWayTranscoder(OrderedDict):
     """ Transcode one way based on a table mapping elements to elements.
 
     Parameters
@@ -406,7 +406,7 @@ class OneWayTranscoder:
         a_, b_ = OrderedDict.fromkeys(a), OrderedDict.fromkeys(b)
         if len(a_) != len(b_):
             raise ValueError('the first two parameters must have equal length')
-        self.xtable = OrderedDict(zip(a_, b_))  # preserve order
+        super().__init__(zip(a_, b_))
 
     def __str__(self):
         return self.p(delimiter=',\n ', keyvalsep=' => ')
@@ -453,7 +453,7 @@ class OneWayTranscoder:
 
         """
         try:
-            return self.xtable[element]
+            return self[element]
         except KeyError:
             if not strict:
                 return element

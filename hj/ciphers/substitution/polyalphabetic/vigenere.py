@@ -25,15 +25,11 @@ class BaseVigenereCipher(PolySubCipher):
     TABULA_RECTA = TabulaRecta
 
     def __init__(self, countersign, alphabet=DEFAULT_ALPHABET):
+        super().__init__(alphabet)
+        self.tableau = self._make_tableau(alphabet or DEFAULT_ALPHABET)
+        self.countersign = [e for e in countersign if e in self.tableau.keys]
         if not countersign:
             raise ValueError('A countersign is required')
-        # try:
-        #     iter(countersign):
-        # except TypeError:
-        #     raise TypeError('countersign must be iterable')
-        super().__init__(alphabet)
-        self.countersign = countersign
-        self.tableau = self._make_tableau(alphabet or DEFAULT_ALPHABET)
 
     def _make_tableau(self, alphabet):
         """ Create a tabula recta for transcoding.
@@ -57,50 +53,19 @@ class BaseVigenereCipher(PolySubCipher):
         """
         return self.TABULA_RECTA(alphabet=alphabet)
 
-    # def _encode(self, s, strict):
-    #     generator = self._transcoder(s, strict, self.countersign,
-    #                                  self.tableau.encode)
-    #     yield from generator
-    def _encode(self, s, strict):
-        return self._transcoder(s, strict, self.countersign,
-                                self.tableau.encode)
-        # food = None
-        # while True:
-        #     e_transcoded, e_raw = generator.send(food)
-        #     food = yield e_transcoded, e_raw
+    def _encode(self, s):
+        return self._transcoder(s, self.countersign, self.tableau.encode)
 
-    def _decode(self, s, strict):
-        return self._transcoder(s, strict, self.countersign,
-                                self.tableau.decode)
-        # food = None
-        # while True:
-        #     e_transcoded, e_raw = generator.send(food)
-        #     food = yield e_transcoded, e_raw
+    def _decode(self, s):
+        return self._transcoder(s, self.countersign, self.tableau.decode)
 
-    # def _encode(self, s, strict):
-    #     generator = self._transcoder(s, strict, self.countersign,
-    #                                  self.tableau.encode)
-    #     while True:
-    #         e_transcoded, __ = generator.send(None)
-    #         yield e_transcoded
-    #
-    # def _decode(self, s, strict):
-    #     generator = self._transcoder(s, strict, self.countersign,
-    #                                  self.tableau.decode)
-    #     while True:
-    #         e_transcoded, __ = generator.send(None)
-    #         yield e_transcoded
-
-    def _transcoder(self, message, strict, countersign,
-                    cipher_func):
+    def _transcoder(self, message, countersign, cipher_func):
         """ Transcode a character.
 
         Parameters
         ----------
         message : str
             A message to transcode.
-        strict : bool
-            `True` to strip non-transcodeable characters, `False` otherwise.
         countersign : str
             An encryption/decryption key.
         cipher_func : function
@@ -141,6 +106,9 @@ class BaseVigenereCipher(PolySubCipher):
         # msgset = set(message)
         # valid_keychars = keyset & msgset
 
+        # this obviates the need for "except InvalidKeyElement"
+        # countersign = (c for c in countersign if c in self.tableau.keys)
+
         wrapped_key = IterWrapper(countersign)
         wrapped_msg = IterWrapper(message)
 
@@ -165,18 +133,13 @@ class BaseVigenereCipher(PolySubCipher):
                 try:
 
                     try:
-                        x_msg_char = cipher_func(msg_char, key_char).pop()
+                        x_msg_char = list(cipher_func(msg_char, key_char)).pop()
                     except IndexError:
                         raise InvalidMessageElement(msg_char)
 
-                except InvalidKeyElement:
-                    # skip this key character--not valid in key alphabet
-                    wrapped_key.advance()
-
                 except InvalidMessageElement as e:
-                    if not strict:
-                        # yield e.element, None
-                        yield msg_char, None
+                    # yield e.element, None
+                    yield msg_char, None
 
                     # skip this message character--not valid in message alphabet
                     wrapped_msg.advance()
@@ -278,26 +241,29 @@ class VigenereCipher(BaseVigenereCipher):
         A character set to use for transcoding.  Default `None`.
 
     """
-    def _encode(self, s, strict):
-        generator = super()._encode(s, strict)
-        while True:
-            try:
-                e_transcoded, __ = next(generator)
-            except StopIteration:
-                return
-            else:
-                yield e_transcoded
+    def _encode(self, s):
+        for e_after, __ in super()._encode(s):
+            yield e_after
+        # generator = super()._encode(s)
+        # while True:
+        #     try:
+        #         e_after, __ = next(generator)
+        #     except StopIteration:
+        #         return
+        #     else:
+        #         yield e_after
 
-    def _decode(self, s, strict):
-        generator = super()._decode(s, strict)
-        while True:
-            try:
-                e_transcoded, __ = next(generator)
-            except StopIteration:
-                return
-            else:
-                yield e_transcoded
-
+    def _decode(self, s):
+        for e_after, __ in super()._decode(s):
+            yield e_after
+        # generator = super()._decode(s)
+        # while True:
+        #     try:
+        #         e_after, __ = next(generator)
+        #     except StopIteration:
+        #         return
+        #     else:
+        #         yield e_after
 
 class VigenereTextAutoclaveCipher(BaseVigenereCipher):
     """ An oft-overlooked autokey cipher developed by Blaise de Vigenère.
@@ -314,29 +280,29 @@ class VigenereTextAutoclaveCipher(BaseVigenereCipher):
     effect at all) unless the key is shorter than the text to be encrypted.
 
     """
-    def _encode(self, s, strict):
+    def _encode(self, s):
         food = None
-        generator = super()._encode(s, strict)
+        generator = super()._encode(s)
         while True:
             try:
-                e_transcoded, e_raw = generator.send(food)
+                e_after, e_before = generator.send(food)
             except StopIteration:
                 return
             else:
-                yield e_transcoded
-                food = [e_raw]
+                yield e_after
+                food = [e_before]
 
-    def _decode(self, s, strict):
+    def _decode(self, s):
         food = None
-        generator = super()._decode(s, strict)
+        generator = super()._decode(s)
         while True:
             try:
-                e_transcoded, e_raw = generator.send(food)
+                e_after, e_before = generator.send(food)
             except StopIteration:
                 return
             else:
-                yield e_transcoded
-                food = [e_transcoded]
+                yield e_after
+                food = [e_after]
 
 
 class VigenereKeyAutoclaveCipher(BaseVigenereCipher):
@@ -354,26 +320,26 @@ class VigenereKeyAutoclaveCipher(BaseVigenereCipher):
     effect at all) unless the key is shorter than the text to be encrypted.
 
     """
-    def _encode(self, s, strict):
+    def _encode(self, s):
         food = None
-        generator = super()._encode(s, strict)
+        generator = super()._encode(s)
         while True:
             try:
-                e_transcoded, e_raw = generator.send(food)
+                e_after, e_before = generator.send(food)
             except StopIteration:
                 return
             else:
-                yield e_transcoded
-                food = [e_transcoded]
+                yield e_after
+                food = [e_after]
 
-    def _decode(self, s, strict):
+    def _decode(self, s):
         food = None
-        generator = super()._decode(s, strict)
+        generator = super()._decode(s)
         while True:
             try:
-                e_transcoded, e_raw = generator.send(food)
+                e_after, e_before = generator.send(food)
             except StopIteration:
                 return
             else:
-                yield e_transcoded
-                food = [e_raw]
+                yield e_after
+                food = [e_before]

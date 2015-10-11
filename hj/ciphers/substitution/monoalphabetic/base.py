@@ -3,6 +3,7 @@
 
 from .. import SubCipher
 from utils import OneWayTranscoder
+from collections import OrderedDict
 
 
 class MonoSubCipher(SubCipher):
@@ -17,7 +18,7 @@ class MonoSubCipher(SubCipher):
 
     """
     def __init__(self, a, b):
-        super().__init__()
+        super().__init__(a)
         self.a2b, self.b2a = OneWayTranscoder(a, b), OneWayTranscoder(b, a)
 
     def __str__(self):
@@ -26,40 +27,34 @@ class MonoSubCipher(SubCipher):
     def __repr__(self):
         return '{}: {}'.format(self.__class__.__name__, self.a2b.p())
 
-    def _encode(self, s, strict):
+    def _encode(self, s):
         """ Transcode forwards.
 
         Parameters
         ----------
         s : iterable
             An iterable of elements to transcode.
-        strict : bool
-            `True` to skip non-transcodable elements,
-            `False` to yield them unchanged.
 
         Returns
         -------
-        out : data-type
+        out : generator
             The transcoded counterparts, if possible, of the input sequence.
 
         """
-        return self.a2b.transcode(s, strict)
+        return (self.a2b.get(e, e) for e in s)
 
-    def _decode(self, s, strict):
+    def _decode(self, s):
         """ Transcode backwards.
 
         Parameters
         ----------
         s : iterable
             An iterable of elements to transcode.
-        strict : bool
-            `True` to skip non-transcodable elements,
-            `False` to yield them unchanged.
 
         Returns
         -------
-        out : data-type
+        out : generator
             The transcoded counterparts, if possible, of the input sequence.
 
         """
-        return self.b2a.transcode(s, strict)
+        return (self.b2a.get(e, e) for e in s)

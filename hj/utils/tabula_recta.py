@@ -47,7 +47,7 @@ class TabulaRecta:
     """
     def __init__(self, alphabet, keys=None):
         self.alphabet = alphabet
-        self.keys = keys
+        self.keys = keys or alphabet
         alphabets_ = self._make_rows(alphabet)
         self.alphabets_ = alphabets_
         # transcoders_list = [CaesarCipher(n, alphabet=alphabet)
@@ -83,7 +83,7 @@ class TabulaRecta:
         except KeyError:
             raise InvalidKeyElement(key)
         else:
-            return transcoder._encode(seq, True)
+            return transcoder.encode(seq, strict=True)
 
     def decode(self, seq, key):
         """ Locate element within the grid.
@@ -113,7 +113,7 @@ class TabulaRecta:
         except KeyError:
             raise InvalidKeyElement(key)
         else:
-            return transcoder._decode(seq, True)
+            return transcoder.decode(seq, strict=True)
 
     def __str__(self):
         alphabet = self.alphabet

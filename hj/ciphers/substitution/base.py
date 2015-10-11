@@ -30,7 +30,9 @@ class SubCipher(Cipher):
     """
     DEFAULT_NULLCHAR = 'X'
 
-    def __init__(self, nullchar=DEFAULT_NULLCHAR):
+    def __init__(self, alphabet, nullchar=DEFAULT_NULLCHAR):
+        self.alphabet = alphabet
+
         super().__init__()
         self.nullchar = nullchar
 
@@ -109,7 +111,9 @@ class SubCipher(Cipher):
             The encoded message.
 
         """
-        out = self._encode(s, strict)
+        if strict:
+            s = (e for e in s if e in self.alphabet)
+        out = self._encode(s)
         return ''.join(out)
 
     def decode(self, s, strict=False, block=0):
@@ -131,7 +135,12 @@ class SubCipher(Cipher):
             The decoded message.
 
         """
-        out = self._decode(s, strict)
+        if strict:
+            s = (e for e in s if e in self.alphabet)
+        #     # or:
+        #     # diff = set(msg) - set(alphabet)
+        #     # b2a = str.maketrans(a, b, diff)
+        out = self._decode(s)
         return ''.join(out)
 
     # def unblockify(self, iterable, n, fillvalue=None):
