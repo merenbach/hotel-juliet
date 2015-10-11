@@ -381,7 +381,7 @@ class IterWrapper:
 
 
 class OneWayTranscoder(OrderedDict):
-    """ Transcode one way based on a table mapping elements to elements.
+    """ Map keys to values precisely, retaining ordering.
 
     Parameters
     ----------
@@ -433,78 +433,3 @@ class OneWayTranscoder(OrderedDict):
         table = delimiter.join("'{}'{}'{}'".format(str(k), keyvalsep, str(v))
                                for k, v in self.xtable.items())
         return '{{{}}}'.format(table)
-
-    def translate(self, element, strict):
-        """ Generator to transcode.
-
-        Parameters
-        ----------
-        seq : iterable
-            An iterable of elements to transcode.
-        strict : bool
-            `True` to skip non-transcodable elements,
-            `False` to yield them unchanged.
-
-        Yields
-        -------
-        out : tuple
-            The next transcoded counterpart, if possible, of the input,
-            or the input itself if `strict` is `False`.
-
-        """
-        try:
-            return self[element]
-        except KeyError:
-            if not strict:
-                return element
-            else:
-                raise
-        # if strict and element not in self.xtable:
-        #     raise KeyError
-        # else:
-        #     return self.xtable.get(element, element)
-
-
-    def _transcode(self, seq, strict):
-        """ Generator to transcode.
-
-        Parameters
-        ----------
-        seq : object
-            A sequence of objects to transcode.
-        strict : bool
-            `True` to skip non-transcodable elements,
-            `False` to yield them unchanged.
-
-        Yields
-        -------
-        out : object
-            The transcoded counterpart, if possible, of the input,
-            or the input itself if `strict` is `False`.
-
-        """
-        for element in seq:
-            try:
-                yield self.translate(element, strict)
-            except KeyError:
-                pass
-
-    def transcode(self, seq, strict):
-        """ Generator to transcode.
-
-        Parameters
-        ----------
-        seq : iterable
-            An iterable of elements to transcode.
-        strict : bool
-            `True` to skip non-transcodable elements,
-            `False` to yield them unchanged.
-
-        Yields
-        -------
-        out : tuple
-            The next transcoded counterpart, if possible, of the input,
-            or the input itself if `strict` is `False`.
-
-        """
-        return list(self._transcode(seq, strict))

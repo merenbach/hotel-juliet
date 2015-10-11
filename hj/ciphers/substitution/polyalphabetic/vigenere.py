@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from .base import PolySubCipher
-from utils import DEFAULT_ALPHABET, IterWrapper
-from utils.tabula_recta import TabulaRecta, InvalidKeyElement, InvalidMessageElement
+from utils import DEFAULT_ALPHABET, IterWrapper, extendable_iterator
+from utils.tabula_recta import TabulaRecta
 
 # [TODO] still need to add keyed alphabets per Vigenere
 
@@ -110,14 +110,10 @@ class BaseVigenereCipher(PolySubCipher):
         # countersign = (c for c in countersign if c in self.tableau.keys)
 
         wrapped_key = IterWrapper(countersign)
-        wrapped_msg = IterWrapper(message)
+        wrapped_key2 = extendable_iterator(countersign)
+        key_char = None
 
-        # class TranscodeAttempt:
-        #     def __init__(self, msg_char, key_char):
-        #         self.key_char = key_char
-        #         self.msg_char = msg_char
-
-        while True:
+        for msg_char in message:
             try:
 
                 # # advance semicircular message "gear" if it's primed
@@ -128,21 +124,14 @@ class BaseVigenereCipher(PolySubCipher):
 
                 # custom errors, plz! raise an error and don't return a generator
                 key_char = wrapped_key.read()
-                msg_char = wrapped_msg.read()
+                # msg_char = wrapped_msg.read()
 
+                x_msg_char_out = cipher_func(msg_char, key_char)
                 try:
-
-                    try:
-                        x_msg_char = list(cipher_func(msg_char, key_char)).pop()
-                    except IndexError:
-                        raise InvalidMessageElement(msg_char)
-
-                except InvalidMessageElement as e:
+                    x_msg_char = list(x_msg_char_out).pop()
+                except IndexError:
                     # yield e.element, None
                     yield msg_char, None
-
-                    # skip this message character--not valid in message alphabet
-                    wrapped_msg.advance()
 
                 else:
                     key_food = yield x_msg_char, msg_char
@@ -150,8 +139,7 @@ class BaseVigenereCipher(PolySubCipher):
                     # this can be here since key won't advance if transcoding
                     # was not successful
                     wrapped_key.advance(key_food or key_char)
-
-                    wrapped_msg.advance()
+                    # key_char = wrapped_key2.send(key_food or key_char)
 
             except StopIteration:
                 return

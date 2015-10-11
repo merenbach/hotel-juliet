@@ -18,22 +18,6 @@ from ciphers.substitution.monoalphabetic import CaesarCipher
 #   OCEAN#OGR#APHYWH#AT#!I LOVEund4Da$eA
 #   STORM THE CASTLE AT #MIDNIG####H###T
 
-class TabulaRectaError(Exception):
-    def __init__(self, element):
-        self.element = element
-
-class InvalidKeyElement(TabulaRectaError):
-    """ Key character not in key alphabet.
-
-    """
-    pass
-
-class InvalidMessageElement(TabulaRectaError):
-    """ Message character not in message alphabet.
-
-    """
-    pass
-
 class TabulaRecta:
     """ Message alphabet is on top; key alphabet is on side.
 
@@ -79,9 +63,9 @@ class TabulaRecta:
 
         """
         try:
-            transcoder = self.key_table.translate(key, True)
+            transcoder = self.key_table[key]
         except KeyError:
-            raise InvalidKeyElement(key)
+            raise IndexError
         else:
             return transcoder.encode(seq, strict=True)
 
@@ -109,9 +93,9 @@ class TabulaRecta:
 
         """
         try:
-            transcoder = self.key_table.translate(key, True)
+            transcoder = self.key_table[key]
         except KeyError:
-            raise InvalidKeyElement(key)
+            raise IndexError
         else:
             return transcoder.decode(seq, strict=True)
 
