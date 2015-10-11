@@ -12,17 +12,15 @@ class VariantBeaufortCipher(VigenereCipher):
     Not to be confused with the (symmetric) Beaufort cipher, which also uses
     the tabula recta.
 
-    [TODO] override encode/decode, not _encode/_decode?
-
     """
-    def _encode(self, *args, **kwargs):
+    def _encode(self, s):
         """ Reverse the encoding direction.
 
         """
-        return super()._decode(*args, **kwargs)
+        return super()._decode(s)
 
-    def _decode(self, *args, **kwargs):
+    def _decode(self, s):
         """ Reverse the decoding direction.
 
         """
-        return super()._encode(*args, **kwargs)
+        return super()._encode(s)

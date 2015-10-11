@@ -28,7 +28,7 @@ class BaseVigenereCipher(PolySubCipher):
         super().__init__(alphabet)
         self.tableau = self._make_tableau(alphabet or DEFAULT_ALPHABET)
         self.countersign = [e for e in countersign if e in self.tableau.keys]
-        if not countersign:
+        if not self.countersign:
             raise ValueError('A countersign is required')
 
     def _make_tableau(self, alphabet):
@@ -54,20 +54,18 @@ class BaseVigenereCipher(PolySubCipher):
         return self.TABULA_RECTA(alphabet=alphabet)
 
     def _encode(self, s):
-        return self._transcoder(s, self.countersign, self.tableau.encode)
+        return self._transcoder(s, self.tableau.encode)
 
     def _decode(self, s):
-        return self._transcoder(s, self.countersign, self.tableau.decode)
+        return self._transcoder(s, self.tableau.decode)
 
-    def _transcoder(self, message, countersign, cipher_func):
+    def _transcoder(self, message, cipher_func):
         """ Transcode a character.
 
         Parameters
         ----------
         message : str
             A message to transcode.
-        countersign : str
-            An encryption/decryption key.
         cipher_func : function
             A function (encode or decode) to use.
 
@@ -106,33 +104,26 @@ class BaseVigenereCipher(PolySubCipher):
         # msgset = set(message)
         # valid_keychars = keyset & msgset
 
-        wrapped_key = extendable_iterator(countersign)
+        wrapped_key = extendable_iterator(self.countersign)
 
-        try:
-            key_char = wrapped_key.send(None)
-        except StopIteration:
-            return
+        key_char = wrapped_key.send(None)
 
         # iterate over (finite!) message in outer loop with standard "for"
         for msg_char in message:
+            x_msg_char_out = cipher_func(msg_char, key_char)
+
             try:
-                x_msg_char_out = cipher_func(msg_char, key_char)
+                x_msg_char = list(x_msg_char_out).pop()
 
-                try:
-                    x_msg_char = list(x_msg_char_out).pop()
+            except IndexError:
+                yield msg_char, None
 
-                except IndexError:
-                    yield msg_char, None
+            else:
+                key_food = yield x_msg_char, msg_char
 
-                else:
-                    key_food = yield x_msg_char, msg_char
-
-                    # this can be here since key won't advance if transcoding
-                    # was not successful
-                    key_char = wrapped_key.send(key_food or key_char)
-
-            except StopIteration:
-                return
+                # this can be here since key won't advance if transcoding
+                # was not successful
+                key_char = wrapped_key.send(key_food or key_char)
 
             # while True:
             #     if advance_key is True:
