@@ -6,6 +6,8 @@ class Cipher:
     """ Base class for ciphers.
 
     """
+    verbose_name = 'cipher'
+
     def _encode(self, s):
         """ Encoding logic.
 

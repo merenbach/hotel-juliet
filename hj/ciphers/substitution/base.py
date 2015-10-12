@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .. import Cipher
-from utils import unique_list
+import string
 # from utils.base import grouper
 # [TODO] still need to implement grouping/blocks
 
@@ -12,6 +12,8 @@ class SubCipher(Cipher):
 
     Attributes
     ----------
+    DEFAULT_ALPHABET : str
+        The default character set for encoding.
     DEFAULT_NULLCHAR : str
        A default string ("X") to use as padding.
 
@@ -28,32 +30,35 @@ class SubCipher(Cipher):
     refactoring may be required.
 
     """
+    verbose_name = 'substitution'
+    DEFAULT_ALPHABET = string.ascii_uppercase
+
     DEFAULT_NULLCHAR = 'X'
 
     def __init__(self, alphabet, nullchar=DEFAULT_NULLCHAR):
-        self.alphabet = alphabet
-
         super().__init__()
+        self.alphabet = ''.join(alphabet or self.DEFAULT_ALPHABET)
+
         self.nullchar = nullchar
 
-    def __repr__(self):
-        # [TODO] maybe improve this
-        return repr(self.tableau)
-
     def __str__(self):
-        # [TODO] maybe improve this
-        return str(self.tableau)
+        return self.verbose_name.title()
 
-    def _encode(self, s, strict):
+    # def __repr__(self):
+    #     # [TODO] maybe improve this
+    #     return repr(self.tableau)
+    #
+    # def __str__(self):
+    #     # [TODO] maybe improve this
+    #     return str(self.tableau)
+
+    def _encode(self, s):
         """ Encode a message.
 
         Parameters
         ----------
         s : str
             A message to transcode.
-        strict : bool
-            `True` to strip non-transcodeable characters from the message,
-            `False` otherwise.
 
         Returns
         -------
@@ -68,16 +73,13 @@ class SubCipher(Cipher):
         """
         raise NotImplementedError
 
-    def _decode(self, s, strict):
+    def _decode(self, s):
         """ Decode a message.
 
         Parameters
         ----------
         s : str
             A message to transcode.
-        strict : bool
-            `True` to strip non-transcodeable characters from the message,
-            `False` otherwise.
 
         Returns
         -------
@@ -112,7 +114,7 @@ class SubCipher(Cipher):
 
         """
         if strict:
-            s = (e for e in s if e in self.alphabet)
+            s = ''.join(e for e in s if e in self.alphabet)
         out = self._encode(s)
         return ''.join(out)
 
@@ -136,7 +138,7 @@ class SubCipher(Cipher):
 
         """
         if strict:
-            s = (e for e in s if e in self.alphabet)
+            s = ''.join(e for e in s if e in self.alphabet)
         #     # or:
         #     # diff = set(msg) - set(alphabet)
         #     # b2a = str.maketrans(a, b, diff)

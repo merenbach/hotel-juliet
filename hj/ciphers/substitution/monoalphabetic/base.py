@@ -10,21 +10,41 @@ class MonoSubCipher(SubCipher):
 
     Parameters
     ----------
-    a : sequence of str
-        A source character set to use for transcoding.
-    b : sequence of str
-        A target character set to use for transcoding.
+    alphabet : str
+        A plaintext alphabet.
 
     """
-    def __init__(self, a, b):
-        super().__init__(a)
-        self.a2b, self.b2a = OrderedDict(zip(a, b)), OrderedDict(zip(b, a))
+    verbose_name = 'monoalphabetic substitution'
+
+    def __init__(self, alphabet):
+        super().__init__(alphabet)
+
+    def alphabet_(self):
+        """ Create a ciphertext alphabet.
+
+        Returns
+        -------
+        out : str
+            A ciphertext alphabet.
+
+        Raises
+        ------
+        NotImplementedError
+            If not overridden.
+
+        """
+        raise NotImplementedError
 
     def __str__(self):
-        return self.a2b.p(delimiter=',\n ', keyvalsep=' <=> ')
+        base = super().__str__()
+        pt = 'PT: {}'.format(self.alphabet)
+        ct = 'CT: {}'.format(self.alphabet_())
+        return '{}\n  {}\n  {}'.format(base, pt, ct)
 
     def __repr__(self):
-        return '{}: {}'.format(self.__class__.__name__, self.a2b.p())
+        return '{}: {} <=> {}'.format(self.__class__.__name__,
+                                               repr(self.alphabet),
+                                               repr(self.alphabet_()))
 
     def _encode(self, s):
         """ Transcode forwards.
@@ -40,7 +60,8 @@ class MonoSubCipher(SubCipher):
             The transcoded counterparts, if possible, of the input sequence.
 
         """
-        return (self.a2b.get(e, e) for e in s)
+        xtable = str.maketrans(self.alphabet, self.alphabet_())
+        return s.translate(xtable)
 
     def _decode(self, s):
         """ Transcode backwards.
@@ -56,4 +77,5 @@ class MonoSubCipher(SubCipher):
             The transcoded counterparts, if possible, of the input sequence.
 
         """
-        return (self.b2a.get(e, e) for e in s)
+        xtable = str.maketrans(self.alphabet_(), self.alphabet)
+        return s.translate(xtable)

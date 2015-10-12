@@ -3,4 +3,3 @@
 
 from utils.base import *  # noqa
 # from utils.tabula_recta import *  # noqa
-from string import ascii_uppercase as DEFAULT_ALPHABET  # noqa

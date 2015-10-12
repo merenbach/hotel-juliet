@@ -85,7 +85,7 @@ def lrotated(seq, offset):
     Notes
     -----
     Right-shifting by default would require negating the
-    offset values, thus introducing additional complexity.
+    offset values, thereby introducing additional complexity.
 
     """
     try:
@@ -183,47 +183,36 @@ def affine_transform(seq, multiplier, offset):
     return multiplied(newseq, multiplier)
 
 
-def unique_list(s):
-    """ Get unique items in sequence, preserving order.
-
-    Parameters
-    ----------
-    seq : sequence
-        A list, tuple, or string to process.
-
-    Returns
-    -------
-    out : list
-        A copy of the original sequence with duplicate elements removed.
-
-    """
-    return list(OrderedDict.fromkeys(s))
-
-
-def keyed(seq, keyword):
+def keyed(seq, key):
     """ Key a copy of the given sequence.
 
     Parameters
     ----------
-    seq : sequence
-        A sequence with which to key a copy of self.
+    seq : iterable
+        A sequence to key with key `key`.
+    key : iterable
+        A key for the sequencence `seq`.
 
     Returns
     -------
-    out : type(self)
-        A copy of `self` keyed with `seq`.
+    out : iterable
+        The input sequence `seq`, prefixed with `key`, and only one occurrence per
+        character.
 
     Notes
     -----
-    Only elements already in self will be used for keying.
+    Elements in `key` not already in `seq` will be ignored.
+    Repeating characters will be elided to the first occurrence.
 
     """
-    # [TODO] make this much, much better
-    # filter elements not in `self` from `seq`
-    # uniqued seq + (self - seq)
-    filtered_keyword = [element for element in keyword if element in seq]
-    seq = list(seq)
-    return unique_list(filtered_keyword + seq)
+    # put valid characters from "key" at beginning of new sequence
+    seq_ = [k for k in key if k in seq]
+
+    # add original sequence now
+    seq_.extend(seq)
+
+    # eliminate dupes and return
+    return OrderedDict.fromkeys(seq_)
 
 
 # def union(a, b):
@@ -336,27 +325,3 @@ def extendable_iterator(seq):
     for element in seq:
         food = yield element
         seq.extend(food or [])
-
-
-def ezip(*args):
-    """ Zip equal-length iterables together.
-
-    Parameters
-    ----------
-    args : packed sequence of iterables
-        A sequence of iterables to zip.
-
-    Raises
-    ------
-    ValueError
-        If any iterables differ in length from the others.
-
-    Notes
-    -----
-    All passed iterables must be finite and equal in length.
-
-    """
-    arg_lens = set(len(a) for a in args)
-    if len(arg_lens) != 1:
-        raise ValueError('all arguments must have equal length')
-    return zip(*args)

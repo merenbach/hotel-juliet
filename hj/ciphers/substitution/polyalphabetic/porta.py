@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from .vigenere import VigenereCipher
-from utils import DEFAULT_ALPHABET
 from utils.tabula_recta import DellaPortaTabulaRecta
 
 
@@ -14,7 +13,7 @@ class DellaPortaCipher(VigenereCipher):
     countersign : str
         An encryption/decryption key.
     alphabet : str, optional
-        A character set to use for transcoding.  Default `None`.
+        A plaintext alphabet.  Default `None`.
 
     Notes
     -----
@@ -27,7 +26,9 @@ class DellaPortaCipher(VigenereCipher):
     Since this is a symmetric cipher, autoclave is not implemented.
 
     """
+    verbose_name = 'Della Porta'
+
     TABULA_RECTA = DellaPortaTabulaRecta
 
-    def __init__(self, countersign, alphabet=DEFAULT_ALPHABET):
+    def __init__(self, countersign, alphabet=None):
         super().__init__(countersign, alphabet=alphabet)

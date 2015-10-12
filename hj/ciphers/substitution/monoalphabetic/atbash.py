@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from .affine import AffineCipher
-from utils import DEFAULT_ALPHABET
 
 
 class AtbashCipher(AffineCipher):
@@ -18,7 +17,7 @@ class AtbashCipher(AffineCipher):
     Parameters
     ----------
     alphabet : str, optional
-        A character set to use for transcoding.  Default from `utils`.
+        A plaintext alphabet.  Default `None`.
 
     Notes
     -----
@@ -32,8 +31,10 @@ class AtbashCipher(AffineCipher):
     invoke `super().__init__(alphabet, alphabet[::-1])`.
 
     """
+    verbose_name = 'Atbash'
+
     DEFAULT_M = (-1)
     DEFAULT_B = (-1)
 
-    def __init__(self, alphabet=DEFAULT_ALPHABET):
+    def __init__(self, alphabet=None):
         super().__init__(self.DEFAULT_M, self.DEFAULT_B, alphabet=alphabet)

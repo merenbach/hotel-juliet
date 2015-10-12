@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from .vigenere import VigenereCipher
-from utils import DEFAULT_ALPHABET
 
 
 class TrithemiusCipher(VigenereCipher):
@@ -11,7 +10,7 @@ class TrithemiusCipher(VigenereCipher):
     Parameters
     ----------
     alphabet : str, optional
-        A character set to use for transcoding.  Default `None`.
+        A plaintext alphabet.  Default `None`.
         If specified, will also be used as a countersign.
 
     Notes
@@ -24,5 +23,7 @@ class TrithemiusCipher(VigenereCipher):
            column since there is no key (the key is the top row [the alphabet])
 
     """
-    def __init__(self, alphabet=DEFAULT_ALPHABET):
-        super().__init__(alphabet or DEFAULT_ALPHABET, alphabet=alphabet)
+    verbose_name = 'Trithemius'
+
+    def __init__(self, alphabet=None):
+        super().__init__(alphabet or self.DEFAULT_ALPHABET, alphabet=alphabet)

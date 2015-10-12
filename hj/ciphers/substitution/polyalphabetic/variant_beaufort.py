@@ -13,6 +13,8 @@ class VariantBeaufortCipher(VigenereCipher):
     the tabula recta.
 
     """
+    verbose_name = 'Variant Beaufort'
+
     def _encode(self, s):
         """ Reverse the encoding direction.
 

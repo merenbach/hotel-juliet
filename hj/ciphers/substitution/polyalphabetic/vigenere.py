@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .base import PolySubCipher
-from utils import DEFAULT_ALPHABET, extendable_iterator
+from utils import extendable_iterator
 from utils.tabula_recta import TabulaRecta
 
 # [TODO] still need to add keyed alphabets per Vigenere
@@ -19,14 +19,14 @@ class BaseVigenereCipher(PolySubCipher):
     countersign : str
         An encryption/decryption key.
     alphabet : str
-        A character set to use for transcoding.  Default `None`.
+        A plaintext alphabet.  Default `None`.
 
     """
     TABULA_RECTA = TabulaRecta
 
-    def __init__(self, countersign, alphabet=DEFAULT_ALPHABET):
-        super().__init__(alphabet)
-        self.tableau = self._make_tableau(alphabet or DEFAULT_ALPHABET)
+    def __init__(self, countersign, alphabet=None):
+        super().__init__(alphabet or self.DEFAULT_ALPHABET)
+        self.tableau = self._make_tableau(alphabet or self.DEFAULT_ALPHABET)
         self.countersign = [e for e in countersign if e in self.tableau.keys]
         if not self.countersign:
             raise ValueError('A countersign is required')
@@ -208,6 +208,8 @@ class VigenereCipher(BaseVigenereCipher):
         A character set to use for transcoding.  Default `None`.
 
     """
+    verbose_name = 'Vigenère'
+
     def _encode(self, s):
         for e_after, __ in super()._encode(s):
             yield e_after

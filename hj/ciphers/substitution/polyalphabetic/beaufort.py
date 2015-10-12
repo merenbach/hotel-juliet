@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from .vigenere import VigenereCipher
-from utils import DEFAULT_ALPHABET
 from utils.tabula_recta import BeaufortTabulaRecta
 
 
@@ -14,7 +13,7 @@ class BeaufortCipher(VigenereCipher):
     countersign : str
         An encryption/decryption key.
     alphabet : str, optional
-        A character set to use for transcoding.  Default `None`.
+        A plaintext alphabet.  Default `None`.
 
     Notes
     -----
@@ -30,7 +29,9 @@ class BeaufortCipher(VigenereCipher):
     N.b.: Because this is a symmetric cipher, autoclave is disabled.
 
     """
+    verbose_name = 'Beaufort'
+
     TABULA_RECTA = BeaufortTabulaRecta
 
-    def __init__(self, countersign, alphabet=DEFAULT_ALPHABET):
+    def __init__(self, countersign, alphabet=None):
         super().__init__(countersign, alphabet=alphabet)
