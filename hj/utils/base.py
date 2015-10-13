@@ -178,11 +178,6 @@ def multiplied(multiplicand, multiplier):
     return [multiplicand[n] for n in positions]
 
 
-def affine_transform(seq, multiplier, offset):
-    newseq = lrotated(seq, offset)
-    return multiplied(newseq, multiplier)
-
-
 def keyed(seq, key):
     """ Key a copy of the given sequence.
 

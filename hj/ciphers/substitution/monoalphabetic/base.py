@@ -17,9 +17,13 @@ class MonoSubCipher(SubCipher):
     verbose_name = 'monoalphabetic substitution'
 
     def __init__(self, alphabet):
-        super().__init__(alphabet)
+        if not alphabet:
+            alphabet = self.DEFAULT_ALPHABET
 
-    def alphabet_(self):
+        super().__init__(alphabet)
+        self.alphabet_ = ''.join(self._transform(alphabet))
+
+    def _transform(self, alphabet):
         """ Create a ciphertext alphabet.
 
         Returns
@@ -38,13 +42,13 @@ class MonoSubCipher(SubCipher):
     def __str__(self):
         base = super().__str__()
         pt = 'PT: {}'.format(self.alphabet)
-        ct = 'CT: {}'.format(self.alphabet_())
+        ct = 'CT: {}'.format(self.alphabet_)
         return '{}\n  {}\n  {}'.format(base, pt, ct)
 
     def __repr__(self):
         return '{}: {} <=> {}'.format(self.__class__.__name__,
                                                repr(self.alphabet),
-                                               repr(self.alphabet_()))
+                                               repr(self.alphabet_))
 
     def _encode(self, s):
         """ Transcode forwards.
@@ -60,7 +64,7 @@ class MonoSubCipher(SubCipher):
             The transcoded counterparts, if possible, of the input sequence.
 
         """
-        xtable = str.maketrans(self.alphabet, self.alphabet_())
+        xtable = str.maketrans(self.alphabet, self.alphabet_)
         return s.translate(xtable)
 
     def _decode(self, s):
@@ -77,5 +81,5 @@ class MonoSubCipher(SubCipher):
             The transcoded counterparts, if possible, of the input sequence.
 
         """
-        xtable = str.maketrans(self.alphabet_(), self.alphabet)
+        xtable = str.maketrans(self.alphabet_, self.alphabet)
         return s.translate(xtable)

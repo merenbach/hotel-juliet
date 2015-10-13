@@ -5,7 +5,7 @@ from .base import lrotated, orotated
 from collections import OrderedDict
 from string import digits
 from ciphers.substitution.monoalphabetic.manual import ManualCipher
-from ciphers.substitution.monoalphabetic import CaesarCipher
+from ciphers.substitution.monoalphabetic import ShiftCipher
 
 # [TODO] some way to match up transcodeable chars + usable key chars?
 #
@@ -109,7 +109,7 @@ class TabulaRecta:
         # abets = [lrotated(alphabet, i) for i in range(len(alphabet))]
         # return [ManualCipher(alphabet, alphabet_) for alphabet_ in abets]
         # return [lrotated(alphabet, i) for i, _ in enumerate(alphabet)]
-        return [CaesarCipher(i, alphabet=alphabet) for i in
+        return [ShiftCipher(i, alphabet=alphabet) for i in
                 range(len(alphabet))]
 
 

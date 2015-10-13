@@ -1,12 +1,11 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from .base import MonoSubCipher
-from utils import lrotated
+from .shift import ShiftCipher
 
 
-class CaesarCipher(MonoSubCipher):
-    """ Transcode based on a numeric shift.
+class CaesarCipher(ShiftCipher):
+    """ Transcode based on a numeric shift of 3.
 
     Attributes
     ----------
@@ -16,8 +15,6 @@ class CaesarCipher(MonoSubCipher):
 
     Parameters
     ----------
-    offset : int, optional
-        An integer offset for transcoding.  Default `DEFAULT_OFFSET`.
     alphabet : str, optional
         A plaintext alphabet.  Default `None`.
 
@@ -26,10 +23,5 @@ class CaesarCipher(MonoSubCipher):
 
     DEFAULT_OFFSET = 3
 
-    def __init__(self, offset=DEFAULT_OFFSET, alphabet=None):
-        super().__init__(alphabet)
-        self.offset = offset
-
-    def alphabet_(self):
-        alphabet_ = lrotated(self.alphabet, self.offset)
-        return ''.join(alphabet_)
+    def __init__(self, alphabet=None):
+        super().__init__(self.DEFAULT_OFFSET, alphabet=alphabet)

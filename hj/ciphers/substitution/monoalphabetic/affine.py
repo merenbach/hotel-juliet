@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .base import MonoSubCipher
-from utils import affine_transform
+from utils import lrotated, multiplied
 
 
 class AffineCipher(MonoSubCipher):
@@ -20,10 +20,6 @@ class AffineCipher(MonoSubCipher):
 
     Notes
     -----
-    Although this cipher is technically different from a Caesar shift, the
-    behavioral outcome here is, interestingly enough, the same as if we'd run a
-    Caesar shift and then multiplied the letters with an added offset of zero.
-
     The inverse affine operation is complicated mathematically so we "cheat" by
     caching a tableau (as we do for other monoalphabetic ciphers) and using
     that for encoding (forward) and decoding (reverse).
@@ -36,9 +32,9 @@ class AffineCipher(MonoSubCipher):
     verbose_name = 'affine'
 
     def __init__(self, multiplier, offset, alphabet=None):
-        super().__init__(alphabet)
         self.multiplier, self.offset = multiplier, offset
+        super().__init__(alphabet)
 
-    def alphabet_(self):
-        alphabet_ = affine_transform(self.alphabet, self.multiplier, self.offset)
-        return ''.join(alphabet_)
+    def _transform(self, alphabet):
+        alphabet_ = lrotated(alphabet, self.offset)
+        return multiplied(alphabet_, self.multiplier)

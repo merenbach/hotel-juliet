@@ -19,9 +19,8 @@ class KeywordCipher(MonoSubCipher):
     verbose_name = 'keyword'
 
     def __init__(self, keyword, alphabet=None):
-        super().__init__(alphabet)
         self.keyword = keyword
+        super().__init__(alphabet)
 
-    def alphabet_(self):
-        alphabet_ = keyed(self.alphabet, self.keyword)
-        return ''.join(alphabet_)
+    def _transform(self, alphabet):
+        return keyed(alphabet, self.keyword)
