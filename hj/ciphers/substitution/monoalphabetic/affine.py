@@ -1,11 +1,11 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from .base import MonoSubCipher
-from utils import lrotated, multiplied
+from .shift import ShiftCipher
+from utils import multiplied
 
 
-class AffineCipher(MonoSubCipher):
+class AffineCipher(ShiftCipher):
     """ Transcode based on a transformation of `mx + b` for multiplier `m`,
     character `x`, and added offset `b`.
 
@@ -32,9 +32,9 @@ class AffineCipher(MonoSubCipher):
     verbose_name = 'affine'
 
     def __init__(self, multiplier, offset, alphabet=None):
-        self.multiplier, self.offset = multiplier, offset
-        super().__init__(alphabet)
+        self.multiplier = multiplier
+        super().__init__(offset, alphabet=alphabet)
 
     def _transform(self, alphabet):
-        alphabet_ = lrotated(alphabet, self.offset)
+        alphabet_ = super()._transform(alphabet)
         return multiplied(alphabet_, self.multiplier)
