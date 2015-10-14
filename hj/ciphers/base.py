@@ -49,3 +49,37 @@ class Cipher:
 
         """
         raise NotImplementedError
+
+    def encode(self, s):
+        """ Encode a message.
+
+        Parameters
+        ----------
+        s : str
+            A message to encode.
+
+        Returns
+        -------
+        out : str
+            The encoded message.
+
+        """
+        out = self._encode(s)
+        return ''.join(out)
+
+    def decode(self, s):
+        """ Decode a message.
+
+        Parameters
+        ----------
+        s : str
+            A message to decode.
+
+        Returns
+        -------
+        out : str
+            The decoded message.
+
+        """
+        out = self._decode(s)
+        return ''.join(out)

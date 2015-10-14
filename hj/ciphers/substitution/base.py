@@ -115,8 +115,7 @@ class SubCipher(Cipher):
         """
         if strict:
             s = ''.join(e for e in s if e in self.alphabet)
-        out = self._encode(s)
-        return ''.join(out)
+        return super().encode(s)
 
     def decode(self, s, strict=False, block=0):
         """ Decode a message.
@@ -139,11 +138,7 @@ class SubCipher(Cipher):
         """
         if strict:
             s = ''.join(e for e in s if e in self.alphabet)
-        #     # or:
-        #     # diff = set(msg) - set(alphabet)
-        #     # b2a = str.maketrans(a, b, diff)
-        out = self._decode(s)
-        return ''.join(out)
+        return super().decode(s)
 
     # def unblockify(self, iterable, n, fillvalue=None):
     #     """ From itertools"""
