@@ -2,88 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from ciphers import *
-from utils import *
+from . import *  # noqa
 import string
-
-# class AlphabetTest(unittest.TestCase):
-#     def test_rotate(self):
-#         ab = Alphabet()
-#         for i in range(0, len(ab)):
-#             rot_left = ab.rotated(i)
-#             rot_right = ab.rotated(-i)
-
-
-class UtilsTest(unittest.TestCase):
-
-    PASSPHRASE = 'OCEANOGRAPHYWHAT'
-
-    def testLeftRotation(self):
-        s = 'HELLO, WORLD!'
-        expected_out = [
-            'HELLO, WORLD!',
-            'ELLO, WORLD!H',
-            'LLO, WORLD!HE',
-            'LO, WORLD!HEL',
-            'O, WORLD!HELL',
-            ', WORLD!HELLO',
-            ' WORLD!HELLO,',
-            'WORLD!HELLO, ',
-            'ORLD!HELLO, W',
-            'RLD!HELLO, WO',
-            'LD!HELLO, WOR',
-            'D!HELLO, WORL',
-            '!HELLO, WORLD',
-        ]
-        s_len = len(s)
-        out = [lrotated(s, i) for i in range(s_len)]
-        self.assertEqual(expected_out, out)
-
-        out = [lrotated(s, i + s_len) for i in range(s_len)]
-        self.assertEqual(expected_out, out)
-
-        out = [lrotated(s, i - s_len) for i in range(s_len)]
-        self.assertEqual(expected_out, out)
-
-    def testExtendableIterator(self):
-        iterator = extendable_iterator('')
-        self.assertEqual(''.join(iterator), '')
-
-        iterator = extendable_iterator(self.PASSPHRASE)
-        self.assertEqual(''.join(iterator), self.PASSPHRASE)
-
-        out = []
-        iterator = extendable_iterator(self.PASSPHRASE[0:2])
-        out.append(next(iterator))
-        out.append(iterator.send(self.PASSPHRASE[2]))
-        out.append(next(iterator))
-        out.append(iterator.send([self.PASSPHRASE]))
-
-        self.assertEqual(out, ['O', 'C', 'E', self.PASSPHRASE])
-
-    # def testEqualLengthZip(self):
-    #     a = string.ascii_uppercase
-    #     b = string.ascii_lowercase
-    #     c = 'another string w/length 26'
-    #     d = 'a string of some other length'
-    #
-    #     self.assertEqual(list(ezip(a, a)), list(zip(a, a)))
-    #     self.assertEqual(list(ezip(a, b)), list(zip(a, b)))
-    #     self.assertEqual(list(ezip(a, c, c)), list(zip(a, c, c)))
-    #     self.assertEqual(list(ezip(a, b, c)), list(zip(a, b, c)))
-    #
-    #     # test raising of ValueError with unequal alphabets
-    #     with self.assertRaises(ValueError):
-    #         MonoSubCipher(a, c)
-    #
-    #     with self.assertRaises(ValueError):
-    #         MonoSubCipher(c, d)
-    #
-    #     with self.assertRaises(ValueError):
-    #         ezip(c, d)
-    #
-    #     with self.assertRaises(ValueError):
-    #         ezip(a, b, c, d)
 
 
 class CipherTest(unittest.TestCase):
@@ -112,43 +32,6 @@ class CipherTest(unittest.TestCase):
         if msg_enc_expected is not '':
             self.assertNotEqual(encoded, decoded)
             self.assertEqual(decoded, strict and msg_strict or msg)
-
-
-    def test_caesarcipher(self):
-        c = CaesarCipher()
-        self._transcode(c, self.MESSAGE_PLAIN, None, 'KHOOR, ZRUOG!', strict=False)
-        self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'KHOORZRUOG', strict=True)
-        self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'EBIIL, TLOIA!', strict=False)
-        self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'EBIILTLOIA', strict=True)
-
-    def test_atbashcipher(self):
-        c = AtbashCipher()
-        self._transcode(c, self.MESSAGE_PLAIN, None, 'SVOOL, DLIOW!', strict=False)
-        self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'SVOOLDLIOW', strict=True)
-        self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'SVOOL, DLIOW!', strict=False)
-        self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'SVOOLDLIOW', strict=True)
-
-    def test_keywordcipher(self):
-        c = KeywordCipher(keyword='KANGAROO')
-        self._transcode(c, self.MESSAGE_PLAIN, None, 'CRHHL, WLQHG!', strict=False)
-        self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'CRHHLWLQHG', strict=True)
-        self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'LJOOF, WFEOI!', strict=False)
-        self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'LJOOFWFEOI', strict=True)
-
-    def test_affinecipher(self):
-        c = AffineCipher(7, 3)
-        self._transcode(c, self.MESSAGE_PLAIN, None, 'AFCCX, BXSCY!', strict=False)
-        self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'AFCCXBXSCY', strict=True)
-        self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'IPQQJ, ZJCQA!', strict=False)
-        self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'IPQQJZJCQA', strict=True)
-
-    def test_scytale(self):
-        c = ScytaleCipher(4)
-        self._transcode(c, self.MESSAGE_PLAIN, None, 'HOO!E,RXL LXLWDX', strict=False)
-        # self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'HOOERXLLXLWDX', strict=True)
-        # self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'VGPLBKUILS', strict=True)
-        # self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'TCHLB, IIALO!', strict=False)
-        # self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'TCHLBIIALO', strict=True)
 
     def test_vigenere(self):
         c = VigenereCipher(self.PASSPHRASE)
@@ -235,6 +118,7 @@ class CipherTest(unittest.TestCase):
         self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'OSNYICLJYX', strict=True)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'OSNYI, CLJYX!', strict=False)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'OSNYICLJYX', strict=True)
+
 
 if __name__ == '__main__':
     unittest.main()
