@@ -3,6 +3,7 @@
 
 from .. import SubCipher
 from collections import OrderedDict
+from utils import TwoWayTranslationTable
 
 
 class MonoSubCipher(SubCipher):
@@ -22,6 +23,7 @@ class MonoSubCipher(SubCipher):
 
         super().__init__(alphabet)
         self.alphabet_ = ''.join(self._transform(alphabet))
+        self.xtable = TwoWayTranslationTable(self.alphabet, self.alphabet_)
 
     def _transform(self, alphabet):
         """ Create a ciphertext alphabet.
@@ -64,8 +66,7 @@ class MonoSubCipher(SubCipher):
             The transcoded string output.
 
         """
-        xtable = str.maketrans(self.alphabet, self.alphabet_)
-        return s.translate(xtable)
+        return self.xtable.encode(s)
 
     def _decode(self, s):
         """ Transcode backwards.
@@ -81,5 +82,4 @@ class MonoSubCipher(SubCipher):
             The transcoded string output.
 
         """
-        xtable = str.maketrans(self.alphabet_, self.alphabet)
-        return s.translate(xtable)
+        return self.xtable.decode(s)
