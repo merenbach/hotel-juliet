@@ -47,6 +47,13 @@ class CipherTest(unittest.TestCase):
         self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'EBIIL, TLOIA!', strict=False)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'EBIILTLOIA', strict=True)
 
+    def test_shiftcipher(self):
+        c = ShiftCipher(17)
+        self._transcode(c, self.MESSAGE_PLAIN, None, 'YVCCF, NFICU!', strict=False)
+        self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'YVCCFNFICU', strict=True)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'QNUUX, FXAUM!', strict=False)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'QNUUXFXAUM', strict=True)
+
     def test_keywordcipher(self):
         c = KeywordCipher(keyword='KANGAROO')
         self._transcode(c, self.MESSAGE_PLAIN, None, 'CRHHL, WLQHG!', strict=False)

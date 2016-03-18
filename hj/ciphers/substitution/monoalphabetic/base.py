@@ -55,13 +55,13 @@ class MonoSubCipher(SubCipher):
 
         Parameters
         ----------
-        s : iterable
-            An iterable of elements to transcode.
+        s : str
+            A string to transcode.
 
         Returns
         -------
-        out : generator
-            The transcoded counterparts, if possible, of the input sequence.
+        out : str
+            The transcoded string output.
 
         """
         xtable = str.maketrans(self.alphabet, self.alphabet_)
@@ -72,13 +72,13 @@ class MonoSubCipher(SubCipher):
 
         Parameters
         ----------
-        s : iterable
-            An iterable of elements to transcode.
+        s : str
+            A string to transcode.
 
         Returns
         -------
-        out : generator
-            The transcoded counterparts, if possible, of the input sequence.
+        out : str
+            The transcoded string output.
 
         """
         xtable = str.maketrans(self.alphabet_, self.alphabet)
