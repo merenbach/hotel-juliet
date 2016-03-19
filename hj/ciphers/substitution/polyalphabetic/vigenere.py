@@ -52,17 +52,13 @@ class BaseVigenereCipher(PolySubCipher):
         """
         return TabulaRecta(alphabet)
 
-    def _encode(self, s):
-        # [TODO] the tabula recta could perhaps handle?
-        return self._transcoder(s, self.tableau.encode)
-
-    def _decode(self, s):
-        # [TODO] the tabula recta could perhaps handle?
-        return self._transcoder(s, self.tableau.decode)
-
-    def _transcode(self, s):
-        # [TODO] the tabula recta could perhaps handle?
-        return self._transcoder(s, self.tableau.transcode)
+    # def _encode(self, s):
+    #     # [TODO] the tabula recta could perhaps handle?
+    #     return self._transcoder(s, self.tableau.encode)
+    #
+    # def _decode(self, s):
+    #     # [TODO] the tabula recta could perhaps handle?
+    #     return self._transcoder(s, self.tableau.decode)
 
     def _transcoder(self, message, cipher_func):
         """ Transcode a character.
@@ -80,6 +76,13 @@ class BaseVigenereCipher(PolySubCipher):
             The transcoded message character.
 
         """
+        # [TODO] STEP 1 for refactoring:
+        ##### rework so that with flag yes/no, autoclave code enabled/disabled
+        # STEP 2:
+        ##### rework so that flag defaults to No, but can be set to Yes overridden
+        # STEP 3:
+        ##### eliminate complex hierarchy of Vigenere classes
+        # STEP 4: party
         wrapped_key = extendable_iterator(self.countersign)
         key_char = wrapped_key.send(None)
 
@@ -117,7 +120,7 @@ class VigenereCipher(BaseVigenereCipher):
 
     """
     def _encode(self, s):
-        for e_after, __ in super()._encode(s):
+        for e_after, __ in self._transcoder(s, self.tableau.encode):
             yield e_after
         # generator = super()._encode(s)
         # while True:
@@ -129,7 +132,7 @@ class VigenereCipher(BaseVigenereCipher):
         #         yield e_after
 
     def _decode(self, s):
-        for e_after, __ in super()._decode(s):
+        for e_after, __ in self._transcoder(s, self.tableau.decode):
             yield e_after
         # generator = super()._decode(s)
         # while True:
@@ -140,7 +143,36 @@ class VigenereCipher(BaseVigenereCipher):
         #     else:
         #         yield e_after
 
-class VigenereTextAutoclaveCipher(BaseVigenereCipher):
+class VigenereAutoclaveCipher(BaseVigenereCipher):
+    # def _encode(self, s):
+    #     # [TODO] the tabula recta could perhaps handle?
+    #     return self._transcoder(s, self.tableau.encode)
+    #
+    # def _decode(self, s):
+    #     # [TODO] the tabula recta could perhaps handle?
+    #     return self._transcoder(s, self.tableau.decode)
+
+    def _autoclave_food_before(self, s, generator):
+        try:
+            food = None
+            while True:
+                e_after, e_before = generator.send(food)
+                food = [e_before]
+                yield e_after
+        except StopIteration:
+            return
+
+    def _autoclave_food_after(self, s, generator):
+        try:
+            food = None
+            while True:
+                e_after, __ = generator.send(food)
+                food = [e_after]
+                yield e_after
+        except StopIteration:
+            return
+
+class VigenereTextAutoclaveCipher(VigenereAutoclaveCipher):
     """ An oft-overlooked autokey cipher developed by Blaise de Vigenère.
 
     Notes
@@ -156,29 +188,15 @@ class VigenereTextAutoclaveCipher(BaseVigenereCipher):
 
     """
     def _encode(self, s):
-        generator = super()._encode(s)
-        try:
-            food = None
-            while True:
-                e_after, e_before = generator.send(food)
-                food = [e_before]
-                yield e_after
-        except StopIteration:
-            return
+        generator = self._transcoder(s, self.tableau.encode)
+        return self._autoclave_food_before(s, generator)
 
     def _decode(self, s):
-        generator = super()._decode(s)
-        try:
-            food = None
-            while True:
-                e_after, __ = generator.send(food)
-                food = [e_after]
-                yield e_after
-        except StopIteration:
-            return
+        generator = self._transcoder(s, self.tableau.decode)
+        return self._autoclave_food_after(s, generator)
 
 
-class VigenereKeyAutoclaveCipher(BaseVigenereCipher):
+class VigenereKeyAutoclaveCipher(VigenereAutoclaveCipher):
     """ An oft-overlooked autokey cipher developed by Blaise de Vigenère.
 
     Notes
@@ -194,23 +212,9 @@ class VigenereKeyAutoclaveCipher(BaseVigenereCipher):
 
     """
     def _encode(self, s):
-        generator = super()._encode(s)
-        try:
-            food = None
-            while True:
-                e_after, __ = generator.send(food)
-                food = [e_after]
-                yield e_after
-        except StopIteration:
-            return
+        generator = self._transcoder(s, self.tableau.encode)
+        return self._autoclave_food_after(s, generator)
 
     def _decode(self, s):
-        generator = super()._decode(s)
-        try:
-            food = None
-            while True:
-                e_after, e_before = generator.send(food)
-                food = [e_before]
-                yield e_after
-        except StopIteration:
-            return
+        generator = self._transcoder(s, self.tableau.decode)
+        return self._autoclave_food_before(s, generator)
