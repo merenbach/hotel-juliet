@@ -32,7 +32,6 @@ class TabulaRecta(CipherTableau):
     """
     def __init__(self, alphabet, keys=None):
         super().__init__(alphabet, alphabet)
-        self.alphabet = alphabet
         self.keys = keys or alphabet
         alphabets_ = self._make_rows(alphabet)
         self.alphabets_ = alphabets_
@@ -63,9 +62,7 @@ class TabulaRecta(CipherTableau):
             If no tableau could be found for the given key.
 
         """
-        kt = self.key_table[key]
-        seq = ''.join(e for e in seq if e in kt.pt)
-        return self.key_table[key].encode(seq)
+        return self.key_table[key].encode(seq, strict=True)
 
     def decode(self, seq, key):
         """ Locate element within the grid.
@@ -90,12 +87,10 @@ class TabulaRecta(CipherTableau):
             If no tableau could be found for the given key.
 
         """
-        kt = self.key_table[key]
-        seq = ''.join(e for e in seq if e in kt.ct)
-        return self.key_table[key].decode(seq)
+        return self.key_table[key].decode(seq, strict=True)
 
     def __str__(self):
-        alphabet = self.alphabet
+        alphabet = self.pt
         lines = []
         lines.append('  | ' + ' '.join(alphabet))
         lines.append('--+' + '-' * len(alphabet) * 2)
@@ -113,12 +108,8 @@ class TabulaRecta(CipherTableau):
             An ordered collection of character sets.
 
         """
-        # abets = [lrotated(alphabet, i) for i in range(len(alphabet))]
-        # return [ManualCipher(alphabet, alphabet_) for alphabet_ in abets]
-        # return [lrotated(alphabet, i) for i, _ in enumerate(alphabet)]
-        alphabets_ = [lrotated(alphabet, i) for i, _ in enumerate(alphabet)]
-        return [OneToOneTranslationTable(alphabet, alphabet_) for alphabet_ in
-                alphabets_]
+        cts = [lrotated(self.ct, i) for i, _ in enumerate(self.ct)]
+        return [OneToOneTranslationTable(self.pt, ct) for ct in cts]
 
 
 class GronsfeldTabulaRecta(TabulaRecta):
@@ -147,14 +138,8 @@ class BeaufortTabulaRecta(TabulaRecta):
         super().__init__(alphabet, keys=(alphabet[::-1]))
 
     def _make_rows(self, alphabet):
-        # abets = [lrotated(alphabet, i) for i in range(len(alphabet))]
-        # n = super()._make_rows(alphabet[::-1])
-        # print(n)
-        # return n
-        # return list(reversed(n))
-        abets = [lrotated(alphabet[::-1], i) for i in range(len(alphabet))]
-        return [OneToOneTranslationTable(alphabet, alphabet_) for alphabet_ in abets]
-        # return [AtbashCipher(alphabet=alphabet) for i, __ in enumerate(alphabet)]
+        cts = [lrotated(alphabet[::-1], i) for i in range(len(alphabet))]
+        return [OneToOneTranslationTable(self.pt, ct) for ct in cts]
 
 
 # TODO: this is actually a reciprocal table...
@@ -169,7 +154,7 @@ class DellaPortaTabulaRecta(TabulaRecta):
 
     """
     def __str__(self):
-        alphabet = self.alphabet[:len(self.alphabet) // 2]
+        alphabet = self.pt[:len(self.alphabet) // 2]
         lines = []
         lines.append('     | ' + ' '.join(alphabet))
         lines.append('-----+' + '-' * len(alphabet) * 2)
@@ -183,47 +168,10 @@ class DellaPortaTabulaRecta(TabulaRecta):
         return '\n'.join(lines)
 
     def _make_rows(self, alphabet):
-        alphabet2 = lrotated(alphabet, len(alphabet) // 2)
-        abets = [orotated(alphabet2, i // 2) for i in range(len(alphabet))]
-        return [OneToOneTranslationTable(alphabet, alphabet_) for alphabet_ in abets]
+        alphabet2 = lrotated(self.pt, len(self.pt) // 2)
+        cts = [orotated(alphabet2, i // 2) for i in range(len(alphabet))]
+        return [OneToOneTranslationTable(self.pt, ct) for ct in cts]
 
-
-    #
-    #     # [TODO] kludgy vars that shouldn't be here
-    #     # self.msg_alphabet = alphabet
-    #     # self.keys = alphabet
-    #
-    #     # try:
-    #     #     x, y = self.charmap[a], self.charmap[b]
-    #     # except KeyError:
-    #     #     return None
-    #     # else:
-    #     #     pos = x + y if intersect else x - y
-    #     #     element = self.alphabet.at(pos)
-    #     #     return str(element)
-    #
-    # def _make_transcoders(self):
-    #     """ [TODO] these docs aren't current
-    #     Create a transcoding alphabet.
-    #
-    #     Returns
-    #     -------
-    #     out : sequence
-    #         A transformed alphabet.
-    #
-    #     Raises
-    #     ------
-    #     NotImplementedError
-    #         If not overridden.
-    #
-    #     Notes
-    #     -----
-    #     Since this is invoked by `__init__()` before instance is totally
-    #     initialized, please don't perform any operations that expect a fully
-    #     constructed instance.
-    #
-    #     """
-    #     raise NotImplementedError
 
 # class PolybiusSquare(Tableau):
 #     # alphabet = ascii_uppercase

@@ -5,7 +5,7 @@ from collections import OrderedDict
 
 
 class CipherTableau:
-    """ Alphabetic tableau.
+    """ Metadata used at least to determine substitution input/output charsets.
 
     Parameters
     ----------
@@ -59,13 +59,16 @@ class ManyToOneTranslationTable(CipherTableau):
                                      repr(self.pt),
                                      repr(self.ct))
 
-    def encode(self, s):
+    def encode(self, s, strict=False):
         """ Transcode forwards.
 
         Parameters
         ----------
         s : str
             A string to transcode.
+        strict : bool, optional
+            `True` to discard non-transcodable symbols, `False` otherwise.
+            Default `False`.
 
         Returns
         -------
@@ -73,6 +76,8 @@ class ManyToOneTranslationTable(CipherTableau):
             A transcoded version of `s`.
 
         """
+        if strict:
+            s = ''.join(c for c in s if c in self.pt)
         return s.translate(self.a2b)
 
 
@@ -100,13 +105,16 @@ class OneToOneTranslationTable(ManyToOneTranslationTable):
                                       repr(self.pt),
                                       repr(self.ct))
 
-    def decode(self, s):
+    def decode(self, s, strict=False):
         """ Transcode backwards.
 
         Parameters
         ----------
         s : str
             A string to transcode.
+        strict : bool, optional
+            `True` to discard non-transcodable symbols, `False` otherwise.
+            Default `False`.
 
         Returns
         -------
@@ -114,4 +122,6 @@ class OneToOneTranslationTable(ManyToOneTranslationTable):
             A transcoded version of `s`.
 
         """
+        if strict:
+            s = ''.join(c for c in s if c in self.ct)
         return s.translate(self.b2a)
