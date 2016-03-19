@@ -2,10 +2,9 @@
 # -*- coding: utf-8 -*-
 
 from .base import lrotated, orotated
+from .tableau import OneToOneTranslationTable
 from collections import OrderedDict
 from string import digits
-from ciphers.substitution.monoalphabetic.manual import ManualCipher
-from ciphers.substitution.monoalphabetic import ShiftCipher
 
 # [TODO] some way to match up transcodeable chars + usable key chars?
 #
@@ -109,8 +108,9 @@ class TabulaRecta:
         # abets = [lrotated(alphabet, i) for i in range(len(alphabet))]
         # return [ManualCipher(alphabet, alphabet_) for alphabet_ in abets]
         # return [lrotated(alphabet, i) for i, _ in enumerate(alphabet)]
-        return [ShiftCipher(i, alphabet=alphabet) for i in
-                range(len(alphabet))]
+        alphabets_ = [lrotated(alphabet, i) for i, _ in enumerate(alphabet)]
+        return [OneToOneTranslationTable(alphabet, alphabet_) for alphabet_ in
+                alphabets_]
 
 
 class GronsfeldTabulaRecta(TabulaRecta):
@@ -145,7 +145,7 @@ class BeaufortTabulaRecta(TabulaRecta):
         # return n
         # return list(reversed(n))
         abets = [lrotated(alphabet[::-1], i) for i in range(len(alphabet))]
-        return [ManualCipher(alphabet, alphabet_) for alphabet_ in abets]
+        return [OneToOneTranslationTable(alphabet, alphabet_) for alphabet_ in abets]
         # return [AtbashCipher(alphabet=alphabet) for i, __ in enumerate(alphabet)]
 
 
@@ -177,7 +177,7 @@ class DellaPortaTabulaRecta(TabulaRecta):
     def _make_rows(self, alphabet):
         alphabet2 = lrotated(alphabet, len(alphabet) // 2)
         abets = [orotated(alphabet2, i // 2) for i in range(len(alphabet))]
-        return [ManualCipher(alphabet, alphabet_) for alphabet_ in abets]
+        return [OneToOneTranslationTable(alphabet, alphabet_) for alphabet_ in abets]
 
 
     #

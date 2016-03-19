@@ -37,22 +37,22 @@ class ManyToOneTranslationTable:
         return len(self.a2b)
 
     def __str__(self):
-        pt = 'PT: {}'.format(self.pt)
-        ct = 'CT: {}'.format(self.ct)
-        return '{}\n{}'.format(pt, ct)
+        return 'PT: {}\nCT: {}'.format(self.pt, self.ct)
 
     def __repr__(self):
         return '{}: {} => {}'.format(type(self).__name__,
                                      repr(self.pt),
                                      repr(self.ct))
 
-    def encode(self, s):
+    def encode(self, s, strict=False):
         """ Transcode forwards.
 
         Parameters
         ----------
         s : str
             A string to transcode.
+        strict : bool
+            `True` to strip out non-transcodable characters, `False` otherwise.
 
         Returns
         -------
@@ -60,6 +60,8 @@ class ManyToOneTranslationTable:
             A transcoded version of `s`.
 
         """
+        if strict:
+            s = ''.join(c for c in s if c in self.pt)
         return s.translate(self.a2b)
 
 
@@ -94,13 +96,15 @@ class OneToOneTranslationTable(ManyToOneTranslationTable):
                                       repr(self.pt),
                                       repr(self.ct))
 
-    def decode(self, s):
+    def decode(self, s, strict=False):
         """ Transcode backwards.
 
         Parameters
         ----------
         s : str
             A string to transcode.
+        strict : bool
+            `True` to strip out non-transcodable characters, `False` otherwise.
 
         Returns
         -------
@@ -108,4 +112,6 @@ class OneToOneTranslationTable(ManyToOneTranslationTable):
             A transcoded version of `s`.
 
         """
+        if strict:
+            s = ''.join(c for c in s if c in self.ct)
         return s.translate(self.b2a)
