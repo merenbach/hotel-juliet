@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .. import SubCipher
-from utils import OneToOneTranslationTable
+from utils import chunks, upward_factor, OneToOneTranslationTable
 
 
 class MonoSubCipher(SubCipher):
@@ -44,34 +44,40 @@ class MonoSubCipher(SubCipher):
         """
         raise NotImplementedError
 
-    def _encode(self, s):
-        """ Transcode forwards.
+    def _encode(self, s, strict):
+        """ Encode a message.
 
         Parameters
         ----------
         s : str
-            A string to transcode.
+            A message to transcode.
+        strict : bool
+            `True` to strip non-transcodeable characters from the string,
+            `False` otherwise.
 
         Returns
         -------
         out : str
-            The transcoded string output.
+            A transcoded version of `s`.
 
         """
-        return self.xtable.encode(s)
+        return self.xtable.encode(s, strict=strict)
 
-    def _decode(self, s):
-        """ Transcode backwards.
+    def _decode(self, s, strict):
+        """ Decode a message.
 
         Parameters
         ----------
         s : str
-            A string to transcode.
+            A message to transcode.
+        strict : bool
+            `True` to strip non-transcodeable characters from the string,
+            `False` otherwise.
 
         Returns
         -------
         out : str
-            The transcoded string output.
+            A transcoded version of `s`.
 
         """
-        return self.xtable.decode(s)
+        return self.xtable.decode(s, strict=strict)

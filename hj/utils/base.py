@@ -320,3 +320,16 @@ def extendable_iterator(seq):
     for element in seq:
         food = yield element
         seq.extend(food or [])
+
+
+
+def upward_factor(num, factor):
+    """ return closest multiple of factor above or equal to num """
+    return num + factor - 1 - (num - 1) % factor;
+
+def chunks(seq, n):
+    """Yield successive n-sized chunks from seq."""
+    """ [TODO] note that this raises an exception if n == 0 """
+    # adapted from http://stackoverflow.com/questions/312443/how-do-you-split-a-list-into-evenly-sized-chunks-in-python
+    for i in range(0, len(seq), n):
+        yield seq[i:i+n]

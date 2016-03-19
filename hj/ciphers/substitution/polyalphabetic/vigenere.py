@@ -53,10 +53,14 @@ class BaseVigenereCipher(PolySubCipher):
         """
         return self.TABULA_RECTA(alphabet=alphabet)
 
-    def _encode(self, s):
+    def _encode(self, s, strict):
+        if strict:
+            s = (c for c in s if c in self.alphabet)
         return self._transcoder(s, self.tableau.encode)
 
-    def _decode(self, s):
+    def _decode(self, s, strict):
+        if strict:
+            s = (c for c in s if c in self.alphabet)
         return self._transcoder(s, self.tableau.decode)
 
     def _transcoder(self, message, cipher_func):
@@ -75,37 +79,7 @@ class BaseVigenereCipher(PolySubCipher):
             The transcoded message character.
 
         """
-        # msg_outer = False
-        # msg_outer = True
-
-        # both mechanisms--key outer and message outer--are the same length
-        # when optimized, so far, so it's not entirely straightforward which
-        # is superior, philosophically or otherwise
-        # if msg_outer:
-        # PROS of this mechanism:
-        #   - no inner loop
-        #   - iterate over the message outside (more imp. philosophically
-        #     than the passphrase)
-        #   - fairly straightforward logic
-        #   - message needn't be an iterator
-        # CONS:
-        #   - `advance` bool required
-        # NOTES:
-        #   - key advancement in conditional, not loop
-
-        # if advance_key:
-        #     key_char = keystream.send(food)
-        #     keystream.send('aoeu')
-        #     advance_key, food = False, None
-        # message = iter(message)
-        # while True:
-        # key_char = keystream.send(food)
-        # keyset = set(countersign)
-        # msgset = set(message)
-        # valid_keychars = keyset & msgset
-
         wrapped_key = extendable_iterator(self.countersign)
-
         key_char = wrapped_key.send(None)
 
         # iterate over (finite!) message in outer loop with standard "for"
@@ -113,7 +87,7 @@ class BaseVigenereCipher(PolySubCipher):
             x_msg_char_out = cipher_func(msg_char, key_char)
 
             if len(x_msg_char_out) == 0:
-                # mesage char not transcodeable
+                # message char not transcodeable
                 # strict must be off, or this character wouldn't still be here
                 # yield the raw character
                 yield msg_char, None
@@ -125,74 +99,6 @@ class BaseVigenereCipher(PolySubCipher):
                 # was not successful
                 key_char = wrapped_key.send(key_food or key_char)
 
-            # while True:
-            #     if advance_key is True:
-            #         key_char = keystream.send(food)
-            #         # advance_key, food = False, None
-            #         food = None
-
-            #     try:
-            #         x_msg_char = list(cipher_func(msg_char, key_char))
-            #         if x_msg_char != []:
-            #             x_msg_char = x_msg_char[0]
-            #             could_transcode = True
-            #
-            #     except KeyError:
-            #         # skip this character--not valid in key
-            #         # advance_key = True
-            #         pass
-            #     else:
-            #         break
-            #
-            # advance_key = False
-            #
-            # if could_transcode:
-            #     out_char = x_msg_char
-            #     # character was successfully transcoded
-            #     if not autoclave:
-            #         food = key_char
-            #     else:
-            #         food = autoclave(msg_char, x_msg_char)
-            #     advance_key = True
-            #     success = True
-            #
-            # elif not strict:
-            #     # if not strict, x_msg_char is already set to msg_char
-            #     # thanks to cipher_func
-            #     out_char = msg_char
-            #     success = True
-
-            # if success:
-            #     yield out_char
-
-
-        # # PROS:
-        # #   - no initial keystream priming
-        # # CONS:
-        # #   - message needs to be an iterator
-        # #   - inner loop
-        # #   - less clear
-        # # NOTES:
-        # #  - message advancement and key advancement as loops
-        # message = iter(message)
-        #
-        # for key_char in keystream:
-        #     advance_key = False
-        #
-        #     # this inner loop advances the message char
-        #     # it avoids advancing the key until a key char is consumed
-        #     while advance_key is False:
-        #         msg_char = next(message)
-        #         x_msg_char, success = cipher_func(msg_char, key_char, True)
-        #         if success:
-        #             yield x_msg_char
-        #         else:
-        #             yield fallback(msg_char)
-        #             if not autoclave:
-        #                 food = key_char
-        #             else:
-        #                 food = autoclave(msg_char, x_msg_char)
-        #             keystream.append(food)
 
 class VigenereCipher(BaseVigenereCipher):
     """ THE Vigenère cipher, conceptual foundation of several other ciphers.
@@ -208,8 +114,8 @@ class VigenereCipher(BaseVigenereCipher):
         A character set to use for transcoding.  Default `None`.
 
     """
-    def _encode(self, s):
-        for e_after, __ in super()._encode(s):
+    def _encode(self, s, strict):
+        for e_after, __ in super()._encode(s, strict):
             yield e_after
         # generator = super()._encode(s)
         # while True:
@@ -220,8 +126,8 @@ class VigenereCipher(BaseVigenereCipher):
         #     else:
         #         yield e_after
 
-    def _decode(self, s):
-        for e_after, __ in super()._decode(s):
+    def _decode(self, s, strict):
+        for e_after, __ in super()._decode(s, strict):
             yield e_after
         # generator = super()._decode(s)
         # while True:
@@ -247,8 +153,8 @@ class VigenereTextAutoclaveCipher(BaseVigenereCipher):
     effect at all) unless the key is shorter than the text to be encrypted.
 
     """
-    def _encode(self, s):
-        generator = super()._encode(s)
+    def _encode(self, s, strict):
+        generator = super()._encode(s, strict)
         try:
             food = None
             while True:
@@ -258,8 +164,8 @@ class VigenereTextAutoclaveCipher(BaseVigenereCipher):
         except StopIteration:
             return
 
-    def _decode(self, s):
-        generator = super()._decode(s)
+    def _decode(self, s, strict):
+        generator = super()._decode(s, strict)
         try:
             food = None
             while True:
@@ -285,8 +191,8 @@ class VigenereKeyAutoclaveCipher(BaseVigenereCipher):
     effect at all) unless the key is shorter than the text to be encrypted.
 
     """
-    def _encode(self, s):
-        generator = super()._encode(s)
+    def _encode(self, s, strict):
+        generator = super()._encode(s, strict)
         try:
             food = None
             while True:
@@ -296,8 +202,8 @@ class VigenereKeyAutoclaveCipher(BaseVigenereCipher):
         except StopIteration:
             return
 
-    def _decode(self, s):
-        generator = super()._decode(s)
+    def _decode(self, s, strict):
+        generator = super()._decode(s, strict)
         try:
             food = None
             while True:

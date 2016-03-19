@@ -12,61 +12,61 @@ class CipherTest(unittest.TestCase):
     MESSAGE_STRICT = 'HELLOWORLD'
     PASSPHRASE = 'OCEANOGRAPHYWHAT'
 
-    def _transcode(self, cipher, msg, msg_strict, msg_enc_expected, strict):
-        encoded = cipher.encode(msg, strict=strict)
+    def _transcode(self, cipher, msg, msg_strict, msg_enc_expected, block):
+        encoded = cipher.encode(msg, block=block)
         # [TODO] should we test with both strict and non-strict decoding?
-        decoded = cipher.decode(encoded, strict=strict)
+        decoded = cipher.decode(encoded, block=block)
 
         self.assertEqual(encoded, msg_enc_expected)
         if msg_enc_expected is not '':
             self.assertNotEqual(encoded, decoded)
-            self.assertEqual(decoded, strict and msg_strict or msg)
+            self.assertEqual(decoded, block==0 and msg_strict or msg)
 
     def _transcode_reverse(self, cipher, msg, msg_strict, msg_enc_expected,
-                           strict):
-        encoded = cipher.decode(msg, strict=strict)
+                           block):
+        encoded = cipher.decode(msg, block=block)
         # [TODO] should we test with both strict and non-strict decoding?
-        decoded = cipher.encode(encoded, strict=strict)
+        decoded = cipher.encode(encoded, block=block)
 
         self.assertEqual(encoded, msg_enc_expected)
         if msg_enc_expected is not '':
             self.assertNotEqual(encoded, decoded)
-            self.assertEqual(decoded, strict and msg_strict or msg)
+            self.assertEqual(decoded, block==0 and msg_strict or msg)
 
     def test_atbashcipher(self):
         c = AtbashCipher()
-        self._transcode(c, self.MESSAGE_PLAIN, None, 'SVOOL, DLIOW!', strict=False)
-        self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'SVOOLDLIOW', strict=True)
-        self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'SVOOL, DLIOW!', strict=False)
-        self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'SVOOLDLIOW', strict=True)
+        self._transcode(c, self.MESSAGE_PLAIN, None, 'SVOOL, DLIOW!', block=None)
+        self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'SVOOLDLIOW', block=0)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'SVOOL, DLIOW!', block=None)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'SVOOLDLIOW', block=0)
 
     def test_caesarcipher(self):
         c = CaesarCipher()
-        self._transcode(c, self.MESSAGE_PLAIN, None, 'KHOOR, ZRUOG!', strict=False)
-        self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'KHOORZRUOG', strict=True)
-        self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'EBIIL, TLOIA!', strict=False)
-        self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'EBIILTLOIA', strict=True)
+        self._transcode(c, self.MESSAGE_PLAIN, None, 'KHOOR, ZRUOG!', block=None)
+        self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'KHOORZRUOG', block=0)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'EBIIL, TLOIA!', block=None)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'EBIILTLOIA', block=0)
 
     def test_shiftcipher(self):
         c = ShiftCipher(17)
-        self._transcode(c, self.MESSAGE_PLAIN, None, 'YVCCF, NFICU!', strict=False)
-        self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'YVCCFNFICU', strict=True)
-        self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'QNUUX, FXAUM!', strict=False)
-        self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'QNUUXFXAUM', strict=True)
+        self._transcode(c, self.MESSAGE_PLAIN, None, 'YVCCF, NFICU!', block=None)
+        self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'YVCCFNFICU', block=0)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'QNUUX, FXAUM!', block=None)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'QNUUXFXAUM', block=0)
 
     def test_keywordcipher(self):
         c = KeywordCipher(keyword='KANGAROO')
-        self._transcode(c, self.MESSAGE_PLAIN, None, 'CRHHL, WLQHG!', strict=False)
-        self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'CRHHLWLQHG', strict=True)
-        self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'LJOOF, WFEOI!', strict=False)
-        self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'LJOOFWFEOI', strict=True)
+        self._transcode(c, self.MESSAGE_PLAIN, None, 'CRHHL, WLQHG!', block=None)
+        self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'CRHHLWLQHG', block=0)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'LJOOF, WFEOI!', block=None)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'LJOOFWFEOI', block=0)
 
     def test_affinecipher(self):
         c = AffineCipher(7, 3)
-        self._transcode(c, self.MESSAGE_PLAIN, None, 'AFCCX, BXSCY!', strict=False)
-        self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'AFCCXBXSCY', strict=True)
-        self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'IPQQJ, ZJCQA!', strict=False)
-        self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'IPQQJZJCQA', strict=True)
+        self._transcode(c, self.MESSAGE_PLAIN, None, 'AFCCX, BXSCY!', block=None)
+        self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'AFCCXBXSCY', block=0)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'IPQQJ, ZJCQA!', block=None)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'IPQQJZJCQA', block=0)
 
 
 if __name__ == '__main__':

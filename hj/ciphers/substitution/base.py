@@ -48,13 +48,16 @@ class SubCipher(Cipher):
     #     # [TODO] maybe improve this
     #     return str(self.tableau)
 
-    def _encode(self, s):
+    def _encode(self, s, strict):
         """ Encode a message.
 
         Parameters
         ----------
         s : str
             A message to transcode.
+        strict : bool
+            `True` to strip non-transcodeable characters from the string,
+            `False` otherwise.
 
         Returns
         -------
@@ -69,18 +72,21 @@ class SubCipher(Cipher):
         """
         raise NotImplementedError
 
-    def _decode(self, s):
+    def _decode(self, s, strict):
         """ Decode a message.
 
         Parameters
         ----------
         s : str
             A message to transcode.
+        strict : bool
+            `True` to strip non-transcodeable characters from the string,
+            `False` otherwise.
 
         Returns
         -------
-        out : iterable
-            A transcoded iterable (string, list, generator, etc.).
+        out : str
+            A transcoded string.
 
         Raises
         ------
@@ -90,18 +96,18 @@ class SubCipher(Cipher):
         """
         raise NotImplementedError
 
-    def encode(self, s, strict=False, block=0):
+    def encode(self, s, block=None):
         """ Encode a message.
 
         Parameters
         ----------
         s : str
             A message to encode.
-        strict : bool, optional
-            `True` to strip non-transcodeable characters from the string,
-            `False` otherwise.
         block : int, optional
-            NOT YET IMPLEMENTED.  Divide output into blocks of this size.
+            Divide output into blocks of this size.  All non-transcodable
+            symbols will be stripped.  Specify the value `0` to strip all
+            non-transcodable symbols and not divide into blocks.
+            Default `None`.
 
         Returns
         -------
@@ -109,22 +115,34 @@ class SubCipher(Cipher):
             The encoded message.
 
         """
-        if strict:
-            s = ''.join(e for e in s if e in self.alphabet)
-        return super().encode(s)
+        if block is None:
+            strict = False
+        else:
+            strict = True
 
-    def decode(self, s, strict=False, block=0):
+        out = self._encode(s, strict=strict)
+
+        if block is not None and block > 0:
+            remainder = len(out) % block
+            padding = upward_factor(len(out), block)
+            out = out.ljust(padding, self.DEFAULT_NULLCHAR)
+            out = ' '.join(chunks(out, block))
+
+        return ''.join(out)
+
+    def decode(self, s, block=None):
         """ Decode a message.
 
         Parameters
         ----------
         s : str
             A message to decode.
-        strict : bool, optional
-            `True` to strip non-transcodeable characters from the string,
-            `False` otherwise.
         block : int, optional
-            NOT YET IMPLEMENTED.  Divide output into blocks of this size.
+            Divide output into blocks of this size.  All non-transcodable
+            symbols will be stripped.  Specify the value `0` to strip all
+            non-transcodable symbols and not divide into blocks.
+            Default `None`.
+
 
         Returns
         -------
@@ -132,9 +150,20 @@ class SubCipher(Cipher):
             The decoded message.
 
         """
-        if strict:
-            s = ''.join(e for e in s if e in self.alphabet)
-        return super().decode(s)
+        if block is None:
+            strict = False
+        else:
+            strict = True
+
+        out = self._decode(s, strict=strict)
+
+        if block is not None and block > 0:
+            remainder = len(out) % block
+            padding = upward_factor(len(out), block)
+            out = out.ljust(padding, self.DEFAULT_NULLCHAR)
+            out = ' '.join(chunks(out, block))
+
+        return ''.join(out)
 
     # def unblockify(self, iterable, n, fillvalue=None):
     #     """ From itertools"""
