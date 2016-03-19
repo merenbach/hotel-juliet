@@ -112,7 +112,6 @@ class SubCipher(Cipher):
         """
         if block is not None:
             # filter message to characters in ciphertext alphabet
-            # [TODO] would be nice to use translation table `strict` arg
             s = ''.join(c for c in s if c in self.tableau.pt)
 
             if block > 0:
@@ -147,7 +146,6 @@ class SubCipher(Cipher):
         """
         if block is not None:
             # filter message to characters in ciphertext alphabet
-            # [TODO] would be nice to use translation table `strict` arg
             s = ''.join(c for c in s if c in self.tableau.ct)
 
         out = self._decode(s)

@@ -20,8 +20,8 @@ class CipherTableau:
 
     def __repr__(self):
         return '{}: PT=[{}], CT=[{}]'.format(type(self).__name__,
-                                   repr(self.pt),
-                                   repr(self.ct))
+                                             repr(self.pt),
+                                             repr(self.ct))
 
     def __str__(self):
         return 'PT: {}\nCT: {}'.format(self.pt, self.ct)
@@ -59,16 +59,13 @@ class ManyToOneTranslationTable(CipherTableau):
                                      repr(self.pt),
                                      repr(self.ct))
 
-    def encode(self, s, strict=False):
+    def encode(self, s):
         """ Transcode forwards.
 
         Parameters
         ----------
         s : str
             A string to transcode.
-        strict : bool, optional
-            `True` to discard non-transcodable symbols, `False` otherwise.
-            Default `False`.
 
         Returns
         -------
@@ -76,8 +73,6 @@ class ManyToOneTranslationTable(CipherTableau):
             A transcoded version of `s`.
 
         """
-        if strict:
-            s = ''.join(c for c in s if c in self.pt)
         return s.translate(self.a2b)
 
 
@@ -105,16 +100,13 @@ class OneToOneTranslationTable(ManyToOneTranslationTable):
                                       repr(self.pt),
                                       repr(self.ct))
 
-    def decode(self, s, strict=False):
+    def decode(self, s):
         """ Transcode backwards.
 
         Parameters
         ----------
         s : str
             A string to transcode.
-        strict : bool, optional
-            `True` to discard non-transcodable symbols, `False` otherwise.
-            Default `False`.
 
         Returns
         -------
@@ -122,6 +114,4 @@ class OneToOneTranslationTable(ManyToOneTranslationTable):
             A transcoded version of `s`.
 
         """
-        if strict:
-            s = ''.join(c for c in s if c in self.ct)
         return s.translate(self.b2a)

@@ -31,12 +31,10 @@ class TabulaRecta(CipherTableau):
     """
     def __init__(self, pt, alphabet_=None, keys=None):
         super().__init__(pt, alphabet_ or pt)
-        keys = keys or pt
         alphabets_ = self._make_rows(pt)
-        self.alphabets_ = alphabets_
         # transcoders_list = [CaesarCipher(n, alphabet=alphabet)
         #                     for n, __ in enumerate(alphabet)]
-        self.key_table = OrderedDict(zip(keys, alphabets_))
+        self.key_table = OrderedDict(zip(keys or pt, alphabets_))
 
     def __repr__(self):
         return '{}: PT=[{}], CT=[{}], keys=[{}]'.format(type(self).__name__,
@@ -67,7 +65,9 @@ class TabulaRecta(CipherTableau):
             If no tableau could be found for the given key.
 
         """
-        return self.key_table[key].encode(seq, strict=True)
+        if seq not in self.pt:
+            raise ValueError
+        return self.key_table[key].encode(seq)
 
     def decode(self, seq, key):
         """ Locate element within the grid.
@@ -92,14 +92,16 @@ class TabulaRecta(CipherTableau):
             If no tableau could be found for the given key.
 
         """
-        return self.key_table[key].decode(seq, strict=True)
+        if seq not in self.ct:
+            raise ValueError
+        return self.key_table[key].decode(seq)
 
     def __str__(self):
         alphabet = self.pt
         lines = []
         lines.append('  | ' + ' '.join(alphabet))
         lines.append('--+' + '-' * len(alphabet) * 2)
-        for k, v in zip(self.key_table or alphabet, self.alphabets_):
+        for k, v in self.key_table.items():
             row = ' '.join(v.ct)
             lines.append('{0} | {1}'.format(k, row))
         return '\n'.join(lines)
@@ -134,7 +136,7 @@ class DellaPortaTabulaRecta(TabulaRecta):
         lines.append('     | ' + ' '.join(alphabet))
         lines.append('-----+' + '-' * len(alphabet) * 2)
         cur_header = None
-        for i, (k, v) in enumerate(self.alphabets_.items()):
+        for i, (k, v) in enumerate(self.key_table.items()):
             if i % 2 == 0:
                 cur_header = k
             elif i % 2 == 1:

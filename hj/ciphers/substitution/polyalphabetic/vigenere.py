@@ -81,9 +81,10 @@ class BaseVigenereCipher(PolySubCipher):
 
         # iterate over (finite!) message in outer loop with standard "for"
         for msg_char in message:
-            x_msg_char_out = cipher_func(msg_char, key_char)
+            try:
+                x_msg_char_out = cipher_func(msg_char, key_char)
 
-            if len(x_msg_char_out) == 0:
+            except ValueError:
                 # message char not transcodeable
                 # strict must be off, or this character wouldn't still be here
                 # yield the raw character

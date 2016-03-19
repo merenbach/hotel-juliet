@@ -54,6 +54,7 @@ The underlying frameworks are a bit of a playground for me right now.  The code 
     to maintain and wrap one's head around?  Classes including classes that
     delegating to other classes...
   - Put countersign specification into encode/decode?
+  - Customizable null padding char?
 
 ## DONE! but needs unit tests...
 
