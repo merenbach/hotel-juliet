@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .vigenere import VigenereCipher
-from utils.tabula_recta import GronsfeldTabulaRecta
+from string import digits
 
 
 class GronsfeldCipher(VigenereCipher):
@@ -17,11 +17,31 @@ class GronsfeldCipher(VigenereCipher):
 
     Notes
     -----
-    Since the countersign is numeric, autoclave makes less sense here.
+    Since the countersign is numeric, autoclave makes somewhat less sense here.
     [TODO] Technically, it can be made totally symmetric if a Beaufort tabula recta is used instead.
 
     """
-    TABULA_RECTA = GronsfeldTabulaRecta
-
     def __init__(self, countersign, alphabet=None):
         super().__init__(countersign, alphabet=alphabet)
+
+    def _make_tableau(self, alphabet):
+        """ Create a tabula recta for transcoding.
+
+        Parameters
+        ----------
+        alphabet : str
+            A character set to use for transcoding.
+
+        Returns
+        -------
+        out : utils.tableau.TabulaRecta
+            A tabula recta to use for transcoding.
+
+        Notes
+        -----
+        Since this is invoked by `__init__()` before instance is totally
+        initialized, please don't perform any operations that expect a fully
+        constructed instance.
+
+        """
+        return self.TABULA_RECTA(alphabet, keys=digits)

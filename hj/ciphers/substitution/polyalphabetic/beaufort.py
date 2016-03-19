@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from .vigenere import VigenereCipher
-from utils.tabula_recta import BeaufortTabulaRecta
 
 
 class BeaufortCipher(VigenereCipher):
@@ -29,7 +28,27 @@ class BeaufortCipher(VigenereCipher):
     N.b.: Because this is a symmetric cipher, autoclave is disabled.
 
     """
-    TABULA_RECTA = BeaufortTabulaRecta
-
     def __init__(self, countersign, alphabet=None):
         super().__init__(countersign, alphabet=alphabet)
+
+    def _make_tableau(self, alphabet):
+        """ Create a tabula recta for transcoding.
+
+        Parameters
+        ----------
+        alphabet : str
+            A character set to use for transcoding.
+
+        Returns
+        -------
+        out : utils.tableau.TabulaRecta
+            A tabula recta to use for transcoding.
+
+        Notes
+        -----
+        Since this is invoked by `__init__()` before instance is totally
+        initialized, please don't perform any operations that expect a fully
+        constructed instance.
+
+        """
+        return self.TABULA_RECTA(alphabet, alphabet[::-1], alphabet[::-1])

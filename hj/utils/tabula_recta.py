@@ -4,7 +4,6 @@
 from .base import lrotated, orotated
 from .tableau import OneToOneTranslationTable
 from collections import OrderedDict
-from string import digits
 
 # [TODO] some way to match up transcodeable chars + usable key chars?
 #
@@ -30,14 +29,20 @@ class TabulaRecta(CipherTableau):
         An ordered sequence of keys to use for rows.
 
     """
-    def __init__(self, alphabet, keys=None):
-        super().__init__(alphabet, alphabet)
-        self.keys = keys or alphabet
-        alphabets_ = self._make_rows(alphabet)
+    def __init__(self, pt, alphabet_=None, keys=None):
+        super().__init__(pt, alphabet_ or pt)
+        keys = keys or pt
+        alphabets_ = self._make_rows(pt)
         self.alphabets_ = alphabets_
         # transcoders_list = [CaesarCipher(n, alphabet=alphabet)
         #                     for n, __ in enumerate(alphabet)]
-        self.key_table = OrderedDict(zip(keys or alphabet, alphabets_))
+        self.key_table = OrderedDict(zip(keys, alphabets_))
+
+    def __repr__(self):
+        return '{}: PT=[{}], CT=[{}], keys=[{}]'.format(type(self).__name__,
+                                      repr(self.pt),
+                                      repr(self.ct),
+                                      ''.join(self.key_table.keys()))
 
     def encode(self, seq, key):
         """ Locate element within the grid.
@@ -94,8 +99,8 @@ class TabulaRecta(CipherTableau):
         lines = []
         lines.append('  | ' + ' '.join(alphabet))
         lines.append('--+' + '-' * len(alphabet) * 2)
-        for k, v in zip(self.keys or alphabet, self.alphabets_):
-            row = ' '.join(v.a2b.xtable.values())
+        for k, v in zip(self.key_table or alphabet, self.alphabets_):
+            row = ' '.join(v.ct)
             lines.append('{0} | {1}'.format(k, row))
         return '\n'.join(lines)
 
@@ -109,36 +114,6 @@ class TabulaRecta(CipherTableau):
 
         """
         cts = [lrotated(self.ct, i) for i, _ in enumerate(self.ct)]
-        return [OneToOneTranslationTable(self.pt, ct) for ct in cts]
-
-
-class GronsfeldTabulaRecta(TabulaRecta):
-    """ Gronsfeld cipher version.
-
-    Parameters
-    ----------
-    alphabet : str
-        An alphabet to use for this tabula recta.
-
-    """
-    def __init__(self, alphabet):
-        super().__init__(alphabet, keys=digits)
-
-
-class BeaufortTabulaRecta(TabulaRecta):
-    """ Beaufort cipher version.
-
-    Parameters
-    ----------
-    alphabet : str
-        An alphabet to use for this tabula recta.
-
-    """
-    def __init__(self, alphabet):
-        super().__init__(alphabet, keys=(alphabet[::-1]))
-
-    def _make_rows(self, alphabet):
-        cts = [lrotated(alphabet[::-1], i) for i in range(len(alphabet))]
         return [OneToOneTranslationTable(self.pt, ct) for ct in cts]
 
 
@@ -174,6 +149,11 @@ class DellaPortaTabulaRecta(TabulaRecta):
 
 
 # class PolybiusSquare(Tableau):
+### [TODO] the hardest part here will be textual representation, e.g. __str__,
+### as the polybius square is going to be a substitution cipher where pairs of
+### digits map to symbols (e.g., 12 => BAT).  Actually, perhaps the hardest
+### part will be filtering out I/J in a 5x5 grid one way, but translating to
+### only one or the other in reverse.
 #     # alphabet = ascii_uppercase
 #     DEFAULT_OVERLAP = {'J': 'I'}
 #     DEFAULT_NULLCHAR = 'X'

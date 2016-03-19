@@ -29,7 +29,7 @@ class BaseVigenereCipher(PolySubCipher):
         if not alphabet:
             alphabet = self.DEFAULT_ALPHABET
         self.tableau = self._make_tableau(alphabet)
-        self.countersign = [e for e in countersign if e in self.tableau.keys]
+        self.countersign = [e for e in countersign if e in self.tableau.key_table]
         if not self.countersign:
             raise ValueError('A countersign is required')
 
@@ -53,7 +53,7 @@ class BaseVigenereCipher(PolySubCipher):
         constructed instance.
 
         """
-        return self.TABULA_RECTA(alphabet=alphabet)
+        return self.TABULA_RECTA(alphabet)
 
     def _encode(self, s):
         # [TODO] the tabula recta could perhaps handle?
