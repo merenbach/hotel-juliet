@@ -3,6 +3,7 @@
 
 from .. import Cipher
 import string
+from utils import chunks
 # from utils.base import grouper
 # [TODO] still need to implement grouping/blocks
 
@@ -48,16 +49,18 @@ class SubCipher(Cipher):
     #     # [TODO] maybe improve this
     #     return str(self.tableau)
 
-    def _encode(self, s, strict):
+    def _encode(self, s, block):
         """ Encode a message.
 
         Parameters
         ----------
         s : str
             A message to transcode.
-        strict : bool
-            `True` to strip non-transcodeable characters from the string,
-            `False` otherwise.
+        block : int or None
+            Divide output into blocks of this size.  All non-transcodable
+            symbols will be stripped.  Specify the value `0` to strip all
+            non-transcodable symbols and not divide into blocks.
+            Specify the value `None` to disable chunking.
 
         Returns
         -------
@@ -72,16 +75,18 @@ class SubCipher(Cipher):
         """
         raise NotImplementedError
 
-    def _decode(self, s, strict):
+    def _decode(self, s, block):
         """ Decode a message.
 
         Parameters
         ----------
         s : str
             A message to transcode.
-        strict : bool
-            `True` to strip non-transcodeable characters from the string,
-            `False` otherwise.
+        block : int or None
+            Divide output into blocks of this size.  All non-transcodable
+            symbols will be stripped.  Specify the value `0` to strip all
+            non-transcodable symbols and not divide into blocks.
+            Specify the value `None` to disable chunking.
 
         Returns
         -------
@@ -107,7 +112,7 @@ class SubCipher(Cipher):
             Divide output into blocks of this size.  All non-transcodable
             symbols will be stripped.  Specify the value `0` to strip all
             non-transcodable symbols and not divide into blocks.
-            Default `None`.
+            Specify the value `None` to disable chunking.  Default `None`.
 
         Returns
         -------
@@ -115,17 +120,9 @@ class SubCipher(Cipher):
             The encoded message.
 
         """
-        if block is None:
-            strict = False
-        else:
-            strict = True
-
-        out = self._encode(s, strict=strict)
+        out = self._encode(s, block=block)
 
         if block is not None and block > 0:
-            remainder = len(out) % block
-            padding = upward_factor(len(out), block)
-            out = out.ljust(padding, self.DEFAULT_NULLCHAR)
             out = ' '.join(chunks(out, block))
 
         return ''.join(out)
@@ -141,8 +138,7 @@ class SubCipher(Cipher):
             Divide output into blocks of this size.  All non-transcodable
             symbols will be stripped.  Specify the value `0` to strip all
             non-transcodable symbols and not divide into blocks.
-            Default `None`.
-
+            Specify the value `None` to disable chunking.  Default `None`.
 
         Returns
         -------
@@ -150,17 +146,9 @@ class SubCipher(Cipher):
             The decoded message.
 
         """
-        if block is None:
-            strict = False
-        else:
-            strict = True
-
-        out = self._decode(s, strict=strict)
+        out = self._decode(s, block=block)
 
         if block is not None and block > 0:
-            remainder = len(out) % block
-            padding = upward_factor(len(out), block)
-            out = out.ljust(padding, self.DEFAULT_NULLCHAR)
             out = ' '.join(chunks(out, block))
 
         return ''.join(out)

@@ -53,13 +53,13 @@ class BaseVigenereCipher(PolySubCipher):
         """
         return self.TABULA_RECTA(alphabet=alphabet)
 
-    def _encode(self, s, strict):
-        if strict:
+    def _encode(self, s, block):
+        if block is not None:
             s = (c for c in s if c in self.alphabet)
         return self._transcoder(s, self.tableau.encode)
 
-    def _decode(self, s, strict):
-        if strict:
+    def _decode(self, s, block):
+        if block is not None:
             s = (c for c in s if c in self.alphabet)
         return self._transcoder(s, self.tableau.decode)
 
@@ -114,8 +114,8 @@ class VigenereCipher(BaseVigenereCipher):
         A character set to use for transcoding.  Default `None`.
 
     """
-    def _encode(self, s, strict):
-        for e_after, __ in super()._encode(s, strict):
+    def _encode(self, s, block):
+        for e_after, __ in super()._encode(s, block):
             yield e_after
         # generator = super()._encode(s)
         # while True:
@@ -126,8 +126,8 @@ class VigenereCipher(BaseVigenereCipher):
         #     else:
         #         yield e_after
 
-    def _decode(self, s, strict):
-        for e_after, __ in super()._decode(s, strict):
+    def _decode(self, s, block):
+        for e_after, __ in super()._decode(s, block):
             yield e_after
         # generator = super()._decode(s)
         # while True:
@@ -153,8 +153,8 @@ class VigenereTextAutoclaveCipher(BaseVigenereCipher):
     effect at all) unless the key is shorter than the text to be encrypted.
 
     """
-    def _encode(self, s, strict):
-        generator = super()._encode(s, strict)
+    def _encode(self, s, block):
+        generator = super()._encode(s, block)
         try:
             food = None
             while True:
@@ -164,8 +164,8 @@ class VigenereTextAutoclaveCipher(BaseVigenereCipher):
         except StopIteration:
             return
 
-    def _decode(self, s, strict):
-        generator = super()._decode(s, strict)
+    def _decode(self, s, block):
+        generator = super()._decode(s, block)
         try:
             food = None
             while True:
@@ -191,8 +191,8 @@ class VigenereKeyAutoclaveCipher(BaseVigenereCipher):
     effect at all) unless the key is shorter than the text to be encrypted.
 
     """
-    def _encode(self, s, strict):
-        generator = super()._encode(s, strict)
+    def _encode(self, s, block):
+        generator = super()._encode(s, block)
         try:
             food = None
             while True:
@@ -202,8 +202,8 @@ class VigenereKeyAutoclaveCipher(BaseVigenereCipher):
         except StopIteration:
             return
 
-    def _decode(self, s, strict):
-        generator = super()._decode(s, strict)
+    def _decode(self, s, block):
+        generator = super()._decode(s, block)
         try:
             food = None
             while True:

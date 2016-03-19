@@ -59,7 +59,7 @@ class TabulaRecta:
             If no tableau could be found for the given key.
 
         """
-        return self.key_table[key].encode(seq, strict=True)
+        return self.key_table[key].encode(seq, block=0)
 
     def decode(self, seq, key):
         """ Locate element within the grid.
@@ -84,7 +84,7 @@ class TabulaRecta:
             If no tableau could be found for the given key.
 
         """
-        return self.key_table[key].decode(seq, strict=True)
+        return self.key_table[key].decode(seq, block=0)
 
     def __str__(self):
         alphabet = self.alphabet

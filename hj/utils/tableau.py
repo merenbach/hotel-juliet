@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from collections import OrderedDict
+from utils import upward_factor
 
 
 class ManyToOneTranslationTable:
@@ -29,6 +30,8 @@ class ManyToOneTranslationTable:
     means characters repeated at least once, whether consecutive or not.)
 
     """
+    DEFAULT_NULLCHAR = 'X'
+
     def __init__(self, pt, ct):
         self.a2b = str.maketrans(pt, ct)
         self.pt, self.ct = pt, ct
@@ -44,7 +47,7 @@ class ManyToOneTranslationTable:
                                      repr(self.pt),
                                      repr(self.ct))
 
-    def encode(self, s, strict=False):
+    def encode(self, s, block=None):
         """ Transcode forwards.
 
         Parameters
@@ -60,8 +63,13 @@ class ManyToOneTranslationTable:
             A transcoded version of `s`.
 
         """
-        if strict:
+        if block is not None:
             s = ''.join(c for c in s if c in self.pt)
+
+            if block > 0:
+                padding = upward_factor(len(s), block)
+                s = s.ljust(padding, self.DEFAULT_NULLCHAR)
+
         return s.translate(self.a2b)
 
 
@@ -96,7 +104,7 @@ class OneToOneTranslationTable(ManyToOneTranslationTable):
                                       repr(self.pt),
                                       repr(self.ct))
 
-    def decode(self, s, strict=False):
+    def decode(self, s, block=None):
         """ Transcode backwards.
 
         Parameters
@@ -112,6 +120,13 @@ class OneToOneTranslationTable(ManyToOneTranslationTable):
             A transcoded version of `s`.
 
         """
-        if strict:
-            s = ''.join(c for c in s if c in self.ct)
-        return s.translate(self.b2a)
+        if block is not None:
+            s = ''.join(c for c in s if c in self.pt)
+
+        out = s.translate(self.b2a)
+
+        if block is not None and block > 0:
+            padding = upward_factor(len(out), block)
+            out = out.ljust(padding, self.DEFAULT_NULLCHAR)
+
+        return out

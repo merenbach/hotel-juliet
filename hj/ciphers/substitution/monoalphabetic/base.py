@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .. import SubCipher
-from utils import chunks, upward_factor, OneToOneTranslationTable
+from utils import OneToOneTranslationTable
 
 
 class MonoSubCipher(SubCipher):
@@ -44,16 +44,18 @@ class MonoSubCipher(SubCipher):
         """
         raise NotImplementedError
 
-    def _encode(self, s, strict):
+    def _encode(self, s, block):
         """ Encode a message.
 
         Parameters
         ----------
         s : str
             A message to transcode.
-        strict : bool
-            `True` to strip non-transcodeable characters from the string,
-            `False` otherwise.
+        block : int or None
+            Divide output into blocks of this size.  All non-transcodable
+            symbols will be stripped.  Specify the value `0` to strip all
+            non-transcodable symbols and not divide into blocks.
+            Specify the value `None` to disable chunking.
 
         Returns
         -------
@@ -61,18 +63,20 @@ class MonoSubCipher(SubCipher):
             A transcoded version of `s`.
 
         """
-        return self.xtable.encode(s, strict=strict)
+        return self.xtable.encode(s, block=block)
 
-    def _decode(self, s, strict):
+    def _decode(self, s, block):
         """ Decode a message.
 
         Parameters
         ----------
         s : str
             A message to transcode.
-        strict : bool
-            `True` to strip non-transcodeable characters from the string,
-            `False` otherwise.
+        block : int or None
+            Divide output into blocks of this size.  All non-transcodable
+            symbols will be stripped.  Specify the value `0` to strip all
+            non-transcodable symbols and not divide into blocks.
+            Specify the value `None` to disable chunking.
 
         Returns
         -------
@@ -80,4 +84,4 @@ class MonoSubCipher(SubCipher):
             A transcoded version of `s`.
 
         """
-        return self.xtable.decode(s, strict=strict)
+        return self.xtable.decode(s, block=block)
