@@ -18,6 +18,12 @@ class CipherTableau:
     def __init__(self, pt, ct):
         self.pt, self.ct = pt, ct
 
+        self.from_plaintext_to_num = {v: k for k, v in enumerate(pt)}
+        self.from_ciphertext_to_num = {v: k for k, v in enumerate(ct)}
+
+        self.from_num_to_plaintext = {k: v for k, v in enumerate(pt)}
+        self.from_num_to_ciphertext = {k: v for k, v in enumerate(ct)}
+
     def __repr__(self):
         return '{}: PT=[{}], CT=[{}]'.format(type(self).__name__,
                                              repr(self.pt),
@@ -25,6 +31,15 @@ class CipherTableau:
 
     def __str__(self):
         return 'PT: {}\nCT: {}'.format(self.pt, self.ct)
+
+    def pt2digits(self, s):
+        return [self.from_plaintext_to_num.get(c, c) for c in s]
+    def ct2digits(self, s):
+        return [self.from_plaintext_to_num.get(c, c) for c in s]
+    def digits2pt(self, s):
+        return [self.from_num_to_plaintext.get(d, d) for d in s]
+    def digits2ct(self, s):
+        return [self.from_num_to_ciphertext.get(d, d) for d in s]
 
 
 class ManyToOneTranslationTable(CipherTableau):

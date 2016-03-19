@@ -65,9 +65,16 @@ class TabulaRecta(CipherTableau):
             If no tableau could be found for the given key.
 
         """
-        if seq not in self.pt:
+        ns = self.pt2digits(seq)
+        ks_faulty = self.pt2digits(key)
+        try:
+            o = (ns[0] + ks_faulty[0]) % len(self.pt)
+            return ''.join(self.digits2ct([o]))
+        except TypeError:
             raise ValueError
-        return self.key_table[key].encode(seq)
+        # if seq not in self.pt:
+        #     raise ValueError
+        # return self.key_table[key].encode(seq)
 
     def decode(self, seq, key):
         """ Locate element within the grid.
@@ -92,9 +99,16 @@ class TabulaRecta(CipherTableau):
             If no tableau could be found for the given key.
 
         """
-        if seq not in self.ct:
+        ns = self.ct2digits(seq)
+        ks_faulty = self.ct2digits(key)
+        try:
+            o = (ns[0] - ks_faulty[0]) % len(self.ct)
+            return ''.join(self.digits2pt([o]))
+        except TypeError:
             raise ValueError
-        return self.key_table[key].decode(seq)
+        # if seq not in self.ct:
+        #     raise ValueError
+        # return self.key_table[key].decode(seq)
 
     def __str__(self):
         alphabet = self.pt
