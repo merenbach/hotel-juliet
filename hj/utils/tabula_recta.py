@@ -38,7 +38,7 @@ class TabulaRecta(CipherTableau):
             keys = ct or pt
         self.key_table = OrderedDict(zip(keys, alphabets_))
 
-        self.from_key_to_num = {v: k for k, v in enumerate(keys)}
+        self.keys = keys
         # self.from_num_to_key = {k: v for k, v in enumerate(keys)}
 
     def __repr__(self):
@@ -46,6 +46,60 @@ class TabulaRecta(CipherTableau):
                                       repr(self.pt),
                                       repr(self.ct),
                                       ''.join(self.key_table.keys()))
+
+    @staticmethod
+    def _encode(m, k, a):
+        """ Vigenere-type encipherment.
+
+        Parameters
+        ----------
+        m : int
+            An integer representing a plaintext symbol to encode.
+        k : int
+            An integer representing a key symbol to help with encoding.
+        a : int
+            An integer representing the length of the ciphertext alphabet.
+
+        """
+        return (m + k) % a
+
+    @staticmethod
+    def _decode(m, k, a):
+        """ Vigenere-type decipherment.
+
+        Parameters
+        ----------
+        m : int
+            An integer representing a ciphertext symbol to decode.
+        k : int
+            An integer representing a key symbol to help with decoding.
+        a : int
+            An integer representing the length of the plaintext alphabet.
+
+        """
+        return (m - k) % a
+
+    @staticmethod
+    def _transcode(m, k, a):
+        """ Beaufort-type encipherment and decipherment.
+
+        Parameters
+        ----------
+        m : int
+            An integer representing a plaintext or ciphertext symbol to
+            transcode.
+        k : int
+            An integer representing a key symbol to help with transcoding.
+        a : int
+            An integer representing the length of the destination alphabet.
+
+
+        Notes
+        -----
+        This is really the same as `a - _decode(m, k, a)`.
+
+        """
+        return (k - m) % a
 
     def encode(self, seq, key):
         """ Locate element within the grid.
@@ -66,21 +120,15 @@ class TabulaRecta(CipherTableau):
 
         Raises
         ------
-        KeyError
+        ValueError
             If no tableau could be found for the given key.
 
         """
-        try:
-            pt_num = self.pt2digits[seq]
-            k_num = self.from_key_to_num[key]
-        except KeyError:
-            raise ValueError
-        else:
-            o = (pt_num + k_num) % len(self.pt)
-            return ''.join(self.digits2ct[o])
-        # if seq not in self.pt:
-        #     raise ValueError
-        # return self.key_table[key].encode(seq)
+        pt_num = self.pt.index(seq)
+        k_num = self.keys.index(key)
+
+        o = self._encode(pt_num, k_num, len(self.ct))
+        return self.ct[o]
 
     def decode(self, seq, key):
         """ Locate element within the grid.
@@ -101,18 +149,15 @@ class TabulaRecta(CipherTableau):
 
         Raises
         ------
-        KeyError
+        ValueError
             If no tableau could be found for the given key.
 
         """
-        try:
-            ct_num = self.ct2digits[seq]
-            k_num = self.from_key_to_num[key]
-        except KeyError:
-            raise ValueError
-        else:
-            o = (ct_num - k_num) % len(self.ct)
-            return ''.join(self.digits2pt[o])
+        ct_num = self.ct.index(seq)
+        k_num = self.keys.index(key)
+
+        o = self._decode(ct_num, k_num, len(self.pt))
+        return self.pt[o]
 
     def symmetric_encode(self, seq, key):
         """ Locate element within the grid.
@@ -137,17 +182,11 @@ class TabulaRecta(CipherTableau):
             If no tableau could be found for the given key.
 
         """
-        try:
-            pt_num = self.pt2digits[seq]
-            k_num = self.from_key_to_num[key]
-        except KeyError:
-            raise ValueError
-        else:
-            o = (k_num - pt_num) % len(self.pt)
-            return ''.join(self.digits2ct[o])
-        # if seq not in self.pt:
-        #     raise ValueError
-        # return self.key_table[key].encode(seq)
+        pt_num = self.pt.index(seq)
+        k_num = self.keys.index(key)
+
+        o = self._transcode(pt_num, k_num, len(self.pt))
+        return self.ct[o]
 
     def symmetric_decode(self, seq, key):
         """ Locate element within the grid.
@@ -168,53 +207,15 @@ class TabulaRecta(CipherTableau):
 
         Raises
         ------
-        KeyError
+        ValueError
             If no tableau could be found for the given key.
 
         """
-        try:
-            ct_num = self.ct2digits[seq]
-            k_num = self.from_key_to_num[key]
-        except KeyError:
-            raise ValueError
-        else:
-            o = (k_num - ct_num) % len(self.ct)
-            return ''.join(self.digits2pt[o])
+        ct_num = self.ct.index(seq)
+        k_num = self.keys.index(key)
 
-    def transcode(self, seq, key):
-        """ Locate element on axis after matching other axis and internal col/row.
-
-        Parameters
-        ----------
-        element : str
-            An element to transcode.
-            Essentially a row header character on the left edge of the tableau.
-        key : str
-            The dictionary key of a transcoder.
-            Essentially a row header character on the left edge of the tableau.
-
-        Returns
-        -------
-        out : data-type
-            A transcoded copy (if possible) of the given element `element`.
-
-        Raises
-        ------
-        KeyError
-            If no tableau could be found for the given key.
-
-        """
-        ns = self.ct2digits(seq) ## [TODO] so encoding and decode ARE somewhat
-        ### different if Beaufort uses symmetric but different alphabets, huh?
-        ks_faulty = [self.from_key_to_num.get(key)]
-        try:
-            o = (ks_faulty[0] - ns[0]) % len(self.ct)
-            return ''.join(self.digits2pt([o]))
-        except TypeError:
-            raise ValueError
-        # if seq not in self.ct:
-        #     raise ValueError
-        # return self.key_table[key].decode(seq)
+        o = self._transcode(ct_num, k_num, len(self.ct))
+        return self.pt[o]
 
     def __str__(self):
         alphabet = self.pt

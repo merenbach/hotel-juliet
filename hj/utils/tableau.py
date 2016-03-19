@@ -18,12 +18,6 @@ class CipherTableau:
     def __init__(self, pt, ct):
         self.pt, self.ct = pt, ct
 
-        self.pt2digits = {v: k for k, v in enumerate(pt)}
-        self.ct2digits = {v: k for k, v in enumerate(ct)}
-
-        self.digits2pt = {k: v for k, v in enumerate(pt)}
-        self.digits2ct = {k: v for k, v in enumerate(ct)}
-
     def __repr__(self):
         return '{}: PT=[{}], CT=[{}]'.format(type(self).__name__,
                                              repr(self.pt),

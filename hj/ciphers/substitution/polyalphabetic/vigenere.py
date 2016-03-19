@@ -52,13 +52,13 @@ class BaseVigenereCipher(PolySubCipher):
         """
         return TabulaRecta(alphabet)
 
-    # def _encode(self, s):
-    #     # [TODO] the tabula recta could perhaps handle?
-    #     return self._transcoder(s, self.tableau.encode)
-    #
-    # def _decode(self, s):
-    #     # [TODO] the tabula recta could perhaps handle?
-    #     return self._transcoder(s, self.tableau.decode)
+    def _encode(self, s):
+        # [TODO] the tabula recta could perhaps handle?
+        return self._transcoder(s, self.tableau.encode)
+
+    def _decode(self, s):
+        # [TODO] the tabula recta could perhaps handle?
+        return self._transcoder(s, self.tableau.decode)
 
     def _transcoder(self, message, cipher_func):
         """ Transcode a character.
@@ -119,29 +119,10 @@ class VigenereCipher(BaseVigenereCipher):
         A character set to use for transcoding.  Default `None`.
 
     """
-    def _encode(self, s):
-        for e_after, __ in self._transcoder(s, self.tableau.encode):
+    def _transcoder(self, message, cipher_func):
+        for e_after, __ in super()._transcoder(message, cipher_func):
             yield e_after
-        # generator = super()._encode(s)
-        # while True:
-        #     try:
-        #         e_after, __ = next(generator)
-        #     except StopIteration:
-        #         return
-        #     else:
-        #         yield e_after
 
-    def _decode(self, s):
-        for e_after, __ in self._transcoder(s, self.tableau.decode):
-            yield e_after
-        # generator = super()._decode(s)
-        # while True:
-        #     try:
-        #         e_after, __ = next(generator)
-        #     except StopIteration:
-        #         return
-        #     else:
-        #         yield e_after
 
 class VigenereAutoclaveCipher(BaseVigenereCipher):
     # def _encode(self, s):
