@@ -70,13 +70,14 @@ class TabulaRecta(CipherTableau):
             If no tableau could be found for the given key.
 
         """
-        ns = self.pt2digits(seq)
-        ks_faulty = [self.from_key_to_num.get(key)]
         try:
-            o = (ns[0] + ks_faulty[0]) % len(self.pt)
-            return ''.join(self.digits2ct([o]))
-        except TypeError:
+            pt_num = self.pt2digits[seq]
+            k_num = self.from_key_to_num[key]
+        except KeyError:
             raise ValueError
+        else:
+            o = (pt_num + k_num) % len(self.pt)
+            return ''.join(self.digits2ct[o])
         # if seq not in self.pt:
         #     raise ValueError
         # return self.key_table[key].encode(seq)
@@ -104,16 +105,81 @@ class TabulaRecta(CipherTableau):
             If no tableau could be found for the given key.
 
         """
-        ns = self.ct2digits(seq)
-        ks_faulty = [self.from_key_to_num.get(key)]
         try:
-            o = (ns[0] - ks_faulty[0]) % len(self.ct)
-            return ''.join(self.digits2pt([o]))
-        except TypeError:
+            ct_num = self.ct2digits[seq]
+            k_num = self.from_key_to_num[key]
+        except KeyError:
             raise ValueError
-        # if seq not in self.ct:
+        else:
+            o = (ct_num - k_num) % len(self.ct)
+            return ''.join(self.digits2pt[o])
+
+    def symmetric_encode(self, seq, key):
+        """ Locate element within the grid.
+
+        Parameters
+        ----------
+        element : str
+            An element to transcode.
+            Essentially a row header character on the left edge of the tableau.
+        key : str
+            The dictionary key of a transcoder.
+            Essentially a row header character on the left edge of the tableau.
+
+        Returns
+        -------
+        out : data-type
+            A transcoded copy (if possible) of the given element `element`.
+
+        Raises
+        ------
+        KeyError
+            If no tableau could be found for the given key.
+
+        """
+        try:
+            pt_num = self.pt2digits[seq]
+            k_num = self.from_key_to_num[key]
+        except KeyError:
+            raise ValueError
+        else:
+            o = (k_num - pt_num) % len(self.pt)
+            return ''.join(self.digits2ct[o])
+        # if seq not in self.pt:
         #     raise ValueError
-        # return self.key_table[key].decode(seq)
+        # return self.key_table[key].encode(seq)
+
+    def symmetric_decode(self, seq, key):
+        """ Locate element within the grid.
+
+        Parameters
+        ----------
+        element : str
+            An element to transcode.
+            Essentially a row header character on the left edge of the tableau.
+        key : str
+            The dictionary key of a transcoder.
+            Essentially a row header character on the left edge of the tableau.
+
+        Returns
+        -------
+        out : data-type
+            A transcoded copy (if possible) of the given element `element`.
+
+        Raises
+        ------
+        KeyError
+            If no tableau could be found for the given key.
+
+        """
+        try:
+            ct_num = self.ct2digits[seq]
+            k_num = self.from_key_to_num[key]
+        except KeyError:
+            raise ValueError
+        else:
+            o = (k_num - ct_num) % len(self.ct)
+            return ''.join(self.digits2pt[o])
 
     def transcode(self, seq, key):
         """ Locate element on axis after matching other axis and internal col/row.
@@ -138,7 +204,8 @@ class TabulaRecta(CipherTableau):
             If no tableau could be found for the given key.
 
         """
-        ns = self.ct2digits(seq)
+        ns = self.ct2digits(seq) ## [TODO] so encoding and decode ARE somewhat
+        ### different if Beaufort uses symmetric but different alphabets, huh?
         ks_faulty = [self.from_key_to_num.get(key)]
         try:
             o = (ks_faulty[0] - ns[0]) % len(self.ct)

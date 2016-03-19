@@ -56,8 +56,10 @@ class BeaufortCipher(VigenereCipher):
 
     def _encode(self, s):
         # [TODO] the tabula recta could perhaps handle?
-        return super()._transcode(s)
+        for e_after, __ in self._transcoder(s, self.tableau.symmetric_encode):
+            yield e_after
 
     def _decode(self, s):
         # [TODO] the tabula recta could perhaps handle?
-        return super()._transcode(s)
+        for e_after, __ in self._transcoder(s, self.tableau.symmetric_decode):
+            yield e_after

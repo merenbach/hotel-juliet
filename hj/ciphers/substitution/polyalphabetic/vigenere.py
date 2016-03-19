@@ -140,11 +140,6 @@ class VigenereCipher(BaseVigenereCipher):
         #     else:
         #         yield e_after
 
-
-    def _transcode(self, s):
-        for e_after, __ in super()._transcode(s):
-            yield e_after
-
 class VigenereTextAutoclaveCipher(BaseVigenereCipher):
     """ An oft-overlooked autokey cipher developed by Blaise de Vigenère.
 
