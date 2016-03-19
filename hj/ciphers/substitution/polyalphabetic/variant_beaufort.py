@@ -13,14 +13,14 @@ class VariantBeaufortCipher(VigenereCipher):
     the tabula recta.
 
     """
-    def _encode(self, s, block):
+    def _encode(self, s):
         """ Reverse the encoding direction.
 
         """
-        return super()._decode(s, block)
+        return super()._decode(s)
 
-    def _decode(self, s, block):
+    def _decode(self, s):
         """ Reverse the decoding direction.
 
         """
-        return super()._encode(s, block)
+        return super()._encode(s)

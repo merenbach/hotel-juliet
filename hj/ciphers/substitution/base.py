@@ -3,7 +3,7 @@
 
 from .. import Cipher
 import string
-from utils import chunks
+from utils import chunks, upward_factor
 # from utils.base import grouper
 # [TODO] still need to implement grouping/blocks
 
@@ -30,8 +30,13 @@ class SubCipher(Cipher):
     This assumes one tableau per cipher.  If more are needed,
     refactoring may be required.
 
+    All tableaux must have to the `.pt` and `.ct` attributes so that input and
+    output character sets can be checked, for instance for chunking.  We need
+    to know how many characters can be transcoded _before_ we transcode.
+
     """
     DEFAULT_ALPHABET = string.ascii_uppercase
+    DEFAULT_NULLCHAR = 'X'
 
     # def __init__(self):
     #     super().__init__()
@@ -44,18 +49,13 @@ class SubCipher(Cipher):
     #     # [TODO] maybe improve this
     #     return str(self.tableau)
 
-    def _encode(self, s, block):
+    def _encode(self, s):
         """ Encode a message.
 
         Parameters
         ----------
         s : str
             A message to transcode.
-        block : int or None
-            Divide output into blocks of this size.  All non-transcodable
-            symbols will be stripped.  Specify the value `0` to strip all
-            non-transcodable symbols and not divide into blocks.
-            Specify the value `None` to disable chunking.
 
         Returns
         -------
@@ -70,18 +70,13 @@ class SubCipher(Cipher):
         """
         raise NotImplementedError
 
-    def _decode(self, s, block):
+    def _decode(self, s):
         """ Decode a message.
 
         Parameters
         ----------
         s : str
             A message to transcode.
-        block : int or None
-            Divide output into blocks of this size.  All non-transcodable
-            symbols will be stripped.  Specify the value `0` to strip all
-            non-transcodable symbols and not divide into blocks.
-            Specify the value `None` to disable chunking.
 
         Returns
         -------
@@ -115,7 +110,15 @@ class SubCipher(Cipher):
             The encoded message.
 
         """
-        out = self._encode(s, block=block)
+        if block is not None:
+            # filter message to characters in ciphertext alphabet
+            s = ''.join(c for c in s if c in self.tableau.pt)
+
+            if block > 0:
+                padding = upward_factor(len(s), block)
+                s = s.ljust(padding, self.DEFAULT_NULLCHAR)
+
+        out = self._encode(s)
 
         if block is not None and block > 0:
             out = ' '.join(chunks(out, block))
@@ -141,9 +144,15 @@ class SubCipher(Cipher):
             The decoded message.
 
         """
-        out = self._decode(s, block=block)
+        if block is not None:
+            # filter message to characters in ciphertext alphabet
+            s = ''.join(c for c in s if c in self.tableau.ct)
+
+        out = self._decode(s)
 
         if block is not None and block > 0:
+            padding = upward_factor(len(out), block)
+            out = out.ljust(padding, self.DEFAULT_NULLCHAR)
             out = ' '.join(chunks(out, block))
 
         return ''.join(out)

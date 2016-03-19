@@ -2,11 +2,10 @@
 # -*- coding: utf-8 -*-
 
 from collections import OrderedDict
-from utils import upward_factor
 
 
-class ManyToOneTranslationTable:
-    """ Monoalphabetic tableau.
+class CipherTableau:
+    """ Alphabetic tableau.
 
     Parameters
     ----------
@@ -14,6 +13,22 @@ class ManyToOneTranslationTable:
         A plaintext alphabet for the tableau.
     ct : str
         A ciphertext alphabet for the tableau.
+
+    """
+    def __init__(self, pt, ct):
+        self.pt, self.ct = pt, ct
+
+    def __repr__(self):
+        return '{}: PT=[{}], CT=[{}]'.format(type(self).__name__,
+                                   repr(self.pt),
+                                   repr(self.ct))
+
+    def __str__(self):
+        return 'PT: {}\nCT: {}'.format(self.pt, self.ct)
+
+
+class ManyToOneTranslationTable(CipherTableau):
+    """ Monoalphabetic tableau.
 
     Raises
     ------
@@ -33,29 +48,24 @@ class ManyToOneTranslationTable:
     DEFAULT_NULLCHAR = 'X'
 
     def __init__(self, pt, ct):
+        super().__init__(pt, ct)
         self.a2b = str.maketrans(pt, ct)
-        self.pt, self.ct = pt, ct
 
     def __len__(self):
         return len(self.a2b)
-
-    def __str__(self):
-        return 'PT: {}\nCT: {}'.format(self.pt, self.ct)
 
     def __repr__(self):
         return '{}: {} => {}'.format(type(self).__name__,
                                      repr(self.pt),
                                      repr(self.ct))
 
-    def encode(self, s, block=None):
+    def encode(self, s):
         """ Transcode forwards.
 
         Parameters
         ----------
         s : str
             A string to transcode.
-        strict : bool
-            `True` to strip out non-transcodable characters, `False` otherwise.
 
         Returns
         -------
@@ -63,25 +73,11 @@ class ManyToOneTranslationTable:
             A transcoded version of `s`.
 
         """
-        if block is not None:
-            s = ''.join(c for c in s if c in self.pt)
-
-            if block > 0:
-                padding = upward_factor(len(s), block)
-                s = s.ljust(padding, self.DEFAULT_NULLCHAR)
-
         return s.translate(self.a2b)
 
 
 class OneToOneTranslationTable(ManyToOneTranslationTable):
     """ Monoalphabetic tableau.
-
-    Parameters
-    ----------
-    pt : sequence
-        A plaintext alphabet for the tableau.
-    ct : sequence
-        A ciphertext alphabet for the tableau.
 
     Notes
     -----
@@ -104,15 +100,13 @@ class OneToOneTranslationTable(ManyToOneTranslationTable):
                                       repr(self.pt),
                                       repr(self.ct))
 
-    def decode(self, s, block=None):
+    def decode(self, s):
         """ Transcode backwards.
 
         Parameters
         ----------
         s : str
             A string to transcode.
-        strict : bool
-            `True` to strip out non-transcodable characters, `False` otherwise.
 
         Returns
         -------
@@ -120,13 +114,4 @@ class OneToOneTranslationTable(ManyToOneTranslationTable):
             A transcoded version of `s`.
 
         """
-        if block is not None:
-            s = ''.join(c for c in s if c in self.pt)
-
-        out = s.translate(self.b2a)
-
-        if block is not None and block > 0:
-            padding = upward_factor(len(out), block)
-            out = out.ljust(padding, self.DEFAULT_NULLCHAR)
-
-        return out
+        return s.translate(self.b2a)

@@ -20,13 +20,13 @@ class MonoSubCipher(SubCipher):
         if not alphabet:
             alphabet = self.DEFAULT_ALPHABET
         alphabet_ = ''.join(self._transform(alphabet))
-        self.xtable = OneToOneTranslationTable(alphabet, alphabet_)
+        self.tableau = OneToOneTranslationTable(alphabet, alphabet_)
 
     def __repr__(self):
-        return '{} ({})'.format(type(self).__name__, repr(self.xtable))
+        return '{} ({})'.format(type(self).__name__, repr(self.tableau))
 
     def __str__(self):
-        return str(self.xtable)
+        return str(self.tableau)
 
     def _transform(self, alphabet):
         """ Create a ciphertext alphabet.
@@ -44,18 +44,13 @@ class MonoSubCipher(SubCipher):
         """
         raise NotImplementedError
 
-    def _encode(self, s, block):
+    def _encode(self, s):
         """ Encode a message.
 
         Parameters
         ----------
         s : str
             A message to transcode.
-        block : int or None
-            Divide output into blocks of this size.  All non-transcodable
-            symbols will be stripped.  Specify the value `0` to strip all
-            non-transcodable symbols and not divide into blocks.
-            Specify the value `None` to disable chunking.
 
         Returns
         -------
@@ -63,20 +58,15 @@ class MonoSubCipher(SubCipher):
             A transcoded version of `s`.
 
         """
-        return self.xtable.encode(s, block=block)
+        return self.tableau.encode(s)
 
-    def _decode(self, s, block):
+    def _decode(self, s):
         """ Decode a message.
 
         Parameters
         ----------
         s : str
             A message to transcode.
-        block : int or None
-            Divide output into blocks of this size.  All non-transcodable
-            symbols will be stripped.  Specify the value `0` to strip all
-            non-transcodable symbols and not divide into blocks.
-            Specify the value `None` to disable chunking.
 
         Returns
         -------
@@ -84,4 +74,4 @@ class MonoSubCipher(SubCipher):
             A transcoded version of `s`.
 
         """
-        return self.xtable.decode(s, block=block)
+        return self.tableau.decode(s)

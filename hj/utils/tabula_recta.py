@@ -16,7 +16,10 @@ from string import digits
 #   OCEAN#OGR#APHYWH#AT#!I LOVEund4Da$eA
 #   STORM THE CASTLE AT #MIDNIG####H###T
 
-class TabulaRecta:
+from utils.tableau import CipherTableau
+
+
+class TabulaRecta(CipherTableau):
     """ Message alphabet is on top; key alphabet is on side.
 
     Parameters
@@ -28,6 +31,7 @@ class TabulaRecta:
 
     """
     def __init__(self, alphabet, keys=None):
+        super().__init__(alphabet, alphabet)
         self.alphabet = alphabet
         self.keys = keys or alphabet
         alphabets_ = self._make_rows(alphabet)
@@ -59,7 +63,9 @@ class TabulaRecta:
             If no tableau could be found for the given key.
 
         """
-        return self.key_table[key].encode(seq, block=0)
+        kt = self.key_table[key]
+        seq = ''.join(e for e in seq if e in kt.pt)
+        return self.key_table[key].encode(seq)
 
     def decode(self, seq, key):
         """ Locate element within the grid.
@@ -84,7 +90,9 @@ class TabulaRecta:
             If no tableau could be found for the given key.
 
         """
-        return self.key_table[key].decode(seq, block=0)
+        kt = self.key_table[key]
+        seq = ''.join(e for e in seq if e in kt.ct)
+        return self.key_table[key].decode(seq)
 
     def __str__(self):
         alphabet = self.alphabet
