@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .base import PolySubCipher
-from utils import extendable_iterator
-from utils.tabula_recta import TabulaRecta
+from utils import extendable_iterator, TabulaRecta
 
 # [TODO] still need to add keyed alphabets per Vigenere
 
@@ -22,8 +21,6 @@ class BaseVigenereCipher(PolySubCipher):
         A plaintext alphabet.  Default `None`.
 
     """
-    TABULA_RECTA = TabulaRecta
-
     def __init__(self, countersign, alphabet=None):
         super().__init__()
         if not alphabet:
@@ -53,7 +50,7 @@ class BaseVigenereCipher(PolySubCipher):
         constructed instance.
 
         """
-        return self.TABULA_RECTA(alphabet)
+        return TabulaRecta(alphabet)
 
     def _encode(self, s):
         # [TODO] the tabula recta could perhaps handle?

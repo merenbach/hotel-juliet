@@ -3,6 +3,7 @@
 
 from .vigenere import VigenereCipher
 from string import digits
+from utils import TabulaRecta
 
 
 class GronsfeldCipher(VigenereCipher):
@@ -44,4 +45,4 @@ class GronsfeldCipher(VigenereCipher):
         constructed instance.
 
         """
-        return self.TABULA_RECTA(alphabet, keys=digits)
+        return TabulaRecta(alphabet, keys=digits)

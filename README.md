@@ -41,16 +41,23 @@ The underlying frameworks are a bit of a playground for me right now.  The code 
 
   - Allow shifting a la <http://rumkin.com/tools/cipher/caesar-keyed.php>
   - Autotranslate to upper case?
-  - Handle block grouping and nulls again.
   - Test whether keys/alphas actually have to be strings.
   - Add keyed Vigenere.
   - Tests should account for non-string and non-sequence keys.
   - Cardano cipher
   - Larrabee cipher
-  - Instead of passing "strict" around, how about just returning a
-    wrapper for the non-transcodeable element and the original caller can
-    determine what to do with it?
+  - More cleanup of strict: does it belong in translation table, or elsewhere?
+  - Redo all encipherment/decipherment using math?  For instance, polyalphabetic
+    encryption/decryption can be done with mod(len alphabet) arithmetic,
+    and the monoalphabetic is very simple.
+  - More specifically, is the whole "translation table" idea inherently difficult
+    to maintain and wrap one's head around?  Classes including classes that
+    delegating to other classes...
+  - Put countersign specification into encode/decode?
 
+## DONE! but needs unit tests...
+
+  - Handle block grouping and nulls again.
 
 
 ## Notes

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .vigenere import VigenereCipher
+from utils import TabulaRecta
 
 
 class BeaufortCipher(VigenereCipher):
@@ -51,4 +52,4 @@ class BeaufortCipher(VigenereCipher):
         constructed instance.
 
         """
-        return self.TABULA_RECTA(alphabet, alphabet[::-1], alphabet[::-1])
+        return TabulaRecta(alphabet, alphabet[::-1], alphabet[::-1])

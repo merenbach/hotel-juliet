@@ -82,7 +82,7 @@ class ManyToOneTranslationTable(CipherTableau):
 
 
 class OneToOneTranslationTable(ManyToOneTranslationTable):
-    """ Monoalphabetic tableau.
+    """ Reciprocal monoalphabetic tableau.
 
     Notes
     -----
