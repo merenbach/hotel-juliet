@@ -33,14 +33,9 @@ class SubCipher(Cipher):
     """
     DEFAULT_ALPHABET = string.ascii_uppercase
 
-    DEFAULT_NULLCHAR = 'X'
-
-    def __init__(self, alphabet, nullchar=DEFAULT_NULLCHAR):
-        super().__init__()
-        self.alphabet = ''.join(alphabet or self.DEFAULT_ALPHABET)
-
-        self.nullchar = nullchar
-
+    # def __init__(self):
+    #     super().__init__()
+    #
     # def __repr__(self):
     #     # [TODO] maybe improve this
     #     return repr(self.tableau)

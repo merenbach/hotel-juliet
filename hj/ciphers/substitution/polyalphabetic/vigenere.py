@@ -25,8 +25,10 @@ class BaseVigenereCipher(PolySubCipher):
     TABULA_RECTA = TabulaRecta
 
     def __init__(self, countersign, alphabet=None):
-        super().__init__(alphabet or self.DEFAULT_ALPHABET)
-        self.tableau = self._make_tableau(alphabet or self.DEFAULT_ALPHABET)
+        super().__init__()
+        if not alphabet:
+            alphabet = self.DEFAULT_ALPHABET
+        self.tableau = self._make_tableau(alphabet)
         self.countersign = [e for e in countersign if e in self.tableau.keys]
         if not self.countersign:
             raise ValueError('A countersign is required')
@@ -54,13 +56,15 @@ class BaseVigenereCipher(PolySubCipher):
         return self.TABULA_RECTA(alphabet=alphabet)
 
     def _encode(self, s, block):
+        # [TODO] the tabula recta could perhaps handle?
         if block is not None:
-            s = (c for c in s if c in self.alphabet)
+            s = (c for c in s if c in self.tableau.alphabet)
         return self._transcoder(s, self.tableau.encode)
 
     def _decode(self, s, block):
+        # [TODO] the tabula recta could perhaps handle?
         if block is not None:
-            s = (c for c in s if c in self.alphabet)
+            s = (c for c in s if c in self.tableau.alphabet)
         return self._transcoder(s, self.tableau.decode)
 
     def _transcoder(self, message, cipher_func):

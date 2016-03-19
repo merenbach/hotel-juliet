@@ -15,12 +15,12 @@ class MonoSubCipher(SubCipher):
 
     """
     def __init__(self, alphabet):
+        super().__init__()
+
         if not alphabet:
             alphabet = self.DEFAULT_ALPHABET
-
-        super().__init__(alphabet)
-        self.alphabet_ = ''.join(self._transform(alphabet))
-        self.xtable = OneToOneTranslationTable(self.alphabet, self.alphabet_)
+        alphabet_ = ''.join(self._transform(alphabet))
+        self.xtable = OneToOneTranslationTable(alphabet, alphabet_)
 
     def __repr__(self):
         return '{} ({})'.format(type(self).__name__, repr(self.xtable))
