@@ -52,4 +52,4 @@ class BeaufortCipher(VigenereCipher):
         constructed instance.
 
         """
-        return TabulaRecta(alphabet, alphabet[::-1], alphabet[::-1])
+        return TabulaRecta(alphabet, alphabet[::-1])

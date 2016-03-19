@@ -29,12 +29,17 @@ class TabulaRecta(CipherTableau):
         An ordered sequence of keys to use for rows.
 
     """
-    def __init__(self, pt, alphabet_=None, keys=None):
-        super().__init__(pt, alphabet_ or pt)
-        alphabets_ = self._make_rows(pt)
+    def __init__(self, pt, ct=None, keys=None):
+        super().__init__(pt, ct or pt)
+        alphabets_ = self._make_rows('')
         # transcoders_list = [CaesarCipher(n, alphabet=alphabet)
         #                     for n, __ in enumerate(alphabet)]
-        self.key_table = OrderedDict(zip(keys or pt, alphabets_))
+        if not keys:
+            keys = ct or pt
+        self.key_table = OrderedDict(zip(keys, alphabets_))
+
+        self.from_key_to_num = {v: k for k, v in enumerate(keys)}
+        # self.from_num_to_key = {k: v for k, v in enumerate(keys)}
 
     def __repr__(self):
         return '{}: PT=[{}], CT=[{}], keys=[{}]'.format(type(self).__name__,
@@ -66,7 +71,7 @@ class TabulaRecta(CipherTableau):
 
         """
         ns = self.pt2digits(seq)
-        ks_faulty = self.pt2digits(key)
+        ks_faulty = [self.from_key_to_num.get(key)]
         try:
             o = (ns[0] + ks_faulty[0]) % len(self.pt)
             return ''.join(self.digits2ct([o]))
@@ -100,7 +105,7 @@ class TabulaRecta(CipherTableau):
 
         """
         ns = self.ct2digits(seq)
-        ks_faulty = self.ct2digits(key)
+        ks_faulty = [self.from_key_to_num.get(key)]
         try:
             o = (ns[0] - ks_faulty[0]) % len(self.ct)
             return ''.join(self.digits2pt([o]))
@@ -160,7 +165,7 @@ class DellaPortaTabulaRecta(TabulaRecta):
 
     def _make_rows(self, alphabet):
         alphabet2 = lrotated(self.pt, len(self.pt) // 2)
-        cts = [orotated(alphabet2, i // 2) for i in range(len(alphabet))]
+        cts = [orotated(alphabet2, i // 2) for i in range(len(self.pt))]
         return [OneToOneTranslationTable(self.pt, ct) for ct in cts]
 
 
