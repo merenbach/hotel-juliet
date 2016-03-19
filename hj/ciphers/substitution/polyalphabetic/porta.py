@@ -26,8 +26,6 @@ class DellaPortaCipher(VigenereCipher):
     Since this is a symmetric cipher, autoclave is not implemented.
 
     """
-    verbose_name = 'Della Porta'
-
     TABULA_RECTA = DellaPortaTabulaRecta
 
     def __init__(self, countersign, alphabet=None):

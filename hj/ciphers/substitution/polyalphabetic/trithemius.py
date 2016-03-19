@@ -23,7 +23,5 @@ class TrithemiusCipher(VigenereCipher):
            column since there is no key (the key is the top row [the alphabet])
 
     """
-    verbose_name = 'Trithemius'
-
     def __init__(self, alphabet=None):
         super().__init__(alphabet or self.DEFAULT_ALPHABET, alphabet=alphabet)

@@ -8,4 +8,4 @@ class PolySubCipher(SubCipher):
     """ A representation of a tabula recta cipher
 
     """
-    verbose_name = 'polyalphabetic substitution'
+    pass

@@ -4,7 +4,7 @@
 from collections import OrderedDict
 
 
-class OneWayTranslationTable:
+class ManyToOneTranslationTable:
     """ Monoalphabetic tableau.
 
     Parameters
@@ -37,10 +37,9 @@ class OneWayTranslationTable:
         return len(self.a2b)
 
     def __str__(self):
-        base = type(self).__name__
         pt = 'PT: {}'.format(self.pt)
         ct = 'CT: {}'.format(self.ct)
-        return '{}\n  {}\n  {}'.format(base, pt, ct)
+        return '{}\n{}'.format(pt, ct)
 
     def __repr__(self):
         return '{}: {} => {}'.format(type(self).__name__,
@@ -64,7 +63,7 @@ class OneWayTranslationTable:
         return s.translate(self.a2b)
 
 
-class TwoWayTranslationTable(OneWayTranslationTable):
+class OneToOneTranslationTable(ManyToOneTranslationTable):
     """ Monoalphabetic tableau.
 
     Parameters

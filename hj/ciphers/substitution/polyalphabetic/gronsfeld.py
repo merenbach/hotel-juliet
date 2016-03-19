@@ -21,8 +21,6 @@ class GronsfeldCipher(VigenereCipher):
     [TODO] Technically, it can be made totally symmetric if a Beaufort tabula recta is used instead.
 
     """
-    verbose_name = 'Gronsfeld'
-
     TABULA_RECTA = GronsfeldTabulaRecta
 
     def __init__(self, countersign, alphabet=None):

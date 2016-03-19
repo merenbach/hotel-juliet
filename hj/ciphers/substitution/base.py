@@ -30,7 +30,6 @@ class SubCipher(Cipher):
     refactoring may be required.
 
     """
-    verbose_name = 'substitution'
     DEFAULT_ALPHABET = string.ascii_uppercase
 
     DEFAULT_NULLCHAR = 'X'
@@ -40,9 +39,6 @@ class SubCipher(Cipher):
         self.alphabet = ''.join(alphabet or self.DEFAULT_ALPHABET)
 
         self.nullchar = nullchar
-
-    def __str__(self):
-        return self.verbose_name.title()
 
     # def __repr__(self):
     #     # [TODO] maybe improve this

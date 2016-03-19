@@ -19,8 +19,6 @@ class CaesarCipher(ShiftCipher):
         A plaintext alphabet.  Default `None`.
 
     """
-    verbose_name = 'Caesar'
-
     DEFAULT_OFFSET = 3
 
     def __init__(self, alphabet=None):

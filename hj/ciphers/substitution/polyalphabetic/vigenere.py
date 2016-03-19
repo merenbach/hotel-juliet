@@ -195,7 +195,7 @@ class BaseVigenereCipher(PolySubCipher):
         #             keystream.append(food)
 
 class VigenereCipher(BaseVigenereCipher):
-    """ THE Vigenere cipher, conceptual foundation of several other ciphers.
+    """ THE Vigenère cipher, conceptual foundation of several other ciphers.
 
     Despite its name, it was not created by Blaise de Vigenère, who instead
     created an autokey cipher.
@@ -208,8 +208,6 @@ class VigenereCipher(BaseVigenereCipher):
         A character set to use for transcoding.  Default `None`.
 
     """
-    verbose_name = 'Vigenère'
-
     def _encode(self, s):
         for e_after, __ in super()._encode(s):
             yield e_after

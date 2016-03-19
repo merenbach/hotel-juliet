@@ -31,8 +31,6 @@ class AtbashCipher(AffineCipher):
     invoke `super().__init__(alphabet, alphabet[::-1])`.
 
     """
-    verbose_name = 'Atbash'
-
     DEFAULT_M = (-1)
     DEFAULT_B = (-1)
 

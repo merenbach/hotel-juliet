@@ -29,8 +29,6 @@ class AffineCipher(ShiftCipher):
     solution that, when computed, reveals the whole ciphertext alphabet.
 
     """
-    verbose_name = 'affine'
-
     def __init__(self, multiplier, offset, alphabet=None):
         self.multiplier = multiplier
         super().__init__(offset, alphabet=alphabet)

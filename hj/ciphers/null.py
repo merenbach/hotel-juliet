@@ -8,8 +8,6 @@ class NullCipher(Cipher):
     """ Base class for ciphers.
 
     """
-    verbose_name = 'null'
-
     def _encode(self, s):
         """ Encoding logic.
 

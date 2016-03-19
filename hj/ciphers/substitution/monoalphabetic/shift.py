@@ -16,8 +16,6 @@ class ShiftCipher(MonoSubCipher):
         A plaintext alphabet.  Default `None`.
 
     """
-    verbose_name = 'shift'
-
     def __init__(self, offset, alphabet=None):
         self.offset = offset
         super().__init__(alphabet)

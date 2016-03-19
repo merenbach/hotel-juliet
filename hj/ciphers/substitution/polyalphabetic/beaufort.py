@@ -29,8 +29,6 @@ class BeaufortCipher(VigenereCipher):
     N.b.: Because this is a symmetric cipher, autoclave is disabled.
 
     """
-    verbose_name = 'Beaufort'
-
     TABULA_RECTA = BeaufortTabulaRecta
 
     def __init__(self, countersign, alphabet=None):

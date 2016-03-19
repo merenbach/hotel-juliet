@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .. import SubCipher
-from collections import OrderedDict
-from utils import TwoWayTranslationTable
+from utils import OneToOneTranslationTable
 
 
 class MonoSubCipher(SubCipher):
@@ -15,15 +14,19 @@ class MonoSubCipher(SubCipher):
         A plaintext alphabet.
 
     """
-    verbose_name = 'monoalphabetic substitution'
-
     def __init__(self, alphabet):
         if not alphabet:
             alphabet = self.DEFAULT_ALPHABET
 
         super().__init__(alphabet)
         self.alphabet_ = ''.join(self._transform(alphabet))
-        self.xtable = TwoWayTranslationTable(self.alphabet, self.alphabet_)
+        self.xtable = OneToOneTranslationTable(self.alphabet, self.alphabet_)
+
+    def __repr__(self):
+        return '{} ({})'.format(type(self).__name__, repr(self.xtable))
+
+    def __str__(self):
+        return str(self.xtable)
 
     def _transform(self, alphabet):
         """ Create a ciphertext alphabet.
@@ -40,17 +43,6 @@ class MonoSubCipher(SubCipher):
 
         """
         raise NotImplementedError
-
-    def __str__(self):
-        base = super().__str__()
-        pt = 'PT: {}'.format(self.alphabet)
-        ct = 'CT: {}'.format(self.alphabet_)
-        return '{}\n  {}\n  {}'.format(base, pt, ct)
-
-    def __repr__(self):
-        return '{}: {} <=> {}'.format(self.__class__.__name__,
-                                               repr(self.alphabet),
-                                               repr(self.alphabet_))
 
     def _encode(self, s):
         """ Transcode forwards.

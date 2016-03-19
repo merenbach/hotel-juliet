@@ -16,8 +16,6 @@ class KeywordCipher(MonoSubCipher):
         A plaintext alphabet.  Default `None`.
 
     """
-    verbose_name = 'keyword'
-
     def __init__(self, keyword, alphabet=None):
         self.keyword = keyword
         super().__init__(alphabet)
