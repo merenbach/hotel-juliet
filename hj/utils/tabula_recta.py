@@ -115,6 +115,40 @@ class TabulaRecta(CipherTableau):
         #     raise ValueError
         # return self.key_table[key].decode(seq)
 
+    def transcode(self, seq, key):
+        """ Locate element on axis after matching other axis and internal col/row.
+
+        Parameters
+        ----------
+        element : str
+            An element to transcode.
+            Essentially a row header character on the left edge of the tableau.
+        key : str
+            The dictionary key of a transcoder.
+            Essentially a row header character on the left edge of the tableau.
+
+        Returns
+        -------
+        out : data-type
+            A transcoded copy (if possible) of the given element `element`.
+
+        Raises
+        ------
+        KeyError
+            If no tableau could be found for the given key.
+
+        """
+        ns = self.ct2digits(seq)
+        ks_faulty = [self.from_key_to_num.get(key)]
+        try:
+            o = (ks_faulty[0] - ns[0]) % len(self.ct)
+            return ''.join(self.digits2pt([o]))
+        except TypeError:
+            raise ValueError
+        # if seq not in self.ct:
+        #     raise ValueError
+        # return self.key_table[key].decode(seq)
+
     def __str__(self):
         alphabet = self.pt
         lines = []

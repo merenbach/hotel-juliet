@@ -60,6 +60,10 @@ class BaseVigenereCipher(PolySubCipher):
         # [TODO] the tabula recta could perhaps handle?
         return self._transcoder(s, self.tableau.decode)
 
+    def _transcode(self, s):
+        # [TODO] the tabula recta could perhaps handle?
+        return self._transcoder(s, self.tableau.transcode)
+
     def _transcoder(self, message, cipher_func):
         """ Transcode a character.
 
@@ -135,6 +139,11 @@ class VigenereCipher(BaseVigenereCipher):
         #         return
         #     else:
         #         yield e_after
+
+
+    def _transcode(self, s):
+        for e_after, __ in super()._transcode(s):
+            yield e_after
 
 class VigenereTextAutoclaveCipher(BaseVigenereCipher):
     """ An oft-overlooked autokey cipher developed by Blaise de Vigenère.
