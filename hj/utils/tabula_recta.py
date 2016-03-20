@@ -47,61 +47,88 @@ class TabulaRecta(CipherTableau):
                                       repr(self.ct),
                                       ''.join(self.key_table.keys()))
 
-    @staticmethod
-    def _encode(m, k, a):
-        """ Vigenere-type encipherment.
+    # @staticmethod
+    # def _encode(m, k, a):
+    #     """ Vigenere-type encipherment.
+    #
+    #     Parameters
+    #     ----------
+    #     m : int
+    #         An integer representing a plaintext symbol to encode.
+    #     k : int
+    #         An integer representing a key symbol to help with encoding.
+    #     a : int
+    #         An integer representing the length of the ciphertext alphabet.
+    #
+    #     """
+    #     return (m + k) % a
+    #
+    # @staticmethod
+    # def _decode(m, k, a):
+    #     """ Vigenere-type decipherment.
+    #
+    #     Parameters
+    #     ----------
+    #     m : int
+    #         An integer representing a ciphertext symbol to decode.
+    #     k : int
+    #         An integer representing a key symbol to help with decoding.
+    #     a : int
+    #         An integer representing the length of the plaintext alphabet.
+    #
+    #     """
+    #     return (m - k) % a
+    #
+    # @staticmethod
+    # def _transcode(m, k, a):
+    #     """ Beaufort-type encipherment and decipherment.
+    #
+    #     Parameters
+    #     ----------
+    #     m : int
+    #         An integer representing a plaintext or ciphertext symbol to
+    #         transcode.
+    #     k : int
+    #         An integer representing a key symbol to help with transcoding.
+    #     a : int
+    #         An integer representing the length of the destination alphabet.
+    #
+    #
+    #     Notes
+    #     -----
+    #     This is really the same as `a - _decode(m, k, a)`.
+    #
+    #     """
+    #     return (k - m) % a
+
+    def combine_indices(self, msg, key, source, target, func):
+        """
 
         Parameters
         ----------
-        m : int
-            An integer representing a plaintext symbol to encode.
-        k : int
-            An integer representing a key symbol to help with encoding.
-        a : int
-            An integer representing the length of the ciphertext alphabet.
+        msg : str
+            A string representing a symbol in the message.
+        key : str
+            A string representing a symbol in the key (countersign).
+        source : str
+            A source alphabet.
+        target : str
+            A target alphabet.
+        func : function
+            A mathematical operaton to perform.
+
+        Raises
+        ------
+        ValueError
+            If any symbols could not be converted into alphabet positions.
 
         """
-        return (m + k) % a
+        m = source.index(msg)
+        k = self.keys.index(key)
+        o = func(m, k)
+        return target[o % len(target)]
 
-    @staticmethod
-    def _decode(m, k, a):
-        """ Vigenere-type decipherment.
-
-        Parameters
-        ----------
-        m : int
-            An integer representing a ciphertext symbol to decode.
-        k : int
-            An integer representing a key symbol to help with decoding.
-        a : int
-            An integer representing the length of the plaintext alphabet.
-
-        """
-        return (m - k) % a
-
-    @staticmethod
-    def _transcode(m, k, a):
-        """ Beaufort-type encipherment and decipherment.
-
-        Parameters
-        ----------
-        m : int
-            An integer representing a plaintext or ciphertext symbol to
-            transcode.
-        k : int
-            An integer representing a key symbol to help with transcoding.
-        a : int
-            An integer representing the length of the destination alphabet.
-
-
-        Notes
-        -----
-        This is really the same as `a - _decode(m, k, a)`.
-
-        """
-        return (k - m) % a
-
-    def encode(self, seq, key):
+    def encode(self, msg, key):
         """ Locate element within the grid.
 
         Parameters
@@ -124,13 +151,9 @@ class TabulaRecta(CipherTableau):
             If no tableau could be found for the given key.
 
         """
-        pt_num = self.pt.index(seq)
-        k_num = self.keys.index(key)
+        return self.combine_indices(msg, key, self.pt, self.ct, lambda m, k: m + k)
 
-        o = self._encode(pt_num, k_num, len(self.ct))
-        return self.ct[o]
-
-    def decode(self, seq, key):
+    def decode(self, msg, key):
         """ Locate element within the grid.
 
         Parameters
@@ -153,13 +176,9 @@ class TabulaRecta(CipherTableau):
             If no tableau could be found for the given key.
 
         """
-        ct_num = self.ct.index(seq)
-        k_num = self.keys.index(key)
+        return self.combine_indices(msg, key, self.ct, self.pt, lambda m, k: m - k)
 
-        o = self._decode(ct_num, k_num, len(self.pt))
-        return self.pt[o]
-
-    def symmetric_encode(self, seq, key):
+    def symmetric_encode(self, msg, key):
         """ Locate element within the grid.
 
         Parameters
@@ -182,13 +201,9 @@ class TabulaRecta(CipherTableau):
             If no tableau could be found for the given key.
 
         """
-        pt_num = self.pt.index(seq)
-        k_num = self.keys.index(key)
+        return self.combine_indices(msg, key, self.pt, self.ct, lambda m, k: k - m)
 
-        o = self._transcode(pt_num, k_num, len(self.pt))
-        return self.ct[o]
-
-    def symmetric_decode(self, seq, key):
+    def symmetric_decode(self, msg, key):
         """ Locate element within the grid.
 
         Parameters
@@ -211,11 +226,7 @@ class TabulaRecta(CipherTableau):
             If no tableau could be found for the given key.
 
         """
-        ct_num = self.ct.index(seq)
-        k_num = self.keys.index(key)
-
-        o = self._transcode(ct_num, k_num, len(self.ct))
-        return self.pt[o]
+        return self.combine_indices(msg, key, self.ct, self.pt, lambda m, k: k - m)
 
     def __str__(self):
         alphabet = self.pt
@@ -316,7 +327,7 @@ class DellaPortaTabulaRecta(TabulaRecta):
 #
 #
 #class BaseTabulaRecta(BaseAlphabetTranscoder):
-#    """ 
+#    """
 #
 #    Parameters
 #    ----------
