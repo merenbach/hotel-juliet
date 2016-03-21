@@ -25,6 +25,9 @@ class DellaPortaCipher(VigenereCipher):
 
     Since this is a symmetric cipher, autoclave is not implemented.
 
+    [TODO] Different algorithms appear to exist for this.  Understanding how
+    this was implemented historically is a priority.
+
     """
     def __init__(self, countersign, alphabet=None):
         super().__init__(countersign, alphabet=alphabet)
