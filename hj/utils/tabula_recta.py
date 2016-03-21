@@ -33,6 +33,7 @@ class ReciprocalTable(CipherTableau):
         alphabets_ = self._make_rows(pt)
         # transcoders_list = [CaesarCipher(n, alphabet=alphabet)
         #                     for n, __ in enumerate(alphabet)]
+        self.keys = keys or pt
         self.key_table = OrderedDict(zip(keys or pt, alphabets_))
 
     def __repr__(self):
@@ -131,12 +132,10 @@ class TabulaRecta(CipherTableau):
     """
     def __init__(self, pt, ct=None, keys=None):
         super().__init__(pt, ct or pt)
-        alphabets_ = self._make_rows('')
         # transcoders_list = [CaesarCipher(n, alphabet=alphabet)
         #                     for n, __ in enumerate(alphabet)]
         if not keys:
             keys = ct or pt
-        self.key_table = OrderedDict(zip(keys, alphabets_))
 
         self.keys = keys
         # self.from_num_to_key = {k: v for k, v in enumerate(keys)}

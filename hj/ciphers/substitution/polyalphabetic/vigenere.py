@@ -26,7 +26,7 @@ class BaseVigenereCipher(PolySubCipher):
         if not alphabet:
             alphabet = self.DEFAULT_ALPHABET
         self.tableau = self._make_tableau(alphabet)
-        self.countersign = [e for e in countersign if e in self.tableau.key_table]
+        self.countersign = [e for e in countersign if e in self.tableau.keys]
         if not self.countersign:
             raise ValueError('A countersign is required')
 
