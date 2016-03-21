@@ -17,6 +17,106 @@ from collections import OrderedDict
 
 from utils.tableau import CipherTableau
 
+class ReciprocalTable(CipherTableau):
+    """ Message alphabet is on top; key alphabet is on side.
+
+    Parameters
+    ----------
+    alphabet : str
+        An alphabet for the tableau.  Duplicate elements will be removed.
+    keys : iterable, optional
+        An ordered sequence of keys to use for rows.
+
+    """
+    def __init__(self, pt, alphabet_=None, keys=None):
+        super().__init__(pt, alphabet_ or pt)
+        alphabets_ = self._make_rows(pt)
+        # transcoders_list = [CaesarCipher(n, alphabet=alphabet)
+        #                     for n, __ in enumerate(alphabet)]
+        self.key_table = OrderedDict(zip(keys or pt, alphabets_))
+
+    def __repr__(self):
+        return '{}: PT=[{}], CT=[{}], keys=[{}]'.format(type(self).__name__,
+                                      repr(self.pt),
+                                      repr(self.ct),
+                                      ''.join(self.key_table.keys()))
+
+    def encode(self, seq, key):
+        """ Locate element within the grid.
+
+        Parameters
+        ----------
+        element : str
+            An element to transcode.
+            Essentially a row header character on the left edge of the tableau.
+        key : str
+            The dictionary key of a transcoder.
+            Essentially a row header character on the left edge of the tableau.
+
+        Returns
+        -------
+        out : data-type
+            A transcoded copy (if possible) of the given element `element`.
+
+        Raises
+        ------
+        KeyError
+            If no tableau could be found for the given key.
+
+        """
+        if seq not in self.pt:
+            raise ValueError
+        return self.key_table[key].encode(seq)
+
+    def decode(self, seq, key):
+        """ Locate element within the grid.
+
+        Parameters
+        ----------
+        element : str
+            An element to transcode.
+            Essentially a row header character on the left edge of the tableau.
+        key : str
+            The dictionary key of a transcoder.
+            Essentially a row header character on the left edge of the tableau.
+
+        Returns
+        -------
+        out : data-type
+            A transcoded copy (if possible) of the given element `element`.
+
+        Raises
+        ------
+        KeyError
+            If no tableau could be found for the given key.
+
+        """
+        if seq not in self.ct:
+            raise ValueError
+        return self.key_table[key].decode(seq)
+
+    def __str__(self):
+        alphabet = self.pt
+        lines = []
+        lines.append('  | ' + ' '.join(alphabet))
+        lines.append('--+' + '-' * len(alphabet) * 2)
+        for k, v in self.key_table.items():
+            row = ' '.join(v.ct)
+            lines.append('{0} | {1}'.format(k, row))
+        return '\n'.join(lines)
+
+    def _make_rows(self, alphabet):
+        """ Create alphabets.
+
+        Returns
+        -------
+        out : list
+            An ordered collection of character sets.
+
+        """
+        cts = [lrotated(self.ct, i) for i, _ in enumerate(self.ct)]
+        return [OneToOneTranslationTable(self.pt, ct) for ct in cts]
+
 
 class TabulaRecta(CipherTableau):
     """ Message alphabet is on top; key alphabet is on side.
@@ -252,7 +352,7 @@ class TabulaRecta(CipherTableau):
 
 
 # TODO: this is actually a reciprocal table...
-class DellaPortaTabulaRecta(TabulaRecta):
+class DellaPortaTabulaRecta(ReciprocalTable):
     """ Porta cipher version, doubling up rows and symmetrically rotating.
 
     [TODO] Would like to be able to make fewer overrides on parent class logic,
