@@ -33,7 +33,7 @@ class ReciprocalTable(CipherTableau):
         alphabets_ = self._make_rows(pt)
         # transcoders_list = [CaesarCipher(n, alphabet=alphabet)
         #                     for n, __ in enumerate(alphabet)]
-        self.keys = keys or pt
+        self.key_alphabet = keys or pt
         self.key_table = OrderedDict(zip(keys or pt, alphabets_))
 
     def __repr__(self):
@@ -132,7 +132,7 @@ class TabulaRecta(CipherTableau):
     """
     def __init__(self, pt, ct=None, keys=None):
         super().__init__(pt, ct or pt)
-        self.keys = keys or ct or pt
+        self.key_alphabet = keys or ct or pt
         # transcoders_list = [CaesarCipher(n, alphabet=alphabet)
         #                     for n, __ in enumerate(alphabet)]
         # self.from_num_to_key = {k: v for k, v in enumerate(keys)}
@@ -141,7 +141,7 @@ class TabulaRecta(CipherTableau):
         return '{}: PT=[{}], CT=[{}], keys=[{}]'.format(type(self).__name__,
                                       repr(self.pt),
                                       repr(self.ct),
-                                      ''.join(self.keys))
+                                      ''.join(self.key_alphabet))
 
     # def combine_indices(self, source, target, msg, key, func):
     #     """
@@ -167,12 +167,12 @@ class TabulaRecta(CipherTableau):
     #    1. Turn all inputs into their positions in their relevant character
     #    sets.  KEY type character sets are to-number only--keys are never
     #    converted from digit representations into other characters.
-    #    
+    #
     #    2. Munge all input positions as necessary.
     #    3. Turn munged result back into output.
     #
-    #    
-    #    
+    #
+    #
     #
     #     """
     #     m = source.index(msg)
@@ -180,7 +180,7 @@ class TabulaRecta(CipherTableau):
     #     o = func(m, k)  # could be just func(m) with monoalphabetic...
     #     return target[o % len(target)]
 
-    def encode(self, msg, key):
+    def encode(self, msg, *keys):
         """ Locate element within the grid.
 
         Parameters
@@ -188,9 +188,8 @@ class TabulaRecta(CipherTableau):
         element : str
             An element to transcode.
             Essentially a row header character on the left edge of the tableau.
-        key : str
-            The dictionary key of a transcoder.
-            Essentially a row header character on the left edge of the tableau.
+        keys : packed str
+            A sequence of zero or more strings representing encryption keys.
 
         Returns
         -------
@@ -201,14 +200,19 @@ class TabulaRecta(CipherTableau):
         ------
         ValueError
             If no tableau could be found for the given key.
+
+        Notes
+        -----
+        When no keys are supplied, this translates directly from the plaintext
+        to the ciphertext alphabet, as in a monoalphabetic tableau.
 
         """
         m = self.pt.index(msg)
-        k = self.keys.index(key)
+        k = sum(self.key_alphabet.index(key) for key in keys)
+        # k = sum(ka.index(key) for ka, key in self.key_alphabets, keys)
         return self.ct[(m + k) % len(self.ct)]
-        # return self.ct_get(m + k)
 
-    def decode(self, msg, key):
+    def decode(self, msg, *keys):
         """ Locate element within the grid.
 
         Parameters
@@ -216,9 +220,8 @@ class TabulaRecta(CipherTableau):
         element : str
             An element to transcode.
             Essentially a row header character on the left edge of the tableau.
-        key : str
-            The dictionary key of a transcoder.
-            Essentially a row header character on the left edge of the tableau.
+        keys : packed str
+            A sequence of zero or more strings representing decryption keys.
 
         Returns
         -------
@@ -230,18 +233,24 @@ class TabulaRecta(CipherTableau):
         ValueError
             If no tableau could be found for the given key.
 
+        Notes
+        -----
+        When no keys are supplied, this translates directly from the ciphertext
+        to the plaintext alphabet, as in a monoalphabetic tableau.
+
         """
         m = self.ct.index(msg)
-        k = self.keys.index(key)
+        k = sum(self.key_alphabet.index(key) for key in keys)
+        # k = sum(ka.index(key) for ka, key in self.key_alphabets, keys)
         return self.pt[(m - k) % len(self.pt)]
-        # return self.pt_get(m - k)
 
     def __str__(self):
         alphabet = self.pt
         lines = []
         lines.append('  | ' + ' '.join(alphabet))
         lines.append('--+' + '-' * len(alphabet) * 2)
-        all_rows = [(k, lrotated(self.ct, i)) for i, k in enumerate(self.keys)]
+        all_rows = [(k, lrotated(self.ct, i)) for i, k in
+                enumerate(self.key_alphabet)]
         for k, row in all_rows:
             row = ' '.join(row)
             lines.append('{0} | {1}'.format(k, row))
