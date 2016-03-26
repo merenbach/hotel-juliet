@@ -132,19 +132,16 @@ class TabulaRecta(CipherTableau):
     """
     def __init__(self, pt, ct=None, keys=None):
         super().__init__(pt, ct or pt)
+        self.keys = keys or ct or pt
         # transcoders_list = [CaesarCipher(n, alphabet=alphabet)
         #                     for n, __ in enumerate(alphabet)]
-        if not keys:
-            keys = ct or pt
-
-        self.keys = keys
         # self.from_num_to_key = {k: v for k, v in enumerate(keys)}
 
     def __repr__(self):
         return '{}: PT=[{}], CT=[{}], keys=[{}]'.format(type(self).__name__,
                                       repr(self.pt),
                                       repr(self.ct),
-                                      ''.join(self.key_table.keys()))
+                                      ''.join(self.keys))
 
     # def combine_indices(self, source, target, msg, key, func):
     #     """
@@ -244,22 +241,11 @@ class TabulaRecta(CipherTableau):
         lines = []
         lines.append('  | ' + ' '.join(alphabet))
         lines.append('--+' + '-' * len(alphabet) * 2)
-        for k, v in self.key_table.items():
-            row = ' '.join(v.ct)
+        all_rows = [(k, lrotated(self.ct, i)) for i, k in enumerate(self.keys)]
+        for k, row in all_rows:
+            row = ' '.join(row)
             lines.append('{0} | {1}'.format(k, row))
         return '\n'.join(lines)
-
-    def _make_rows(self, alphabet):
-        """ Create alphabets.
-
-        Returns
-        -------
-        out : list
-            An ordered collection of character sets.
-
-        """
-        cts = [lrotated(self.ct, i) for i, _ in enumerate(self.ct)]
-        return [OneToOneTranslationTable(self.pt, ct) for ct in cts]
 
 
 # TODO: this is actually a reciprocal table...
