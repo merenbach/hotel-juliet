@@ -49,48 +49,6 @@ class SubCipher(Cipher):
     #     # [TODO] maybe improve this
     #     return str(self.tableau)
 
-    def _encode(self, s):
-        """ Encode a message.
-
-        Parameters
-        ----------
-        s : str
-            A message to transcode.
-
-        Returns
-        -------
-        out : iterable
-            A transcoded iterable (string, list, generator, etc.).
-
-        Raises
-        ------
-        NotImplementedError
-            If not overridden.
-
-        """
-        raise NotImplementedError
-
-    def _decode(self, s):
-        """ Decode a message.
-
-        Parameters
-        ----------
-        s : str
-            A message to transcode.
-
-        Returns
-        -------
-        out : str
-            A transcoded string.
-
-        Raises
-        ------
-        NotImplementedError
-            If not overridden.
-
-        """
-        raise NotImplementedError
-
     def encode(self, s, block=None):
         """ Encode a message.
 

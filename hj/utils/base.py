@@ -166,7 +166,7 @@ def multiplied(multiplicand, multiplier):
 
     Notes
     -----
-    [TODO]: Make this more elegant.
+    [TODO]: Make this more elegant by using only numbers.
 
     """
     self_len = len(multiplicand)
