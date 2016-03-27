@@ -52,13 +52,14 @@ class MonoSubCipher(SubCipher):
         s : str
             A message to transcode.
 
-        Returns
-        -------
+        Yields
+        ------
         out : str
             A transcoded version of `s`.
 
         """
-        return self.tableau.encode(s)
+        for c in s:
+            yield self.tableau.encode(c)
 
     def _decode(self, s):
         """ Decode a message.
@@ -68,10 +69,11 @@ class MonoSubCipher(SubCipher):
         s : str
             A message to transcode.
 
-        Returns
-        -------
+        Yields
+        ------
         out : str
             A transcoded version of `s`.
 
         """
-        return self.tableau.decode(s)
+        for c in s:
+            yield self.tableau.decode(c)

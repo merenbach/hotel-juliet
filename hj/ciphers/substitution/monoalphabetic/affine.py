@@ -1,11 +1,11 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from .shift import ShiftCipher
+from .caesar import CaesarCipher
 from utils import multiplied
 
 
-class AffineCipher(ShiftCipher):
+class AffineCipher(CaesarCipher):
     """ Transcode based on a transformation of `mx + b` for multiplier `m`,
     character `x`, and added offset `b`.
 

@@ -76,7 +76,7 @@ class SubCipher(Cipher):
                 padding = upward_factor(len(s), block)
                 s = s.ljust(padding, self.DEFAULT_NULLCHAR)
 
-        out = self._encode(s)
+        out = super().encode(s)
 
         if block is not None and block > 0:
             out = ' '.join(chunks(out, block))
@@ -106,7 +106,7 @@ class SubCipher(Cipher):
             # filter message to characters in ciphertext alphabet
             s = ''.join(c for c in s if c in self.tableau.ct)
 
-        out = self._decode(s)
+        out = super().decode(s)
 
         if block is not None and block > 0:
             padding = upward_factor(len(out), block)

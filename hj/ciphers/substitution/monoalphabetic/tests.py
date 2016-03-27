@@ -47,8 +47,7 @@ class CipherTest(unittest.TestCase):
         self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'EBIIL, TLOIA!', block=None)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'EBIILTLOIA', block=0)
 
-    def test_shiftcipher(self):
-        c = ShiftCipher(17)
+        c = CaesarCipher(17)
         self._transcode(c, self.MESSAGE_PLAIN, None, 'YVCCF, NFICU!', block=None)
         self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'YVCCFNFICU', block=0)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'QNUUX, FXAUM!', block=None)

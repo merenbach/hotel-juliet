@@ -53,8 +53,13 @@ class CipherTableau:
         yields a curiously inadvertent implementation of null characters, which
         show up as `offset - 1` (since `str.find` returns `-1` on not found).
 
+        Also note that in many other coding languages, we'd probably want to
+        add len(target) to `n` before running a modulo operation to ensure
+        that `n` would be a positive integer.  Modular arithmethic on negatives
+        may differ by some implementations.
+
         """
-        n = offset + source.index(element)
+        n = offset + source.index(element)  # + len(target)
         return target[n % len(target)]
 
     def __repr__(self):
@@ -92,25 +97,25 @@ class ManyToOneTranslationTable(CipherTableau):
         return '{}: {} => {}'.format(type(self).__name__,
                                      repr(self.pt), repr(self.ct))
 
-    def encode(self, s):
+    def encode(self, element):
         """ Transcode forwards.
 
         Parameters
         ----------
-        s : str
-            A string to transcode.
+        element : object
+            An element to transcode.
 
-        Yields
-        ------
-        out : str
-            A transcoded version of `s`.
+        Returns
+        -------
+        out : object
+            A transcoded version of `element`, or the non-transcoded `element`
+            if transcoding failed.
 
         """
-        for c in s:
-            try:
-                yield self.transpose(c, self.pt, self.ct)
-            except ValueError:
-                yield c
+        try:
+            return self.transpose(element, self.pt, self.ct)
+        except ValueError:
+            return element
 
 
 class OneToOneTranslationTable(ManyToOneTranslationTable):
@@ -135,22 +140,22 @@ class OneToOneTranslationTable(ManyToOneTranslationTable):
         return '{}: {} <=> {}'.format(type(self).__name__,
                                       repr(self.pt), repr(self.ct))
 
-    def decode(self, s):
+    def decode(self, element):
         """ Transcode backwards.
 
         Parameters
         ----------
-        s : str
-            A string to transcode.
+        element : object
+            An element to transcode.
 
-        Yields
-        ------
-        out : str
-            A transcoded version of `s`.
+        Returns
+        -------
+        out : object
+            A transcoded version of `element`, or the non-transcoded `element`
+            if transcoding failed.
 
         """
-        for c in s:
-            try:
-                yield self.transpose(c, self.ct, self.pt)
-            except ValueError:
-                yield c
+        try:
+            return self.transpose(element, self.ct, self.pt)
+        except ValueError:
+            return element
