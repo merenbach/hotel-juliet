@@ -67,7 +67,7 @@ class ReciprocalTable(CipherTableau):
         """
         if seq not in self.pt:
             raise ValueError
-        return self.key_table[key].encode(seq)
+        return ''.join(self.key_table[key].encode(seq))
 
     def decode(self, seq, key):
         """ Locate element within the grid.
@@ -94,7 +94,7 @@ class ReciprocalTable(CipherTableau):
         """
         if seq not in self.ct:
             raise ValueError
-        return self.key_table[key].decode(seq)
+        return ''.join(self.key_table[key].decode(seq))
 
     def __str__(self):
         alphabet = self.pt
@@ -133,6 +133,7 @@ class TabulaRecta(CipherTableau):
     def __init__(self, pt, ct=None, keys=None):
         super().__init__(pt, ct or pt)
         self.key_alphabet = keys or ct or pt
+        # self.key_alphabets = [self.key_alphabet]
         # transcoders_list = [CaesarCipher(n, alphabet=alphabet)
         #                     for n, __ in enumerate(alphabet)]
         # self.from_num_to_key = {k: v for k, v in enumerate(keys)}
@@ -142,43 +143,6 @@ class TabulaRecta(CipherTableau):
                                       repr(self.pt),
                                       repr(self.ct),
                                       ''.join(self.key_alphabet))
-
-    # def combine_indices(self, source, target, msg, key, func):
-    #     """
-    #
-    #     Parameters
-    #     ----------
-    #     msg : str
-    #         A string representing a symbol in the message.
-    #     key : str
-    #         A string representing a symbol in the key (countersign).
-    #     source : str
-    #         A source alphabet.
-    #     target : str
-    #         A target alphabet.
-    #     func : function
-    #         A mathematical operaton to perform.
-    #
-    #     Raises
-    #     ------
-    #     ValueError
-    #         If any symbols could not be converted into alphabet positions.
-    #
-    #    1. Turn all inputs into their positions in their relevant character
-    #    sets.  KEY type character sets are to-number only--keys are never
-    #    converted from digit representations into other characters.
-    #
-    #    2. Munge all input positions as necessary.
-    #    3. Turn munged result back into output.
-    #
-    #
-    #
-    #
-    #     """
-    #     m = source.index(msg)
-    #     k = self.keys.index(key)
-    #     o = func(m, k)  # could be just func(m) with monoalphabetic...
-    #     return target[o % len(target)]
 
     def encode(self, msg, *keys):
         """ Locate element within the grid.
@@ -208,7 +172,8 @@ class TabulaRecta(CipherTableau):
 
         """
         k = sum(self.key_alphabet.index(key) for key in keys)
-        return self._transcode(self.pt, self.ct, msg, k)
+        # k = sum(ka.index(key) for ka, key in zip(self.key_alphabets, keys))
+        return self.transpose(msg, self.pt, self.ct, offset=k)
 
     def decode(self, msg, *keys):
         """ Locate element within the grid.
@@ -238,7 +203,8 @@ class TabulaRecta(CipherTableau):
 
         """
         k = sum(self.key_alphabet.index(key) for key in keys)
-        return self._transcode(self.ct, self.pt, msg, -k)
+        # k = sum(ka.index(key) for ka, key in zip(self.key_alphabets, keys))
+        return self.transpose(msg, self.ct, self.pt, offset=-k)
 
     def __str__(self):
         alphabet = self.pt

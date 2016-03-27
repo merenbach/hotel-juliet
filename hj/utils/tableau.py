@@ -19,24 +19,24 @@ class CipherTableau:
         self.pt, self.ct = pt, ct
 
     @staticmethod
-    def _transcode(source, target, element, offset=0):
+    def transpose(element, source, target, offset=0):
         """ Shift an element between alphabets based off of its index.
 
         Parameters
         ----------
+        element : object
+            An element to transcode.
         source : sequence
             A source character set (e.g., plaintext alphabet).
         target : sequence
             A target character set (e.g., ciphertext alphabet).
-        element : str
-            An element to transcode.
         offset : int, optional
             Shift the element over this number of characters à la Caesar shift.
             Default `0`.
 
         Returns
         -------
-        out : data-type
+        out : object
             A transcoded copy (if possible) of the given element `element`.
 
         Raises
@@ -49,15 +49,17 @@ class CipherTableau:
         Notes
         -----
         This may underlie both monoalphabetic and polyalphabetic substitution.
+        Intriguingly, replacing the call to `str.index` with one to `str.find`
+        yields a curiously inadvertent implementation of null characters, which
+        show up as `offset - 1` (since `str.find` returns `-1` on not found).
 
         """
-        m = offset + source.index(element)
-        return target[m % len(target)]
+        n = offset + source.index(element)
+        return target[n % len(target)]
 
     def __repr__(self):
         return '{}: PT=[{}], CT=[{}]'.format(type(self).__name__,
-                                             repr(self.pt),
-                                             repr(self.ct))
+                                             repr(self.pt), repr(self.ct))
 
     def __str__(self):
         return 'PT: {}\nCT: {}'.format(self.pt, self.ct)
@@ -85,15 +87,10 @@ class ManyToOneTranslationTable(CipherTableau):
 
     def __init__(self, pt, ct):
         super().__init__(pt, ct)
-        self.a2b = str.maketrans(pt, ct)
-
-    def __len__(self):
-        return len(self.a2b)
 
     def __repr__(self):
         return '{}: {} => {}'.format(type(self).__name__,
-                                     repr(self.pt),
-                                     repr(self.ct))
+                                     repr(self.pt), repr(self.ct))
 
     def encode(self, s):
         """ Transcode forwards.
@@ -103,13 +100,17 @@ class ManyToOneTranslationTable(CipherTableau):
         s : str
             A string to transcode.
 
-        Returns
-        -------
+        Yields
+        ------
         out : str
             A transcoded version of `s`.
 
         """
-        return s.translate(self.a2b)
+        for c in s:
+            try:
+                yield self.transpose(c, self.pt, self.ct)
+            except ValueError:
+                yield c
 
 
 class OneToOneTranslationTable(ManyToOneTranslationTable):
@@ -129,12 +130,10 @@ class OneToOneTranslationTable(ManyToOneTranslationTable):
     """
     def __init__(self, pt, ct):
         super().__init__(pt, ct)
-        self.b2a = str.maketrans(ct, pt)
 
     def __repr__(self):
         return '{}: {} <=> {}'.format(type(self).__name__,
-                                      repr(self.pt),
-                                      repr(self.ct))
+                                      repr(self.pt), repr(self.ct))
 
     def decode(self, s):
         """ Transcode backwards.
@@ -144,10 +143,14 @@ class OneToOneTranslationTable(ManyToOneTranslationTable):
         s : str
             A string to transcode.
 
-        Returns
-        -------
+        Yields
+        ------
         out : str
             A transcoded version of `s`.
 
         """
-        return s.translate(self.b2a)
+        for c in s:
+            try:
+                yield self.transpose(c, self.ct, self.pt)
+            except ValueError:
+                yield c
