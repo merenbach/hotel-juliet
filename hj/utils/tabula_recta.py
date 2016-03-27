@@ -207,10 +207,8 @@ class TabulaRecta(CipherTableau):
         to the ciphertext alphabet, as in a monoalphabetic tableau.
 
         """
-        m = self.pt.index(msg)
         k = sum(self.key_alphabet.index(key) for key in keys)
-        # k = sum(ka.index(key) for ka, key in self.key_alphabets, keys)
-        return self.ct[(m + k) % len(self.ct)]
+        return self._transcode(self.pt, self.ct, msg, k)
 
     def decode(self, msg, *keys):
         """ Locate element within the grid.
@@ -239,10 +237,8 @@ class TabulaRecta(CipherTableau):
         to the plaintext alphabet, as in a monoalphabetic tableau.
 
         """
-        m = self.ct.index(msg)
         k = sum(self.key_alphabet.index(key) for key in keys)
-        # k = sum(ka.index(key) for ka, key in self.key_alphabets, keys)
-        return self.pt[(m - k) % len(self.pt)]
+        return self._transcode(self.ct, self.pt, msg, -k)
 
     def __str__(self):
         alphabet = self.pt

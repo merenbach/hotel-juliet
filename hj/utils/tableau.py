@@ -18,6 +18,41 @@ class CipherTableau:
     def __init__(self, pt, ct):
         self.pt, self.ct = pt, ct
 
+    def _transcode(self, source, target, element, offset=0):
+        """ Shift an element between alphabets based off of its index.
+
+        Parameters
+        ----------
+        source : sequence
+            A source character set (e.g., plaintext alphabet).
+        target : sequence
+            A target character set (e.g., ciphertext alphabet).
+        element : str
+            An element to transcode.
+        offset : int, optional
+            Shift the element over this number of characters à la Caesar shift.
+            Default `0`.
+
+        Returns
+        -------
+        out : data-type
+            A transcoded copy (if possible) of the given element `element`.
+
+        Raises
+        ------
+        ValueError
+            If no index in `source` could be found for the given element.
+        ZeroDivisionError
+            If length of `target` is zero.
+
+        Notes
+        -----
+        This may underlie both monoalphabetic and polyalphabetic substitution.
+
+        """
+        m = offset + source.index(element)
+        return target[m % len(target)]
+
     def __repr__(self):
         return '{}: PT=[{}], CT=[{}]'.format(type(self).__name__,
                                              repr(self.pt),
