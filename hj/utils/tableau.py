@@ -18,7 +18,8 @@ class CipherTableau:
     def __init__(self, pt, ct):
         self.pt, self.ct = pt, ct
 
-    def _transcode(self, source, target, element, offset=0):
+    @staticmethod
+    def _transcode(source, target, element, offset=0):
         """ Shift an element between alphabets based off of its index.
 
         Parameters
