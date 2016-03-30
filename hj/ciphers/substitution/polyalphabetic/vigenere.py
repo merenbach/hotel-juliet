@@ -79,28 +79,26 @@ class VigenereCipher(PolySubCipher):
                 key_char = keystream.send(key_food or key_char)
 
     def _encode(self, s):
-        msgstream =  self._transcoder(s, self.tableau.encipher)
+        msgstream = self._transcoder(s, self.tableau.encipher)
 
         key_food = None
-        while True:
-            try:
+        try:
+            while True:
                 x_msg_char, msg_char = msgstream.send(key_food)
-            except StopIteration:
-                return
-            # print('k_char/x_msg_char/msg_char = {}/{}/{}'.format(next_key_char, x_msg_char, msg_char))
-            yield x_msg_char or msg_char
+                yield x_msg_char or msg_char
+        except StopIteration:
+            return
 
     def _decode(self, s):
-        msgstream =  self._transcoder(s, self.tableau.decipher)
+        msgstream = self._transcoder(s, self.tableau.decipher)
 
         key_food = None
-        while True:
-            try:
+        try:
+            while True:
                 x_msg_char, msg_char = msgstream.send(key_food)
-            except StopIteration:
-                return
-            # print('x_msg_char/msg_char = {}/{}'.format(x_msg_char, msg_char))
-            yield x_msg_char or msg_char
+                yield x_msg_char or msg_char
+        except StopIteration:
+            return
 
 
 class VigenereTextAutoclaveCipher(VigenereCipher):
@@ -119,32 +117,26 @@ class VigenereTextAutoclaveCipher(VigenereCipher):
 
     """
     def _encode(self, s):
-        msgstream =  self._transcoder(s, self.tableau.encipher)
+        msgstream = self._transcoder(s, self.tableau.encipher)
 
-        key_food = None
-        while True:
-            try:
-                x_msg_char, msg_char = msgstream.send(key_food)
-            except StopIteration:
-                return
-            # print('k_char/x_msg_char/msg_char = {}/{}/{}'.format(next_key_char, x_msg_char, msg_char))
-            yield x_msg_char or msg_char
-            if x_msg_char:
-                key_food = msg_char
+        msg_char = None
+        try:
+            while True:
+                x_msg_char, msg_char = msgstream.send(msg_char)
+                yield x_msg_char or msg_char
+        except StopIteration:
+            return
 
     def _decode(self, s):
-        msgstream =  self._transcoder(s, self.tableau.decipher)
+        msgstream = self._transcoder(s, self.tableau.decipher)
 
-        key_food = None
-        while True:
-            try:
-                x_msg_char, msg_char = msgstream.send(key_food)
-            except StopIteration:
-                return
-            # print('x_msg_char/msg_char = {}/{}'.format(x_msg_char, msg_char))
-            yield x_msg_char or msg_char
-            if x_msg_char:
-                key_food = x_msg_char
+        x_msg_char = None
+        try:
+            while True:
+                x_msg_char, msg_char = msgstream.send(x_msg_char)
+                yield x_msg_char or msg_char
+        except StopIteration:
+            return
 
 
 class VigenereKeyAutoclaveCipher(VigenereCipher):
@@ -163,29 +155,23 @@ class VigenereKeyAutoclaveCipher(VigenereCipher):
 
     """
     def _encode(self, s):
-        msgstream =  self._transcoder(s, self.tableau.encipher)
+        msgstream = self._transcoder(s, self.tableau.encipher)
 
-        key_food = None
-        while True:
-            try:
-                x_msg_char, msg_char = msgstream.send(key_food)
-            except StopIteration:
-                return
-            # print('k_char/x_msg_char/msg_char = {}/{}/{}'.format(next_key_char, x_msg_char, msg_char))
-            yield x_msg_char or msg_char
-            if x_msg_char:
-                key_food = x_msg_char
+        x_msg_char = None
+        try:
+            while True:
+                x_msg_char, msg_char = msgstream.send(x_msg_char)
+                yield x_msg_char or msg_char
+        except StopIteration:
+            return
 
     def _decode(self, s):
-        msgstream =  self._transcoder(s, self.tableau.decipher)
+        msgstream = self._transcoder(s, self.tableau.decipher)
 
-        key_food = None
-        while True:
-            try:
-                x_msg_char, msg_char = msgstream.send(key_food)
-            except StopIteration:
-                return
-            # print('x_msg_char/msg_char = {}/{}'.format(x_msg_char, msg_char))
-            yield x_msg_char or msg_char
-            if x_msg_char:
-                key_food = msg_char
+        msg_char = None
+        try:
+            while True:
+                x_msg_char, msg_char = msgstream.send(msg_char)
+                yield x_msg_char or msg_char
+        except StopIteration:
+            return
