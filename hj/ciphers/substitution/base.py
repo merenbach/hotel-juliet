@@ -67,6 +67,12 @@ class SubCipher(Cipher):
         out : str
             The encoded message.
 
+        Notes
+        -----
+        Although this can invoke either `self._encode` or `super().encode`, it
+        essentially falls prey to the "call super" antipattern and should
+        probably be refactored. [TODO]
+
         """
         if block is not None:
             # filter message to characters in ciphertext alphabet
@@ -100,6 +106,12 @@ class SubCipher(Cipher):
         -------
         out : str
             The decoded message.
+
+        Notes
+        -----
+        Although this can invoke either `self._encode` or `super().encode`, it
+        essentially falls prey to the "call super" antipattern and should
+        probably be refactored. [TODO]
 
         """
         if block is not None:

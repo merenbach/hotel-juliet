@@ -56,10 +56,11 @@ class CipherTableau:
         Also note that in many other coding languages, we'd probably want to
         add len(target) to `n` before running a modulo operation to ensure
         that `n` would be a positive integer.  Modular arithmethic on negatives
-        may differ by some implementations.
+        may differ by some implementations, so perhaps it should be added.
+        [TODO]
 
         """
-        n = offset + source.index(element)  # + len(target)
+        n = source.index(element) + offset  # + len(target)
         return target[n % len(target)]
 
     def __repr__(self):
@@ -97,7 +98,7 @@ class ManyToOneTranslationTable(CipherTableau):
         return '{}: {} => {}'.format(type(self).__name__,
                                      repr(self.pt), repr(self.ct))
 
-    def encode(self, element):
+    def encipher(self, element):
         """ Transcode forwards.
 
         Parameters
@@ -140,7 +141,7 @@ class OneToOneTranslationTable(ManyToOneTranslationTable):
         return '{}: {} <=> {}'.format(type(self).__name__,
                                       repr(self.pt), repr(self.ct))
 
-    def decode(self, element):
+    def decipher(self, element):
         """ Transcode backwards.
 
         Parameters

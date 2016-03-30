@@ -16,11 +16,23 @@ class VariantBeaufortCipher(VigenereCipher):
     def _encode(self, s):
         """ Reverse the encoding direction.
 
+        Notes
+        -----
+        This needs to be done currently with `_decode`, rather than `decode`,
+        because it's still an encryption operation and we just want to change
+        the internals.
+
         """
         return super()._decode(s)
 
     def _decode(self, s):
         """ Reverse the decoding direction.
+
+        Notes
+        -----
+        This needs to be done currently with `_encode`, rather than `encode`,
+        because it's still a decryption operation and we just want to change
+        the internals.
 
         """
         return super()._encode(s)

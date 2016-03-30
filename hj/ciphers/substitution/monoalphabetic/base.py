@@ -59,7 +59,7 @@ class MonoSubCipher(SubCipher):
 
         """
         for c in s:
-            yield self.tableau.encode(c)
+            yield self.tableau.encipher(c)
 
     def _decode(self, s):
         """ Decode a message.
@@ -76,4 +76,4 @@ class MonoSubCipher(SubCipher):
 
         """
         for c in s:
-            yield self.tableau.decode(c)
+            yield self.tableau.decipher(c)

@@ -25,7 +25,10 @@ class AtbashCipher(AffineCipher):
     where multiplier and offset are both equal to one less than the length of
     the alphabet.  Thanks to modular arithmetic, values of `-1` for offset and
     multiplier yield the same outcome, without even needing to know the length
-    of the alphabet.
+    of the alphabet.  Since other language implementations may handle negative
+    modular arithmetic differently, for the record, the default M and B could
+    also be the alphabet/character set length minus one (e.g., `26` for the
+    Latin alphabet).
 
     Technically we could simply subclass the generic MonoSubCipher class and
     invoke `super().__init__(alphabet, alphabet[::-1])`.
