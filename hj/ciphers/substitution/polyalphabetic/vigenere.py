@@ -77,6 +77,9 @@ class VigenereCipher(PolySubCipher):
                 # was not successful
                 key_char = keystream.send(key_food or key_char)
 
+    def _encode_autoclave(self, msg_char, x_msg_char): return None
+    def _decode_autoclave(self, msg_char, x_msg_char): return None
+
     def _encode(self, s):
         msgstream = self._transcoder(s, self.tableau.encipher)
 
@@ -85,6 +88,7 @@ class VigenereCipher(PolySubCipher):
             while True:
                 x_msg_char, msg_char = msgstream.send(key_food)
                 yield x_msg_char or msg_char
+                key_food = self._encode_autoclave(msg_char, x_msg_char)
         except StopIteration:
             return
 
@@ -96,6 +100,7 @@ class VigenereCipher(PolySubCipher):
             while True:
                 x_msg_char, msg_char = msgstream.send(key_food)
                 yield x_msg_char or msg_char
+                key_food = self._decode_autoclave(msg_char, x_msg_char)
         except StopIteration:
             return
 
@@ -115,29 +120,8 @@ class VigenereTextAutoclaveCipher(VigenereCipher):
     effect at all) unless the key is shorter than the text to be encrypted.
 
     """
-    def _encode(self, s):
-        msgstream = self._transcoder(s, self.tableau.encipher)
-
-        key_food = None
-        try:
-            while True:
-                x_msg_char, msg_char = msgstream.send(key_food)
-                yield x_msg_char or msg_char
-                key_food = msg_char
-        except StopIteration:
-            return
-
-    def _decode(self, s):
-        msgstream = self._transcoder(s, self.tableau.decipher)
-
-        key_food = None
-        try:
-            while True:
-                x_msg_char, msg_char = msgstream.send(key_food)
-                yield x_msg_char or msg_char
-                key_food = x_msg_char
-        except StopIteration:
-            return
+    def _encode_autoclave(self, msg_char, x_msg_char): return msg_char
+    def _decode_autoclave(self, msg_char, x_msg_char): return x_msg_char
 
 
 class VigenereKeyAutoclaveCipher(VigenereCipher):
@@ -155,26 +139,5 @@ class VigenereKeyAutoclaveCipher(VigenereCipher):
     effect at all) unless the key is shorter than the text to be encrypted.
 
     """
-    def _encode(self, s):
-        msgstream = self._transcoder(s, self.tableau.encipher)
-
-        key_food = None
-        try:
-            while True:
-                x_msg_char, msg_char = msgstream.send(key_food)
-                yield x_msg_char or msg_char
-                key_food = x_msg_char
-        except StopIteration:
-            return
-
-    def _decode(self, s):
-        msgstream = self._transcoder(s, self.tableau.decipher)
-
-        key_food = None
-        try:
-            while True:
-                x_msg_char, msg_char = msgstream.send(key_food)
-                yield x_msg_char or msg_char
-                key_food = msg_char
-        except StopIteration:
-            return
+    def _encode_autoclave(self, msg_char, x_msg_char): return x_msg_char
+    def _decode_autoclave(self, msg_char, x_msg_char): return msg_char
