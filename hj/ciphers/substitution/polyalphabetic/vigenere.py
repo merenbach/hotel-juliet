@@ -54,7 +54,7 @@ class VigenereCipher(PolySubCipher):
         """
         return TabulaRecta(alphabet)
 
-    def _transcoder(self, message, func):
+    def _transcoder(self, message, cipher_func, autoclave_func):
         keystream = extendable_iterator(self.countersign)
         key_char = next(keystream)
         # key_char = yield
@@ -62,16 +62,17 @@ class VigenereCipher(PolySubCipher):
         # iterate over (finite!) message in outer loop with standard "for"
         for msg_char in message:
             try:
-                x_msg_char = func(msg_char, key_char)
+                x_msg_char = cipher_func(msg_char, key_char)
 
             except ValueError:
                 # message char not transcodeable
                 # strict must be off, or this character wouldn't still be here
                 # yield the raw character
-                yield None, msg_char
+                yield msg_char
 
             else:
-                key_food = yield x_msg_char, msg_char
+                yield x_msg_char
+                key_food = autoclave_func(msg_char, x_msg_char)
 
                 # this can be here since key won't advance if transcoding
                 # was not successful
@@ -81,28 +82,10 @@ class VigenereCipher(PolySubCipher):
     def _decode_autoclave(self, msg_char, x_msg_char): return None
 
     def _encode(self, s):
-        msgstream = self._transcoder(s, self.tableau.encipher)
-
-        key_food = None
-        try:
-            while True:
-                x_msg_char, msg_char = msgstream.send(key_food)
-                yield x_msg_char or msg_char
-                key_food = self._encode_autoclave(msg_char, x_msg_char)
-        except StopIteration:
-            return
+        return self._transcoder(s, self.tableau.encipher, self._encode_autoclave)
 
     def _decode(self, s):
-        msgstream = self._transcoder(s, self.tableau.decipher)
-
-        key_food = None
-        try:
-            while True:
-                x_msg_char, msg_char = msgstream.send(key_food)
-                yield x_msg_char or msg_char
-                key_food = self._decode_autoclave(msg_char, x_msg_char)
-        except StopIteration:
-            return
+        return self._transcoder(s, self.tableau.decipher, self._decode_autoclave)
 
 
 class VigenereTextAutoclaveCipher(VigenereCipher):
