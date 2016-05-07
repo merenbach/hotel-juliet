@@ -42,7 +42,7 @@ class ReciprocalTable(CipherTableau):
                                       repr(self.ct),
                                       ''.join(self.key_table.keys()))
 
-    def encipher(self, seq, key):
+    def encipher(self, element, key):
         """ Locate element within the grid.
 
         Parameters
@@ -61,15 +61,15 @@ class ReciprocalTable(CipherTableau):
 
         Raises
         ------
-        KeyError
+        ValueError
             If no tableau could be found for the given key.
 
         """
-        if seq not in self.pt:
+        if element not in self.pt:
             raise ValueError
-        return ''.join(self.key_table[key].encipher(seq))
+        return self.key_table[key].encipher(element)
 
-    def decipher(self, seq, key):
+    def decipher(self, element, key):
         """ Locate element within the grid.
 
         Parameters
@@ -88,13 +88,13 @@ class ReciprocalTable(CipherTableau):
 
         Raises
         ------
-        KeyError
+        ValueError
             If no tableau could be found for the given key.
 
         """
-        if seq not in self.ct:
+        if element not in self.ct:
             raise ValueError
-        return ''.join(self.key_table[key].decipher(seq))
+        return self.key_table[key].decipher(element)
 
     def __str__(self):
         alphabet = self.pt
