@@ -124,8 +124,10 @@ class TabulaRecta(CipherTableau):
 
     Parameters
     ----------
-    alphabet : str
-        An alphabet for the tableau.  Duplicate elements will be removed.
+    pt : str
+        A plaintext alphabet for the tableau.
+    ct : str, optional
+        A ciphertext alphabet for the tableau.  Defaults to `pt`.
     keys : iterable, optional
         An ordered sequence of keys to use for rows.
 
