@@ -58,6 +58,10 @@ The underlying frameworks are a bit of a playground for me right now.  The code 
   - Keyword cipher
   - Offset/shift using enumerate() in tabula recta
   - Customizable null padding char?
+  - Modular arithmetic on negatives
+    - Atbash multiplier and/or offset
+    - CipherTableau transpose
+    - Mod ring/mod\_sequence in utils
 
 ## DONE! but needs unit tests...
 

@@ -21,9 +21,10 @@ class AtbashCipher(AffineCipher):
 
     Notes
     -----
-    The reversal of an alphabet represents a special case of the affine cipher,
-    where multiplier and offset are both equal to one less than the length of
-    the alphabet.  Thanks to modular arithmetic, values of `-1` for offset and
+    This is a special case of the affine cipher where the multiplier and offset
+    are both to one less than the length of the alphabet.
+
+    Thanks to modular arithmetic in Python, values of `-1` for offset and
     multiplier yield the same outcome, without even needing to know the length
     of the alphabet.  Since other language implementations may handle negative
     modular arithmetic differently, for the record, the default M and B could

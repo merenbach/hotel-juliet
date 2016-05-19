@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .base import MonoSubCipher
-from utils import multiplied
+from utils import mod_sequence
 
 
 class AffineCipher(MonoSubCipher):
@@ -28,11 +28,9 @@ class AffineCipher(MonoSubCipher):
     is vulnerable not only to frequency analysis, but also has an algebraic
     solution that, when computed, reveals the whole ciphertext alphabet.
 
-    Technically, the affine cipher is just a Caesar shift cipher with the
-    additional step of transforming the alphabet further after shifting it.
-
-    Technically, a Caesar shift cipher is just an affine cipher with a
-    multiplier of `1`.
+    Technically, the affine cipher can be implemented as a Caesar shift
+    cipher with the additional step of transforming the alphabet
+    further after shifting it.
 
     """
     def __init__(self, multiplier, offset, alphabet=None):
@@ -40,4 +38,5 @@ class AffineCipher(MonoSubCipher):
         super().__init__(alphabet=alphabet)
 
     def _transform(self, alphabet):
-        return multiplied(alphabet, self.multiplier, self.offset)
+        seq = mod_sequence(len(alphabet), self.multiplier, self.offset)
+        return (alphabet[n] for n in seq)

@@ -7,6 +7,54 @@ from math import gcd
 from itertools import zip_longest, cycle, islice
 
 
+def finite_ap(start, count, interval):
+    """ Generate a finite arithmetic progression.
+
+    Parameters
+    ----------
+    start : int
+        The initial term of the sequence.
+    count : int
+        The length of the sequence to generate.
+    interval : int
+        The common difference of the sequence.
+
+    Returns
+    -------
+    out : generator
+        The resulting sequence as a generator.
+
+    Notes
+    -----
+    This is essentially just a loose cover for the Python `range` builtin.
+
+    """
+    return range(start, count * interval + start, interval)
+
+
+def coprime(a, b):
+    """ Determine whether two integers are relatively prime.
+
+    Parameters
+    ----------
+    a : int
+        An integer.
+    b : int
+        An integer.
+
+    Returns
+    -------
+    out : bool
+        `True` if `a` and `b` are coprime, `False` otherwise.
+
+    Notes
+    -----
+    The order of the parameters does not matter.
+
+    """
+    return gcd(a, b) == 1
+
+
 # def clever_cast(t, s):
 #     if t is str:
 #         s = ''.join(c for c in s)
@@ -144,17 +192,19 @@ def orotated(seq, offset):
 #     return {element: idx for (idx, element) in enumerate(seq)}
 
 
-def multiplied(seq, m, b):
-    """ Multiply each element's position by a number.
+
+
+def mod_sequence(count, m, b):
+    """ Generate a modular ring, similar to an LCG with multiplier of 1.
 
     Parameters
     ----------
-    seq : sequence
-        A list, tuple, or string to multiply (the multiplicand).
+    count : int
+        The length of the sequence to generate.
     m : int
-        A number by which to multiply each element's position (the multiplier).
+        The common difference ("increment") of the sequence.
     b : int
-        A number to add to the multiplication of element positions.
+        The initial term ("seed" or "start value") of the sequence.
 
     Returns
     -------
@@ -164,24 +214,28 @@ def multiplied(seq, m, b):
     Raises
     ------
     ValueError
-        If `by` and `len(seq)` are not coprime.
+        If the sequence length and common difference are not coprime.
 
     Notes
     -----
-    [TODO] because the offset can be negative, we may wish to add `seq_len` to
-    each position beforehand in case certain Python implementations handle
-    modular arithmetic differently on negatives.  See comments on CipherTableau
-    `transpose()` method.
+    [TODO] There's probably an official name for this sort of sequence.
 
+    This is essentially an implementation of a linear congruential generator
+    (LCG) with multiplier of 1, which is fascinating because the LCG is a
+    historical pseudo-random number generator (PRNG) and it's being used here
+    for the transformations necessary to an affine cipher base alphabet.
+
+    [TODO] because the offset can be negative, we may wish to add `count` to
+    each position beforehand in case certain Python implementations handle
+    modular arithmetic differently on negatives.  See comments on
+    the CipherTableau `transpose()` method.
+
+    [TODO] unit tests required.
 
     """
-    seq_len = len(seq)
-    if not coprime(m, seq_len):
-        raise ValueError('Multiplier and alphabet length must be coprime.')
-
-    return (seq[n % seq_len] for n in range(b, seq_len * m, m))
-    # positions = [(m * n + b) for n in range(seq_len)]
-    # return (seq[n % seq_len] for n in positions)
+    if not coprime(m, count):
+        raise ValueError('Count and common difference must be coprime.')
+    return (n % count for n in finite_ap(b, count, m))
 
 
 def keyed(seq, key):
@@ -233,25 +287,6 @@ def keyed(seq, key):
 #
 #     """
 #     return set(a) & set(b)
-
-
-def coprime(a, b):
-    """ Determine whether `a` and `b` are coprime.
-
-    Parameters
-    ----------
-    a : int
-        An integer.
-    b : int
-        An integer.
-
-    Returns
-    -------
-    out : bool
-        `True` if `a` and `b` are coprime, `False` otherwise.
-
-    """
-    return gcd(a, b) == 1
 
 
 def grouper(iterable, n, fillvalue=None):

@@ -18,6 +18,30 @@ class UtilsTest(unittest.TestCase):
 
     PASSPHRASE = 'OCEANOGRAPHYWHAT'
 
+    def testFiniteAP(self):
+        for count in range(28):
+            for interval in range(1, 28):
+                for start in range(28):
+                    ap = list(finite_ap(start, count, interval))
+
+                    # test against alternative means of constructing
+                    # [TODO] we should probably hardcode a few tests, as well
+                    ap2 = [start + interval * n for n in range(count)]
+                    self.assertEqual(ap, ap2)
+
+    def testCoprimality(self):
+        # [TODO] these could be more extensive
+
+        yes_coprime = [(3,5), (7,20), (14, 15), (172, 17)]
+        no_coprime = [(2,4), (2,22), (3, 15), (14, 28)]
+
+        for a, b in yes_coprime:
+            self.assertEqual(True, coprime(a, b))
+            self.assertEqual(True, coprime(b, a))
+        for a, b in no_coprime:
+            self.assertEqual(False, coprime(a, b))
+            self.assertEqual(False, coprime(b, a))
+
     def testLeftRotation(self):
         s = 'HELLO, WORLD!'
         expected_out = [
