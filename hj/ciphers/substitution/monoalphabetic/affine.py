@@ -28,6 +28,12 @@ class AffineCipher(CaesarCipher):
     is vulnerable not only to frequency analysis, but also has an algebraic
     solution that, when computed, reveals the whole ciphertext alphabet.
 
+    Technically, the affine cipher is just a Caesar shift cipher with the
+    additional step of transforming the alphabet further after shifting it.
+
+    Technically, a Caesar shift cipher is just an affine cipher with a
+    multiplier of `1`.
+
     """
     def __init__(self, multiplier, offset, alphabet=None):
         self.multiplier = multiplier

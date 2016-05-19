@@ -144,15 +144,17 @@ def orotated(seq, offset):
 #     return {element: idx for (idx, element) in enumerate(seq)}
 
 
-def multiplied(multiplicand, multiplier):
+def multiplied(seq, m, b):
     """ Multiply each element's position by a number.
 
     Parameters
     ----------
-    multiplicand : sequence
-        A list, tuple, or string to multiply.
-    multiplier : int
-        A number by which to multiply each element's position.
+    seq : sequence
+        A list, tuple, or string to multiply (the multiplicand).
+    m : int
+        A number by which to multiply each element's position (the multiplier).
+    b : int
+        A number to add to the multiplication of element positions.
 
     Returns
     -------
@@ -164,18 +166,14 @@ def multiplied(multiplicand, multiplier):
     ValueError
         If `by` and `len(seq)` are not coprime.
 
-    Notes
-    -----
-    [TODO]: Make this more elegant by using only numbers.
-
     """
-    self_len = len(multiplicand)
-    if not coprime(multiplier, self_len):
+    seq_len = len(seq)
+    if not coprime(m, seq_len):
         raise ValueError('Multiplier and alphabet length must be coprime.')
 
-    positions = [(multiplier * n) % self_len for n in range(self_len)]
-    # positions = [(multiplier * n + offset) % self_len for n in range(self_len)]  # noqa
-    return [multiplicand[n] for n in positions]
+    return (seq[n % seq_len] for n in range(b, seq_len * m, m))
+    # positions = [(m * n + b) for n in range(seq_len)]
+    # return (seq[n % seq_len] for n in positions)
 
 
 def keyed(seq, key):
@@ -191,8 +189,8 @@ def keyed(seq, key):
     Returns
     -------
     out : iterable
-        The input sequence `seq`, prefixed with `key`, and only one occurrence per
-        character.
+        The input sequence `seq`, prefixed with `key`, and only one occurrence
+        per character.
 
     Notes
     -----

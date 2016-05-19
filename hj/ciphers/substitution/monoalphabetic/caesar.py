@@ -21,6 +21,14 @@ class CaesarCipher(MonoSubCipher):
     alphabet : str, optional
         A plaintext alphabet.  Default `None`.
 
+    Notes
+    -----
+    Technically, the affine cipher is just a Caesar shift cipher with the
+    additional step of transforming the alphabet further after shifting it.
+
+    Technically, a Caesar shift cipher is just an affine cipher with a
+    multiplier of `1`.
+
     """
     DEFAULT_OFFSET = 3
 
