@@ -1,11 +1,11 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from .caesar import CaesarCipher
+from .base import MonoSubCipher
 from utils import multiplied
 
 
-class AffineCipher(CaesarCipher):
+class AffineCipher(MonoSubCipher):
     """ Transcode based on a transformation of `mx + b` for multiplier `m`,
     character `x`, and added offset `b`.
 
@@ -36,9 +36,8 @@ class AffineCipher(CaesarCipher):
 
     """
     def __init__(self, multiplier, offset, alphabet=None):
-        self.multiplier = multiplier
-        super().__init__(offset, alphabet=alphabet)
+        self.multiplier, self.offset = multiplier, offset
+        super().__init__(alphabet=alphabet)
 
     def _transform(self, alphabet):
-        alphabet_ = super()._transform(alphabet)
-        return multiplied(alphabet_, self.multiplier)
+        return multiplied(alphabet, self.multiplier, self.offset)

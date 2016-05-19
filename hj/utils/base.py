@@ -166,6 +166,14 @@ def multiplied(seq, m, b):
     ValueError
         If `by` and `len(seq)` are not coprime.
 
+    Notes
+    -----
+    [TODO] because the offset can be negative, we may wish to add `seq_len` to
+    each position beforehand in case certain Python implementations handle
+    modular arithmetic differently on negatives.  See comments on CipherTableau
+    `transpose()` method.
+
+
     """
     seq_len = len(seq)
     if not coprime(m, seq_len):
