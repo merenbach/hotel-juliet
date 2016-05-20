@@ -18,7 +18,7 @@ class CaesarCipher(AffineCipher):
 
     Parameters
     ----------
-    offset : int, optional
+    key : int, optional
         An integer offset for transcoding.  Default `3`.
     alphabet : str, optional
         A plaintext alphabet.  Default `None`.
@@ -31,5 +31,5 @@ class CaesarCipher(AffineCipher):
     DEFAULT_M = 1
     DEFAULT_B = 3
 
-    def __init__(self, offset=DEFAULT_B, alphabet=None):
-        super().__init__(self.DEFAULT_M, offset, alphabet=alphabet)
+    def __init__(self, key=DEFAULT_B, alphabet=None):
+        super().__init__(self.DEFAULT_M, key, alphabet=alphabet)

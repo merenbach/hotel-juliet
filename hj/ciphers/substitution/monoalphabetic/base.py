@@ -10,16 +10,19 @@ class MonoSubCipher(SubCipher):
 
     Parameters
     ----------
-    alphabet : str
-        A plaintext alphabet.
+    key : str
+        An encryption/decryption key.   May be an integer, tuple, etc.
+        It will be passed to the `_transform` method.
+    alphabet : str, optional
+        A plaintext alphabet.  Default `None`.
 
     """
-    def __init__(self, alphabet):
+    def __init__(self, key, alphabet=None):
         super().__init__()
 
         if not alphabet:
             alphabet = self.DEFAULT_ALPHABET
-        alphabet_ = ''.join(self._transform(alphabet))
+        alphabet_ = ''.join(self._transform(alphabet, key))
         self.tableau = OneToOneTranslationTable(alphabet, alphabet_)
 
     def __repr__(self):
@@ -28,7 +31,8 @@ class MonoSubCipher(SubCipher):
     def __str__(self):
         return str(self.tableau)
 
-    def _transform(self, alphabet):
+    @staticmethod
+    def _transform(alphabet, key):
         """ Create a ciphertext alphabet.
 
         Returns

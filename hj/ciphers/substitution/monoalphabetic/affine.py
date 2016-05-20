@@ -34,9 +34,10 @@ class AffineCipher(MonoSubCipher):
 
     """
     def __init__(self, multiplier, offset, alphabet=None):
-        self.multiplier, self.offset = multiplier, offset
-        super().__init__(alphabet=alphabet)
+        key = (multiplier, offset)
+        super().__init__(key, alphabet=alphabet)
 
-    def _transform(self, alphabet):
-        seq = mod_sequence(len(alphabet), self.multiplier, self.offset)
+    @staticmethod
+    def _transform(alphabet, key):
+        seq = mod_sequence(len(alphabet), key[0], key[1])
         return (alphabet[n] for n in seq)

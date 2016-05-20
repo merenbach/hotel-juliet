@@ -54,7 +54,7 @@ class CipherTest(unittest.TestCase):
         self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'QNUUXFXAUM', block=0)
 
     def test_keywordcipher(self):
-        c = KeywordCipher(keyword='KANGAROO')
+        c = KeywordCipher('KANGAROO')
         self._transcode(c, self.MESSAGE_PLAIN, None, 'CRHHL, WLQHG!', block=None)
         self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'CRHHLWLQHG', block=0)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'LJOOF, WFEOI!', block=None)
