@@ -11,12 +11,15 @@ class AffineCipher(MonoSubCipher):
 
     Parameters
     ----------
-    multiplier : int,
+    a : int
         A multiplier.  Must be coprime with length of alphabet used.
-    offset : int
+    b : int
         An offset.
     alphabet : str, optional
         A plaintext alphabet.  Default `None`.
+
+    Raises
+    ------
 
     Notes
     -----
@@ -33,11 +36,11 @@ class AffineCipher(MonoSubCipher):
     further after shifting it.
 
     """
-    def __init__(self, multiplier, offset, alphabet=None):
-        key = (multiplier, offset)
+    def __init__(self, a, b, alphabet=None):
+        key = (a, b)
         super().__init__(key, alphabet=alphabet)
 
     @staticmethod
     def _transform(alphabet, key):
         seq = mod_sequence(len(alphabet), key[0], key[1])
-        return (alphabet[n] for n in seq)
+        return ''.join(alphabet[n] for n in seq)

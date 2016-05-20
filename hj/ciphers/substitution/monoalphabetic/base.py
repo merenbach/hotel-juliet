@@ -22,7 +22,7 @@ class MonoSubCipher(SubCipher):
 
         if not alphabet:
             alphabet = self.DEFAULT_ALPHABET
-        alphabet_ = ''.join(self._transform(alphabet, key))
+        alphabet_ = self._transform(alphabet, key)
         self.tableau = OneToOneTranslationTable(alphabet, alphabet_)
 
     def __repr__(self):

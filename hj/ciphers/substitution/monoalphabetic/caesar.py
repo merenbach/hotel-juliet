@@ -9,7 +9,7 @@ class CaesarCipher(AffineCipher):
 
     Attributes
     ----------
-    DEFAULT_M: int
+    DEFAULT_A: int
         A multiplier of one, since we're simply shifting.
         Exists as a named variable to avoid a "magic number."
     DEFAULT_B : int
@@ -18,7 +18,7 @@ class CaesarCipher(AffineCipher):
 
     Parameters
     ----------
-    key : int, optional
+    b : int, optional
         An integer offset for transcoding.  Default `3`.
     alphabet : str, optional
         A plaintext alphabet.  Default `None`.
@@ -28,8 +28,8 @@ class CaesarCipher(AffineCipher):
     This is a special case of the affine cipher with a multiplier of one.
 
     """
-    DEFAULT_M = 1
+    DEFAULT_A = 1
     DEFAULT_B = 3
 
-    def __init__(self, key=DEFAULT_B, alphabet=None):
-        super().__init__(self.DEFAULT_M, key, alphabet=alphabet)
+    def __init__(self, b=DEFAULT_B, alphabet=None):
+        super().__init__(self.DEFAULT_A, b, alphabet=alphabet)

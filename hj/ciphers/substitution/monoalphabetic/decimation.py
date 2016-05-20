@@ -17,7 +17,7 @@ class DecimationCipher(AffineCipher):
 
     Parameters
     ----------
-    key : int
+    a : int
         A multiplier.  Must be coprime with length of alphabet used.
     alphabet : str, optional
         A plaintext alphabet.  Default `None`.
@@ -29,5 +29,5 @@ class DecimationCipher(AffineCipher):
     """
     DEFAULT_B = 0
 
-    def __init__(self, key, alphabet=None):
-        super().__init__(key, self.DEFAULT_B, alphabet=alphabet)
+    def __init__(self, a, alphabet=None):
+        super().__init__(a, self.DEFAULT_B, alphabet=alphabet)

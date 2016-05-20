@@ -9,7 +9,7 @@ class AtbashCipher(AffineCipher):
 
     Attributes
     ----------
-    DEFAULT_M : int
+    DEFAULT_A : int
         The multiplier for the affine cipher.
     DEFAULT_B : int
         The offset for the affine cipher.
@@ -35,8 +35,8 @@ class AtbashCipher(AffineCipher):
     invoke `super().__init__(alphabet, alphabet[::-1])`.
 
     """
-    DEFAULT_M = (-1)
+    DEFAULT_A = (-1)
     DEFAULT_B = (-1)
 
     def __init__(self, alphabet=None):
-        super().__init__(self.DEFAULT_M, self.DEFAULT_B, alphabet=alphabet)
+        super().__init__(self.DEFAULT_A, self.DEFAULT_B, alphabet=alphabet)
