@@ -67,8 +67,8 @@ class CipherTest(unittest.TestCase):
         self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'IPQQJ, ZJCQA!', block=None)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'IPQQJZJCQA', block=0)
 
-    def test_multiplicativecipher(self):
-        c = MultiplicativeCipher(7)
+    def test_decimationcipher(self):
+        c = DecimationCipher(7)
         self._transcode(c, self.MESSAGE_PLAIN, None, 'XCZZU, YUPZV!', block=None)
         self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'XCZZUYUPZV', block=0)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'BIJJC, SCVJT!', block=None)

@@ -5,7 +5,7 @@ from .affine import AffineCipher
 from utils import mod_sequence
 
 
-class MultiplicativeCipher(AffineCipher):
+class DecimationCipher(AffineCipher):
     """ Transcode based on a transformation of `mx` for multiplier `m` and
     character `x`.
 
