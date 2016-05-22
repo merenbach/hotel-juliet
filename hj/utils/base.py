@@ -53,7 +53,7 @@ def mod_sequence(count, interval, start):
     Notes
     -----
     This is basically a linear congruential generator with a multiplier of `1`
-    and a finite number of terms (one cycle).
+    and a finite number of terms (i.e., one cycle).
 
     [TODO] requires unit tests
 
@@ -63,6 +63,10 @@ def mod_sequence(count, interval, start):
 
     for n in range(start, count * interval + start, interval):
         yield n % count
+
+#def scramble(seq, mapping):
+#  for m in mapping:
+#    yield seq[m % len(seq)]
 
 
 # def shares_prime_factors(x, y):
@@ -267,7 +271,7 @@ def lcg(m, a, c, seed, limit=None, hull_dobell=True):
         if not coprime(m, c):
             raise ValueError('Multiplier and increment must be coprime.')
         if not contains_prime_factors_of(a - 1, m):
-            raise ValueError('`m` and `a - 1` must be coprime.')
+            raise ValueError('`a - 1` must be divisible by prime factors of `m`.')
         if (m % 4) == 0 and (a - 1) % 4 != 0:
             raise ValueError('If `m` is divisible by 4, `a - 1` must be, too.')
 
