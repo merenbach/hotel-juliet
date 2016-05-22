@@ -18,17 +18,6 @@ class UtilsTest(unittest.TestCase):
 
     PASSPHRASE = 'OCEANOGRAPHYWHAT'
 
-    def testFiniteAP(self):
-        for count in range(28):
-            for interval in range(1, 28):
-                for start in range(28):
-                    ap = list(finite_ap(start, count, interval))
-
-                    # test against alternative means of constructing
-                    # [TODO] we should probably hardcode a few tests, as well
-                    ap2 = [start + interval * n for n in range(count)]
-                    self.assertEqual(ap, ap2)
-
     def testCoprimality(self):
         # [TODO] these could be more extensive
 

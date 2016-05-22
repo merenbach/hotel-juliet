@@ -2,34 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import collections
+import itertools
 from collections import OrderedDict
 from math import gcd
 from itertools import zip_longest, cycle, islice
-
-
-def finite_ap(start, count, interval):
-    """ Generate a finite arithmetic progression.
-
-    Parameters
-    ----------
-    start : int
-        The initial term of the sequence.
-    count : int
-        The length of the sequence to generate.
-    interval : int
-        The common difference of the sequence.
-
-    Returns
-    -------
-    out : generator
-        The resulting sequence as a generator.
-
-    Notes
-    -----
-    This is essentially just a loose cover for the Python `range` builtin.
-
-    """
-    return range(start, count * interval + start, interval)
 
 
 def coprime(a, b):
@@ -53,6 +29,223 @@ def coprime(a, b):
 
     """
     return gcd(a, b) == 1
+
+
+# def shares_prime_factors(x, y):
+#     c = gcd(x, y)
+#     z = y // c
+#     while True:
+#         if z == 1:
+#             return True
+#         c = gcd(x, z)
+#         if c == 1:
+#             return False
+#         z = z // c
+
+def prime_sieve(n):
+    if n % 2 == 0:
+        yield 2
+
+    def divide_out(a, by):
+        while a % by == 0:
+            a //= by
+        return a
+
+
+    n = divide_out(n, 2)
+
+    i = 3
+    while i * i <= n:
+        if n % i == 0:
+            yield i
+            n = divide_out(n, i)
+        else:
+            i += 2
+
+    for i in range(3, ..., 2):
+        pass
+
+    if n > 1:
+        yield n
+
+def contains_prime_factors_of(x, y):
+    """ does X have all the prime factors of Y?
+
+    Parameters
+    ----------
+    x : int
+        A number to check for shared prime factors.
+    y : int
+        A number whose prime factors must be in `x`.
+
+    """
+    # if result is divisible by somehow reduced-to-unique prime factors number
+    # (e.g., 2*2*3*3*5 => x % (2*3*5) == 0), we can return True
+    while True:
+        # if x % y == 0:  # X divisible by Y, thus Y is GCF of X and Y
+        #     return True
+        c = gcd(x, y)
+        if c == 1:
+            return False
+        elif c == y:
+            return True
+        else:
+            y //= c
+
+    # print('{}, {}'.format(x, y))
+
+    # c = gcd(x, y)
+    # y //= c
+    # while True:
+    #     print('x, y, gcd = {}, {}, {}'.format(x, y, y*gcd(x, y)))
+    #     if y == 1:  # for first step, y //= gcd(x, y) == y indicates that x is multiple of y
+    #         return True
+    #     c = gcd(x, y)
+    #     if c == 1:  # x and y (reduced) are coprime
+    #         return False
+    #     y //= c
+
+    # while not coprime(x, y):
+    #     print('x, y, gcd = {}, {}, {}'.format(x, y, gcd(x, y)))
+    #     if x % y == 0:  # if X is divisible by Y, then X is divisible by all prime factors of Y
+    #         return True
+    #     y //= gcd(x, y)
+    # return False
+
+        # if gcd(x, y) == y:  # for first step, y //= gcd(x, y) == y indicates that x is multiple of y
+        #     return True
+        # 24,8=>8
+        # 24,6=>6
+        # 24,12
+        # ***if x is evenly divisible by y, does that make y the GCD of x and y
+
+        # 14 and 7==> 7 is GCD of 14 and 7
+        # 14 and 2==> 2 is GCD of 14 and 2
+        # 12 and 8==> 4 is GCD of 12 and 8
+    # while True:
+    #     print('going through')
+    #     if x % y == 0:  # if X is divisible by Y, then X is divisible by all prime factors of Y
+    #         return True
+    #     # c = gcd(x, y)
+    #     if gcd(x, y) == 1:  # x and y (reduced) are coprime
+    #         return False
+    #     y //= gcd(x, y)
+
+
+    # while True:
+    #     c = gcd(x, y)
+    #     if c == 1:  # x and y (reduced) are coprime
+    #         return False
+    #     y //= c
+    #     if y == 1:  # for first step, y //= gcd(x, y) == y indicates that x is multiple of y
+    #         return True
+
+    # c = gcd(x, y)
+    # y //= c
+    # while True:
+    #     if y == 1:  # for first step, y //= gcd(x, y) == y indicates that x is multiple of y
+    #         return True
+    #     c = gcd(x, y)
+    #     if c == 1:  # x and y (reduced) are coprime
+    #         return False
+    #     y //= c
+
+
+# def finite_ap(start, count, interval):
+#     """ Generate a finite arithmetic progression.
+
+#     Parameters
+#     ----------
+#     start : int
+#         The initial term of the sequence.
+#     count : int
+#         The length of the sequence to generate.
+#     interval : int
+#         The common difference of the sequence.
+
+#     Returns
+#     -------
+#     out : generator
+#         The resulting sequence as a generator.
+
+#     Notes
+#     -----
+#     This is essentially just a loose cover for the Python `range` builtin.
+
+#     """
+#     return range(start, count * interval + start, interval)
+
+
+def lcg(m, a, c, seed, limit=None, hull_dobell=True):
+    """ Configure a linear congruential generator.
+
+    Parameters
+    ----------
+    m : int
+        The modulus.
+    a : int
+        The multiplier.
+    c : int
+        The increment of the sequence.
+    seed : int
+        The initial term (seed or start value) for the sequence.
+    limit : int, optional
+        When this is not `None`, only `limit` items will be returned from the
+        generator.  Default `None`.
+    hull_dobell : bool, optional
+        `True` to apply requirements of Hull-Dobell Theorem, `False` otherwise.
+        This ensures that the generator has a full period for all seed values.
+        Overriding this may result in a less effective PRNG.  Default `True`.
+
+    Returns
+    -------
+    out : generator
+        The resulting infinite sequence as a generator.
+
+    Notes
+    -----
+    With a multiplier of `1`, this becomes an effective generator for the
+    ciphertext alphabet used in the affine cipher.
+
+    [TODO] very much a WIP.  The algorithm appears to work, but input
+    validation is lacking, and contains_prime_factors_of() could be clearer.
+
+    [TODO] unit tests very much required
+
+    [TODO] although islice is nice here, I'm not convinced the implementation
+    here is ideal, having an inner function accessing outer scope vars,
+    as well as combination of `return` and `yield`.
+
+    """
+    # if m <= 0:
+    #     raise ValueError('Constraint `0 < m` not satisfied.')
+    # if m <= a or a <= 0:
+    #     raise ValueError('Constraint `0 < a < m` not satisfied.')
+    # if m <= c or c < 0:
+    #     raise ValueError('Constraint `0 <= c < m` not satisfied.')
+    # if m <= seed or seed < 0:
+    #     raise ValueError('Constraint `0 <= seed < m` not satisfied.')
+
+    # if not all([ (0 < m), (0 < a < m), (0 <= c < m), (0 <= seed < m) ]):
+    #     raise ValueError('hey')
+
+    if hull_dobell:
+        if not coprime(m, c):
+            raise ValueError('Multiplier and increment must be coprime.')
+        if not contains_prime_factors_of(a - 1, m):
+            raise ValueError('`m` and `a - 1` must be coprime.')
+        if (m % 4) == 0 and (a - 1) % 4 != 0:
+            raise ValueError('If `m` is divisible by 4, `a - 1` must be, too.')
+
+    def lcg_():
+        out = seed
+        while True:
+            yield out
+            out = (a * out + c) % m
+
+    return itertools.islice(lcg_(), limit)
+
+
 
 
 # def clever_cast(t, s):
@@ -192,52 +385,6 @@ def orotated(seq, offset):
 #     return {element: idx for (idx, element) in enumerate(seq)}
 
 
-
-
-def mod_sequence(count, m, b):
-    """ Generate a modular ring, similar to an LCG with multiplier of 1.
-
-    Parameters
-    ----------
-    count : int
-        The length of the sequence to generate.
-    m : int
-        The common difference ("increment") of the sequence.
-    b : int
-        The initial term ("seed" or "start value") of the sequence.
-
-    Returns
-    -------
-    out : generator
-        The resulting sequence as a generator.
-
-    Raises
-    ------
-    ValueError
-        If the sequence length and common difference are not coprime.
-
-    Notes
-    -----
-    [TODO] There's probably an official name for this sort of sequence.
-
-    This is essentially an implementation of a linear congruential generator
-    (LCG) with multiplier of 1, which is fascinating because the LCG is a
-    historical pseudo-random number generator (PRNG) and it's being used here
-    for the transformations necessary to an affine cipher base alphabet.
-
-    [TODO] because the offset can be negative, we may wish to add `count` to
-    each position beforehand in case certain Python implementations handle
-    modular arithmetic differently on negatives.  See comments on
-    the CipherTableau `transpose()` method.
-
-    [TODO] unit tests required.
-
-    """
-    if not coprime(m, count):
-        raise ValueError('Count and common difference must be coprime.')
-    return (n % count for n in finite_ap(b, count, m))
-
-
 def keyed(seq, key):
     """ Key a copy of the given sequence.
 
@@ -365,7 +512,13 @@ def extendable_iterator(seq):
 
 
 def upward_factor(num, factor):
-    """ return closest multiple of factor above or equal to num """
+    """ return closest multiple of factor above or equal to num
+
+    Notes
+    -----
+    [TODO] Needs unit tests.  Also, features using this aren't unit tested.
+
+    """
     return num + factor - 1 - (num - 1) % factor;
 
 def chunks(seq, n):

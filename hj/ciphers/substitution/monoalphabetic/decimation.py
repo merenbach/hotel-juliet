@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from .affine import AffineCipher
-from utils import mod_sequence
 
 
 class DecimationCipher(AffineCipher):

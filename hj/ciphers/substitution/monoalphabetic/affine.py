@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .base import MonoSubCipher
-from utils import mod_sequence
+from utils import lcg
 
 
 class AffineCipher(MonoSubCipher):
@@ -42,5 +42,6 @@ class AffineCipher(MonoSubCipher):
 
     @staticmethod
     def _transform(alphabet, key):
-        seq = mod_sequence(len(alphabet), key[0], key[1])
-        return ''.join(alphabet[n] for n in seq)
+        count = len(alphabet)
+        generator = lcg(count, 1, key[0], key[1], limit=count)
+        return ''.join(alphabet[n] for n in generator)
