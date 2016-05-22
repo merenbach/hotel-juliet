@@ -27,8 +27,42 @@ def coprime(a, b):
     -----
     The order of the parameters does not matter.
 
+    [TODO] requires unit tests
+
     """
     return gcd(a, b) == 1
+
+
+def mod_sequence(count, interval, start):
+    """ Generate a finite arithmetic progression.
+
+    Parameters
+    ----------
+    count : int
+        The length of the sequence to generate.
+    interval : int
+        The common difference of the sequence.
+    start : int
+        The initial term of the sequence.
+
+    Returns
+    -------
+    out : generator
+        The resulting sequence as a generator.
+
+    Notes
+    -----
+    This is basically a linear congruential generator with a multiplier of `1`
+    and a finite number of terms (one cycle).
+
+    [TODO] requires unit tests
+
+    """
+    if not coprime(count, interval):
+        raise ValueError('Parameters `count` and `interval` must be coprime.')
+
+    for n in range(start, count * interval + start, interval):
+        yield n % count
 
 
 # def shares_prime_factors(x, y):
