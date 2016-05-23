@@ -44,13 +44,23 @@ def regular(a, b):
     -------
     `True` if `a` is `b`-regular, `False` otherwise.
 
+    Raises
+    ------
+    ValueError
+        If `a` == 0.
+
     Notes
     -----
     Definition of "regularity" coming from Michael Thomas De Vlieger,
       <http://www.vincico.com/proof/neutral.html>.
 
+    See also: <https://oeis.org/A243103>
+
 
     """
+    if a == 0:
+        raise ValueError('Parameter `a` must be nonzero.')
+
     while b != 1:
         b = math.gcd(b, a)
         a //= b
@@ -275,14 +285,13 @@ def keyed(seq, key):
     Repeating characters will be elided to the first occurrence.
 
     """
-    # put valid characters from "key" at beginning of new sequence
-    seq_ = [k for k in key if k in seq]
-
-    # add original sequence now
-    seq_.extend(seq)
-
-    # eliminate dupes and return
-    return collections.OrderedDict.fromkeys(seq_)
+    d = collections.OrderedDict.fromkeys(seq)
+    for k in reversed(key):
+        try:
+            d.move_to_end(k, last=False)
+        except KeyError:
+            pass
+    return d.keys()
 
 
 # def union(a, b):
