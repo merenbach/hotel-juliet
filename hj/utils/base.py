@@ -139,10 +139,9 @@ def lcg(m, a, c, seed, hull_dobell=True):
         if divisible(m, 4) and not divisible(a - 1, 4):
             raise ValueError('If 4 divides `m`, 4 must divide `a - 1`.')
 
-    out = seed
     while True:
-        yield out
-        out = (a * out + c) % m
+        yield seed
+        seed = (seed * a + c) % m
 
 
 # def clever_cast(t, s):
