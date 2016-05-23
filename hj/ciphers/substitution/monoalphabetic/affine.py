@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from .base import MonoSubCipher
-from utils import mod_sequence
+from utils import lcg
+import itertools
 
 
 class AffineCipher(MonoSubCipher):
@@ -43,5 +44,5 @@ class AffineCipher(MonoSubCipher):
     @staticmethod
     def _transform(alphabet, key):
         count = len(alphabet)
-        generator = mod_sequence(count, key[0], key[1])
+        generator = itertools.islice(lcg(count, 1, key[0], key[1]), count)
         return ''.join(alphabet[n] for n in generator)

@@ -3,8 +3,7 @@
 
 import collections
 import itertools
-from collections import OrderedDict
-from math import gcd
+import math
 from itertools import zip_longest, cycle, islice
 
 
@@ -21,200 +20,44 @@ def coprime(a, b):
     Returns
     -------
     out : bool
-        `True` if `a` and `b` are coprime, `False` otherwise.
+        `True` if `a` and `b` share no prime factors, `False` otherwise.
 
     Notes
     -----
     The order of the parameters does not matter.
 
-    [TODO] requires unit tests
-
     """
-    return gcd(a, b) == 1
+    return math.gcd(a, b) == 1
 
 
-def mod_sequence(count, interval, start):
-    """ Generate a finite arithmetic progression.
+def regular(a, b):
+    """ Do all the prime factors of `a` also divide `b`?
 
     Parameters
     ----------
-    count : int
-        The length of the sequence to generate.
-    interval : int
-        The common difference of the sequence.
-    start : int
-        The initial term of the sequence.
+    a : int
+        An integer whose prime factors are being divided into `b`.
+    b : int
+        An integer into which to attept to divide the prime factors of `a`.
 
     Returns
     -------
-    out : generator
-        The resulting sequence as a generator.
+    `True` if `a` is `b`-regular, `False` otherwise.
 
     Notes
     -----
-    This is basically a linear congruential generator with a multiplier of `1`
-    and a finite number of terms (i.e., one cycle).
+    Definition of "regularity" coming from Michael Thomas De Vlieger,
+      <http://www.vincico.com/proof/neutral.html>.
 
-    [TODO] requires unit tests
 
     """
-    if not coprime(count, interval):
-        raise ValueError('Parameters `count` and `interval` must be coprime.')
-
-    for n in range(start, count * interval + start, interval):
-        yield n % count
-
-#def scramble(seq, mapping):
-#  for m in mapping:
-#    yield seq[m % len(seq)]
+    while b != 1:
+        b = math.gcd(b, a)
+        a //= b
+    return a == 1
 
 
-# def shares_prime_factors(x, y):
-#     c = gcd(x, y)
-#     z = y // c
-#     while True:
-#         if z == 1:
-#             return True
-#         c = gcd(x, z)
-#         if c == 1:
-#             return False
-#         z = z // c
-
-def prime_sieve(n):
-    if n % 2 == 0:
-        yield 2
-
-    def divide_out(a, by):
-        while a % by == 0:
-            a //= by
-        return a
-
-
-    n = divide_out(n, 2)
-
-    i = 3
-    while i * i <= n:
-        if n % i == 0:
-            yield i
-            n = divide_out(n, i)
-        else:
-            i += 2
-
-    for i in range(3, ..., 2):
-        pass
-
-    if n > 1:
-        yield n
-
-def contains_prime_factors_of(x, y):
-    """ does X have all the prime factors of Y?
-
-    Parameters
-    ----------
-    x : int
-        A number to check for shared prime factors.
-    y : int
-        A number whose prime factors must be in `x`.
-
-    """
-    # if result is divisible by somehow reduced-to-unique prime factors number
-    # (e.g., 2*2*3*3*5 => x % (2*3*5) == 0), we can return True
-    while True:
-        # if x % y == 0:  # X divisible by Y, thus Y is GCF of X and Y
-        #     return True
-        c = gcd(x, y)
-        if c == 1:
-            return False
-        elif c == y:
-            return True
-        else:
-            y //= c
-
-    # print('{}, {}'.format(x, y))
-
-    # c = gcd(x, y)
-    # y //= c
-    # while True:
-    #     print('x, y, gcd = {}, {}, {}'.format(x, y, y*gcd(x, y)))
-    #     if y == 1:  # for first step, y //= gcd(x, y) == y indicates that x is multiple of y
-    #         return True
-    #     c = gcd(x, y)
-    #     if c == 1:  # x and y (reduced) are coprime
-    #         return False
-    #     y //= c
-
-    # while not coprime(x, y):
-    #     print('x, y, gcd = {}, {}, {}'.format(x, y, gcd(x, y)))
-    #     if x % y == 0:  # if X is divisible by Y, then X is divisible by all prime factors of Y
-    #         return True
-    #     y //= gcd(x, y)
-    # return False
-
-        # if gcd(x, y) == y:  # for first step, y //= gcd(x, y) == y indicates that x is multiple of y
-        #     return True
-        # 24,8=>8
-        # 24,6=>6
-        # 24,12
-        # ***if x is evenly divisible by y, does that make y the GCD of x and y
-
-        # 14 and 7==> 7 is GCD of 14 and 7
-        # 14 and 2==> 2 is GCD of 14 and 2
-        # 12 and 8==> 4 is GCD of 12 and 8
-    # while True:
-    #     print('going through')
-    #     if x % y == 0:  # if X is divisible by Y, then X is divisible by all prime factors of Y
-    #         return True
-    #     # c = gcd(x, y)
-    #     if gcd(x, y) == 1:  # x and y (reduced) are coprime
-    #         return False
-    #     y //= gcd(x, y)
-
-
-    # while True:
-    #     c = gcd(x, y)
-    #     if c == 1:  # x and y (reduced) are coprime
-    #         return False
-    #     y //= c
-    #     if y == 1:  # for first step, y //= gcd(x, y) == y indicates that x is multiple of y
-    #         return True
-
-    # c = gcd(x, y)
-    # y //= c
-    # while True:
-    #     if y == 1:  # for first step, y //= gcd(x, y) == y indicates that x is multiple of y
-    #         return True
-    #     c = gcd(x, y)
-    #     if c == 1:  # x and y (reduced) are coprime
-    #         return False
-    #     y //= c
-
-
-# def finite_ap(start, count, interval):
-#     """ Generate a finite arithmetic progression.
-
-#     Parameters
-#     ----------
-#     start : int
-#         The initial term of the sequence.
-#     count : int
-#         The length of the sequence to generate.
-#     interval : int
-#         The common difference of the sequence.
-
-#     Returns
-#     -------
-#     out : generator
-#         The resulting sequence as a generator.
-
-#     Notes
-#     -----
-#     This is essentially just a loose cover for the Python `range` builtin.
-
-#     """
-#     return range(start, count * interval + start, interval)
-
-
-def lcg(m, a, c, seed, limit=None, hull_dobell=True):
+def lcg(m, a, c, seed, hull_dobell=True):
     """ Configure a linear congruential generator.
 
     Parameters
@@ -227,17 +70,14 @@ def lcg(m, a, c, seed, limit=None, hull_dobell=True):
         The increment of the sequence.
     seed : int
         The initial term (seed or start value) for the sequence.
-    limit : int, optional
-        When this is not `None`, only `limit` items will be returned from the
-        generator.  Default `None`.
     hull_dobell : bool, optional
         `True` to apply requirements of Hull-Dobell Theorem, `False` otherwise.
         This ensures that the generator has a full period for all seed values.
         Overriding this may result in a less effective PRNG.  Default `True`.
 
-    Returns
-    -------
-    out : generator
+    Yields
+    ------
+    out : int
         The resulting infinite sequence as a generator.
 
     Notes
@@ -245,14 +85,9 @@ def lcg(m, a, c, seed, limit=None, hull_dobell=True):
     With a multiplier of `1`, this becomes an effective generator for the
     ciphertext alphabet used in the affine cipher.
 
-    [TODO] very much a WIP.  The algorithm appears to work, but input
-    validation is lacking, and contains_prime_factors_of() could be clearer.
+    [TODO] needs more input validation
 
     [TODO] unit tests very much required
-
-    [TODO] although islice is nice here, I'm not convinced the implementation
-    here is ideal, having an inner function accessing outer scope vars,
-    as well as combination of `return` and `yield`.
 
     """
     # if m <= 0:
@@ -270,20 +105,15 @@ def lcg(m, a, c, seed, limit=None, hull_dobell=True):
     if hull_dobell:
         if not coprime(m, c):
             raise ValueError('Multiplier and increment must be coprime.')
-        if not contains_prime_factors_of(a - 1, m):
-            raise ValueError('`a - 1` must be divisible by prime factors of `m`.')
+        if not regular(m, a - 1):
+            raise ValueError('Prime factors of `m` must also divide `a - 1`.')
         if (m % 4) == 0 and (a - 1) % 4 != 0:
-            raise ValueError('If `m` is divisible by 4, `a - 1` must be, too.')
+            raise ValueError('If 4 divides `m`, 4 must divide `a - 1`.')
 
-    def lcg_():
-        out = seed
-        while True:
-            yield out
-            out = (a * out + c) % m
-
-    return itertools.islice(lcg_(), limit)
-
-
+    out = seed
+    while True:
+        yield out
+        out = (a * out + c) % m
 
 
 # def clever_cast(t, s):
@@ -452,7 +282,7 @@ def keyed(seq, key):
     seq_.extend(seq)
 
     # eliminate dupes and return
-    return OrderedDict.fromkeys(seq_)
+    return collections.OrderedDict.fromkeys(seq_)
 
 
 # def union(a, b):

@@ -19,10 +19,10 @@ class UtilsTest(unittest.TestCase):
     PASSPHRASE = 'OCEANOGRAPHYWHAT'
 
     def testCoprimality(self):
-        # [TODO] these could be more extensive
+        # [TODO] expand these tests
 
-        yes_coprime = [(3,5), (7,20), (14, 15), (172, 17)]
-        no_coprime = [(2,4), (2,22), (3, 15), (14, 28)]
+        yes_coprime = [(3, 5), (7, 20), (14, 15), (172, 17)]
+        no_coprime = [(2, 4), (2, 22), (3, 15), (14, 28)]
 
         for a, b in yes_coprime:
             self.assertEqual(True, coprime(a, b))
