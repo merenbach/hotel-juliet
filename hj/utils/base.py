@@ -30,6 +30,25 @@ def coprime(a, b):
     return math.gcd(a, b) == 1
 
 
+def divisible(a, b):
+    """ Determine whether one integer evenly divides another.
+
+    Parameters
+    ----------
+    a : int
+        A dividend.
+    b : int
+        A divisor.
+
+    Returns
+    -------
+    out : bool
+        `True` if `a` is evenly divisible by `b` `False` otherwise.
+
+    """
+    return (a % b) == 0
+
+
 def regular(a, b):
     """ Do all the prime factors of `a` also divide `b`?
 
@@ -117,7 +136,7 @@ def lcg(m, a, c, seed, hull_dobell=True):
             raise ValueError('Multiplier and increment must be coprime.')
         if not regular(m, a - 1):
             raise ValueError('Prime factors of `m` must also divide `a - 1`.')
-        if (m % 4) == 0 and (a - 1) % 4 != 0:
+        if divisible(m, 4) and not divisible(a - 1, 4):
             raise ValueError('If 4 divides `m`, 4 must divide `a - 1`.')
 
     out = seed

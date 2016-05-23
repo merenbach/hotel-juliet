@@ -21,26 +21,38 @@ class UtilsTest(unittest.TestCase):
     def testCoprimality(self):
         # [TODO] expand these tests
 
-        yes_coprime = [(3, 5), (7, 20), (14, 15), (172, 17)]
-        no_coprime = [(2, 4), (2, 22), (3, 15), (14, 28)]
+        yes = [(3, 5), (7, 20), (14, 15), (172, 17)]
+        no = [(2, 4), (2, 22), (3, 15), (14, 28)]
 
-        for a, b in yes_coprime:
+        for a, b in yes:
             self.assertEqual(True, coprime(a, b))
             self.assertEqual(True, coprime(b, a))
-        for a, b in no_coprime:
+        for a, b in no:
             self.assertEqual(False, coprime(a, b))
             self.assertEqual(False, coprime(b, a))
+
+    def testDivisibility(self):
+        # [TODO] expand these tests
+
+        yes = [(100, 100), (100, 10), (24, 3), (24, 8)]
+        no = [(10, 100), (24, 7), (3, 24), (8, 7)]
+
+        for a, b in yes:
+            self.assertEqual(True, divisible(a, b))
+
+        for a, b in no:
+            self.assertEqual(False, divisible(a, b))
 
     def testRegularity(self):
         # [TODO] expand these tests
 
-        yes_regular = [(98, 168), (24, 6), (6, 24), (12, 18), (3, 0), (1, 1)]
-        no_regular = [(168, 98), (168, 132), (132, 168), (2, 1)]
+        yes = [(98, 168), (24, 6), (6, 24), (12, 18), (3, 0), (1, 1)]
+        no = [(168, 98), (168, 132), (132, 168), (2, 1)]
 
-        for a, b in yes_regular:
+        for a, b in yes:
             self.assertEqual(True, regular(a, b))
 
-        for a, b in no_regular:
+        for a, b in no:
             self.assertEqual(False, regular(a, b))
 
         with self.assertRaises(ValueError):
