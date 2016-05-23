@@ -31,6 +31,21 @@ class UtilsTest(unittest.TestCase):
             self.assertEqual(False, coprime(a, b))
             self.assertEqual(False, coprime(b, a))
 
+    def testRegularity(self):
+        # [TODO] expand these tests
+
+        yes_regular = [(98, 168), (24, 6), (6, 24), (12, 18), (3, 0), (1, 1)]
+        no_regular = [(168, 98), (168, 132), (132, 168), (2, 1)]
+
+        for a, b in yes_regular:
+            self.assertEqual(True, regular(a, b))
+
+        for a, b in no_regular:
+            self.assertEqual(False, regular(a, b))
+
+        with self.assertRaises(ValueError):
+            regular(0, 0)
+
     def testLeftRotation(self):
         s = 'HELLO, WORLD!'
         expected_out = [
