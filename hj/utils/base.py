@@ -405,15 +405,21 @@ def extendable_iterator(seq):
 
 
 
-def upward_factor(num, factor):
+def upward_factor(factor, base):
     """ return closest multiple of factor above or equal to num
+
+    Parameters
+    ----------
+    factor : int
+    base : int
 
     Notes
     -----
-    [TODO] Needs unit tests.  Also, features using this aren't unit tested.
+    [TODO] features using this aren't fully unit tested
 
     """
-    return num + factor - 1 - (num - 1) % factor;
+    return base + factor - 1 - (base - 1) % factor;
+
 
 def chunks(seq, n):
     """Yield successive n-sized chunks from seq."""

@@ -43,6 +43,25 @@ class UtilsTest(unittest.TestCase):
         for a, b in no:
             self.assertEqual(False, divisible(a, b))
 
+    def testUpwardRound(self):
+        # [TODO] expand these tests
+
+        tests = [
+            (3, 10, 12),
+            (4, 10, 12),
+            (5, 10, 10),
+            (6, 10, 12),
+            (7, 10, 14),
+            (8, 9, 16),
+            (8, 8, 8),
+        ]
+        for factor, base, expected in tests:
+            out = upward_factor(factor, base)
+            self.assertEqual(out, expected)
+
+        with self.assertRaises(ZeroDivisionError):
+            upward_factor(0, 0)
+
     def testRegularity(self):
         # [TODO] expand these tests
 

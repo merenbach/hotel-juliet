@@ -79,7 +79,7 @@ class SubCipher(Cipher):
             s = ''.join(c for c in s if c in self.tableau.pt)
 
             if block > 0:
-                padding = upward_factor(len(s), block)
+                padding = upward_factor(block, len(s))
                 s = s.ljust(padding, self.DEFAULT_NULLCHAR)
 
         out = super().encode(s)
@@ -121,7 +121,7 @@ class SubCipher(Cipher):
         out = super().decode(s)
 
         if block is not None and block > 0:
-            padding = upward_factor(len(out), block)
+            padding = upward_factor(block, len(out))
             out = out.ljust(padding, self.DEFAULT_NULLCHAR)
             out = ' '.join(chunks(out, block))
 
