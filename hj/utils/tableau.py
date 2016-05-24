@@ -1,8 +1,6 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from collections import OrderedDict
-
 
 class CipherTableau:
     """ Metadata used at least to determine substitution input/output charsets.
