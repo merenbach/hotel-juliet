@@ -58,6 +58,22 @@ class UtilsTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             regular(0, 0)
 
+    def testUnique(self):
+        io_vals = [
+                ('', 'KANGAROO', ''),
+                ('KANGAROO', '', 'KANGRO'),
+                ('KANGAROO', 'KANGAROO', 'KANGRO'),
+                ('KANGAROO', '31337h#xorz', 'KANGRO'),
+                ('ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'KANGAROO',
+                    'KANGROBCDEFHIJLMPQSTUVWXYZ'),
+                ('ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'OCEANOGRAPHYWHAT',
+                    'OCEANGRPHYWTBDFIJKLMQSUVXZ'),
+        ]
+
+        for src, pre, dst in io_vals:
+            out = ''.join(unique(src, prefix=pre))
+            self.assertEqual(out, dst)
+
     def testLeftRotation(self):
         s = 'HELLO, WORLD!'
         expected_out = [

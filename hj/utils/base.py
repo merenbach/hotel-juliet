@@ -144,6 +144,34 @@ def lcg(m, a, c, seed, hull_dobell=True):
         seed = (seed * a + c) % m
 
 
+def unique(seq, prefix=[]):
+    """ Filter recurrences in a sequence, optionally rearranging.
+
+    Parameters
+    ----------
+    seq : sequence
+        A sequence to condense.
+    prefix : iterable, optional
+        A forced prefix for this sequence.
+        Elements not already in `seq` will be ignored.
+        Defaults to an empty list.
+
+    Returns
+    -------
+    out : list
+        The input sequence `seq`, prefixed with `prefix`, and only the first
+        occurrence of each character retained.
+
+    """
+    d = collections.OrderedDict.fromkeys(seq)
+    for k in reversed(prefix):
+        try:
+            d.move_to_end(k, last=False)
+        except KeyError:
+            pass
+    return list(d.keys())
+
+
 # def clever_cast(t, s):
 #     if t is str:
 #         s = ''.join(c for c in s)
@@ -281,35 +309,6 @@ def orotated(seq, offset):
 #     return {element: idx for (idx, element) in enumerate(seq)}
 
 
-def keyed(seq, key):
-    """ Key a copy of the given sequence.
-
-    Parameters
-    ----------
-    seq : iterable
-        A sequence to key with key `key`.
-    key : iterable
-        A key for the sequencence `seq`.
-
-    Returns
-    -------
-    out : iterable
-        The input sequence `seq`, prefixed with `key`, and only one occurrence
-        per character.
-
-    Notes
-    -----
-    Elements in `key` not already in `seq` will be ignored.
-    Repeating characters will be elided to the first occurrence.
-
-    """
-    d = collections.OrderedDict.fromkeys(seq)
-    for k in reversed(key):
-        try:
-            d.move_to_end(k, last=False)
-        except KeyError:
-            pass
-    return d.keys()
 
 
 # def union(a, b):

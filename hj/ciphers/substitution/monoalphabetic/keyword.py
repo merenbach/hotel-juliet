@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .base import MonoSubCipher
-from utils import keyed
+from utils import unique
 
 
 class KeywordCipher(MonoSubCipher):
@@ -25,9 +25,9 @@ class KeywordCipher(MonoSubCipher):
     cipher if the relevant ciphertext alphabet is provided as the keyword.
 
     """
-    def __init__(self, keyword, alphabet=None):
-        super().__init__(keyword, alphabet=alphabet)
+    # def __init__(self, keyword, alphabet=None):
+    #     super().__init__(keyword, alphabet=alphabet)
 
     @staticmethod
     def _transform(alphabet, key):
-        return ''.join(keyed(alphabet, key))
+        return ''.join(unique(alphabet, prefix=key))
