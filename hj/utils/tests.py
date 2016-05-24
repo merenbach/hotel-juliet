@@ -47,6 +47,9 @@ class UtilsTest(unittest.TestCase):
         # [TODO] expand these tests
 
         tests = [
+            (1, 1, 1),
+            (1, 2, 2),
+            (2, 1, 2),
             (3, 10, 12),
             (4, 10, 12),
             (5, 10, 10),
