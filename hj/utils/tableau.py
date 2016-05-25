@@ -83,9 +83,9 @@ class ManyToOneTranslationTable(CipherTableau):
 
     Notes
     -----
-    Recurring symbols in `plaintext` may yield undefined output when encoding.
+    Recurring symbols in `plaintext` will be ignored.
 
-    The ciphertext alphabet may contain reccurences, for instance in the case
+    The ciphertext alphabet may contain recurrences, for instance in the case
     of homophonic substitution ciphers, where multiple ciphertext symbols may
     represent a single plaintext symbol.  (In this case, recurrences simply
     means characters repeated at least once, whether consecutive or not.)
@@ -126,8 +126,7 @@ class OneToOneTranslationTable(ManyToOneTranslationTable):
 
     Notes
     -----
-    Recurring symbols in `plaintext` or `ciphertext` may yield undefined output
-    when encoding or decoding.
+    Recurring symbols in `plaintext` or `ciphertext` will be ignored.
 
     Because standard reverse substitution requires a one-to-one mapping,
     homophonic substitution ciphers are not currently supported in a two-way

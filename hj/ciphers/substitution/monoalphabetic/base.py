@@ -30,10 +30,17 @@ class MonoSubCipher(SubCipher):
     def maketableau(alphabet, key):
         """ Create a ciphertext alphabet.
 
+        Parameters
+        ----------
+        alphabet : str
+            An alphabet to transform.
+        key : object
+            An integer, string, tuple, etc. to use to transform the alphabet.
+
         Returns
         -------
-        out : str
-            A ciphertext alphabet.
+        out : object
+            A tableau for encryption and decryption.
 
         Raises
         ------
