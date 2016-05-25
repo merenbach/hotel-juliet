@@ -57,7 +57,7 @@ def regular(a, b):
     a : int
         An integer whose prime factors are being divided into `b`.
     b : int
-        An integer into which to attept to divide the prime factors of `a`.
+        An integer into which to attempt to divide the prime factors of `a`.
 
     Returns
     -------
@@ -74,7 +74,6 @@ def regular(a, b):
       <http://www.vincico.com/proof/neutral.html>.
 
     See also: <https://oeis.org/A243103>
-
 
     """
     if a == 0:
@@ -161,6 +160,10 @@ def unique(seq, prefix=[]):
     out : list
         The input sequence `seq`, prefixed with `prefix`, and only the first
         occurrence of each character retained.
+
+    Notes
+    -----
+    [TODO] needs unit tests
 
     """
     d = collections.OrderedDict.fromkeys(seq)
