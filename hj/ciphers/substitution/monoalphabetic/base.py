@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from .. import SubCipher
-from utils import OneToOneTranslationTable
 
 
 class MonoSubCipher(SubCipher):
@@ -19,11 +18,7 @@ class MonoSubCipher(SubCipher):
     """
     def __init__(self, key, alphabet=None):
         super().__init__()
-
-        if not alphabet:
-            alphabet = self.DEFAULT_ALPHABET
-        alphabet_ = self._transform(alphabet, key)
-        self.tableau = OneToOneTranslationTable(alphabet, alphabet_)
+        self.tableau = self.maketableau(alphabet or self.DEFAULT_ALPHABET, key)
 
     def __repr__(self):
         return '{} ({})'.format(type(self).__name__, repr(self.tableau))
@@ -32,7 +27,7 @@ class MonoSubCipher(SubCipher):
         return str(self.tableau)
 
     @staticmethod
-    def _transform(alphabet, key):
+    def maketableau(alphabet, key):
         """ Create a ciphertext alphabet.
 
         Returns

@@ -15,6 +15,11 @@ class DecimationCipher(AffineCipher):
     alphabet : str, optional
         A plaintext alphabet.  Default `None`.
 
+    Raises
+    ------
+    ValueError
+        If `multiplier` is not coprime with the length of the alphabet.
+
     Notes
     -----
     This is a special case of the affine cipher with a shift of `0`.

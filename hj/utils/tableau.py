@@ -1,6 +1,8 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from .base import unique
+
 
 class CipherTableau:
     """ Metadata used at least to determine substitution input/output charsets.
@@ -12,8 +14,15 @@ class CipherTableau:
     ct : str
         A ciphertext alphabet for the tableau.
 
+    Raises
+    ------
+    ValueError
+        If `pt` and `ct` have different lengths.
+
     """
     def __init__(self, pt, ct):
+        if len(pt) != len(ct):
+            raise ValueError('Both alphabets must have the same length.')
         self.pt, self.ct = pt, ct
 
     @staticmethod
@@ -72,11 +81,6 @@ class CipherTableau:
 class ManyToOneTranslationTable(CipherTableau):
     """ Monoalphabetic tableau.
 
-    Raises
-    ------
-    ValueError
-        If `pt` and `ct` have different lengths.
-
     Notes
     -----
     Recurring symbols in `plaintext` may yield undefined output when encoding.
@@ -90,7 +94,7 @@ class ManyToOneTranslationTable(CipherTableau):
     DEFAULT_NULLCHAR = 'X'
 
     def __init__(self, pt, ct):
-        super().__init__(pt, ct)
+        super().__init__(unique(pt), ct)
 
     def __repr__(self):
         return '{}: {} => {}'.format(type(self).__name__,
@@ -133,7 +137,7 @@ class OneToOneTranslationTable(ManyToOneTranslationTable):
 
     """
     def __init__(self, pt, ct):
-        super().__init__(pt, ct)
+        super().__init__(pt, unique(ct))
 
     def __repr__(self):
         return '{}: {} <=> {}'.format(type(self).__name__,

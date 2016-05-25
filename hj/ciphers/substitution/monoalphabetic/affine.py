@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .base import MonoSubCipher
-from utils import lcg
+from utils import OneToOneTranslationTable, lcg
 
 
 class AffineCipher(MonoSubCipher):
@@ -20,6 +20,8 @@ class AffineCipher(MonoSubCipher):
 
     Raises
     ------
+    ValueError
+        If `multiplier` is not coprime with the length of the alphabet.
 
     Notes
     -----
@@ -41,6 +43,7 @@ class AffineCipher(MonoSubCipher):
         super().__init__(key, alphabet=alphabet)
 
     @staticmethod
-    def _transform(alphabet, key):
+    def maketableau(alphabet, key):
         gen = lcg(len(alphabet), 1, key[0], key[1])
-        return ''.join(alphabet[ next(gen) ] for __ in alphabet)
+        alphabet_ = ''.join(alphabet[ next(gen) ] for __ in alphabet)
+        return OneToOneTranslationTable(alphabet, alphabet_)

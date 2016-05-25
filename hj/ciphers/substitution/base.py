@@ -5,7 +5,7 @@ from .. import Cipher
 import string
 from utils import chunks, upward_factor
 # from utils.base import grouper
-# [TODO] still need to implement grouping/blocks
+# [TODO] reduce reliance on str.join method
 
 
 class SubCipher(Cipher):
