@@ -3,7 +3,6 @@
 
 from .base import MonoSubCipher
 from utils import lcg
-import itertools
 
 
 class AffineCipher(MonoSubCipher):
@@ -43,6 +42,5 @@ class AffineCipher(MonoSubCipher):
 
     @staticmethod
     def _transform(alphabet, key):
-        count = len(alphabet)
-        generator = itertools.islice(lcg(count, 1, key[0], key[1]), count)
-        return ''.join(alphabet[n] for n in generator)
+        gen = lcg(len(alphabet), 1, key[0], key[1])
+        return ''.join(alphabet[ next(gen) ] for __ in alphabet)
