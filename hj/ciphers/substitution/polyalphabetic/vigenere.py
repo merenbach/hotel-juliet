@@ -24,15 +24,14 @@ class VigenereCipher(PolySubCipher):
     def __init__(self, countersign, alphabet=None):
         super().__init__()
 
-        if not alphabet:
-            alphabet = self.DEFAULT_ALPHABET
-        self.tableau = self._make_tableau(alphabet)
+        self.tableau = self.maketableau(alphabet or self.DEFAULT_ALPHABET)
 
         self.countersign = [e for e in countersign if e in self.tableau.key_alphabet]
         if not self.countersign:
             raise ValueError('A countersign is required')
 
-    def _make_tableau(self, alphabet):
+    @staticmethod
+    def maketableau(alphabet):
         """ Create a tabula recta for transcoding.
 
         Parameters

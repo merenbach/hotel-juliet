@@ -25,7 +25,8 @@ class GronsfeldCipher(VigenereCipher):
     # def __init__(self, countersign, alphabet=None):
     #     super().__init__(countersign, alphabet=alphabet)
 
-    def _make_tableau(self, alphabet):
+    @staticmethod
+    def maketableau(alphabet):
         """ Create a tabula recta for transcoding.
 
         Parameters
