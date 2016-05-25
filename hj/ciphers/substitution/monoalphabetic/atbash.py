@@ -7,13 +7,6 @@ from .affine import AffineCipher
 class AtbashCipher(AffineCipher):
     """ Transcode based on reverse alphabet.
 
-    Attributes
-    ----------
-    DEFAULT_A : int
-        The multiplier for the affine cipher.
-    DEFAULT_B : int
-        The offset for the affine cipher.
-
     Parameters
     ----------
     alphabet : str, optional
@@ -21,22 +14,14 @@ class AtbashCipher(AffineCipher):
 
     Notes
     -----
-    This is a special case of the affine cipher where the multiplier and offset
-    are both to one less than the length of the alphabet.
-
-    Thanks to modular arithmetic in Python, values of `-1` for offset and
-    multiplier yield the same outcome, without even needing to know the length
-    of the alphabet.  Since other language implementations may handle negative
-    modular arithmetic differently, for the record, the default M and B could
-    also be the alphabet/character set length minus one (e.g., `26` for the
-    Latin alphabet).
+    This is a special case of the affine cipher with a multiplier and shift
+    both equal to one less than the length of the alphabet in use.  Thanks to
+    Python modular arithmetic, we can specify `-1` for both of these to achieve
+    the same result without knowing the length of the alphabet beforehand.
 
     Technically we could simply subclass the generic MonoSubCipher class and
     invoke `super().__init__(alphabet, alphabet[::-1])`.
 
     """
-    DEFAULT_A = (-1)
-    DEFAULT_B = (-1)
-
     def __init__(self, alphabet=None):
-        super().__init__(self.DEFAULT_A, self.DEFAULT_B, alphabet=alphabet)
+        super().__init__(-1, -1, alphabet=alphabet)

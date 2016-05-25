@@ -12,9 +12,9 @@ class AffineCipher(MonoSubCipher):
 
     Parameters
     ----------
-    a : int
+    multiplier : int
         A multiplier.  Must be coprime with length of alphabet used.
-    b : int
+    shift : int
         An offset.
     alphabet : str, optional
         A plaintext alphabet.  Default `None`.
@@ -37,8 +37,8 @@ class AffineCipher(MonoSubCipher):
     further after shifting it.
 
     """
-    def __init__(self, a, b, alphabet=None):
-        key = (a, b)
+    def __init__(self, multiplier, shift, alphabet=None):
+        key = (multiplier, shift)
         super().__init__(key, alphabet=alphabet)
 
     @staticmethod
