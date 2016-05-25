@@ -158,8 +158,8 @@ def unique(seq, prefix=[]):
     Returns
     -------
     out : list
-        The input sequence `seq`, prefixed with `prefix`, and only the first
-        occurrence of each character retained.
+        The input sequence `seq`, prefixed optionally with `prefix`, and only
+        the first occurrence of each character retained.
 
     Notes
     -----

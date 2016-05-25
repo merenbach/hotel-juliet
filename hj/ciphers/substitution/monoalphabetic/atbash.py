@@ -15,12 +15,10 @@ class AtbashCipher(AffineCipher):
     Notes
     -----
     This is a special case of the affine cipher with a multiplier and shift
-    both equal to one less than the length of the alphabet in use.  Thanks to
-    Python modular arithmetic, we can specify `-1` for both of these to achieve
-    the same result without knowing the length of the alphabet beforehand.
-
-    Technically we could simply subclass the generic MonoSubCipher class and
-    invoke `super().__init__(alphabet, alphabet[::-1])`.
+    both equal to one less than the length of the alphabet in use, which
+    effectively reverses the string..  Thanks to Python modular arithmetic,
+    we can specify `-1` for both of these to achieve the same result without
+    knowing the length of the alphabet beforehand.
 
     """
     def __init__(self, alphabet=None):
