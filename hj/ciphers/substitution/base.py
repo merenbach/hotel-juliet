@@ -21,7 +21,7 @@ class SubCipher(Cipher):
     Parameters
     ----------
     alphabet : str
-        A character set to use for transcoding.
+        A plaintext alphabet to use for transcoding.
     nullchar : str, optional
         A null character for padding.  Default `DEFAULT_NULLCHAR`.
 
@@ -42,13 +42,11 @@ class SubCipher(Cipher):
         super().__init__()
         self.tableau = self.maketableau(alphabet or self.DEFAULT_ALPHABET)
 
-    # def __repr__(self):
-    #     # [TODO] maybe improve this
-    #     return repr(self.tableau)
-    #
-    # def __str__(self):
-    #     # [TODO] maybe improve this
-    #     return str(self.tableau)
+    def __repr__(self):
+        return '{} ({})'.format(type(self).__name__, repr(self.tableau))
+
+    def __str__(self):
+        return str(self.tableau)
 
     def maketableau(self, alphabet):
         """ Create a ciphertext alphabet.
