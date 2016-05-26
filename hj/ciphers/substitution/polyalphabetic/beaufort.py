@@ -17,7 +17,7 @@ class BeaufortCipher(VigenereCipher):
 
     Notes
     -----
-    Unlike the vigenere cipher, the *key* letter is located inside the grid.
+    Unlike the vigenere cipher, the _key_ letter is located inside the grid.
     Thus encryption simply swaps the location of the message character and
     the key character in encryption and decryption.
 
@@ -29,9 +29,6 @@ class BeaufortCipher(VigenereCipher):
     N.b.: Because this is a symmetric cipher, autoclave is disabled.
 
     """
-    def __init__(self, countersign, alphabet=None):
-        super().__init__(countersign, alphabet=alphabet)
-
     def maketableau(self, alphabet):
         """ Create a tabula recta for transcoding.
 

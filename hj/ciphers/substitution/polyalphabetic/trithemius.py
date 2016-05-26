@@ -19,7 +19,7 @@ class TrithemiusCipher(VigenereCipher):
     does not allow for autoclave because it wouldn't be true to the original
     specification, where the countersign is fixed to the alphabet.
 
-    [TODO] from a traditional standpoint, this should not have a left-hand
+    [TODO] from a traditionalism standpoint, this should not have a left-hand
            column since there is no key (the key is the top row [the alphabet])
 
     """

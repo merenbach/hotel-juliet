@@ -22,9 +22,6 @@ class GronsfeldCipher(VigenereCipher):
     [TODO] Technically, it can be made totally symmetric if a Beaufort tabula recta is used instead.
 
     """
-    # def __init__(self, countersign, alphabet=None):
-    #     super().__init__(countersign, alphabet=alphabet)
-
     def maketableau(self, alphabet):
         """ Create a tabula recta for transcoding.
 

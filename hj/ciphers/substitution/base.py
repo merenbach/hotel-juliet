@@ -20,8 +20,8 @@ class SubCipher(Cipher):
 
     Parameters
     ----------
-    alphabet : str
-        A plaintext alphabet to use for transcoding.
+    alphabet : str, optional
+        A plaintext alphabet to use for transcoding.  Default `None`.
     nullchar : str, optional
         A null character for padding.  Default `DEFAULT_NULLCHAR`.
 
@@ -38,7 +38,7 @@ class SubCipher(Cipher):
     DEFAULT_ALPHABET = string.ascii_uppercase
     DEFAULT_NULLCHAR = 'X'
 
-    def __init__(self, alphabet):
+    def __init__(self, alphabet=None):
         super().__init__()
         self.tableau = self.maketableau(alphabet or self.DEFAULT_ALPHABET)
 

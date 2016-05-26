@@ -18,7 +18,7 @@ class DellaPortaCipher(VigenereCipher):
     Notes
     -----
     This is similar to the Beaufort cipher, not to be confused with the
-    "variant Beaufort" cipher, which is a variant of the Vigenere.
+    "variant Beaufort" cipher, which is a modified Vigenère.
 
     [TODO] ensure alphabet length is divisible by the number of items in each
     group in the leftmost (key) column
@@ -28,10 +28,10 @@ class DellaPortaCipher(VigenereCipher):
     [TODO] Different algorithms appear to exist for this.  Understanding how
     this was implemented historically is a priority.
 
-    """
-    def __init__(self, countersign, alphabet=None):
-        super().__init__(countersign, alphabet=alphabet)
+    [TODO] this is arguably not a variant of the Vigenere and should probably
+    not inherit therefrom
 
+    """
     def maketableau(self, alphabet):
         """ Create a tabula recta for transcoding.
 

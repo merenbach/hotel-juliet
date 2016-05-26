@@ -22,7 +22,7 @@ class VigenereCipher(PolySubCipher):
 
     """
     def __init__(self, countersign, alphabet=None):
-        super().__init__(alphabet)
+        super().__init__(alphabet=alphabet)
 
         self.countersign = intersect(countersign, self.tableau.key_alphabet)
         if not self.countersign:
