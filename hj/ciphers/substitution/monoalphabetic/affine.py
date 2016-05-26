@@ -39,11 +39,10 @@ class AffineCipher(MonoSubCipher):
 
     """
     def __init__(self, multiplier, shift, alphabet=None):
-        key = (multiplier, shift)
-        super().__init__(key, alphabet=alphabet)
+        self.key = (multiplier, shift)
+        super().__init__(alphabet=alphabet)
 
-    @staticmethod
-    def maketableau(alphabet, key):
-        gen = lcg(len(alphabet), 1, key[0], key[1])
+    def maketableau(self, alphabet):
+        gen = lcg(len(alphabet), 1, self.key[0], self.key[1])
         alphabet_ = ''.join(alphabet[ next(gen) ] for __ in alphabet)
         return OneToOneTranslationTable(alphabet, alphabet_)

@@ -25,10 +25,10 @@ class KeywordCipher(MonoSubCipher):
     cipher if the relevant ciphertext alphabet is provided as the keyword.
 
     """
-    # def __init__(self, keyword, alphabet=None):
-    #     super().__init__(keyword, alphabet=alphabet)
+    def __init__(self, keyword, alphabet=None):
+        self.key = keyword
+        super().__init__(alphabet=alphabet)
 
-    @staticmethod
-    def maketableau(alphabet, key):
-        alphabet_ = ''.join(unique(alphabet, prefix=key))
+    def maketableau(self, alphabet):
+        alphabet_ = ''.join(unique(alphabet, prefix=self.key))
         return OneToOneTranslationTable(alphabet, alphabet_)

@@ -32,8 +32,7 @@ class DellaPortaCipher(VigenereCipher):
     def __init__(self, countersign, alphabet=None):
         super().__init__(countersign, alphabet=alphabet)
 
-    @staticmethod
-    def maketableau(alphabet):
+    def maketableau(self, alphabet):
         """ Create a tabula recta for transcoding.
 
         Parameters

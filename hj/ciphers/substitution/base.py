@@ -38,9 +38,10 @@ class SubCipher(Cipher):
     DEFAULT_ALPHABET = string.ascii_uppercase
     DEFAULT_NULLCHAR = 'X'
 
-    # def __init__(self):
-    #     super().__init__()
-    #
+    def __init__(self, alphabet):
+        super().__init__()
+        self.tableau = self.maketableau(alphabet or self.DEFAULT_ALPHABET)
+
     # def __repr__(self):
     #     # [TODO] maybe improve this
     #     return repr(self.tableau)
@@ -48,6 +49,27 @@ class SubCipher(Cipher):
     # def __str__(self):
     #     # [TODO] maybe improve this
     #     return str(self.tableau)
+
+    def maketableau(self, alphabet):
+        """ Create a ciphertext alphabet.
+
+        Parameters
+        ----------
+        alphabet : str
+            An alphabet to transform.
+
+        Returns
+        -------
+        out : object
+            A tableau for encryption and decryption.
+
+        Raises
+        ------
+        NotImplementedError
+            If not overridden.
+
+        """
+        raise NotImplementedError
 
 
     def encode(self, s, block=None):
