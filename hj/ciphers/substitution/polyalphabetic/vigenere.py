@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .base import PolySubCipher
-from utils import extendable_iterator, TabulaRecta
+from utils import extendable_iterator, intersect, TabulaRecta
 
 # [TODO] still need to add keyed alphabets per Vigenere
 
@@ -26,9 +26,9 @@ class VigenereCipher(PolySubCipher):
 
         self.tableau = self.maketableau(alphabet or self.DEFAULT_ALPHABET)
 
-        self.countersign = [e for e in countersign if e in self.tableau.key_alphabet]
+        self.countersign = intersect(countersign, self.tableau.key_alphabet)
         if not self.countersign:
-            raise ValueError('A countersign is required')
+            raise ValueError('A countersign is required.')
 
     @staticmethod
     def maketableau(alphabet):

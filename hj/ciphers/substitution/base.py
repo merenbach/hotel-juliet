@@ -3,7 +3,7 @@
 
 from .. import Cipher
 import string
-from utils import chunks, upward_factor
+from utils import chunks, upward_factor, intersect
 # from utils.base import grouper
 # [TODO] reduce reliance on str.join method
 
@@ -49,6 +49,7 @@ class SubCipher(Cipher):
     #     # [TODO] maybe improve this
     #     return str(self.tableau)
 
+
     def encode(self, s, block=None):
         """ Encode a message.
 
@@ -76,7 +77,7 @@ class SubCipher(Cipher):
         """
         if block is not None:
             # filter message to characters in ciphertext alphabet
-            s = ''.join(c for c in s if c in self.tableau.pt)
+            s = ''.join(intersect(s, self.tableau.pt))
 
             if block > 0:
                 padding = upward_factor(block, len(s))
@@ -116,7 +117,7 @@ class SubCipher(Cipher):
         """
         if block is not None:
             # filter message to characters in ciphertext alphabet
-            s = ''.join(c for c in s if c in self.tableau.ct)
+            s = ''.join(intersect(s, self.tableau.ct))
 
         out = super().decode(s)
 

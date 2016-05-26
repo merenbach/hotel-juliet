@@ -143,6 +143,25 @@ def lcg(m, a, c, seed, hull_dobell=True):
         seed = (seed * a + c) % m
 
 
+def intersect(a, b):
+    """ Intersect two sequences.
+
+    Parameters
+    ----------
+    a : sequence
+        An iterable to filter.  Order will be preserved.
+    b : sequence
+        Only retain elements in `a` if they exist in this iterable.
+
+    Returns
+    -------
+    out : list
+        All the elements from `a`, minus any that don't appear in `b`.
+
+    """
+    return [e for e in a if e in b]
+
+
 def unique(seq, prefix=[]):
     """ Filter recurrences in a sequence, optionally rearranging.
 
