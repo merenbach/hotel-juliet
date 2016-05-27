@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .base import MonoSubCipher
-from utils import OneToOneTranslationTable, lcg
+from utils import lcg
 
 
 class AffineCipher(MonoSubCipher):
@@ -42,7 +42,8 @@ class AffineCipher(MonoSubCipher):
         self.key = (multiplier, shift)
         super().__init__(alphabet=alphabet)
 
-    def maketableau(self, alphabet):
-        gen = lcg(len(alphabet), 1, self.key[0], self.key[1])
+    @staticmethod
+    def makealphabets(alphabet, key=None):
+        gen = lcg(len(alphabet), 1, key[0], key[1])
         alphabet_ = ''.join(alphabet[ next(gen) ] for __ in alphabet)
-        return OneToOneTranslationTable(alphabet, alphabet_)
+        return alphabet, alphabet_

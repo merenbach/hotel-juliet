@@ -2,12 +2,17 @@
 # -*- coding: utf-8 -*-
 
 from .. import SubCipher
+from utils import OneToOneTranslationTable
 
 
 class MonoSubCipher(SubCipher):
     """ Monoalphabetic substitution transcoder.
 
     """
+    def maketableau(self, alphabet):
+        alphabet, alphabet_ = self.makealphabets(alphabet, key=self.key)
+        return OneToOneTranslationTable(alphabet, alphabet_)
+
     def _encode(self, s):
         """ Encode a message.
 

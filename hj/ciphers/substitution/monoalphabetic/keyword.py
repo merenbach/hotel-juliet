@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .base import MonoSubCipher
-from utils import OneToOneTranslationTable, unique
+from utils import unique
 
 
 class KeywordCipher(MonoSubCipher):
@@ -29,6 +29,7 @@ class KeywordCipher(MonoSubCipher):
         self.key = keyword
         super().__init__(alphabet=alphabet)
 
-    def maketableau(self, alphabet):
-        alphabet_ = ''.join(unique(alphabet, prefix=self.key))
-        return OneToOneTranslationTable(alphabet, alphabet_)
+    @staticmethod
+    def makealphabets(alphabet, key=None):
+        alphabet_ = ''.join(unique(alphabet, prefix=key))
+        return alphabet, alphabet_
