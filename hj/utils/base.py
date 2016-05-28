@@ -1,9 +1,9 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import collections
 import itertools
 import math
+from collections import OrderedDict
 from itertools import zip_longest, cycle, islice
 
 
@@ -185,7 +185,7 @@ def unique(seq, prefix=[]):
     [TODO] needs unit tests
 
     """
-    d = collections.OrderedDict.fromkeys(seq)
+    d = OrderedDict.fromkeys(seq)
     for k in reversed(prefix):
         try:
             d.move_to_end(k, last=False)

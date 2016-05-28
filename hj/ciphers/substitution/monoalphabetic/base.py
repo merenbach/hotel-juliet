@@ -2,16 +2,26 @@
 # -*- coding: utf-8 -*-
 
 from .. import SubCipher
-from utils import OneToOneTranslationTable
+from utils import CipherTableau
 
 
 class MonoSubCipher(SubCipher):
     """ Monoalphabetic substitution transcoder.
 
+    Parameters
+    ----------
+    alphabet : str, optional
+        A plaintext alphabet.  Default `None`.
+
     """
-    def maketableau(self, alphabet):
-        alphabet, alphabet_ = self.makealphabets(alphabet, key=self.key)
-        return OneToOneTranslationTable(alphabet, alphabet_)
+    def __init__(self, key, alphabet=None):
+        super().__init__()
+
+        if not alphabet:
+            alphabet = self.DEFAULT_ALPHABET
+
+        alphabet, alphabet_ = self.makealphabets(alphabet, key)
+        self.tableau = CipherTableau(alphabet, alphabet_)
 
     def _encode(self, s):
         """ Encode a message.
@@ -26,9 +36,13 @@ class MonoSubCipher(SubCipher):
         out : str
             A transcoded version of `s`.
 
+        Notes
+        -----
+        A subclass needing more specialized behavior (e.g., a homophonic
+        substitution cipher) should override this and customize as needed.
+
         """
-        for c in s:
-            yield self.tableau.encipher(c)
+        return s.translate(self.tableau.pt2ct)
 
     def _decode(self, s):
         """ Decode a message.
@@ -43,6 +57,10 @@ class MonoSubCipher(SubCipher):
         out : str
             A transcoded version of `s`.
 
+        Notes
+        -----
+        A subclass needing more specialized behavior (e.g., a homophonic
+        substitution cipher) should override this and customize as needed.
+
         """
-        for c in s:
-            yield self.tableau.decipher(c)
+        return s.translate(self.tableau.ct2pt)

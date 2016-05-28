@@ -21,10 +21,13 @@ class VigenereCipher(PolySubCipher):
         A plaintext alphabet.  Default `None`.
 
     """
-    def __init__(self, countersign, alphabet=None):
-        super().__init__(alphabet=alphabet)
+    ENCODE_AUTOCLAVE = None
+    DECODE_AUTOCLAVE = None
 
-        self.countersign = intersect(countersign, self.tableau.key_alphabet)
+    def __init__(self, countersign, alphabet=None):
+        super().__init__()
+        self.tableau = self.maketableau(alphabet or self.DEFAULT_ALPHABET)
+        self.countersign = intersect(countersign, self.tableau.rows)
         if not self.countersign:
             raise ValueError('A countersign is required.')
 
@@ -48,40 +51,33 @@ class VigenereCipher(PolySubCipher):
         constructed instance.
 
         """
-        return TabulaRecta(alphabet)
-
-    def _transcoder(self, message, cipher_func, autoclave_func):
-        keystream = extendable_iterator(self.countersign)
-        key_char = next(keystream)
-        # key_char = yield
-
-        # iterate over (finite!) message in outer loop with standard "for"
-        for msg_char in message:
-            try:
-                x_msg_char = cipher_func(msg_char, key_char)
-
-            except ValueError:
-                # message char not transcodeable
-                # strict must be off, or this character wouldn't still be here
-                # yield the raw character
-                yield msg_char
-
-            else:
-                yield x_msg_char
-                key_food = autoclave_func(msg_char, x_msg_char)
-
-                # this can be here since key won't advance if transcoding
-                # was not successful
-                key_char = keystream.send(key_food or key_char)
-
-    def _encode_autoclave(self, msg_char, x_msg_char): return None
-    def _decode_autoclave(self, msg_char, x_msg_char): return None
+        return TabulaRecta(alphabet, alphabet, alphabet)
 
     def _encode(self, s):
-        return self._transcoder(s, self.tableau.encipher, self._encode_autoclave)
+        keystream = extendable_iterator(self.countersign)
+        key_char = next(keystream)
+        for c in s:
+            row = self.tableau.rows.get(key_char)
+            if row and c in row.pt:
+                x_msg_char = c.translate(row.pt2ct)
+                key_food = (None, c, x_msg_char)[self.ENCODE_AUTOCLAVE or 0]
+                key_char = keystream.send(key_food or key_char)
+            else:
+                x_msg_char = c
+            yield x_msg_char
 
     def _decode(self, s):
-        return self._transcoder(s, self.tableau.decipher, self._decode_autoclave)
+        keystream = extendable_iterator(self.countersign)
+        key_char = next(keystream)
+        for c in s:
+            row = self.tableau.rows.get(key_char)
+            if row and c in row.ct:
+                x_msg_char = c.translate(row.ct2pt)
+                key_food = (None, c, x_msg_char)[self.DECODE_AUTOCLAVE or 0]
+                key_char = keystream.send(key_food or key_char)
+            else:
+                x_msg_char = c
+            yield x_msg_char
 
 
 class VigenereTextAutoclaveCipher(VigenereCipher):
@@ -99,8 +95,14 @@ class VigenereTextAutoclaveCipher(VigenereCipher):
     effect at all) unless the key is shorter than the text to be encrypted.
 
     """
-    def _encode_autoclave(self, msg_char, x_msg_char): return msg_char
-    def _decode_autoclave(self, msg_char, x_msg_char): return x_msg_char
+    ENCODE_AUTOCLAVE = 1
+    DECODE_AUTOCLAVE = 2
+
+    # def _encode(self, s):
+    #     return self._transcoder(s, self.tableau.encipher, ARGS_FIRST)
+
+    # def _decode(self, s):
+    #     return self._transcoder(s, self.tableau.decipher, ARGS_LAST)
 
 
 class VigenereKeyAutoclaveCipher(VigenereCipher):
@@ -118,5 +120,11 @@ class VigenereKeyAutoclaveCipher(VigenereCipher):
     effect at all) unless the key is shorter than the text to be encrypted.
 
     """
-    def _encode_autoclave(self, msg_char, x_msg_char): return x_msg_char
-    def _decode_autoclave(self, msg_char, x_msg_char): return msg_char
+    ENCODE_AUTOCLAVE = 2
+    DECODE_AUTOCLAVE = 1
+
+    # def _encode(self, s):
+    #     return self._transcoder(s, self.tableau.encipher, ARGS_LAST)
+
+    # def _decode(self, s):
+    #     return self._transcoder(s, self.tableau.decipher, ARGS_FIRST)

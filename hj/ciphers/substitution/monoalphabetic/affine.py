@@ -39,11 +39,11 @@ class AffineCipher(MonoSubCipher):
 
     """
     def __init__(self, multiplier, shift, alphabet=None):
-        self.key = (multiplier, shift)
-        super().__init__(alphabet=alphabet)
+        key = (multiplier, shift)
+        super().__init__(key, alphabet=alphabet)
 
     @staticmethod
-    def makealphabets(alphabet, key=None):
+    def makealphabets(alphabet, key):
         gen = lcg(len(alphabet), 1, key[0], key[1])
         alphabet_ = ''.join(alphabet[ next(gen) ] for __ in alphabet)
         return alphabet, alphabet_

@@ -2,10 +2,11 @@
 # -*- coding: utf-8 -*-
 
 from .base import unique
+from collections import namedtuple
 
 
-class CipherTableau:
-    """ Metadata used at least to determine substitution input/output charsets.
+class CipherTableau(namedtuple('CipherTableau', 'pt ct')):
+    """ A one-to-one, bidirectional, plaintext/ciphertext translation tableau.
 
     Parameters
     ----------
@@ -14,150 +15,60 @@ class CipherTableau:
     ct : str
         A ciphertext alphabet for the tableau.
 
-    Raises
-    ------
-    ValueError
-        If `pt` and `ct` have different lengths.
+    Notes
+    -----
+    In a typical monoalphabetic substitution tableau, one plaintext character
+    maps to one ciphertext character, and vice-versa.  _That is this class._
+    No recurrences exist in either the plaintext or the ciphertext alphabet.
+
+    In a homophonic substitution tableau, one plaintext character may
+    map to multiple ciphertext characters, with several enciphered symbols
+    representing certain plaintext characters so as to even out frequencies
+    of letters and thereby hinder cryptanalysis.  _This could be a subclass._
+
+    What this has in common with a polyalphabetic tableau is that in both
+    cases, one plaintext character may be represented by multiple ciphertext
+    characters.  In a monoalphabetic cipher, however, those ciphertext
+    characters must always map back to the same plaintext character, regardless
+    of key, whereas in a true polyalphabetic substitution cipher, a key will
+    determine to which plaintext character a ciphertext character maps.
 
     """
-    def __init__(self, pt, ct):
-        if len(pt) != len(ct):
-            raise ValueError('Both alphabets must have the same length.')
-        self.pt, self.ct = pt, ct
-
-    @staticmethod
-    def transpose(element, source, target, offset=0):
-        """ Shift an element between alphabets based off of its index.
-
-        Parameters
-        ----------
-        element : object
-            An element to transcode.
-        source : sequence
-            A source character set (e.g., plaintext alphabet).
-        target : sequence
-            A target character set (e.g., ciphertext alphabet).
-        offset : int, optional
-            Shift the element over this number of characters à la Caesar shift.
-            Default `0`.
-
-        Returns
-        -------
-        out : object
-            A transcoded copy (if possible) of the given element `element`.
-
-        Raises
-        ------
-        ValueError
-            If no index in `source` could be found for the given element.
-        ZeroDivisionError
-            If length of `target` is zero.
-
-        Notes
-        -----
-        This may underlie both monoalphabetic and polyalphabetic substitution.
-        Intriguingly, replacing the call to `str.index` with one to `str.find`
-        yields a curiously inadvertent implementation of null characters, which
-        show up as `offset - 1` (since `str.find` returns `-1` on not found).
-
-        Also note that in many other coding languages, we'd probably want to
-        add len(target) to `n` before running a modulo operation to ensure
-        that `n` would be a positive integer.  Modular arithmethic on negatives
-        may differ by some implementations, so perhaps it should be added.
-        [TODO]
-
-        """
-        n = source.index(element) + offset  # + len(target)
-        return target[n % len(target)]
-
-    def __repr__(self):
-        return '{}: PT=[{}], CT=[{}]'.format(type(self).__name__,
-                                             repr(self.pt), repr(self.ct))
+    __slots__ = ()
 
     def __str__(self):
         return 'PT: {}\nCT: {}'.format(self.pt, self.ct)
 
-
-class ManyToOneTranslationTable(CipherTableau):
-    """ Monoalphabetic tableau.
-
-    Notes
-    -----
-    Recurring symbols in `plaintext` will be ignored.
-
-    The ciphertext alphabet may contain recurrences, for instance in the case
-    of homophonic substitution ciphers, where multiple ciphertext symbols may
-    represent a single plaintext symbol.  (In this case, recurrences simply
-    means characters repeated at least once, whether consecutive or not.)
-
-    """
-    DEFAULT_NULLCHAR = 'X'
-
-    def __init__(self, pt, ct):
-        super().__init__(unique(pt), ct)
-
-    def __repr__(self):
-        return '{}: {} => {}'.format(type(self).__name__,
-                                     repr(self.pt), repr(self.ct))
-
-    def encipher(self, element):
-        """ Transcode forwards.
-
-        Parameters
-        ----------
-        element : object
-            An element to transcode.
+    @property
+    def pt2ct(self):
+        """ Create a translation table from plaintext to ciphertext.
 
         Returns
         -------
-        out : object
-            A transcoded version of `element`, or the non-transcoded `element`
-            if transcoding failed.
+        out : dict
+            A Unicode translation dict.
+
+        Notes
+        -----
+        If any individual characters appear more than once in the plaintext
+        alphabet `pt`, unexpected output may occur when the table is used.
 
         """
-        try:
-            return self.transpose(element, self.pt, self.ct)
-        except ValueError:
-            return element
+        return str.maketrans(self.pt, self.ct)
 
-
-class OneToOneTranslationTable(ManyToOneTranslationTable):
-    """ Reciprocal monoalphabetic tableau.
-
-    Notes
-    -----
-    Recurring symbols in `plaintext` or `ciphertext` will be ignored.
-
-    Because standard reverse substitution requires a one-to-one mapping,
-    homophonic substitution ciphers are not currently supported in a two-way
-    fashion.  Technically some heuristics could be devised, such as randomly
-    choosing one of several ciphertext characters for each individual plaintext
-    character.  [TODO]?
-
-    """
-    def __init__(self, pt, ct):
-        super().__init__(pt, unique(ct))
-
-    def __repr__(self):
-        return '{}: {} <=> {}'.format(type(self).__name__,
-                                      repr(self.pt), repr(self.ct))
-
-    def decipher(self, element):
-        """ Transcode backwards.
-
-        Parameters
-        ----------
-        element : object
-            An element to transcode.
+    @property
+    def ct2pt(self):
+        """ Create a translation table from ciphertext to plaintext.
 
         Returns
         -------
-        out : object
-            A transcoded version of `element`, or the non-transcoded `element`
-            if transcoding failed.
+        out : dict
+            A Unicode translation dict.
+
+        Notes
+        -----
+        If any individual characters appear more than once in the ciphertext
+        alphabet `ct`, unexpected output may occur when the table is used.
 
         """
-        try:
-            return self.transpose(element, self.ct, self.pt)
-        except ValueError:
-            return element
+        return str.maketrans(self.ct, self.pt)

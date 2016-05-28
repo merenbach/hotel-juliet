@@ -82,13 +82,14 @@ The underlying frameworks are a bit of a playground for me right now.  The code 
     delegating to other classes...
   - Put countersign specification into encode/decode?
   - Support vigenere cube
-  - Keyword cipher
+  - Keyword Vigenere cipher
   - Offset/shift using enumerate() in tabula recta
   - Customizable null padding char?
   - Modular arithmetic on negatives
     - Atbash multiplier and/or offset
     - CipherTableau transpose
     - Mod ring/mod\_sequence in utils
+  - Will variant Beaufort work as implemented if pt/ct alphabets have totally different character sets?
 
 ## DONE! but needs unit tests...
 

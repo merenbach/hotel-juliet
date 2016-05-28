@@ -26,10 +26,9 @@ class KeywordCipher(MonoSubCipher):
 
     """
     def __init__(self, keyword, alphabet=None):
-        self.key = keyword
-        super().__init__(alphabet=alphabet)
+        super().__init__(keyword, alphabet=alphabet)
 
     @staticmethod
-    def makealphabets(alphabet, key=None):
+    def makealphabets(alphabet, key):
         alphabet_ = ''.join(unique(alphabet, prefix=key))
         return alphabet, alphabet_

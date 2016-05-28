@@ -2,22 +2,48 @@
 # -*- coding: utf-8 -*-
 
 from .base import lrotated, orotated
-from .tableau import OneToOneTranslationTable
-from collections import OrderedDict
+from .tableau import CipherTableau
+from collections import OrderedDict, namedtuple
 
-# [TODO] some way to match up transcodeable chars + usable key chars?
-#
-#   OCEANOGRAPHYWHAT!ILOVEund4Da$eA
-#   STORM THE CASTLE AT MIDNIGHT
-#
-# to
-#
-#   OCEAN#OGR#APHYWH#AT#!I LOVEund4Da$eA
-#   STORM THE CASTLE AT #MIDNIG####H###T
 
-from utils.tableau import CipherTableau
+class TabulaRecta:
+    """ Similar to CipherTableau, but oh-so-different.
 
-class ReciprocalTable(CipherTableau):
+    Parameters
+    ----------
+    pt : str
+        A plaintext alphabet for the tableau.
+    ct : str, optional
+        A ciphertext alphabet for the tableau.  Defaults to `pt`.
+    keys : iterable, optional
+        An ordered sequence of keys to use for rows.
+
+    """
+    def __init__(self, pt, ct=None, keys=None):
+        if not ct:
+            ct = pt
+        if not keys:
+            keys = ct
+        self.pt, self.ct, self.keys = pt, ct, keys # [TODO] temporary?
+        makerows = [lrotated(ct, i) for i in range(len(keys))]
+        tableaux = [CipherTableau(pt, ct_) for ct_ in makerows]
+        self.rows = OrderedDict(zip(keys, tableaux))
+
+
+    def __str__(self):
+        lines = []
+        lines.append('  | ' + ' '.join(self.pt))
+        lines.append('--+' + '-' * len(self.pt) * 2)
+        for k, v in self.rows.items():
+            line = '{} | {}'.format(k, ' '.join(v.ct))
+            lines.append(line)
+        return '\n'.join(lines)
+
+    # def __repr__(self):
+    #     pass
+
+
+class ReciprocalTable(TabulaRecta):
     """ Message alphabet is on top; key alphabet is on side.
 
     Parameters
@@ -33,8 +59,9 @@ class ReciprocalTable(CipherTableau):
         alphabets_ = self._make_rows(pt)
         # transcoders_list = [CaesarCipher(n, alphabet=alphabet)
         #                     for n, __ in enumerate(alphabet)]
-        self.key_alphabet = keys or pt
+        self.keys = keys or pt
         self.key_table = OrderedDict(zip(keys or pt, alphabets_))
+        self.rows = OrderedDict(zip(keys or alphabet_ or pt, alphabets_))
 
     def __repr__(self):
         return '{}: PT=[{}], CT=[{}], keys=[{}]'.format(type(self).__name__,
@@ -116,109 +143,8 @@ class ReciprocalTable(CipherTableau):
 
         """
         cts = [lrotated(self.ct, i) for i, _ in enumerate(self.ct)]
-        return [OneToOneTranslationTable(self.pt, ct) for ct in cts]
+        return [CipherTableau(self.pt, ct) for ct in cts]
 
-
-class TabulaRecta(CipherTableau):
-    """ Message alphabet is on top; key alphabet is on side.
-
-    Parameters
-    ----------
-    pt : str
-        A plaintext alphabet for the tableau.
-    ct : str, optional
-        A ciphertext alphabet for the tableau.  Defaults to `pt`.
-    keys : iterable, optional
-        An ordered sequence of keys to use for rows.
-
-    """
-    def __init__(self, pt, ct=None, keys=None):
-        super().__init__(pt, ct or pt)
-        self.key_alphabet = keys or ct or pt
-        # self.key_alphabets = [self.key_alphabet]
-        # transcoders_list = [CaesarCipher(n, alphabet=alphabet)
-        #                     for n, __ in enumerate(alphabet)]
-        # self.from_num_to_key = {k: v for k, v in enumerate(keys)}
-
-    def __repr__(self):
-        return '{}: PT=[{}], CT=[{}], keys=[{}]'.format(type(self).__name__,
-                                      repr(self.pt),
-                                      repr(self.ct),
-                                      ''.join(self.key_alphabet))
-
-    def encipher(self, msg, *keys):
-        """ Locate element within the grid.
-
-        Parameters
-        ----------
-        element : str
-            An element to transcode.
-            Essentially a row header character on the left edge of the tableau.
-        keys : packed str
-            A sequence of zero or more strings representing encryption keys.
-
-        Returns
-        -------
-        out : data-type
-            A transcoded copy (if possible) of the given element `element`.
-
-        Raises
-        ------
-        ValueError
-            If no tableau could be found for the given key.
-
-        Notes
-        -----
-        When no keys are supplied, this translates directly from the plaintext
-        to the ciphertext alphabet, as in a monoalphabetic tableau.
-
-        """
-        k = sum(self.key_alphabet.index(key) for key in keys)
-        # k = sum(ka.index(key) for ka, key in zip(self.key_alphabets, keys))
-        return self.transpose(msg, self.pt, self.ct, offset=k)
-
-    def decipher(self, msg, *keys):
-        """ Locate element within the grid.
-
-        Parameters
-        ----------
-        element : str
-            An element to transcode.
-            Essentially a row header character on the left edge of the tableau.
-        keys : packed str
-            A sequence of zero or more strings representing decryption keys.
-
-        Returns
-        -------
-        out : data-type
-            A transcoded copy (if possible) of the given element `element`.
-
-        Raises
-        ------
-        ValueError
-            If no tableau could be found for the given key.
-
-        Notes
-        -----
-        When no keys are supplied, this translates directly from the ciphertext
-        to the plaintext alphabet, as in a monoalphabetic tableau.
-
-        """
-        k = sum(self.key_alphabet.index(key) for key in keys)
-        # k = sum(ka.index(key) for ka, key in zip(self.key_alphabets, keys))
-        return self.transpose(msg, self.ct, self.pt, offset=-k)
-
-    def __str__(self):
-        alphabet = self.pt
-        lines = []
-        lines.append('  | ' + ' '.join(alphabet))
-        lines.append('--+' + '-' * len(alphabet) * 2)
-        all_rows = [(k, lrotated(self.ct, i)) for i, k in
-                enumerate(self.key_alphabet)]
-        for k, row in all_rows:
-            row = ' '.join(row)
-            lines.append('{0} | {1}'.format(k, row))
-        return '\n'.join(lines)
 
 
 # TODO: this is actually a reciprocal table...
@@ -249,7 +175,7 @@ class DellaPortaTabulaRecta(ReciprocalTable):
     def _make_rows(self, alphabet):
         alphabet2 = lrotated(self.pt, len(self.pt) // 2)
         cts = [orotated(alphabet2, i // 2) for i in range(len(self.pt))]
-        return [OneToOneTranslationTable(self.pt, ct) for ct in cts]
+        return [CipherTableau(self.pt, ct) for ct in cts]
 
 
 # class PolybiusSquare(Tableau):
@@ -285,152 +211,3 @@ class DellaPortaTabulaRecta(ReciprocalTable):
 #             row = ' '.join(v.values())
 #             lines.append('{0} | {1}'.format(k, row))
 #         return '\n'.join(lines)
-
-#from utils.alphabet import Alphabet
-#
-## def yielder(alphabet, keybet=None):
-##     max_alphas = len(keybet or alphabet)
-##     for n in range(max_alphas)
-##         yield alphabet.lrotate(n)
-#
-#from .alphabet import BaseAlphabetTranscoder
-#
-#
-#class BaseTabulaRecta(BaseAlphabetTranscoder):
-#    """
-#
-#    Parameters
-#    ----------
-#    alphabet : str or string like
-#        An alphabet to use.
-#    alphabet_ : str or string like, optional
-#        An alternative alphabet to use for keying.
-#
-#    """
-#    def __init__(self, alphabet, alphabet_=None):
-#        super().__init__(alphabet, alphabet_ or alphabet)
-#
-#
-#class TabulaRecta(BaseTabulaRecta):
-#    """ Message alphabet is on top; key alphabet is on side.
-#
-#    Parameters
-#    ----------
-#    alphabet : str or string like
-#        An alphabet to use.  Message encoding will occur with this alphabet.
-#        The message and this alphabet must have overlapping character sets.
-#    alphabet_ : str or string like
-#        A cipher alphabet to use.  Passphrase keying will occur with this
-#        alphabet.  The passphrase and this alphabet must have overlapping
-#        character sets.
-#
-#    Notes
-#    -----
-#    Since (en/de)ciphering is done positionally with math, it really doesn't
-#    matter whether the two alphabets are the same length or even whether
-#    they have any of the same characters.
-#
-#    As long as the passphrase (in the polyalphabetic cipher) and the alphabet
-#    passed in have the same character set (or rather, provided that the
-#    key alphabet is a superset of the passphrase character set), everything
-#    will translate fine.  Random Unicode glyphs could be used.
-#
-#    """
-#    def __init__(self, alphabet=None, alphabet_=None):
-#        super().__init__(alphabet, alphabet_)
-#        # [TODO] kludgy vars that shouldn't be here
-#        self.msg_alphabet = self.alphabet
-#        self.key_alphabet = self.alphabet_
-#
-#    def intersect(self, col_char, row_char):
-#        """ Locate character within the grid.
-#
-#        Parameters
-#        ----------
-#        col : str or string like
-#            The header character of the column to use.
-#        row : str or string like
-#            The header character of the row to use.
-#
-#        Returns
-#        -------
-#        out : str
-#            The element at the intersection of column `col` and row `row`.
-#
-#        Notes
-#        -----
-#        Order of params is not important here _except_ insofar as
-#        the tabula recta may not be square (e.g., Gronsfeld cipher).
-#
-#        """
-#        try:
-#            m = self.alphabet.index(str(col_char))
-#            k = self.alphabet_.index(str(row_char))
-#        except ValueError:
-#            return None
-#        else:
-#            idx = (m+k) % len(self.alphabet)
-#            out = self.alphabet[idx]
-#            return str(out)
-#
-#    def locate(self, col_char, row_char):
-#        """ Locate character at intersection of character `a` with row occupant character `k` """
-#        """ Order here *is* important, but has nothing to do with rows vs. columns """
-#        """ If character `a` not found, return None
-#
-#        Returns
-#        -------
-#        out : str
-#            The element (encoded or plaintext) that intersects with
-#            edge character `msg_char` to find character `key_char`.
-#
-#        """
-#        try:
-#            m = self.alphabet.index(str(col_char))
-#            k = self.alphabet_.index(str(row_char))
-#        except KeyError:
-#            return None
-#        else:
-#            idx = (m-k) % len(self.alphabet)
-#            out = self.alphabet[idx]
-#            return str(out)
-#
-#    # def __repr__(self):
-#    #     rows = ['    ' + ' '.join(str(self.alphabet))]
-#    #     rows.append('  +' + '-' * 2 * len(self.alphabet))
-#    #     rows.extend([str(row[0]) + ' | ' + ' '.join(str(row)) for row in self.rows])
-#    #     return '\n'.join(rows)
-#
-#
-#
-#    #def p(self, delimiter=' '):
-#    #    rows = []
-#    #    l = len(self.table[0].elements)
-#    #    rows.append(delimiter * 4 + delimiter.join(self.table[0].elements))
-#    #    rows.append(delimiter * 2 + '+' + '-' * (l * 2))
-#    #    rows.extend(row.elements[0] + ' |' + delimiter + delimiter.join(row.elements) for row in self.table)
-#    #    return '\n'.join(rows)
-#
-## class BeaufortTabulaRecta(TabulaRecta):
-##     """ Message alphabet is on top; key alphabet is on side.
-##
-##     Parameters
-##     ----------
-##     alphabet : str or string like, optional
-##         An alphabet to use for transcoding.
-##
-##     """
-##     def _make_alphabets(self, alphabet):
-##         """ Create alphabets.
-##
-##         """
-##         return super()._make_alphabets(~alphabet[::-1])
-##         transcoders = []
-##         for i, c in enumerate(alphabet):
-##             alphabet_ = alphabet.lrotate(i)
-##             transcoders.append(Transcoder(alphabet, alphabet_[::-1]))
-##         return transcoders
-##
-##
-##
-##
