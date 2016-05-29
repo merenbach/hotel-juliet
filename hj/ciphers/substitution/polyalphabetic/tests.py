@@ -63,6 +63,12 @@ class CipherTest(unittest.TestCase):
         self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'TCHLB, DMKAC!', block=None)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'TCHLBDMKAC', block=0)
 
+        c = VigenereTextAutoclaveCipher('Q')
+        self._transcode(c, self.MESSAGE_PLAIN, None, 'XLPWZ, KKFCO!', block=None)
+        self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'XLPWZKKFCO', block=0)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'RNYNB, VTYNQ!', block=None)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'RNYNBVTYNQ', block=0)
+
         with self.assertRaises(ValueError):
             VigenereTextAutoclaveCipher('b4dk3y')
             VigenereTextAutoclaveCipher('')
@@ -79,6 +85,12 @@ class CipherTest(unittest.TestCase):
         self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'VGPLBRUGWE', block=0)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'TCHLB, PKGAP!', block=None)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'TCHLBPKGAP', block=0)
+
+        c = VigenereKeyAutoclaveCipher('Q')
+        self._transcode(c, self.MESSAGE_PLAIN, None, 'XBMXL, HVMXA!', block=None)
+        self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'XBMXLHVMXA', block=0)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'RXHAD, ISDUS!', block=None)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'RXHADISDUS', block=0)
 
         with self.assertRaises(ValueError):
             VigenereKeyAutoclaveCipher('b4dk3y')
