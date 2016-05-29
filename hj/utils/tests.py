@@ -47,7 +47,6 @@ class UtilsTest(unittest.TestCase):
     def testLCG(self):
         # [TODO] expand these tests
 
-
         #
         # Various sequences figures borrowed for verification from:
         #
@@ -76,7 +75,6 @@ class UtilsTest(unittest.TestCase):
         g = lcg(64, 13, 0, 4, hull_dobell=False)
         g_expected = [4, 52, 36, 20, 4]
         self.assertEqual(list(itertools.islice(g, 5)), g_expected)
-
 
 
     def testUpwardRound(self):

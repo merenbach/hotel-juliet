@@ -31,7 +31,8 @@ class VigenereCipher(PolySubCipher):
         if not self.countersign:
             raise ValueError('A countersign is required.')
 
-    def maketableau(self, alphabet):
+    @staticmethod
+    def maketableau(alphabet):
         """ Create a tabula recta for transcoding.
 
         Parameters
@@ -51,7 +52,7 @@ class VigenereCipher(PolySubCipher):
         constructed instance.
 
         """
-        return TabulaRecta(alphabet, alphabet, alphabet)
+        return TabulaRecta(alphabet)
 
     def _encode(self, s):
         keystream = extendable_iterator(self.countersign)

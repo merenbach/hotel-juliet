@@ -29,7 +29,8 @@ class BeaufortCipher(VigenereCipher):
     N.b.: Because this is a symmetric cipher, autoclave is disabled.
 
     """
-    def maketableau(self, alphabet):
+    @staticmethod
+    def maketableau(alphabet):
         """ Create a tabula recta for transcoding.
 
         Parameters

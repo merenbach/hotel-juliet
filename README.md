@@ -92,6 +92,7 @@ The underlying frameworks are a bit of a playground for me right now.  The code 
   - Will variant Beaufort work as implemented if pt/ct alphabets have totally different character sets?
   - Tabula recta maybe shouldn't be referred to as a tableau--or is it?
   - Caesar box cipher?
+  - Null cipher may not actually be a null cipher as per the ACA.
 
 ## DONE! but needs unit tests...
 

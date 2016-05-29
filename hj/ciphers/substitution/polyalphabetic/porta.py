@@ -32,7 +32,8 @@ class DellaPortaCipher(VigenereCipher):
     not inherit therefrom
 
     """
-    def maketableau(self, alphabet):
+    @staticmethod
+    def maketableau(alphabet):
         """ Create a tabula recta for transcoding.
 
         Parameters
