@@ -3,11 +3,11 @@
 
 from . import base
 from .tableau import CipherTableau
-from collections import OrderedDict, namedtuple
+from collections import OrderedDict
 
 
 class TabulaRecta:
-    """ Similar to CipherTableau, but oh-so-different.
+    """ A two-dimensional, rectangular grid for polyalphabetic transcoding.
 
     Parameters
     ----------
@@ -20,10 +20,8 @@ class TabulaRecta:
 
     """
     def __init__(self, pt, ct=None, keys=None):
-        if not ct:
-            ct = pt
         self.pt, self.ct = pt, ct or pt
-        self.rows = OrderedDict(self.tableaux(pt, ct, keys or ct))
+        self.rows = OrderedDict(self.tableaux(pt, ct or pt, keys or ct or pt))
 
     @staticmethod
     def tableaux(pt, ct, keys):
