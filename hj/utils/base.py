@@ -399,34 +399,6 @@ def roundrobin(*iterables):
             nexts = cycle(islice(nexts, pending))
 
 
-def extendable_iterator(seq):
-    """ Generator that may be appended to.
-
-    Parameters
-    ----------
-    seq : iterable
-        A sequence or iterator that yields elements.
-
-    Yields
-    ------
-    out : data-type
-        An element from seq.
-    in : iterable
-        If not falsy, a sequence of elements to append to `seq`.
-
-    Raises
-    ------
-    TypeError
-        If generator input is neither falsy nor iterable.
-
-    """
-    seq = list(seq)
-    for element in seq:
-        food = yield element
-        seq.extend(food or [])
-
-
-
 def upward_factor(factor, base):
     """ return closest multiple of factor above or equal to num
 

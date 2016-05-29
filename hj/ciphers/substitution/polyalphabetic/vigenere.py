@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from .base import PolySubCipher
-from utils import extendable_iterator, intersect, TabulaRecta
+from utils import intersect, TabulaRecta
+import itertools
 
 # [TODO] still need to add keyed alphabets per Vigenere
 
@@ -21,8 +22,11 @@ class VigenereCipher(PolySubCipher):
         A plaintext alphabet.  Default `None`.
 
     """
-    ENCODE_AUTOCLAVE = None
-    DECODE_AUTOCLAVE = None
+    @staticmethod
+    def _autoclave_encode(before, after): return None
+
+    @staticmethod
+    def _autoclave_decode(before, after): return None
 
     def __init__(self, countersign, alphabet=None):
         super().__init__()
@@ -55,27 +59,33 @@ class VigenereCipher(PolySubCipher):
         return TabulaRecta(alphabet)
 
     def _encode(self, s):
-        keystream = extendable_iterator(self.countersign)
+        countersign = list(self.countersign)
+
+        keystream = itertools.cycle(countersign)
         key_char = next(keystream)
         for c in s:
             row = self.tableau.rows.get(key_char)
             if row and c in row.pt:
                 x_msg_char = c.translate(row.pt2ct)
-                key_food = (None, c, x_msg_char)[self.ENCODE_AUTOCLAVE or 0]
-                key_char = keystream.send(key_food or key_char)
+                key_food = self._autoclave_encode(c, x_msg_char)
+                countersign.extend(key_food or [])
+                key_char = next(keystream)
             else:
                 x_msg_char = c
             yield x_msg_char
 
     def _decode(self, s):
-        keystream = extendable_iterator(self.countersign)
+        countersign = list(self.countersign)
+
+        keystream = itertools.cycle(countersign)
         key_char = next(keystream)
         for c in s:
             row = self.tableau.rows.get(key_char)
             if row and c in row.ct:
                 x_msg_char = c.translate(row.ct2pt)
-                key_food = (None, c, x_msg_char)[self.DECODE_AUTOCLAVE or 0]
-                key_char = keystream.send(key_food or key_char)
+                key_food = self._autoclave_decode(c, x_msg_char)
+                countersign.extend(key_food or [])
+                key_char = next(keystream)
             else:
                 x_msg_char = c
             yield x_msg_char
@@ -96,14 +106,13 @@ class VigenereTextAutoclaveCipher(VigenereCipher):
     effect at all) unless the key is shorter than the text to be encrypted.
 
     """
-    ENCODE_AUTOCLAVE = 1
-    DECODE_AUTOCLAVE = 2
+    ENCODE_AUTOCLAVE = 0
 
-    # def _encode(self, s):
-    #     return self._transcoder(s, self.tableau.encipher, ARGS_FIRST)
+    @staticmethod
+    def _autoclave_encode(before, after): return before
 
-    # def _decode(self, s):
-    #     return self._transcoder(s, self.tableau.decipher, ARGS_LAST)
+    @staticmethod
+    def _autoclave_decode(before, after): return after
 
 
 class VigenereKeyAutoclaveCipher(VigenereCipher):
@@ -121,11 +130,10 @@ class VigenereKeyAutoclaveCipher(VigenereCipher):
     effect at all) unless the key is shorter than the text to be encrypted.
 
     """
-    ENCODE_AUTOCLAVE = 2
-    DECODE_AUTOCLAVE = 1
+    ENCODE_AUTOCLAVE = 1
 
-    # def _encode(self, s):
-    #     return self._transcoder(s, self.tableau.encipher, ARGS_LAST)
+    @staticmethod
+    def _autoclave_encode(before, after): return after
 
-    # def _decode(self, s):
-    #     return self._transcoder(s, self.tableau.decipher, ARGS_FIRST)
+    @staticmethod
+    def _autoclave_decode(before, after): return before

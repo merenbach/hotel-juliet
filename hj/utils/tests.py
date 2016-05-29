@@ -157,22 +157,6 @@ class UtilsTest(unittest.TestCase):
         out = [lrotated(s, i - s_len) for i in range(s_len)]
         self.assertEqual(expected_out, out)
 
-    def testExtendableIterator(self):
-        iterator = extendable_iterator('')
-        self.assertEqual(''.join(iterator), '')
-
-        iterator = extendable_iterator(self.PASSPHRASE)
-        self.assertEqual(''.join(iterator), self.PASSPHRASE)
-
-        out = []
-        iterator = extendable_iterator(self.PASSPHRASE[0:2])
-        out.append(next(iterator))
-        out.append(iterator.send(self.PASSPHRASE[2]))
-        out.append(next(iterator))
-        out.append(iterator.send([self.PASSPHRASE]))
-
-        self.assertEqual(out, ['O', 'C', 'E', self.PASSPHRASE])
-
     # def testEqualLengthZip(self):
     #     a = string.ascii_uppercase
     #     b = string.ascii_lowercase
