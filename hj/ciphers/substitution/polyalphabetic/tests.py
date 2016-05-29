@@ -46,9 +46,11 @@ class CipherTest(unittest.TestCase):
         self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'TCHLB, IIALO!', block=None)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'TCHLBIIALO', block=0)
 
-        with self.assertRaises(ValueError):
-            VigenereCipher('b4dk3y')
-            VigenereCipher('')
+        c = VigenereCipher('x')
+        self._transcode(c, self.MESSAGE_PLAIN, None, '', block=None)
+        self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, '', block=0)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, None, '', block=None)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, '', block=0)
 
     def test_vigenere_text_autoclave(self):
         c = VigenereTextAutoclaveCipher(self.PASSPHRASE[:5])
@@ -69,9 +71,11 @@ class CipherTest(unittest.TestCase):
         self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'RNYNB, VTYNQ!', block=None)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'RNYNBVTYNQ', block=0)
 
-        with self.assertRaises(ValueError):
-            VigenereTextAutoclaveCipher('b4dk3y')
-            VigenereTextAutoclaveCipher('')
+        c = VigenereTextAutoclaveCipher('x')
+        self._transcode(c, self.MESSAGE_PLAIN, None, '', block=None)
+        self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, '', block=0)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, None, '', block=None)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, '', block=0)
 
     def test_vigenere_key_autoclave(self):
         c = VigenereKeyAutoclaveCipher(self.PASSPHRASE[:5])
@@ -92,9 +96,11 @@ class CipherTest(unittest.TestCase):
         self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'RXHAD, ISDUS!', block=None)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'RXHADISDUS', block=0)
 
-        with self.assertRaises(ValueError):
-            VigenereKeyAutoclaveCipher('b4dk3y')
-            VigenereKeyAutoclaveCipher('')
+        c = VigenereKeyAutoclaveCipher('x')
+        self._transcode(c, self.MESSAGE_PLAIN, None, '', block=None)
+        self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, '', block=0)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, None, '', block=None)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, '', block=0)
 
     def test_variantbeaufort(self):
         c = VariantBeaufortCipher(self.PASSPHRASE)
