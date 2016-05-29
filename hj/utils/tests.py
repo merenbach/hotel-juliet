@@ -54,24 +54,44 @@ class UtilsTest(unittest.TestCase):
         #  L_19540_Modeling_and_Performance_Analysis_with_Simulation/06.pdf>
         #
 
+        with self.assertRaises(ValueError):
+            next(lcg(100, 17, 43, 27))
+        with self.assertRaises(ValueError):
+            next(lcg(100, 17, 43, 27, hull_dobell=True))
         g = lcg(100, 17, 43, 27, hull_dobell=False)
         g_expected = [27, 2, 77, 52, 27]
         self.assertEqual(list(itertools.islice(g, 5)), g_expected)
 
+        with self.assertRaises(ValueError):
+            next(lcg(64, 13, 0, 1))
+        with self.assertRaises(ValueError):
+            next(lcg(64, 13, 0, 1, hull_dobell=True))
         g = lcg(64, 13, 0, 1, hull_dobell=False)
         g_expected = [1, 13, 41, 21, 17, 29, 57, 37, 33, 45, 9, 53, 49, 61, 25,
                       5, 1]
         self.assertEqual(list(itertools.islice(g, 17)), g_expected)
 
+        with self.assertRaises(ValueError):
+            next(lcg(64, 13, 0, 2))
+        with self.assertRaises(ValueError):
+            next(lcg(64, 13, 0, 2, hull_dobell=True))
         g = lcg(64, 13, 0, 2, hull_dobell=False)
         g_expected = [2, 26, 18, 42, 34, 58, 50, 10, 2]
         self.assertEqual(list(itertools.islice(g, 9)), g_expected)
 
+        with self.assertRaises(ValueError):
+            next(lcg(64, 13, 0, 3))
+        with self.assertRaises(ValueError):
+            next(lcg(64, 13, 0, 3, hull_dobell=True))
         g = lcg(64, 13, 0, 3, hull_dobell=False)
         g_expected = [3, 39, 59, 63, 51, 23, 43, 47, 35, 7, 27, 31, 19, 55, 11,
                       15, 3]
         self.assertEqual(list(itertools.islice(g, 17)), g_expected)
 
+        with self.assertRaises(ValueError):
+            next(lcg(64, 13, 0, 4))
+        with self.assertRaises(ValueError):
+            next(lcg(64, 13, 0, 4, hull_dobell=True))
         g = lcg(64, 13, 0, 4, hull_dobell=False)
         g_expected = [4, 52, 36, 20, 4]
         self.assertEqual(list(itertools.islice(g, 5)), g_expected)
