@@ -71,7 +71,7 @@ class SubCipher(Cipher):
         """
         if block is not None:
             # filter message to characters in ciphertext alphabet
-            s = ''.join(intersect(s, self.tableau.pt))
+            s = intersect(s, self.tableau.pt)
 
             if block > 0:
                 padding = upward_factor(block, len(s))
@@ -111,7 +111,7 @@ class SubCipher(Cipher):
         """
         if block is not None:
             # filter message to characters in ciphertext alphabet
-            s = ''.join(intersect(s, self.tableau.ct))
+            s = intersect(s, self.tableau.ct)
 
         out = super().decode(s)
 

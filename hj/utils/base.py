@@ -144,22 +144,22 @@ def lcg(m, a, c, seed, hull_dobell=True):
 
 
 def intersect(a, b):
-    """ Intersect two sequences.
+    """ Intersect two strings.
 
     Parameters
     ----------
-    a : sequence
-        An iterable to filter.  Order will be preserved.
-    b : sequence
-        Only retain elements in `a` if they exist in this iterable.
+    a : str
+        A string to filter.  Order will be preserved.
+    b : str
+        Only retain characters in `a` if they exist in this string.
 
     Returns
     -------
-    out : list
+    out : str
         All the elements from `a`, minus any that don't appear in `b`.
 
     """
-    return [e for e in a if e in b]
+    return ''.join(e for e in a if e in b)
 
 
 def unique(seq, prefix=[]):

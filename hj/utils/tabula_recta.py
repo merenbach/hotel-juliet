@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from .base import lrotated, orotated
+from . import base
 from .tableau import CipherTableau
 from collections import OrderedDict, namedtuple
 
@@ -22,13 +22,25 @@ class TabulaRecta:
     def __init__(self, pt, ct=None, keys=None):
         if not ct:
             ct = pt
-        if not keys:
-            keys = ct
-        self.pt, self.ct, self.keys = pt, ct, keys # [TODO] temporary?
-        makerows = [lrotated(ct, i) for i in range(len(keys))]
-        tableaux = [CipherTableau(pt, ct_) for ct_ in makerows]
-        self.rows = OrderedDict(zip(keys, tableaux))
+        self.pt, self.ct = pt, ct or pt
+        self.rows = OrderedDict(self.tableaux(pt, ct, keys or ct))
 
+    @staticmethod
+    def tableaux(pt, ct, keys):
+        """ Generate all the needed cipher tableaux.
+
+        Parameters
+        ----------
+        pt : str
+            A plaintext alphabet for the tableaux.
+        ct : str
+            A ciphertext alphabet for the tableaux.
+        keys : iterable
+            An ordered sequence of keys to use for rows.
+
+        """
+        for i, k in enumerate(keys):
+            yield (k, CipherTableau(pt, base.lrotated(ct, i)))
 
     def __str__(self):
         lines = []
@@ -142,7 +154,7 @@ class ReciprocalTable(TabulaRecta):
             An ordered collection of character sets.
 
         """
-        cts = [lrotated(self.ct, i) for i, _ in enumerate(self.ct)]
+        cts = [base.lrotated(self.ct, i) for i, _ in enumerate(self.ct)]
         return [CipherTableau(self.pt, ct) for ct in cts]
 
 
@@ -173,8 +185,8 @@ class DellaPortaTabulaRecta(ReciprocalTable):
         return '\n'.join(lines)
 
     def _make_rows(self, alphabet):
-        alphabet2 = lrotated(self.pt, len(self.pt) // 2)
-        cts = [orotated(alphabet2, i // 2) for i in range(len(self.pt))]
+        alphabet2 = base.lrotated(self.pt, len(self.pt) // 2)
+        cts = [base.orotated(alphabet2, i // 2) for i in range(len(self.pt))]
         return [CipherTableau(self.pt, ct) for ct in cts]
 
 
