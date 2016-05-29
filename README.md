@@ -90,6 +90,8 @@ The underlying frameworks are a bit of a playground for me right now.  The code 
     - CipherTableau transpose
     - Mod ring/mod\_sequence in utils
   - Will variant Beaufort work as implemented if pt/ct alphabets have totally different character sets?
+  - Tabula recta maybe shouldn't be referred to as a tableau--or is it?
+  - Caesar box cipher?
 
 ## DONE! but needs unit tests...
 

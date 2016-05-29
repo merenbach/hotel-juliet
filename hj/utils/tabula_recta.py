@@ -56,7 +56,8 @@ class TabulaRecta:
 
 
 class ReciprocalTable(TabulaRecta):
-    """ Message alphabet is on top; key alphabet is on side.
+    """ Message alphabet is on top; key alphabet is on side.  This class doesn't
+    serve much purpose right now, but that may change.
 
     Parameters
     ----------
@@ -66,74 +67,11 @@ class ReciprocalTable(TabulaRecta):
         An ordered sequence of keys to use for rows.
 
     """
-    def __init__(self, pt, alphabet_=None, keys=None):
-        super().__init__(pt, alphabet_ or pt)
-        alphabets_ = self._make_rows(pt)
-        # transcoders_list = [CaesarCipher(n, alphabet=alphabet)
-        #                     for n, __ in enumerate(alphabet)]
-        self.keys = keys or pt
-        self.key_table = OrderedDict(zip(keys or pt, alphabets_))
-        self.rows = OrderedDict(zip(keys or alphabet_ or pt, alphabets_))
-
     def __repr__(self):
         return '{}: PT=[{}], CT=[{}], keys=[{}]'.format(type(self).__name__,
                                       repr(self.pt),
                                       repr(self.ct),
                                       ''.join(self.key_table.keys()))
-
-    def encipher(self, element, key):
-        """ Locate element within the grid.
-
-        Parameters
-        ----------
-        element : str
-            An element to transcode.
-            Essentially a row header character on the left edge of the tableau.
-        key : str
-            The dictionary key of a transcoder.
-            Essentially a row header character on the left edge of the tableau.
-
-        Returns
-        -------
-        out : data-type
-            A transcoded copy (if possible) of the given element `element`.
-
-        Raises
-        ------
-        ValueError
-            If no tableau could be found for the given key.
-
-        """
-        if element not in self.pt:
-            raise ValueError
-        return self.key_table[key].encipher(element)
-
-    def decipher(self, element, key):
-        """ Locate element within the grid.
-
-        Parameters
-        ----------
-        element : str
-            An element to transcode.
-            Essentially a row header character on the left edge of the tableau.
-        key : str
-            The dictionary key of a transcoder.
-            Essentially a row header character on the left edge of the tableau.
-
-        Returns
-        -------
-        out : data-type
-            A transcoded copy (if possible) of the given element `element`.
-
-        Raises
-        ------
-        ValueError
-            If no tableau could be found for the given key.
-
-        """
-        if element not in self.ct:
-            raise ValueError
-        return self.key_table[key].decipher(element)
 
     def __str__(self):
         alphabet = self.pt
@@ -144,18 +82,6 @@ class ReciprocalTable(TabulaRecta):
             row = ' '.join(v.ct)
             lines.append('{0} | {1}'.format(k, row))
         return '\n'.join(lines)
-
-    def _make_rows(self, alphabet):
-        """ Create alphabets.
-
-        Returns
-        -------
-        out : list
-            An ordered collection of character sets.
-
-        """
-        cts = [base.lrotated(self.ct, i) for i, _ in enumerate(self.ct)]
-        return [CipherTableau(self.pt, ct) for ct in cts]
 
 
 
@@ -171,23 +97,24 @@ class DellaPortaTabulaRecta(ReciprocalTable):
 
     """
     def __str__(self):
-        alphabet = self.pt[:len(self.alphabet) // 2]
+        alphabet = self.pt[:len(self.pt) // 2]
         lines = []
         lines.append('     | ' + ' '.join(alphabet))
         lines.append('-----+' + '-' * len(alphabet) * 2)
         cur_header = None
-        for i, (k, v) in enumerate(self.key_table.items()):
+        for i, (k, v) in enumerate(self.rows.items()):
             if i % 2 == 0:
                 cur_header = k
             elif i % 2 == 1:
-                row = ' '.join(v.alphabet_[:len(alphabet)])
+                row = ' '.join(v.ct[:len(alphabet)])
                 lines.append('{0}, {1} | {2}'.format(cur_header, k, row))
         return '\n'.join(lines)
 
-    def _make_rows(self, alphabet):
-        alphabet2 = base.lrotated(self.pt, len(self.pt) // 2)
-        cts = [base.orotated(alphabet2, i // 2) for i in range(len(self.pt))]
-        return [CipherTableau(self.pt, ct) for ct in cts]
+    @staticmethod
+    def tableaux(pt, ct, keys):
+        ct_ = base.lrotated(pt, len(pt) // 2)
+        for i, k in enumerate(keys):
+            yield (k, CipherTableau(pt, base.orotated(ct_, i // 2)))
 
 
 # class PolybiusSquare(Tableau):
