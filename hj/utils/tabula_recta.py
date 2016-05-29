@@ -16,7 +16,7 @@ class TabulaRecta:
     ct : str, optional
         A ciphertext alphabet for the tableau.  Defaults to `pt`.
     keys : iterable, optional
-        An ordered sequence of keys to use for rows.
+        An ordered sequence of keys to use for rows.  Defaults to `ct`.
 
     """
     def __init__(self, pt, ct=None, keys=None):
@@ -35,6 +35,11 @@ class TabulaRecta:
             A ciphertext alphabet for the tableaux.
         keys : iterable
             An ordered sequence of keys to use for rows.
+
+        Yields
+        ------
+        out : tuple
+            A tuple in format (key character, cipher tableau).
 
         """
         for i, k in enumerate(keys):
