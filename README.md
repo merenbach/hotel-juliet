@@ -93,6 +93,7 @@ The underlying frameworks are a bit of a playground for me right now.  The code 
   - Tabula recta maybe shouldn't be referred to as a tableau--or is it?
   - Caesar box cipher?
   - Null cipher may not actually be a null cipher as per the ACA.
+  - Auto convert to caps would be a nice option for messages
 
 ## DONE! but needs unit tests...
 

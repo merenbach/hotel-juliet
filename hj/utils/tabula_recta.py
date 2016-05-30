@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from . import base
-from .tableau import CipherTableau
+from .simple_tableau import SimpleTableau
 from collections import OrderedDict
 
 
@@ -43,7 +43,7 @@ class TabulaRecta:
 
         """
         for i, k in enumerate(keys):
-            yield (k, CipherTableau(pt, base.lrotated(ct, i)))
+            yield (k, SimpleTableau(pt, base.lrotated(ct, i)))
 
     def __str__(self):
         lines = []
@@ -117,7 +117,7 @@ class DellaPortaTabulaRecta(ReciprocalTable):
     def tableaux(pt, ct, keys):
         ct_ = base.lrotated(pt, len(pt) // 2)
         for i, k in enumerate(keys):
-            yield (k, CipherTableau(pt, base.orotated(ct_, i // 2)))
+            yield (k, SimpleTableau(pt, base.orotated(ct_, i // 2)))
 
 
 # class PolybiusSquare(Tableau):

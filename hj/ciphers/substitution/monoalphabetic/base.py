@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .. import SubCipher
-from utils import CipherTableau
+from utils import SimpleTableau
 
 
 class MonoSubCipher(SubCipher):
@@ -21,7 +21,7 @@ class MonoSubCipher(SubCipher):
             alphabet = self.DEFAULT_ALPHABET
 
         alphabet, alphabet_ = self.makealphabets(alphabet, key)
-        self.tableau = CipherTableau(alphabet, alphabet_)
+        self.tableau = SimpleTableau(alphabet, alphabet_)
 
     def _encode(self, s):
         """ Encode a message.
