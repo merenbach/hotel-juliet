@@ -44,7 +44,17 @@ class UtilsTest(unittest.TestCase):
         for a, b in no:
             self.assertEqual(False, divisible(a, b))
 
+    def run_generator_equality_test(self, generator, finite_sample):
+        """ Test a possibly-infinite generator.
+
+        """
+        subset = itertools.islice(generator, len(finite_sample))
+        self.assertEqual(list(subset), list(finite_sample))
+
     def testLCG(self):
+        """ Test the linear congruential generator.
+
+        """
         # [TODO] expand these tests
 
         #
@@ -60,7 +70,7 @@ class UtilsTest(unittest.TestCase):
             next(lcg(100, 17, 43, 27, hull_dobell=True))
         g = lcg(100, 17, 43, 27, hull_dobell=False)
         g_expected = [27, 2, 77, 52, 27]
-        self.assertEqual(list(itertools.islice(g, 5)), g_expected)
+        self.run_generator_equality_test(g, g_expected)
 
         with self.assertRaises(ValueError):
             next(lcg(64, 13, 0, 1))
@@ -69,7 +79,7 @@ class UtilsTest(unittest.TestCase):
         g = lcg(64, 13, 0, 1, hull_dobell=False)
         g_expected = [1, 13, 41, 21, 17, 29, 57, 37, 33, 45, 9, 53, 49, 61, 25,
                       5, 1]
-        self.assertEqual(list(itertools.islice(g, 17)), g_expected)
+        self.run_generator_equality_test(g, g_expected)
 
         with self.assertRaises(ValueError):
             next(lcg(64, 13, 0, 2))
@@ -77,7 +87,7 @@ class UtilsTest(unittest.TestCase):
             next(lcg(64, 13, 0, 2, hull_dobell=True))
         g = lcg(64, 13, 0, 2, hull_dobell=False)
         g_expected = [2, 26, 18, 42, 34, 58, 50, 10, 2]
-        self.assertEqual(list(itertools.islice(g, 9)), g_expected)
+        self.run_generator_equality_test(g, g_expected)
 
         with self.assertRaises(ValueError):
             next(lcg(64, 13, 0, 3))
@@ -86,7 +96,7 @@ class UtilsTest(unittest.TestCase):
         g = lcg(64, 13, 0, 3, hull_dobell=False)
         g_expected = [3, 39, 59, 63, 51, 23, 43, 47, 35, 7, 27, 31, 19, 55, 11,
                       15, 3]
-        self.assertEqual(list(itertools.islice(g, 17)), g_expected)
+        self.run_generator_equality_test(g, g_expected)
 
         with self.assertRaises(ValueError):
             next(lcg(64, 13, 0, 4))
@@ -94,7 +104,7 @@ class UtilsTest(unittest.TestCase):
             next(lcg(64, 13, 0, 4, hull_dobell=True))
         g = lcg(64, 13, 0, 4, hull_dobell=False)
         g_expected = [4, 52, 36, 20, 4]
-        self.assertEqual(list(itertools.islice(g, 5)), g_expected)
+        self.run_generator_equality_test(g, g_expected)
 
 
     def testUpwardRound(self):
@@ -133,6 +143,14 @@ class UtilsTest(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             regular(0, 0)
+
+    def testZigzag(self):
+        seq1 = ((1, 5), [1, 2, 3, 4, 5, 4, 3, 2, 1, 2, 3, 4, 5, 4, 3, 2, 1])
+        seq2 = ((0, 3), [0, 1, 2, 3, 2, 1, 0, 1, 2, 3, 2, 1, 0, 1, 2, 3, 2])
+        seq3 = ((-3, 3), [-3, -2, -1, 0, 1, 2, 3, 2, 1, 0, -1, -2, -3, -2, -1])
+        for params, expected in [seq1, seq2, seq3]:
+            z = zigzag(*params)
+            self.run_generator_equality_test(z, expected)
 
     def testUnique(self):
         io_vals = [

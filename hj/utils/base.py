@@ -252,6 +252,28 @@ def unique(seq, prefix=[]):
 #     return remainder
 
 
+def zigzag(lower, upper):
+    """ Stepped zigzag sequence, as in [1, 2, 3, 4, 5, 4, 3, 2, 1, 2, ...].
+
+    Parameters
+    ----------
+    lower : int
+        Minimum value, inclusive.
+    upper : int
+        Maximum value, inclusive.
+
+    Yields
+    ------
+    out : int
+        The next item in the sequence.
+
+    """
+    a = range(lower, upper)
+    b = range(upper, lower, -1)
+    period = itertools.chain(a, b)
+    return itertools.cycle(period)
+
+
 def lrotated(seq, offset):
     """ Left-rotate a version of the given sequence.
 
