@@ -10,7 +10,7 @@ class KeywordCipher(MonoSubCipher):
 
     Parameters
     ----------
-    keyword : str
+    key : str
         A keyword for transcoding.
     alphabet : str, optional
         A plaintext alphabet.  Default `None`.
@@ -25,8 +25,8 @@ class KeywordCipher(MonoSubCipher):
     cipher if the relevant ciphertext alphabet is provided as the keyword.
 
     """
-    def __init__(self, keyword, alphabet=None):
-        super().__init__(keyword, alphabet=alphabet)
+    def __init__(self, key, alphabet=None):
+        super().__init__(key, alphabet=alphabet)
 
     @staticmethod
     def makealphabets(alphabet, key):
