@@ -145,12 +145,19 @@ class UtilsTest(unittest.TestCase):
             regular(0, 0)
 
     def testZigzag(self):
-        seq1 = ((1, 5), [1, 2, 3, 4, 5, 4, 3, 2, 1, 2, 3, 4, 5, 4, 3, 2, 1])
-        seq2 = ((0, 3), [0, 1, 2, 3, 2, 1, 0, 1, 2, 3, 2, 1, 0, 1, 2, 3, 2])
-        seq3 = ((-3, 3), [-3, -2, -1, 0, 1, 2, 3, 2, 1, 0, -1, -2, -3, -2, -1])
-        for params, expected in [seq1, seq2, seq3]:
-            z = zigzag(*params)
-            self.run_generator_equality_test(z, expected)
+        seqs = [
+            (range(1, 6), [1, 2, 3, 4, 5, 4, 3, 2, 1, 2, 3, 4, 5, 4, 3, 2]),
+            (range(0, 4), [0, 1, 2, 3, 2, 1, 0, 1, 2, 3, 2, 1, 0, 1, 2, 3]),
+            (range(-3, 4), [-3, -2, -1, 0, 1, 2, 3, 2, 1, 0, -1, -2, -3]),
+            (range(5, 0, -1), [5, 4, 3, 2, 1, 2, 3, 4, 5, 4, 3, 2, 1, 2, 3]),
+            (range(3, -1, -1), [3, 2, 1, 0, 1, 2, 3, 2, 1, 0, 1, 2, 3, 2, 1]),
+            (range(3, -4, -1), [3, 2, 1, 0, -1, -2, -3, -2, -1, 0, 1, 2, 3]),
+            ('HELLO', ['H', 'E', 'L', 'L', 'O', 'L', 'L', 'E', 'H', 'E', 'L']),
+            ([3], [3, 3, 3, 3, 3, 3, 3]),
+        ]
+        for base_seq, expected_output in seqs:
+            z = zigzag(base_seq)
+            self.run_generator_equality_test(z, expected_output)
 
     def testUnique(self):
         io_vals = [

@@ -252,25 +252,25 @@ def unique(seq, prefix=[]):
 #     return remainder
 
 
-def zigzag(lower, upper):
-    """ Stepped zigzag sequence, as in [1, 2, 3, 4, 5, 4, 3, 2, 1, 2, ...].
+def zigzag(seq):
+    """ Zigzag any sequence infinitely, like rails in the rail fence cipher.
 
     Parameters
     ----------
-    lower : int
-        Minimum value, inclusive.
-    upper : int
-        Maximum value, inclusive.
+    seq : sequence
+        A sequence to reflect and repeat.
 
-    Yields
-    ------
-    out : int
-        The next item in the sequence.
+    Returns
+    -------
+    out : iterable
+        An infinite loop of the reflected sequence.
+
+    Notes
+    -----
+    If `seq` contains only one item, that item will be yielded endlessly.
 
     """
-    a = range(lower, upper)
-    b = range(upper, lower, -1)
-    period = itertools.chain(a, b)
+    period = itertools.chain(seq, seq[-2:0:-1])
     return itertools.cycle(period)
 
 
@@ -325,6 +325,8 @@ def orotated(seq, offset):
     Notes
     -----
     This function acts as though each half of `seq` is on an interlocking gear.
+
+    [TODO] needs unit tests
 
     """
     if len(seq) % 2 != 0:
