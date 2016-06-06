@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from .vigenere import VigenereCipher
-from string import digits
 from utils import TabulaRecta
+import string
 
 
 class GronsfeldCipher(VigenereCipher):
@@ -43,4 +43,4 @@ class GronsfeldCipher(VigenereCipher):
         constructed instance.
 
         """
-        return TabulaRecta(alphabet, keys=digits)
+        return TabulaRecta(alphabet, keys=string.digits)
