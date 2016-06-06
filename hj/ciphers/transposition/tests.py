@@ -33,6 +33,17 @@ class CipherTest(unittest.TestCase):
             self.assertNotEqual(encoded, decoded)
             self.assertEqual(decoded, block==0 and msg_strict or msg)
 
+    def test_rail_fence(self):
+        c = RailFenceCipher(3)
+        msg = 'WEAREDISCOVEREDFLEEATONCE'
+        self._transcode(c, msg, None, 'WECRLTEERDSOEEFEAOCAIVDEN', block=None)
+        self._transcode_reverse(c, msg, None, 'WSACEOTVAEORRENDEFCLDEEEI', block=None)
+
+        # self._transcode(c, self.MESSAGE_PLAIN, None, 'VGPLB, KUILS!', block=None)
+        # self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'VGPLBKUILS', block=0)
+        # self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'TCHLB, IIALO!', block=None)
+        # self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'TCHLBIIALO', block=0)
+
     def test_scytale(self):
         c = ScytaleCipher(4)
         msg_plain, msg_strict = 'HELLO, WORLD!', 'HELLOWORLD'
