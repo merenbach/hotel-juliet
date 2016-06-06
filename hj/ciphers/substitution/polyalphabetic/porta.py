@@ -46,11 +46,5 @@ class DellaPortaCipher(VigenereCipher):
         out : utils.tableau.TabulaRecta
             A tabula recta to use for transcoding.
 
-        Notes
-        -----
-        Since this is invoked by `__init__()` before instance is totally
-        initialized, please don't perform any operations that expect a fully
-        constructed instance.
-
         """
         return DellaPortaTabulaRecta(alphabet)
