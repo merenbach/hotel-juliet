@@ -6,27 +6,21 @@ from utils import TabulaRecta
 
 
 class BeaufortCipher(VigenereCipher):
-    """ Beaufort cipher.  Symmetric.  Not to be confused with Variant Beaufort.
-
-    Parameters
-    ----------
-    countersign : str
-        An encryption/decryption key.
-    alphabet : str, optional
-        A plaintext alphabet.  Default `None`.
+    """ The symmetric, "true" (as opposed to "variant") Beaufort cipher.
 
     Notes
     -----
-    Unlike the vigenere cipher, the _key_ letter is located inside the grid.
+    Unlike the Vigenère cipher, the _key_ letter is located inside the grid.
     Thus encryption simply swaps the location of the message character and
-    the key character in encryption and decryption.
+    the key character in encryption and decryption, versus the Vigenère.
 
     Although such an implementation works just fine, a separate tabula recta is
-    sometimes employed to tailor Vigenere cipher techniques to the Beaufort.
+    sometimes employed to tailor Vigenère cipher techniques to this cipher.
     In an effort to reduce code duplication (and to make a cool tabula recta
     display), that alternative tableau is used here.
 
-    N.b.: Because this is a symmetric cipher, autoclave is disabled.
+    Not to be confused with the variant Beaufort cipher, which also
+    uses the tabula recta.
 
     """
     @staticmethod

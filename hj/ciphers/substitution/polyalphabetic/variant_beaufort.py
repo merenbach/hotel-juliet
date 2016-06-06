@@ -2,37 +2,40 @@
 # -*- coding: utf-8 -*-
 
 from .vigenere import VigenereCipher
+from utils import TabulaRecta
 
 
 class VariantBeaufortCipher(VigenereCipher):
-    """ Vigenere cipher with encoding and decoding steps reversed.
+    """ Simply the Vigenère cipher with encoding and decoding steps reversed.
 
     Notes
     -----
-    Not to be confused with the (symmetric) Beaufort cipher, which also uses
-    the tabula recta.
+    Unlike the Vigenère cipher, the _plaintext_ letters are located inside the
+    grid.  Thus encryption simply swaps the location of the plaintext and
+    ciphertext characters, versus the Vigenère.
+
+    Although such an implementation works just fine, a separate tabula recta is
+    sometimes employed to tailor Vigenère cipher techniques to this cipher.
+    In an effort to reduce code duplication (and to make a cool tabula recta
+    display), that alternative tableau is used here.
+
+    Not to be confused with the true (symmetric) Beaufort cipher, which also
+    uses the tabula recta.
 
     """
-    def _encode(self, s):
-        """ Reverse the encoding direction.
+    @staticmethod
+    def maketableau(alphabet):
+        """ Create a tabula recta for transcoding.
 
-        Notes
-        -----
-        This needs to be done currently with `_decode`, rather than `decode`,
-        because it's still an encryption operation and we just want to change
-        the internals.
+        Parameters
+        ----------
+        alphabet : str
+            A character set to use for transcoding.
 
-        """
-        return super()._decode(s)
-
-    def _decode(self, s):
-        """ Reverse the decoding direction.
-
-        Notes
-        -----
-        This needs to be done currently with `_encode`, rather than `encode`,
-        because it's still a decryption operation and we just want to change
-        the internals.
+        Returns
+        -------
+        out : utils.tableau.TabulaRecta
+            A tabula recta to use for transcoding.
 
         """
-        return super()._encode(s)
+        return TabulaRecta(alphabet[::-1], ct=alphabet[::-1], keys=alphabet)
