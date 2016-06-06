@@ -12,30 +12,32 @@ class CipherTest(unittest.TestCase):
     MESSAGE_STRICT = 'HELLOWORLD'
     PASSPHRASE = 'OCEANOGRAPHYWHAT'
 
-    def _transcode(self, cipher, msg, msg_strict, msg_enc_expected, strict):
-        encoded = cipher.encode(msg, strict=strict)
+    def _transcode(self, cipher, msg, msg_strict, msg_enc_expected, block):
+        encoded = cipher.encode(msg, block=block)
         # [TODO] should we test with both strict and non-strict decoding?
-        decoded = cipher.decode(encoded, strict=strict)
+        decoded = cipher.decode(encoded, block=block)
 
         self.assertEqual(encoded, msg_enc_expected)
         if msg_enc_expected is not '':
             self.assertNotEqual(encoded, decoded)
-            self.assertEqual(decoded, strict and msg_strict or msg)
+            self.assertEqual(decoded, block==0 and msg_strict or msg)
 
     def _transcode_reverse(self, cipher, msg, msg_strict, msg_enc_expected,
-                           strict):
-        encoded = cipher.decode(msg, strict=strict)
+                           block):
+        encoded = cipher.decode(msg, block=block)
         # [TODO] should we test with both strict and non-strict decoding?
-        decoded = cipher.encode(encoded, strict=strict)
+        decoded = cipher.encode(encoded, block=block)
 
         self.assertEqual(encoded, msg_enc_expected)
         if msg_enc_expected is not '':
             self.assertNotEqual(encoded, decoded)
-            self.assertEqual(decoded, strict and msg_strict or msg)
+            self.assertEqual(decoded, block==0 and msg_strict or msg)
 
     def test_scytale(self):
         c = ScytaleCipher(4)
-        self._transcode(c, self.MESSAGE_PLAIN, None, 'HOO!E,RXL LXLWDX', strict=False)
+        msg_plain, msg_strict = 'HELLO, WORLD!', 'HELLOWORLD'
+        self._transcode(c, msg_plain + 'XXX', None, 'HOO!E,RXL LXLWDX', block=None)
+        self._transcode(c, msg_plain, msg_strict + 'XX', 'HOLEWDLOXLRX', block=0)
         # self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'HOOERXLLXLWDX', strict=True)
         # self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'VGPLBKUILS', strict=True)
         # self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'TCHLB, IIALO!', strict=False)

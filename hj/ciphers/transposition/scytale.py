@@ -12,7 +12,7 @@ class ScytaleCipher(TransCipher):
 
     Parameters
     ----------
-    length : int
+    key : int
         The number of characters per row.
     alphabet : str, optional
         A character set to use for transcoding.  Default `None`.
@@ -22,25 +22,10 @@ class ScytaleCipher(TransCipher):
     This is far less polished than the other ciphers.  Given time...
 
     """
-    def __init__(self, length, alphabet=None):
-        self.length = length
-        # self.depth =
-        super().__init__()
-
     def _encode(self, s):
-        groups = grouper(s, self.length, fillvalue=NULLCHAR)
+        groups = grouper(s, self.key, fillvalue=NULLCHAR)
         return roundrobin(*groups)
 
     def _decode(self, s):
-        groups = grouper(s, len(s) // self.length, fillvalue=NULLCHAR)
+        groups = grouper(s, len(s) // self.key, fillvalue=NULLCHAR)
         return roundrobin(*groups)
-
-    def encode(self, s, strict):
-        # [TODO] this assumes left-to-right message text direction...
-        transcoded = self._encode(s)
-        return ''.join(transcoded)
-
-    def decode(self, s, strict):
-        # [TODO] this assumes left-to-right message text direction...
-        transcoded = self._decode(s)
-        return ''.join(transcoded).rstrip(NULLCHAR)
