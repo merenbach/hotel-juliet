@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .. import Cipher
-from utils import intersect
+from utils import intersect, chunks, upward_factor
 import string
 
 
@@ -11,6 +11,7 @@ class TransCipher(Cipher):
 
     """
     DEFAULT_ALPHABET = string.ascii_uppercase
+    DEFAULT_NULLCHAR = 'X'
 
     def __init__(self, key, alphabet=None):
         self.key = key

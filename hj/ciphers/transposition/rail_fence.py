@@ -44,8 +44,6 @@ class RailFenceCipher(TransCipher):
 
 
     """
-    DEFAULT_NULLCHAR = 'X'
-
     def __init__(self, key, nullchar=None, alphabet=None):
         self.nullchar = nullchar or self.DEFAULT_NULLCHAR
         super().__init__(key, alphabet=alphabet)
