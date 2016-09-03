@@ -74,6 +74,13 @@ class CipherTest(unittest.TestCase):
         self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'BIJJC, SCVJT!', block=None)
         self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'BIJJCSCVJT', block=0)
 
+    def test_rot13cipher(self):
+        c = Rot13Cipher()
+        self._transcode(c, self.MESSAGE_PLAIN, None, 'URYYB, JBEYQ!', block=None)
+        self._transcode(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'URYYBJBEYQ', block=0)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'URYYB, JBEYQ!', block=None)
+        self._transcode_reverse(c, self.MESSAGE_PLAIN, self.MESSAGE_STRICT, 'URYYBJBEYQ', block=0)
+
 
 if __name__ == '__main__':
     unittest.main()
