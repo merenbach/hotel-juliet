@@ -128,7 +128,7 @@ def lcg(m, a, c, seed, hull_dobell=True):
     #     raise ValueError('Constraint `0 <= seed < m` not satisfied.')
 
     # if not all([ (0 < m), (0 < a < m), (0 <= c < m), (0 <= seed < m) ]):
-    #     raise ValueError('hey')
+    #     raise ValueError('Constraints not met')
 
     if hull_dobell:
         if not coprime(m, c):
@@ -423,6 +423,25 @@ def roundrobin(*iterables):
             nexts = cycle(islice(nexts, pending))
 
 
+def downward_factor(factor, base):
+    """ return closest multiple of factor below or equal to num
+
+    Parameters
+    ----------
+    factor : int
+    base : int
+
+    Notes
+    -----
+    [TODO] features using this aren't fully unit tested
+
+    base - base % factor == factor * (base // factor)
+
+    note that base % factor == (base - base % factor) // factor
+
+    """
+    return base - base % factor
+
 def upward_factor(factor, base):
     """ return closest multiple of factor above or equal to num
 
@@ -434,9 +453,13 @@ def upward_factor(factor, base):
     Notes
     -----
     [TODO] features using this aren't fully unit tested
+    
+    Subtracting `1` from `base` is needed to ensure we don't round up if `base`
+    is already a multiple of `factor`.
 
     """
-    return base + factor - 1 - (base - 1) % factor;
+    return factor + downward_factor(factor, base - 1)
+    # return base + factor - 1 - (base - 1) % factor;
 
 
 def chunks(seq, n):

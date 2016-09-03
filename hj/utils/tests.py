@@ -121,6 +121,8 @@ class UtilsTest(unittest.TestCase):
             (7, 10, 14),
             (8, 9, 16),
             (8, 8, 8),
+            (8, 4, 8),
+            (8, 6, 8),
         ]
         for factor, base, expected in tests:
             out = upward_factor(factor, base)
