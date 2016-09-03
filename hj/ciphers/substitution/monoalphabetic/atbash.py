@@ -16,7 +16,7 @@ class AtbashCipher(AffineCipher):
     -----
     This is a special case of the affine cipher with a multiplier and shift
     both equal to one less than the length of the alphabet in use, which
-    effectively reverses the string..  Thanks to Python modular arithmetic,
+    effectively reverses the string.  Thanks to Python modular arithmetic,
     we can specify `-1` for both of these to achieve the same result without
     knowing the length of the alphabet beforehand.
 
