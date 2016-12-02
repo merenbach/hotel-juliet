@@ -1,19 +1,22 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from collections import UserString
+from collections import UserList
 import string
 
-class Alphabet(UserString):
-    """ Wrap an alphabet, which is most likely to be a string.
+class Alphabet(UserList):
+    """ Wrap an alphabet for use in transcoding.
 
     Parameters
     ----------
-    seq : sequence
+    initstr : str
         An alphabet for use in transcoding.
 
     """
-    def __init__(self, seq=None):
-        if seq is None:
-            seq = string.ascii_uppercase
-        super().__init__(seq)
+    def __init__(self, initstr=None):
+        if initstr is None:
+            initstr = string.ascii_uppercase
+        super().__init__(initlist=initstr)
+
+    def __str__(self):
+        return ''.join(self.data)
