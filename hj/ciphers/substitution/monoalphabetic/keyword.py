@@ -3,6 +3,7 @@
 
 from .base import MonoSubCipher
 from utils import unique
+from utils import Alphabet
 
 
 class KeywordCipher(MonoSubCipher):
@@ -29,6 +30,6 @@ class KeywordCipher(MonoSubCipher):
         super().__init__(key, alphabet=alphabet)
 
     @staticmethod
-    def makealphabets(alphabet, key):
-        alphabet_ = ''.join(unique(alphabet, prefix=key))
-        return alphabet, alphabet_
+    def transform(alphabet, key):
+        alphabet_ = (unique(alphabet, prefix=key))
+        return Alphabet(alphabet_)

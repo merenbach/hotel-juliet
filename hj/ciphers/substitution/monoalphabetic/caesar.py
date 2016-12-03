@@ -9,6 +9,9 @@ class CaesarCipher(AffineCipher):
 
     Attributes
     ----------
+    DEFAULT_MULTIPLIER : int
+        The standard affine multiplier (1) for a Caesar cipher.
+        Exists as a named variable to avoid a "magic number."
     DEFAULT_SHIFT : int
         The traditional shift (3 places) for a Caesar cipher.
         Exists as a named variable to avoid a "magic number."
@@ -25,7 +28,8 @@ class CaesarCipher(AffineCipher):
     This is a special case of the affine cipher with a multiplier of `1`.
 
     """
+    DEFAULT_MULTIPLIER = 1
     DEFAULT_SHIFT = 3
 
     def __init__(self, shift=DEFAULT_SHIFT, alphabet=None):
-        super().__init__(1, shift, alphabet=alphabet)
+        super().__init__(self.DEFAULT_MULTIPLIER, shift, alphabet=alphabet)

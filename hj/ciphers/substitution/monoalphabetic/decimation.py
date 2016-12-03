@@ -8,6 +8,12 @@ class DecimationCipher(AffineCipher):
     """ Transcode based on a transformation of `mx` for multiplier `m` and
     character `x`.
 
+    Attributes
+    ----------
+    DEFAULT_SHIFT : int
+        The defined shift (0 places) for a decimation cipher.
+        Exists as a named variable to avoid a "magic number."
+
     Parameters
     ----------
     multiplier : int
@@ -25,5 +31,7 @@ class DecimationCipher(AffineCipher):
     This is a special case of the affine cipher with a shift of `0`.
 
     """
+    DEFAULT_SHIFT = 0
+
     def __init__(self, multiplier, alphabet=None):
-        super().__init__(multiplier, 0, alphabet=alphabet)
+        super().__init__(multiplier, self.DEFAULT_SHIFT, alphabet=alphabet)

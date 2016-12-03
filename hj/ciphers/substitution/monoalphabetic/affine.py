@@ -3,6 +3,7 @@
 
 from .base import MonoSubCipher
 from utils import lcg
+from utils import Alphabet
 import itertools
 
 
@@ -44,8 +45,7 @@ class AffineCipher(MonoSubCipher):
         super().__init__(key, alphabet=alphabet)
 
     @staticmethod
-    def makealphabets(alphabet, key):
+    def transform(alphabet, key):
         gen = lcg(len(alphabet), 1, key[0], key[1])
         gen_slice = itertools.islice(gen, len(alphabet))
-        alphabet_ = ''.join(alphabet[s] for s in gen_slice)
-        return alphabet, alphabet_
+        return Alphabet(alphabet[s] for s in gen_slice)

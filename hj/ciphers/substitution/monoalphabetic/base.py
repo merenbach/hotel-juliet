@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .. import SubCipher
+from utils import Alphabet
 from utils import SimpleTableau
 
 
@@ -17,10 +18,8 @@ class MonoSubCipher(SubCipher):
     def __init__(self, key, alphabet=None):
         super().__init__()
 
-        if not alphabet:
-            alphabet = self.DEFAULT_ALPHABET
-
-        alphabet, alphabet_ = self.makealphabets(alphabet, key)
+        alphabet = Alphabet(alphabet)
+        alphabet_ = self.transform(alphabet, key)
         self.tableau = SimpleTableau(alphabet, alphabet_)
 
     def _encode(self, s):
@@ -42,7 +41,7 @@ class MonoSubCipher(SubCipher):
         substitution cipher) should override this and customize as needed.
 
         """
-        return s.translate(self.tableau.pt2ct)
+        return (self.tableau.pt2ct.get(c, c) for c in s)
 
     def _decode(self, s):
         """ Decode a message.
@@ -63,4 +62,4 @@ class MonoSubCipher(SubCipher):
         substitution cipher) should override this and customize as needed.
 
         """
-        return s.translate(self.tableau.ct2pt)
+        return (self.tableau.ct2pt.get(c, c) for c in s)
