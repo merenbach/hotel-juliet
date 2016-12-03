@@ -4,22 +4,28 @@
 from collections import UserList
 import string
 
-class Alphabet(UserList):
+
+class BaseAlphabet(UserList):
     """ Wrap an alphabet for use in transcoding.
 
     Parameters
     ----------
-    initlist : sequence of str
-        An alphabet for use in transcoding.
+    initlist : sequence, optional
+        An alphabet for use in transcoding.  Default `None`.
+        (If omitted, will be replaced with an empty list.)
+
+    Raises
+    ------
+    ValueError
+        If any elements in `initlist` recur.
 
     """
     def __init__(self, initlist=None):
         if initlist is None:
-            initlist = string.ascii_uppercase
+            initlist = []
+        if len(initlist) > len(set(initlist)):
+            raise ValueError('values in alphabet may not recur')
         super().__init__(initlist=initlist)
-
-    def __str__(self):
-        return ''.join(self.data)
 
     def xtable(self, other):
         """ Create a translation table mapping this alphabet to another.
@@ -40,6 +46,35 @@ class Alphabet(UserList):
             If this alphabet and `other` have different lengths.
 
         """
-        if len(self.data) != len(other):
+        if len(self) != len(other):
             raise ValueError('alphabet length mismatch')
-        return dict(zip(self.data, other))
+        return dict(zip(self, other))
+
+
+class Alphabet(BaseAlphabet):
+    """ Wrap an alphabet for use in transcoding.
+
+    Attributes
+    ----------
+    DEFAULT_ALPHABET : str
+        The default character set for encoding.
+    DEFAULT_NULLCHAR : str
+        A default string ("X") to use as padding.
+
+    Parameters
+    ----------
+    initlist : sequence of str, optional
+        An alphabet for use in transcoding.  Default `None`.
+        (If omitted, will be replaced with `string.ascii_uppercase`.)
+
+    """
+    DEFAULT_ALPHABET = string.ascii_uppercase
+    DEFAULT_NULLCHAR = 'X'
+
+    def __init__(self, initlist=None):
+        if initlist is None:
+            initlist = self.DEFAULT_ALPHABET
+        super().__init__(initlist=initlist)
+
+    def __str__(self):
+        return ''.join(self)

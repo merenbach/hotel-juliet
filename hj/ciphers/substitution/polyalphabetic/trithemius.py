@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .vigenere import VigenereCipher
+from utils import Alphabet
 
 
 class TrithemiusCipher(VigenereCipher):
@@ -24,4 +25,4 @@ class TrithemiusCipher(VigenereCipher):
 
     """
     def __init__(self, alphabet=None):
-        super().__init__(alphabet or self.DEFAULT_ALPHABET, alphabet=alphabet)
+        super().__init__(alphabet or Alphabet.DEFAULT_ALPHABET, alphabet=alphabet)

@@ -48,4 +48,4 @@ class AffineCipher(MonoSubCipher):
     def transform(alphabet, key):
         gen = lcg(len(alphabet), 1, key[0], key[1])
         gen_slice = itertools.islice(gen, len(alphabet))
-        return Alphabet(alphabet[s] for s in gen_slice)
+        return Alphabet([alphabet[s] for s in gen_slice])

@@ -4,26 +4,13 @@
 from .. import Cipher
 import string
 from utils import chunks, upward_factor, intersect
+from utils import Alphabet
 # from utils.base import grouper
 # [TODO] reduce reliance on str.join method
 
 
 class SubCipher(Cipher):
     """ Abstract-ish base class for substitution ciphers
-
-    Attributes
-    ----------
-    DEFAULT_ALPHABET : str
-        The default character set for encoding.
-    DEFAULT_NULLCHAR : str
-       A default string ("X") to use as padding.
-
-    Parameters
-    ----------
-    alphabet : str, optional
-        A plaintext alphabet to use for transcoding.  Default `None`.
-    nullchar : str, optional
-        A null character for padding.  Default `DEFAULT_NULLCHAR`.
 
     Notes
     -----
@@ -35,9 +22,6 @@ class SubCipher(Cipher):
     to know how many characters can be transcoded _before_ we transcode.
 
     """
-    DEFAULT_ALPHABET = string.ascii_uppercase
-    DEFAULT_NULLCHAR = 'X'
-
     def __repr__(self):
         return '{} ({})'.format(type(self).__name__, repr(self.tableau))
 
@@ -75,7 +59,7 @@ class SubCipher(Cipher):
 
             if block > 0:
                 padding = upward_factor(block, len(s))
-                s = s.ljust(padding, self.DEFAULT_NULLCHAR)
+                s = s.ljust(padding, Alphabet.DEFAULT_NULLCHAR)
 
         out = super().encode(s)
 
@@ -117,7 +101,7 @@ class SubCipher(Cipher):
 
         if block is not None and block > 0:
             padding = upward_factor(block, len(out))
-            out = out.ljust(padding, self.DEFAULT_NULLCHAR)
+            out = out.ljust(padding, Alphabet.DEFAULT_NULLCHAR)
             out = ' '.join(chunks(out, block))
 
         return ''.join(out)

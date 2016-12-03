@@ -5,7 +5,7 @@ from collections import namedtuple
 
 
 class SimpleTableau(namedtuple('SimpleTableau', 'pt ct')):
-    """ A one-to-one, bidirectional, plaintext/ciphertext translation tableau.
+    """ A one-to-one, bidirectional, plaintext/ciphertext translation table.
 
     Parameters
     ----------
@@ -67,8 +67,10 @@ class SimpleTableau(namedtuple('SimpleTableau', 'pt ct')):
         If any individual characters appear more than once in the plaintext
         alphabet `pt`, unexpected output may occur when the table is used.
 
+        [TODO] Repeatedly calling this could prove inefficient at scale.
+
         """
-        return str.maketrans(self.pt, self.ct)
+        return self.pt.xtable(self.ct)
 
     @property
     def ct2pt(self):
@@ -84,5 +86,7 @@ class SimpleTableau(namedtuple('SimpleTableau', 'pt ct')):
         If any individual characters appear more than once in the ciphertext
         alphabet `ct`, unexpected output may occur when the table is used.
 
+        [TODO] Repeatedly calling this could prove inefficient at scale.
+
         """
-        return str.maketrans(self.ct, self.pt)
+        return self.ct.xtable(self.pt)

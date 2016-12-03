@@ -2,8 +2,37 @@
 # -*- coding: utf-8 -*-
 
 from . import base
+from .alphabet import Alphabet
 from .simple_tableau import SimpleTableau
 from collections import OrderedDict
+
+# class TR2:
+#     """ Curious proof-of-concept for a tabula recta using only modular
+#     arithmetic.  Presumably will scale better with larger alphabets (e.g.,
+#     3500x3500).  Also of note is that it has its own encode/decode for
+#     individual characters.
+
+#     Notes
+#     -----
+#     Intriguingly, multiple keys may be used in one fell swoop here if they are
+#     summed into a single value.
+
+#     """
+#     def __init__(self, pt, ct, keys):
+#         self.t = SimpleTableau(pt, ct or pt)
+#         self.keys = keys
+
+#     def encode(self, pt, k):
+#         pos_p = self.t.pt.index(pt)
+#         pos_k = self.keys.index(k)
+#         o = (pos_p + pos_k) % len(self.t.ct)
+#         return self.t.ct[o]
+
+#     def decode(self, ct, k):
+#         pos_c = self.t.ct.index(ct)
+#         pos_k = self.keys.index(k)
+#         o = (pos_c - pos_k) % len(self.t.pt)
+#         return self.t.pt[o]
 
 
 class TabulaRecta:
@@ -20,8 +49,9 @@ class TabulaRecta:
 
     """
     def __init__(self, pt, ct=None, keys=None):
-        self.pt, self.ct = pt, ct or pt
-        self.rows = OrderedDict(self.tableaux(pt, ct or pt, keys or ct or pt))
+        pt, ct = Alphabet(pt), Alphabet(ct or pt)
+        self.pt, self.ct = pt, ct
+        self.rows = OrderedDict(self.tableaux(pt, ct, keys or ct))
 
     @staticmethod
     def tableaux(pt, ct, keys):
@@ -43,7 +73,8 @@ class TabulaRecta:
 
         """
         for i, k in enumerate(keys):
-            yield (k, SimpleTableau(pt, base.lrotated(ct, i)))
+            ct_ = Alphabet(base.lrotated(ct, i))
+            yield (k, SimpleTableau(pt, ct_))
 
     def __str__(self):
         lines = []
@@ -115,9 +146,10 @@ class DellaPortaTabulaRecta(ReciprocalTable):
 
     @staticmethod
     def tableaux(pt, ct, keys):
-        ct_ = base.lrotated(pt, len(pt) // 2)
+        ctbase_ = base.lrotated(pt, len(pt) // 2)
         for i, k in enumerate(keys):
-            yield (k, SimpleTableau(pt, base.orotated(ct_, i // 2)))
+            ct_ = Alphabet(base.orotated(ctbase_, i // 2))
+            yield (k, SimpleTableau(pt, ct_))
 
 
 # class PolybiusSquare(Tableau):
