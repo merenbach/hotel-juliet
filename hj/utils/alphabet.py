@@ -23,9 +23,31 @@ class BaseAlphabet(UserList):
     def __init__(self, initlist=None):
         if initlist is None:
             initlist = []
-        if len(initlist) > len(set(initlist)):
+        if self.recurrences(initlist) > 0:
             raise ValueError('values in alphabet may not recur')
         super().__init__(initlist=initlist)
+
+    @staticmethod
+    def recurrences(seq):
+        """ Find the count of repeated elements.
+
+        Parameters
+        ----------
+        seq : sequence
+            A sequence to evaluate.
+
+        Returns
+        -------
+        out : int
+            The number of recurrences, or `0` if none.
+
+        Notes
+        -----
+        If a single element recurs multiple times, each additional recurrence
+        will count.
+
+        """
+        return len(seq) - len(set(seq))
 
     def xtable(self, other):
         """ Create a translation table mapping this alphabet to another.
