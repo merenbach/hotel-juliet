@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from collections import UserList
+from utils import lrotated
 import string
 
 
@@ -19,11 +20,13 @@ class BaseAlphabet(UserList):
     ValueError
         If any elements in `initlist` recur.
 
+    Notes
+    -----
+    [TODO] unit tests required
+
     """
     def __init__(self, initlist=None):
-        if initlist is None:
-            initlist = []
-        if self.recurrences(initlist) > 0:
+        if self.recurrences(initlist or []) > 0:
             raise ValueError('values in alphabet may not recur')
         super().__init__(initlist=initlist)
 
@@ -48,29 +51,6 @@ class BaseAlphabet(UserList):
 
         """
         return len(seq) - len(set(seq))
-
-    def xtable(self, other):
-        """ Create a translation table mapping this alphabet to another.
-
-        Parameters
-        ----------
-        other : sequence
-            An alphabet to which to map.  If it is not the same leng
-
-        Returns
-        -------
-        out : dict
-            A map of this alphabet to `other`.
-
-        Raises
-        ------
-        ValueError
-            If this alphabet and `other` have different lengths.
-
-        """
-        if len(self) != len(other):
-            raise ValueError('alphabet length mismatch')
-        return dict(zip(self, other))
 
 
 class Alphabet(BaseAlphabet):
