@@ -49,12 +49,85 @@ class TabulaRecta:
 
     """
     def __init__(self, pt, ct=None, keys=None):
-        pt, ct = Alphabet(pt), Alphabet(ct or pt)
+        pt, ct, keys = Alphabet(pt), Alphabet(ct), Alphabet(keys)
+
         self.pt, self.ct = pt, ct
-        self.rows = OrderedDict(self.tableaux(pt, ct, keys or ct))
+        self.tableau = SimpleTableau(pt, ct)
+        self.keys = keys
+
+    # def __repr__(self):
+    #     pass
+
+    def __str__(self):
+        lines = []
+        lines.append('  | ' + ' '.join(self.tableau.pt))
+        lines.append('--+' + '-' * len(self.tableau.pt) * 2)
+        for k in self.keys:
+            changed = [self.tableau.pt2ct(e, k) for e in self.tableau.ct]
+            line = '{} | {}'.format(k, ' '.join(changed))
+            lines.append(line)
+        return '\n'.join(lines)
+
+    def pt2ct(self, e, key):
+        """ Create a translation table from plaintext to ciphertext.
+
+        Parameters
+        ----------
+        e : object
+            An element to convert from plaintext to ciphertext.
+        key : object
+            A key to use.
+
+        Returns
+        -------
+        out : object
+            The transcoded character.
+
+        """
+        k = self.keys.index(key)
+        return self.tableau.pt2ct(e, k)
+
+    def ct2pt(self, e, key):
+        """ Create a translation table from plaintext to ciphertext.
+
+        Parameters
+        ----------
+        e : object
+            An element to convert from ciphertext to plaintext.
+        key : object
+            A key to use.
+
+        Returns
+        -------
+        out : object
+            The transcoded character.
+
+        """
+        k = self.keys.index(key)
+        return self.tableau.ct2pt(e, k)
+
+
+class ReciprocalTable:
+    """ Message alphabet is on top; key alphabet is on side.  This class doesn't
+    serve much purpose right now, but that may change.
+
+    Parameters
+    ----------
+    alphabet : str
+        An alphabet for the tableau.  Duplicate elements will be removed.
+    keys : iterable, optional
+        An ordered sequence of keys to use for rows.
+
+    """
+    def __init__(self, pt, ct=None, keys=None):
+        pt, ct = Alphabet(pt), Alphabet(ct or pt)
+        keys = Alphabet(keys)
+        self.pt, self.ct = pt, ct
+        self.rows = OrderedDict(zip(keys, self.tableaux(pt, ct)))
+        self.keys = keys
 
     @staticmethod
-    def tableaux(pt, ct, keys):
+    def tableaux(pt, ct):
         """ Generate all the needed cipher tableaux.
 
         Parameters
@@ -72,35 +145,11 @@ class TabulaRecta:
             A tuple in format (key character, cipher tableau).
 
         """
-        for i, k in enumerate(keys):
+        from itertools import count
+        for i in count():
             ct_ = Alphabet(base.lrotated(ct, i))
-            yield (k, SimpleTableau(pt, ct_))
+            yield SimpleTableau(pt, ct_)
 
-    def __str__(self):
-        lines = []
-        lines.append('  | ' + ' '.join(self.pt))
-        lines.append('--+' + '-' * len(self.pt) * 2)
-        for k, v in self.rows.items():
-            line = '{} | {}'.format(k, ' '.join(v.ct))
-            lines.append(line)
-        return '\n'.join(lines)
-
-    # def __repr__(self):
-    #     pass
-
-
-class ReciprocalTable(TabulaRecta):
-    """ Message alphabet is on top; key alphabet is on side.  This class doesn't
-    serve much purpose right now, but that may change.
-
-    Parameters
-    ----------
-    alphabet : str
-        An alphabet for the tableau.  Duplicate elements will be removed.
-    keys : iterable, optional
-        An ordered sequence of keys to use for rows.
-
-    """
     def __repr__(self):
         return '{}: PT=[{}], CT=[{}], keys=[{}]'.format(type(self).__name__,
                                       repr(self.pt),
@@ -117,6 +166,41 @@ class ReciprocalTable(TabulaRecta):
             lines.append('{0} | {1}'.format(k, row))
         return '\n'.join(lines)
 
+    def pt2ct(self, e, key):
+        """ Create a translation table from plaintext to ciphertext.
+
+        Parameters
+        ----------
+        e : object
+            An element to convert from plaintext to ciphertext.
+        key : object
+            A key to use.
+
+        Returns
+        -------
+        out : object
+            The transcoded character.
+
+        """
+        return self.rows[key].pt2ct(e)
+
+    def ct2pt(self, e, key):
+        """ Create a translation table from plaintext to ciphertext.
+
+        Parameters
+        ----------
+        e : object
+            An element to convert from ciphertext to plaintext.
+        key : object
+            A key to use.
+
+        Returns
+        -------
+        out : object
+            The transcoded character.
+
+        """
+        return self.rows[key].ct2pt(e)
 
 
 # TODO: this is actually a reciprocal table...
@@ -136,7 +220,7 @@ class DellaPortaTabulaRecta(ReciprocalTable):
         lines.append('     | ' + ' '.join(alphabet))
         lines.append('-----+' + '-' * len(alphabet) * 2)
         cur_header = None
-        for i, (k, v) in enumerate(self.rows.items()):
+        for i, (k, v) in enumerate(self.items()):
             if i % 2 == 0:
                 cur_header = k
             elif i % 2 == 1:
@@ -145,11 +229,15 @@ class DellaPortaTabulaRecta(ReciprocalTable):
         return '\n'.join(lines)
 
     @staticmethod
-    def tableaux(pt, ct, keys):
-        ctbase_ = base.lrotated(pt, len(pt) // 2)
-        for i, k in enumerate(keys):
-            ct_ = Alphabet(base.orotated(ctbase_, i // 2))
-            yield (k, SimpleTableau(pt, ct_))
+    def tableaux(pt, ct):
+        ct = pt.lrotated(len(pt) // 2)
+        from itertools import count
+        for i in count():
+            ct_ = (base.orotated(ct, i // 2))
+            yield SimpleTableau(pt, ct_)
+        # while True:
+        #     ct = ct.lrotated(1)
+        #     yield SimpleTableau(pt, ct)
 
 
 # class PolybiusSquare(Tableau):
