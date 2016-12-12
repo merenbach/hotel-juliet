@@ -41,7 +41,11 @@ class MonoSubCipher(SubCipher):
         substitution cipher) should override this and customize as needed.
 
         """
-        return (self.tableau.pt2ct.get(c, c) for c in s)
+        for c in s:
+            try:
+                yield self.tableau.pt2ct(c)
+            except ValueError:
+                yield c
 
     def _decode(self, s):
         """ Decode a message.
@@ -62,4 +66,8 @@ class MonoSubCipher(SubCipher):
         substitution cipher) should override this and customize as needed.
 
         """
-        return (self.tableau.ct2pt.get(c, c) for c in s)
+        for c in s:
+            try:
+                yield self.tableau.ct2pt(c)
+            except ValueError:
+                yield c

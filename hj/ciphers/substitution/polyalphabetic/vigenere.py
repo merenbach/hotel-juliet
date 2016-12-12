@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .base import PolySubCipher
+from utils import Alphabet
 from utils import TabulaRecta
 
 
@@ -27,7 +28,8 @@ class VigenereCipher(PolySubCipher):
 
     def __init__(self, countersign, alphabet=None):
         super().__init__()
-        self.tableau = self.maketableau(alphabet or self.DEFAULT_ALPHABET)
+        alphabet = Alphabet(alphabet)
+        self.tableau = self.maketableau(alphabet)
         self.countersign = countersign
 
     @staticmethod
@@ -48,35 +50,39 @@ class VigenereCipher(PolySubCipher):
         return TabulaRecta(alphabet)
 
     def _encode(self, s):
-        cs = list(c for c in self.countersign if c in self.tableau.rows)
+        cs = list(c for c in self.countersign if c in self.tableau.keys)
         if not cs:
             return
 
         keystream = iter(cs)
         key_char = next(keystream)
         for c in s:
-            row = self.tableau.rows.get(key_char)
-            x_msg_char = c.translate(row.pt2ct)
-            yield x_msg_char
+            try:
+                x_msg_char = self.tableau.pt2ct(c, key_char)
+            except ValueError:
+                yield c
+            else:
+                yield x_msg_char
 
-            if c in row.pt:
                 key_food = self._autoclave_encode(c, x_msg_char)
                 cs.extend(key_food or key_char)
                 key_char = next(keystream)
 
     def _decode(self, s):
-        cs = list(c for c in self.countersign if c in self.tableau.rows)
+        cs = list(c for c in self.countersign if c in self.tableau.keys)
         if not cs:
             return
 
         keystream = iter(cs)
         key_char = next(keystream)
         for c in s:
-            row = self.tableau.rows.get(key_char)
-            x_msg_char = c.translate(row.ct2pt)
-            yield x_msg_char
+            try:
+                x_msg_char = self.tableau.ct2pt(c, key_char)
+            except ValueError:
+                yield c
+            else:
+                yield x_msg_char
 
-            if c in row.ct:
                 key_food = self._autoclave_decode(c, x_msg_char)
                 cs.extend(key_food or key_char)
                 key_char = next(keystream)
