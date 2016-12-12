@@ -230,7 +230,7 @@ class DellaPortaTabulaRecta(ReciprocalTable):
 
     @staticmethod
     def tableaux(pt, ct):
-        ct = pt.lrotated(len(pt) // 2)
+        ct = base.lrotated(pt, len(pt) // 2)
         from itertools import count
         for i in count():
             ct_ = (base.orotated(ct, i // 2))
