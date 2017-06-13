@@ -49,12 +49,14 @@
                [c (in-string s)])
       (string-ref s (affine k a b)))))
 
-(define (make-atbash s)
-  (affinal s -1 -1))
-(define (make-caesar s k)
-  (affinal s 1 k))
 (define (make-affine s a b)
   (affinal s a b))
+(define (make-atbash s)
+  (make-affine s -1 -1))
+(define (make-caesar s b)
+  (make-affine s 1 b))
+(define (make-decimation s a)
+  (make-affine s a 0))
 
 
 (define (xpair a b)
