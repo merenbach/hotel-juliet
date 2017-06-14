@@ -8,7 +8,7 @@
 
 
 (define AFFINE_ALPHABET
-  (make-affine ALPHABET 5 8))
+  (make-affine-alphabet ALPHABET 5 8))
 
 (define AFPAIR
   (xpair ALPHABET AFFINE_ALPHABET))

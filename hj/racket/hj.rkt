@@ -9,12 +9,6 @@
       (string->list s))))
 
 
-(define (filterab mesh kw)
-  (list->string
-    (filter (lambda (c) (member c (string->list mesh))) (string->list kw))))
-(define (make-keyword-alphabet ab kw)
-  (make-alphabet
-    (string-append (filterab ab kw) ab)))
 #| (define (lrotate s n) |#
 #|   (define ss1 (substring s 0 n)) |#
 #|   (define ss2 (substring s n)) |#
@@ -49,27 +43,43 @@
                [c (in-string s)])
       (string-ref s (affine k a b)))))
 
-(define (make-affine s a b)
-  (affinal s a b))
-(define (make-atbash s)
-  (make-affine s -1 -1))
-(define (make-caesar s b)
-  (make-affine s 1 b))
-(define (make-decimation s a)
-  (make-affine s a 0))
-
-
 (define (xpair a b)
   (let ([a (string->list a)]
         [b (string->list b)])
     (cons (make-immutable-hash (map cons a b))
           (make-immutable-hash (map cons b a)))))
 
-(define ATBASH_ALPHABET
-  (make-atbash ALPHABET))
+#| (define (filterab2 mesh kw) |#
+#|   (filter (lambda (c) (member c mesh)) kw)) |#
 
-(define ATPAIR
-  (xpair ALPHABET ATBASH_ALPHABET))
+(define (filterab mesh kw)
+  (list->string
+    (for/list ([c (in-string kw)]
+      #:when (member c mesh))
+      c)))
+
+#| (define (make-alphabet a b) |#
+#|   (xpair a b)) |#
+
+(define (make-affine-alphabet s a b)
+  (make-alphabet
+    (affinal s a b)))
+(define (make-atbash-alphabet s)
+  (make-affine-alphabet s -1 -1))
+(define (make-caesar-alphabet s b)
+  (make-affine-alphabet s 1 b))
+(define (make-decimation-alphabet s a)
+  (make-affine-alphabet s a 0))
+(define (make-keyword-alphabet ab kw)
+  (make-alphabet
+    (string-append (filterab ab kw) ab)))
+
+
+#| (define ATBASH_ALPHABET |#
+#|   (make-atbash ALPHABET)) |#
+
+#| (define ATPAIR |#
+#|   (xpair ALPHABET ATBASH_ALPHABET)) |#
 
 (define (encrypt-char xtb chr)
   (hash-ref (car xtb) chr chr))
@@ -203,23 +213,6 @@
 #| (define encxtable (xtable ALPHABET CAESAR_ALPHABET)) |#
 #| (define decxtable (xtable CAESAR_ALPHABET ALPHABET)) |#
 
-(define (runciphertest)
-  (define MSG "HELLO, WORLD!")
-  (printf "MSG: ~a\n" MSG)
-  #| (define enclammie |#
-  #|   (xform_caesar 3)) |#
-  #| (define declammie |#
-  #|   (xform_caesar -3)) |#
-  #| (define enc1 (xlate enclammie #t MSG)) |#
-  #| (define enc2 (xlate enclammie #f MSG)) |#
-  #| (printf "ENC1, strict: ~a\nENC2, lenient: ~a\n" enc1 enc2) |#
-  #| (define dec1 (xlate declammie #t enc1)) |#
-  #| (define dec2 (xlate declammie #f enc2)) |#
-  #| (printf "DEC1, strict: ~a\nDEC2, lenient: ~a\n" dec1 dec2) |#
-)
-
-(runciphertest)
-
 #| (define (xlate2 somextable strict s) |#
 #|   (map (lambda (i) |#
 #|          (hash-ref somextable i i)) |#
@@ -252,4 +245,4 @@
 #| (list->string (xlate2 encxtable #t "HELLO, WORLD!")) |#
 #| (list->string (xlate2 encxtable #f "HELLO, WORLD!")) |#
 
-(provide ALPHABET encrypt-string decrypt-string make-affine xpair xlate)
+(provide ALPHABET encrypt-string decrypt-string make-affine-alphabet xpair xlate)
