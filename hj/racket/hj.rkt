@@ -2,12 +2,19 @@
 (require racket/list)
 (require racket/string)
 #| (require srfi/13) |#
-(define ALPHABET "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+(define DEFAULT_ALPHABET "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+(define ALPHABET DEFAULT_ALPHABET)
+
 (define (make-alphabet s)
   (list->string
     (remove-duplicates
       (string->list s))))
 
+
+(define qrx
+  (lambda (a b c #:alphabet [alphabet DEFAULT_ALPHABET])
+    (list a b c alphabet)))
+(qrx 2 3 4)
 
 #| (define (lrotate s n) |#
 #|   (define ss1 (substring s 0 n)) |#
@@ -74,6 +81,28 @@
   (make-alphabet
     (string-append (filterab ab kw) ab)))
 
+
+#| (define (string-map a b) |#
+#|   (make-immutable-hash |#
+#|     (map cons (string->list a) (string->list b)))) |#
+
+(define (string-encrypt-affine s a b #:strict strict #:alphabet [alphabet DEFAULT_ALPHABET])
+  (xlate encrypt-char
+         (xpair alphabet
+                (make-affine-alphabet alphabet a b))
+         strict s))
+
+(define (string-decrypt-affine s a b #:strict strict #:alphabet [alphabet DEFAULT_ALPHABET])
+  (xlate decrypt-char
+         (xpair ALPHABET
+                (make-affine-alphabet ALPHABET a b))
+         strict s))
+
+#| (struct bigbadmofo (alphabet) |#
+#|   (bingbangboom ( |#
+#|   (define x 3) |#
+#|    (define y 7) |#
+#|    (+ x y)))) |#
 
 #| (define ATBASH_ALPHABET |#
 #|   (make-atbash ALPHABET)) |#
@@ -245,4 +274,4 @@
 #| (list->string (xlate2 encxtable #t "HELLO, WORLD!")) |#
 #| (list->string (xlate2 encxtable #f "HELLO, WORLD!")) |#
 
-(provide ALPHABET encrypt-string decrypt-string make-affine-alphabet xpair xlate)
+(provide ALPHABET encrypt-string decrypt-string make-affine-alphabet xpair xlate string-encrypt-affine string-decrypt-affine)
