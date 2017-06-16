@@ -93,17 +93,15 @@
 (define (decrypt-char a b chr)
   (hash-ref (make-immutable-hash (map cons b a)) chr chr))
 
-(define (xlate nfunc a b strict s)
-  (for/list
-    ([c (in-string s)]
-     #:when (or (not strict) (hash-has-key? FROM_ALPHA_MAPPING c)))
-    (nfunc (string->list a) (string->list b) c)))
-
 (define (MAKE_TRANSCRYPT_FUNC what-tc-func-to-call what-alpha-to-call strict alphabet s . my-rest-id)
   (list->string
-    (xlate what-tc-func-to-call
-           alphabet (apply what-alpha-to-call alphabet my-rest-id)
-           strict s)))
+    (for/list
+      ([c (in-string s)]
+       #:when (or (not strict) (hash-has-key? FROM_ALPHA_MAPPING c)))
+      (what-tc-func-to-call (string->list alphabet)
+                            (string->list
+                              (apply what-alpha-to-call alphabet my-rest-id))
+                            c))))
 
 
 #| (define (generic-make-tc s #:strict strict #:alphabet [alphabet DEFAULT_ALPHABET] . my-rest-id) |#
