@@ -91,12 +91,13 @@
 (define (MAKE_TRANSCRYPT_FUNC rev what-alpha-to-call strict s alphabet . my-rest-id)
   (let ([alpha1 (string->list alphabet)]
         [alpha2 (string->list (apply what-alpha-to-call alphabet my-rest-id))])
-    (let ([forwards-map (make-immutable-hash (map cons alpha1 alpha2))]
-          [reverse-map (make-immutable-hash (map cons alpha2 alpha1))])
+    (let* ([forwards-map (make-immutable-hash (map cons alpha1 alpha2))]
+          [reverse-map (make-immutable-hash (map cons alpha2 alpha1))]
+          [current-map (if rev reverse-map forwards-map)])
       (for/list
         ([c (in-string s)]
-         #:when (or (not strict) (hash-has-key? FROM_ALPHA_MAPPING c)))
-        (hash-ref (if rev reverse-map forwards-map) c c)))))
+         #:when (or (not strict) (hash-has-key? current-map c)))
+        (hash-ref current-map c c)))))
 
 (define (make-transcoder alphamaker rev)
   (lambda (s #:strict strict #:alphabet [alphabet DEFAULT_ALPHABET] . rest-id)
@@ -105,29 +106,29 @@
 
 ; [TODO] unreadable symbol for separators?
 
-(define string-encrypt-affine
+(define string-encrypt/affine
   (make-transcoder make-affine-alphabet #f))
-(define string-decrypt-affine
+(define string-decrypt/affine
   (make-transcoder make-affine-alphabet #t))
 
-(define string-encrypt-atbash
+(define string-encrypt/atbash
   (make-transcoder make-atbash-alphabet #f))
-(define string-decrypt-atbash
+(define string-decrypt/atbash
   (make-transcoder make-atbash-alphabet #t))
 
-(define string-encrypt-caesar
+(define string-encrypt/caesar
   (make-transcoder make-caesar-alphabet #f))
-(define string-decrypt-caesar
+(define string-decrypt/caesar
   (make-transcoder make-caesar-alphabet #t))
 
-(define string-encrypt-decimation
+(define string-encrypt/decimation
   (make-transcoder make-decimation-alphabet #f))
-(define string-decrypt-decimation
+(define string-decrypt/decimation
   (make-transcoder make-decimation-alphabet #t))
 
-(define string-encrypt-keyword
+(define string-encrypt/keyword
   (make-transcoder make-keyword-alphabet #f))
-(define string-decrypt-keyword
+(define string-decrypt/keyword
   (make-transcoder make-keyword-alphabet #t))
 
 
@@ -155,15 +156,15 @@
 #|     (for/list ([k (in-naturals)] |#
 #|                [x iterable]) |#
 #|       (cons k x))) |#
-(define (char-index iterable)
-    (for/list ([k (in-naturals)]
-               [x iterable])
-      (cons x k)))
+#| (define (char-index iterable) |#
+#|     (for/list ([k (in-naturals)] |#
+#|                [x iterable]) |#
+#|       (cons x k))) |#
 
 
-(define FROM_ALPHA_MAPPING
-  (make-immutable-hash
-    (char-index ALPHABET)))
+#| (define FROM_ALPHA_MAPPING |#
+#|   (make-immutable-hash |#
+#|     (char-index ALPHABET))) |#
 
 
 #| (define (xform s mm) |#
@@ -211,38 +212,38 @@
 
 #| (define (zip p q) |#
 #|   (map cons p q)) |#
-(define (hmap p q)
-  (make-immutable-hash
-    (map cons p q)))
+#| (define (hmap p q) |#
+#|   (make-immutable-hash |#
+#|     (map cons p q))) |#
 
-(define (xtable p q)
-  (hmap (string->list p)
-        (string->list q)))
+#| (define (xtable p q) |#
+#|   (hmap (string->list p) |#
+#|         (string->list q))) |#
 
-(define (xlate2 somextable strict s)
-  (list->string
-    (map
-      (lambda(i)
-        (cond
-          [(equal? strict #f) (hash-ref somextable i i)]
-          [(hash-has-key? somextable i) (hash-ref somextable i i)]
-          [else (hash-ref somextable i #"")]
-          )
-        ) (string->list s))))
+#| (define (xlate2 somextable strict s) |#
+#|   (list->string |#
+#|     (map |#
+#|       (lambda(i) |#
+#|         (cond |#
+#|           [(equal? strict #f) (hash-ref somextable i i)] |#
+#|           [(hash-has-key? somextable i) (hash-ref somextable i i)] |#
+#|           [else (hash-ref somextable i #"")] |#
+#|           ) |#
+#|         ) (string->list s)))) |#
 
-(define (index s char)
-  (for/first ([c s]
-              [i (in-naturals)]
-              #:when (char=? c char))
-             i))
-(define (xxx lammie c)
-  #| (define idx (index ALPHABET c)) |#
-  (define idx (hash-ref FROM_ALPHA_MAPPING c #f))
-  (cond
-    [idx (string-ref ALPHABET
-                     (modulo (lammie idx)
-                             (string-length ALPHABET)))]
-    [else c]))
+#| (define (index s char) |#
+#|   (for/first ([c s] |#
+#|               [i (in-naturals)] |#
+#|               #:when (char=? c char)) |#
+#|              i)) |#
+#| (define (xxx lammie c) |#
+#|   #1| (define idx (index ALPHABET c)) |1# |#
+#|   (define idx (hash-ref FROM_ALPHA_MAPPING c #f)) |#
+#|   (cond |#
+#|     [idx (string-ref ALPHABET |#
+#|                      (modulo (lammie idx) |#
+#|                              (string-length ALPHABET)))] |#
+#|     [else c])) |#
 
 
 
@@ -290,8 +291,8 @@
 #| (list->string (xlate2 encxtable #t "HELLO, WORLD!")) |#
 #| (list->string (xlate2 encxtable #f "HELLO, WORLD!")) |#
 
-(provide string-encrypt-affine string-decrypt-affine)
-(provide string-encrypt-atbash string-decrypt-atbash)
-(provide string-encrypt-caesar string-decrypt-caesar)
-(provide string-encrypt-decimation string-decrypt-decimation)
-(provide string-encrypt-keyword string-decrypt-keyword)
+(provide string-encrypt/affine string-decrypt/affine
+         string-encrypt/atbash string-decrypt/atbash
+         string-encrypt/caesar string-decrypt/caesar
+         string-encrypt/decimation string-decrypt/decimation
+         string-encrypt/keyword string-decrypt/keyword)
