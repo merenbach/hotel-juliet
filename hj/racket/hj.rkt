@@ -50,14 +50,14 @@
                [c (in-string s)])
       (string-ref s (affine k a b)))))
 
-(define (xpair a b)
-  (let ([a (string->list a)]
-        [b (string->list b)])
-    (cons (make-immutable-hash (map cons a b))
-          (make-immutable-hash (map cons b a)))))
-
 #| (define (filterab2 mesh kw) |#
 #|   (filter (lambda (c) (member c mesh)) kw)) |#
+
+#| (define (xpair a b) |#
+#|   (let ([a (string->list a)] |#
+#|         [b (string->list b)]) |#
+#|     (cons (make-immutable-hash (map cons a b)) |#
+#|           (make-immutable-hash (map cons b a))))) |#
 
 (define (filterab mesh kw)
   (list->string
@@ -85,18 +85,60 @@
 #| (define (string-map a b) |#
 #|   (make-immutable-hash |#
 #|     (map cons (string->list a) (string->list b)))) |#
+#| (define (transcrypt-char a b chr t-or-f) |#
+#|   (hash-ref (make-immutable-hash (map cons (if (t-or-f) '(b a) '(a b)) chr chr)))) |#
+
+(define (encrypt-char a b chr)
+  (hash-ref (make-immutable-hash (map cons a b)) chr chr))
+(define (decrypt-char a b chr)
+  (hash-ref (make-immutable-hash (map cons b a)) chr chr))
+
+(define (xlate nfunc a b strict s)
+  (for/list
+    ([c (in-string s)]
+     #:when (or (not strict) (hash-has-key? FROM_ALPHA_MAPPING c)))
+    (nfunc (string->list a) (string->list b) c)))
+
+(define (MAKE_TRANSCRYPT_FUNC what-tc-func-to-call what-alpha-to-call strict alphabet s . my-rest-id)
+  (list->string
+    (xlate what-tc-func-to-call
+           alphabet (apply what-alpha-to-call alphabet my-rest-id)
+           strict s)))
+
+
+#| (define (generic-make-tc s #:strict strict #:alphabet [alphabet DEFAULT_ALPHABET] . my-rest-id) |#
+#|   (apply MAKE_TRANSCRYPT_FUNC encrypt-char make-affine-alphabet strict alphabet s my-rest-id)) |#
 
 (define (string-encrypt-affine s a b #:strict strict #:alphabet [alphabet DEFAULT_ALPHABET])
-  (xlate encrypt-char
-         (xpair alphabet
-                (make-affine-alphabet alphabet a b))
-         strict s))
+  (MAKE_TRANSCRYPT_FUNC encrypt-char make-affine-alphabet strict alphabet s a b))
 
 (define (string-decrypt-affine s a b #:strict strict #:alphabet [alphabet DEFAULT_ALPHABET])
-  (xlate decrypt-char
-         (xpair ALPHABET
-                (make-affine-alphabet ALPHABET a b))
-         strict s))
+  (MAKE_TRANSCRYPT_FUNC decrypt-char make-affine-alphabet strict alphabet s a b))
+
+(define (string-encrypt-atbash s #:strict strict #:alphabet [alphabet DEFAULT_ALPHABET])
+  (MAKE_TRANSCRYPT_FUNC encrypt-char make-atbash-alphabet strict alphabet s))
+
+(define (string-decrypt-atbash s #:strict strict #:alphabet [alphabet DEFAULT_ALPHABET])
+  (MAKE_TRANSCRYPT_FUNC decrypt-char make-atbash-alphabet strict alphabet s))
+
+(define (string-encrypt-caesar s offset #:strict strict #:alphabet [alphabet DEFAULT_ALPHABET])
+  (MAKE_TRANSCRYPT_FUNC encrypt-char make-caesar-alphabet strict alphabet s offset))
+
+(define (string-decrypt-caesar s offset #:strict strict #:alphabet [alphabet DEFAULT_ALPHABET])
+  (MAKE_TRANSCRYPT_FUNC decrypt-char make-caesar-alphabet strict alphabet s offset))
+
+(define (string-encrypt-decimation s mult #:strict strict #:alphabet [alphabet DEFAULT_ALPHABET])
+  (MAKE_TRANSCRYPT_FUNC encrypt-char make-decimation-alphabet strict alphabet s mult))
+
+(define (string-decrypt-decimation s mult #:strict strict #:alphabet [alphabet DEFAULT_ALPHABET])
+  (MAKE_TRANSCRYPT_FUNC decrypt-char make-decimation-alphabet strict alphabet s mult))
+
+(define (string-encrypt-keyword s kw #:strict strict #:alphabet [alphabet DEFAULT_ALPHABET])
+  (MAKE_TRANSCRYPT_FUNC encrypt-char make-keyword-alphabet strict alphabet s kw))
+
+(define (string-decrypt-keyword s kw #:strict strict #:alphabet [alphabet DEFAULT_ALPHABET])
+  (MAKE_TRANSCRYPT_FUNC decrypt-char make-keyword-alphabet strict alphabet s kw))
+
 
 #| (struct bigbadmofo (alphabet) |#
 #|   (bingbangboom ( |#
@@ -109,16 +151,6 @@
 
 #| (define ATPAIR |#
 #|   (xpair ALPHABET ATBASH_ALPHABET)) |#
-
-(define (encrypt-char xtb chr)
-  (hash-ref (car xtb) chr chr))
-(define (decrypt-char xtb chr)
-  (hash-ref (cdr xtb) chr chr))
-
-(define (encrypt-string xtb strict s)
-  (xlate encrypt-char xtb strict s))
-(define (decrypt-string xtb strict s)
-  (xlate decrypt-char xtb strict s))
 
 
 #| (define enumerate |#
@@ -221,13 +253,6 @@
                              (string-length ALPHABET)))]
     [else c]))
 
-(define (xlate nfunc xtb strict s)
-  (list->string
-    (for/list
-      ([c (in-string s)]
-       #:when (or (not strict) (hash-has-key? FROM_ALPHA_MAPPING c)))
-      (nfunc xtb c))))
-
 
 
 #| (define (make_caesar_alphabet n) |#
@@ -274,4 +299,8 @@
 #| (list->string (xlate2 encxtable #t "HELLO, WORLD!")) |#
 #| (list->string (xlate2 encxtable #f "HELLO, WORLD!")) |#
 
-(provide ALPHABET encrypt-string decrypt-string make-affine-alphabet xpair xlate string-encrypt-affine string-decrypt-affine)
+(provide string-encrypt-affine string-decrypt-affine)
+(provide string-encrypt-atbash string-decrypt-atbash)
+(provide string-encrypt-caesar string-decrypt-caesar)
+(provide string-encrypt-decimation string-decrypt-decimation)
+(provide string-encrypt-keyword string-decrypt-keyword)
