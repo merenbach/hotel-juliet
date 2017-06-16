@@ -88,22 +88,19 @@
 #| (define (transcrypt-char a b chr t-or-f) |#
 #|   (hash-ref (make-immutable-hash (map cons (if (t-or-f) '(b a) '(a b)) chr chr)))) |#
 
-(define (MAKE_TRANSCRYPT_FUNC rev what-alpha-to-call strict s alphabet . my-rest-id)
-  (let ([alpha1 (string->list alphabet)]
-        [alpha2 (string->list (apply what-alpha-to-call alphabet my-rest-id))])
-    (let* ([forwards-map (make-immutable-hash (map cons alpha1 alpha2))]
-          [reverse-map (make-immutable-hash (map cons alpha2 alpha1))]
-          [current-map (if rev reverse-map forwards-map)])
-      (for/list
-        ([c (in-string s)]
-         #:when (or (not strict) (hash-has-key? current-map c)))
-        (hash-ref current-map c c)))))
-
 (define (make-transcoder alphamaker rev)
-  (lambda (s #:strict strict #:alphabet [alphabet DEFAULT_ALPHABET] . rest-id)
+  (lambda (s #:strict strict #:alphabet [alphabet DEFAULT_ALPHABET] . my-rest-id)
     (list->string
-      (apply MAKE_TRANSCRYPT_FUNC rev alphamaker strict s alphabet rest-id))))
-
+      (let* ([alpha1 (string->list alphabet)]
+             [alpha2 (string->list (apply alphamaker alphabet my-rest-id))]
+             [forwards-assoc (map cons alpha1 alpha2)]
+             [reverse-assoc (map cons alpha2 alpha1)]
+             [current-map (make-immutable-hash (if rev reverse-assoc forwards-assoc))])
+        (for/list
+          ([c (in-string s)]
+           #:when (or (not strict) (hash-has-key? current-map c)))
+          (hash-ref current-map c c))))))
+; [TODO] use -affine instead of /affine and append /strict for strict variant??
 ; [TODO] unreadable symbol for separators?
 
 (define string-encrypt/affine
