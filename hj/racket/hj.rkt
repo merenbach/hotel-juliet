@@ -88,52 +88,46 @@
 #| (define (transcrypt-char a b chr t-or-f) |#
 #|   (hash-ref (make-immutable-hash (map cons (if (t-or-f) '(b a) '(a b)) chr chr)))) |#
 
-(define (MAKE_TRANSCRYPT_FUNC what-tc-func-to-call what-alpha-to-call strict s alphabet . my-rest-id)
-  (define alpha1 (string->list alphabet))
-  (define alpha2 (string->list (apply what-alpha-to-call alphabet my-rest-id)))
+(define (MAKE_TRANSCRYPT_FUNC rev what-alpha-to-call strict s alphabet . my-rest-id)
+  (let ([alpha1 (string->list alphabet)]
+        [alpha2 (string->list (apply what-alpha-to-call alphabet my-rest-id))])
     (for/list
       ([c (in-string s)]
        #:when (or (not strict) (hash-has-key? FROM_ALPHA_MAPPING c)))
-      (what-tc-func-to-call c alpha1 alpha2)))
+      (hash-ref
+        (make-immutable-hash
+          (if rev (map cons alpha2 alpha1) (map cons alpha1 alpha2) ))
+        c c))))
 
-(define (make-transcoder alphamaker transfunc)
+(define (make-transcoder alphamaker rev)
   (lambda (s #:strict strict #:alphabet [alphabet DEFAULT_ALPHABET] . rest-id)
     (list->string
-      (apply MAKE_TRANSCRYPT_FUNC transfunc alphamaker strict s alphabet rest-id))))
-
-(define (encrypt-char chr a b)
-  (hash-ref (make-immutable-hash (map cons a b)) chr chr))
-(define (decrypt-char chr a b)
-  (hash-ref (make-immutable-hash (map cons b a)) chr chr))
-
-
-#| (define (generic-make-tc s #:strict strict #:alphabet [alphabet DEFAULT_ALPHABET] . my-rest-id) |#
-#|   (apply MAKE_TRANSCRYPT_FUNC encrypt-char make-affine-alphabet strict s alphabet my-rest-id)) |#
+      (apply MAKE_TRANSCRYPT_FUNC rev alphamaker strict s alphabet rest-id))))
 
 (define string-encrypt-affine
-  (make-transcoder make-affine-alphabet encrypt-char))
+  (make-transcoder make-affine-alphabet #f))
 (define string-decrypt-affine
-  (make-transcoder make-affine-alphabet decrypt-char))
+  (make-transcoder make-affine-alphabet #t))
 
 (define string-encrypt-atbash
-  (make-transcoder make-atbash-alphabet encrypt-char))
+  (make-transcoder make-atbash-alphabet #f))
 (define string-decrypt-atbash
-  (make-transcoder make-atbash-alphabet decrypt-char))
+  (make-transcoder make-atbash-alphabet #t))
 
 (define string-encrypt-caesar
-  (make-transcoder make-caesar-alphabet encrypt-char))
+  (make-transcoder make-caesar-alphabet #f))
 (define string-decrypt-caesar
-  (make-transcoder make-caesar-alphabet decrypt-char))
+  (make-transcoder make-caesar-alphabet #t))
 
 (define string-encrypt-decimation
-  (make-transcoder make-decimation-alphabet encrypt-char))
+  (make-transcoder make-decimation-alphabet #f))
 (define string-decrypt-decimation
-  (make-transcoder make-decimation-alphabet decrypt-char))
+  (make-transcoder make-decimation-alphabet #t))
 
 (define string-encrypt-keyword
-  (make-transcoder make-keyword-alphabet encrypt-char))
+  (make-transcoder make-keyword-alphabet #f))
 (define string-decrypt-keyword
-  (make-transcoder make-keyword-alphabet decrypt-char))
+  (make-transcoder make-keyword-alphabet #t))
 
 
 #| (struct bigbadmofo (alphabet) |#
