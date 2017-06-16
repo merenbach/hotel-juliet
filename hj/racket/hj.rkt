@@ -91,18 +91,19 @@
 (define (MAKE_TRANSCRYPT_FUNC rev what-alpha-to-call strict s alphabet . my-rest-id)
   (let ([alpha1 (string->list alphabet)]
         [alpha2 (string->list (apply what-alpha-to-call alphabet my-rest-id))])
-    (for/list
-      ([c (in-string s)]
-       #:when (or (not strict) (hash-has-key? FROM_ALPHA_MAPPING c)))
-      (hash-ref
-        (make-immutable-hash
-          (if rev (map cons alpha2 alpha1) (map cons alpha1 alpha2) ))
-        c c))))
+    (let ([forwards-map (make-immutable-hash (map cons alpha1 alpha2))]
+          [reverse-map (make-immutable-hash (map cons alpha2 alpha1))])
+      (for/list
+        ([c (in-string s)]
+         #:when (or (not strict) (hash-has-key? FROM_ALPHA_MAPPING c)))
+        (hash-ref (if rev reverse-map forwards-map) c c)))))
 
 (define (make-transcoder alphamaker rev)
   (lambda (s #:strict strict #:alphabet [alphabet DEFAULT_ALPHABET] . rest-id)
     (list->string
       (apply MAKE_TRANSCRYPT_FUNC rev alphamaker strict s alphabet rest-id))))
+
+; [TODO] unreadable symbol for separators?
 
 (define string-encrypt-affine
   (make-transcoder make-affine-alphabet #f))
