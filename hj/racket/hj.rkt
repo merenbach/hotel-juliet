@@ -1,20 +1,30 @@
 #lang racket/base
 (require racket/list)
-(require racket/string)
-#| (require srfi/13) |#
+#| (require racket/string) |#
+
+
 (define DEFAULT_ALPHABET "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 (define ALPHABET DEFAULT_ALPHABET)
 
-(define (make-alphabet s)
-  (list->string
-    (remove-duplicates
-      (string->list s))))
+
+(define (coprime . rest-id)
+  ;; Are all arguments coprime?
+  (equal? 1 (apply gcd rest-id)))
 
 
-(define qrx
-  (lambda (a b c #:alphabet [alphabet DEFAULT_ALPHABET])
-    (list a b c alphabet)))
-(qrx 2 3 4)
+#| (require srfi/13) |#
+
+
+
+#| (struct tableau (pt ct)) |#
+#| (define xlateify (tableau (lambda (i) (+ 3 i)) 7)) |#
+#| ((tableau-pt xlateify) 3) |#
+
+
+
+
+
+
 
 #| (define (lrotate s n) |#
 #|   (define ss1 (substring s 0 n)) |#
@@ -23,32 +33,29 @@
 ; (for ([i s])
 ; (printf "~a... ~x" i x))
 
-#| (define (affinal s a b) |#
-#|     (for/list ([c (in-string s)] |#
-#|       (c)) |#
-#|       )) |#
-#| (define (affinal s a b) |#
-#|   (list->string |#
-#|     (for/list |#
-#|       ([c (in-string s)]) |#
-#|       (or c c)))) |#
 
-(define (coprime a b)
-  (equal? 1 (gcd a b)))
+(define (affinity a b m)
+  (lambda (k)
+    (modulo (+ b (* k a)) m)))
 
-(define (affine n a b)
-  (cond
-    [(coprime a (string-length ALPHABET))
-      (modulo
-        (+ b (* n a))
-        (string-length ALPHABET))]
-      [else error "A MUST BE COPRIME WITH ALPHABET"]))
+
+;; [TODO] create only numeric mappings for alphabets, then transform with string->num and num->string at the end?
+#| (define (strposmap s lst) |#
+#|   (map (lambda (i) (string-ref s i)) lst)) |#
+#| (strposmap "HELLO, WORLD" '(0 3 2 7 100)) |#
 
 (define (affinal s a b)
-  (list->string
-    (for/list ([k (in-naturals)]
-               [c (in-string s)])
-      (string-ref s (affine k a b)))))
+  (let ([alphalen (string-length s)])
+    (cond
+      [(coprime a alphalen)
+       (map
+         (lambda (k)
+           (string-ref s k))
+         (map (affinity a b alphalen) (range alphalen)))]
+       #| (for/list ([k (range alphalen)]) |#
+       #|   (string-ref s k) |#
+       #|   )] |#
+      [else error "multiplier and alphabet length must be coprime"])))
 
 #| (define (filterab2 mesh kw) |#
 #|   (filter (lambda (c) (member c mesh)) kw)) |#
@@ -65,12 +72,16 @@
       #:when (member c mesh))
       c)))
 
-#| (define (make-alphabet a b) |#
-#|   (xpair a b)) |#
-
+;; [TODO] alphamaker store alphabet string but accept params after...?
+#| (define (make-affine-alphabet s) |#
+#|   (lambda (a b) |#
+#|     (list->string |#
+#|       (remove-duplicates |#
+#|         (affinal s a b))))) |#
 (define (make-affine-alphabet s a b)
-  (make-alphabet
-    (affinal s a b)))
+  (let ([s (list->string (remove-duplicates (string->list s)))])
+    (remove-duplicates
+      (affinal s a b))))
 (define (make-atbash-alphabet s)
   (make-affine-alphabet s -1 -1))
 (define (make-caesar-alphabet s b)
@@ -78,7 +89,7 @@
 (define (make-decimation-alphabet s a)
   (make-affine-alphabet s a 0))
 (define (make-keyword-alphabet ab kw)
-  (make-alphabet
+  (remove-duplicates
     (string-append (filterab ab kw) ab)))
 
 
@@ -88,18 +99,49 @@
 #| (define (transcrypt-char a b chr t-or-f) |#
 #|   (hash-ref (make-immutable-hash (map cons (if (t-or-f) '(b a) '(a b)) chr chr)))) |#
 
+(define (transcode s xfunc)
+  ;; take a string and apply xfunc to its characters, filtering out any #f values that result
+  (filter values (map xfunc s)))
+
+        #| pos = src.index(e) |#
+        #| if callable(transform): |#
+        #|     pos = transform(pos) |#
+        #| return dst[pos % len(dst)] |#
+
+#| (define (char-transcode c a b [transform ()]) |#
+#|   (b substr (modulo |#
+#|     (transform |#
+#|       (index a c)), len b))) |#
+
+(define (counterpart-finder* a b)
+  ;; Return the same-index counterpart of an element in one list in another.
+  (lambda (e [transform (lambda (i) i)])
+    (list-ref b
+              (transform
+                (index-of a e)))))
+
+(define (counterpart-finder a b)
+  (counterpart-finder* (string->list a) (string->list b)))
+
+#| (define n (counterpart-finder "ABCDEFG" "HIJKLMN")) |#
+#| (n #\C sub1) |#
+
+#| (define transcode-outer |#
+#|   (list->string |#
+#|     (map transcodeify |#
+#|       (string->list s))) |#
+
 (define (make-transcoder alphamaker rev)
-  (lambda (s #:strict strict #:alphabet [alphabet DEFAULT_ALPHABET] . my-rest-id)
+  (lambda (s #:strict strict #:alphabet [alphabet DEFAULT_ALPHABET] . rest-id)
     (list->string
-      (let* ([alpha1 (string->list alphabet)]
-             [alpha2 (string->list (apply alphamaker alphabet my-rest-id))]
+      (let* ([s (string->list s)]
+             [alpha1 (string->list alphabet)]
+             [alpha2 (apply alphamaker alphabet rest-id)]
              [forwards-assoc (map cons alpha1 alpha2)]
              [reverse-assoc (map cons alpha2 alpha1)]
-             [current-map (make-immutable-hash (if rev reverse-assoc forwards-assoc))])
-        (for/list
-          ([c (in-string s)]
-           #:when (or (not strict) (hash-has-key? current-map c)))
-          (hash-ref current-map c c))))))
+             [current-map (make-immutable-hash (if rev reverse-assoc forwards-assoc))]
+             [xfunc (lambda(char) (hash-ref current-map char (if (not strict) char #f)))])
+        (transcode s xfunc)))))
 ; [TODO] use -affine instead of /affine and append /strict for strict variant??
 ; [TODO] unreadable symbol for separators?
 
@@ -287,6 +329,26 @@
 
 #| (list->string (xlate2 encxtable #t "HELLO, WORLD!")) |#
 #| (list->string (xlate2 encxtable #f "HELLO, WORLD!")) |#
+#| (struct cipher-suite |#
+#|                         (encrypt/affine decrypt/affine |#
+#|                          encrypt/atbash decrypt/atbash |#
+#|                          encrypt/caesar decrypt/caesar |#
+#|                          encrypt/decimation decrypt/decimation |#
+#|                          encrypt/keyword decrypt/keyword)) |#
+
+#| (define cipher (cipher-suite string-encrypt/affine string-decrypt/affine |#
+#|          string-encrypt/atbash string-decrypt/atbash |#
+#|          string-encrypt/caesar string-decrypt/caesar |#
+#|          string-encrypt/decimation string-decrypt/decimation |#
+#|          string-encrypt/keyword string-decrypt/keyword)) |#
+
+#| (provide cipher) |#
+
+#| (struct cipher (encrypt decrypt)) |#
+#| (define my-affine-encrypt (lambda() "WE ARE ENCRYPTING")) |#
+#| (define my-affine-decrypt (lambda() "WE ARE DECRYPTING")) |#
+#| (define affine (cipher my-affine-encrypt my-affine-decrypt)) |#
+#| (affine-encrypt) |#
 
 (provide string-encrypt/affine string-decrypt/affine
          string-encrypt/atbash string-decrypt/atbash
