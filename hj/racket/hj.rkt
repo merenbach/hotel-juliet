@@ -121,7 +121,8 @@
   (make-affine-alphabet s a 0))
 (define (make-keyword-alphabet ab kw)
   (remove-duplicates
-    (string-append (filterab ab kw) ab)))
+    (string->list
+      (string-append (filterab ab kw) ab))))
 
 
 #| (define my-affine (make-affine 5 8 26)) |#
