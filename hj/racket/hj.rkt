@@ -1,18 +1,29 @@
 #lang racket/base
 (require racket/list)
+(require racket/set)
 #| (require racket/string) |#
 
+; NOTE: about mechanism
+; While a hashmap (a=>d, b=>e, z=>c) makes great sense for monoalphabetic ciphers, it makes less sense for the Caesar-based polyalphabetic ones, which need a key to offset the translation.
+; To use the same algorithm, it is suggested to use PT_ALPHA=>number, optional transform (incl. keyword offset), number=>CT_ALPHA; whether to PRE-compute the CT_ALPHA is the question, because the transform could be useful in monoalphabetic but will be less efficient--and it will not work for the keyword cipher in particular, and the affine cipher decryption process is very annoying to implement--although in Racket in particular, it is (interestingly) a one-liner in the math module.
+; Perhaps just the keyword CT_ALPHA should be precomputed, and then additional transforms can be built upon it.  This may enable keyed Caesar, or maybe that should be for PT_ALPHA.
+; So whether to store a generated ciphertext alphabet depends on how optimized we want to be; and whether we want logic only in the encoding direction, and to reverse much like a hash table.
 
 (define DEFAULT_ALPHABET "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 (define ALPHABET DEFAULT_ALPHABET)
 
+; very nice done functions
 
-(define (coprime . rest-id)
+(define (coprime? . rest-id)
   ;; Are all arguments coprime?
-  (equal? 1 (apply gcd rest-id)))
+  (= 1 (apply gcd rest-id)))
+#| (define (member? v lst [is-equal? equal?]) |#
+#|   (ormap (lambda (i) (is-equal? v i)) lst)) |#
 
+; end nice done functions
 
 #| (require srfi/13) |#
+#| (member? 3 '(1 2 3)) |#
 
 
 
@@ -33,8 +44,21 @@
 ; (for ([i s])
 ; (printf "~a... ~x" i x))
 
+(define (to-number alphabet)
+  ; what is the index of element in lst? otherwise return #f
+  (make-immutable-hash
+  (for/list ([k (in-naturals)]
+             [c (in-string alphabet)])
+    (cons c k))))
 
-(define (affinity a b m)
+(define (from-number lst num)
+  ; what is the element at position num in lst?
+  (list-ref lst num))
+
+
+
+(define (make-affine a b m)
+  ; Store affine parameters to operate on individual numbers
   (lambda (k)
     (modulo (+ b (* k a)) m)))
 
@@ -47,11 +71,11 @@
 (define (affinal s a b)
   (let ([alphalen (string-length s)])
     (cond
-      [(coprime a alphalen)
+      [(coprime? a alphalen)
        (map
          (lambda (k)
            (string-ref s k))
-         (map (affinity a b alphalen) (range alphalen)))]
+         (map (make-affine a b alphalen) (range alphalen)))]
        #| (for/list ([k (range alphalen)]) |#
        #|   (string-ref s k) |#
        #|   )] |#
@@ -68,9 +92,14 @@
 
 (define (filterab mesh kw)
   (list->string
-    (for/list ([c (in-string kw)]
-      #:when (member c mesh))
-      c)))
+    (let ([mesh (string->list mesh)])
+      (for/list ([c (in-string kw)]
+                 #:when (set-member? mesh c))
+        c))))
+#| (define (filterbc mesh kw) |#
+     #|   (filter set-member? |# 
+
+#| (filterab "ABCDEFGHIJKLMNOPQRSTUVWXYZ" "MONKEyb2MonkeySeeMonkeyDo") |#
 
 ;; [TODO] alphamaker store alphabet string but accept params after...?
 #| (define (make-affine-alphabet s) |#
@@ -86,11 +115,33 @@
   (make-affine-alphabet s -1 -1))
 (define (make-caesar-alphabet s b)
   (make-affine-alphabet s 1 b))
+(define (make-rot13-alphabet s)
+  (make-caesar-alphabet s 13))
 (define (make-decimation-alphabet s a)
   (make-affine-alphabet s a 0))
 (define (make-keyword-alphabet ab kw)
   (remove-duplicates
     (string-append (filterab ab kw) ab)))
+
+
+#| (define my-affine (make-affine 5 8 26)) |#
+#| (define (test-encryption s) |#
+#|   (let ([alpha (string->list ALPHABET)]) |#
+#|     (list->string |#
+#|       (for/list ([c (in-string s)]) |#
+#|           (from-number alpha |#
+#|                        (my-affine |#
+#|                          (hash-ref (to-number ALPHABET) c c) |#
+#|                          )) c)))) |#
+
+#| (test-encryption "HELLO, WORLD") |#
+
+#| (define (make-encode-table func s rest-id) |#
+#|   (make-immutable-hash |#
+#|     (map cons s (apply func s rest-id)))) |#
+#| (define (make-decode-table func s rest-id) |#
+#|   (make-immutable-hash |#
+#|     (map cons (apply func s rest-id) s))) |#
 
 
 #| (define (string-map a b) |#
@@ -99,9 +150,9 @@
 #| (define (transcrypt-char a b chr t-or-f) |#
 #|   (hash-ref (make-immutable-hash (map cons (if (t-or-f) '(b a) '(a b)) chr chr)))) |#
 
-(define (transcode s xfunc)
-  ;; take a string and apply xfunc to its characters, filtering out any #f values that result
-  (filter values (map xfunc s)))
+#| (define (transcode s xfunc) |#
+#|   ;; take a string and apply xfunc to its characters, filtering out any #f values that result |#
+#|   (filter values (map xfunc s))) |#
 
         #| pos = src.index(e) |#
         #| if callable(transform): |#
@@ -113,15 +164,19 @@
 #|     (transform |#
 #|       (index a c)), len b))) |#
 
-(define (counterpart-finder* a b)
-  ;; Return the same-index counterpart of an element in one list in another.
-  (lambda (e [transform (lambda (i) i)])
-    (list-ref b
-              (transform
-                (index-of a e)))))
+#| (define (counterpart e lst1 lst2) |#
+#|   ;; Return the same-index counterpart of an element in one list in another. |#
+#|   (list-ref lst2 (index-of lst1 e))) |#
 
-(define (counterpart-finder a b)
-  (counterpart-finder* (string->list a) (string->list b)))
+#| (define (counterpart-finder* a b) |#
+#|   ;; Return the same-index counterpart of an element in one list in another. |#
+#|   (lambda (e [transform (lambda (i) i)]) |#
+#|     (list-ref b |#
+#|               (transform |#
+#|                 (index-of a e))))) |#
+
+#| (define (counterpart-finder a b) |#
+#|   (counterpart-finder* (string->list a) (string->list b))) |#
 
 #| (define n (counterpart-finder "ABCDEFG" "HIJKLMN")) |#
 #| (n #\C sub1) |#
@@ -131,19 +186,72 @@
 #|     (map transcodeify |#
 #|       (string->list s))) |#
 
+#| (define (list-intersect lst someset) |#
+#|   (reverse |#
+#|     (set-intersect lst someset))) |#
+
+#| (define (restrict-membership lst someset) |#
+#|   (let ([valid-elements (set-intersect lst someset)]) |#
+#|     (for/list ([e lst] |#
+#|                #:when (member e valid-elements)) |#
+#|       e))) |#
+
+#| ABCDEFGHIJKLMNOPQRSTUVWXYZ |#
+#| MONKEY2 |#
+#| MONKEY2ABCDEFGHIJKLMNOPQRSTUVWXYZ |#
+#|       ^ |#
+
+#| (list->string (reverse (set-intersect (string->list "MONKeY2qbABCDEFGHIJKLMNOPQRSTUVWXYZ")(string->list "ABCDEFGHIJKLMNOPQRSTUVWXYZ") ))) |#
+#| (restrict-membership '(1 2 3 b 4 5 8 9 a b c d e) '( a b 5)) |#
+
+; TODO filter out chars before they even make it here?
+;      this way we can use strict elsewhere in a stored lambda?
 (define (make-transcoder alphamaker rev)
   (lambda (s #:strict strict #:alphabet [alphabet DEFAULT_ALPHABET] . rest-id)
     (list->string
-      (let* ([s (string->list s)]
-             [alpha1 (string->list alphabet)]
+      (let* ([alpha1 (string->list alphabet)]
              [alpha2 (apply alphamaker alphabet rest-id)]
-             [forwards-assoc (map cons alpha1 alpha2)]
-             [reverse-assoc (map cons alpha2 alpha1)]
-             [current-map (make-immutable-hash (if rev reverse-assoc forwards-assoc))]
-             [xfunc (lambda(char) (hash-ref current-map char (if (not strict) char #f)))])
-        (transcode s xfunc)))))
+             [source-alpha (if rev alpha2 alpha1)]
+             [target-alpha (if rev alpha1 alpha2)]
+             [current-map (make-immutable-hash (map cons source-alpha target-alpha))]
+             )
+        (filter values
+          (for/list ([char (in-string s)]
+            #:when (or (not strict) (hash-has-key? current-map char)))
+            (hash-ref current-map char char)))))))
+        #| (for/list ([char s] |#
+        #|            #:when (or (not strict) (hash-has-key? current-map char))) |#
+        #|            #1| #:when (or (not strict) (set-member? source-alpha char))) |1# |#
+        #|   (hash-ref current-map char char)) |#
+
+#| (define (make-encoder alphamaker) |#
+#|   (lambda (s #:strict strict #:alphabet [alphabet DEFAULT_ALPHABET] . rest-id) |#
+#|     (list->string |#
+#|       (let ([s (string->list s)] |#
+#|              [alpha1 (string->list alphabet)] |#
+#|              [alpha2 (apply alphamaker alphabet rest-id)]) |#
+#|         (for/list ([c s] |#
+#|           #:when (member c s) |#
+#|           (counterpart c alpha1 alpha2)))))) |#
 ; [TODO] use -affine instead of /affine and append /strict for strict variant??
 ; [TODO] unreadable symbol for separators?
+
+#| (define (makeit a b) |#
+#|   (for/hash ([c1 (in-string a)] |#
+#|              [c2 (in-string b)]) |#
+#|     (values c1 c2))) |#
+
+#| (makeit "ABCDE" "12345") |#
+#| (make-immutable-hash (map cons (string->list "ABCDE") (string->list "12345"))) |#
+
+#| (define (string-index s c) |#
+#|   (for/and ([k (in-naturals)] |#
+#|         [char (in-string s)] |#
+#|         #:break (equal? char c)) |#
+#|     k)) |#
+
+#| (string-index "HELLO" #\H) |#
+; [TODO] memoize results with promise?
 
 (define string-encrypt/affine
   (make-transcoder make-affine-alphabet #f))
@@ -160,6 +268,11 @@
 (define string-decrypt/caesar
   (make-transcoder make-caesar-alphabet #t))
 
+(define string-encrypt/rot13
+  (make-transcoder make-rot13-alphabet #f))
+(define string-decrypt/rot13
+  (make-transcoder make-rot13-alphabet #t))
+
 (define string-encrypt/decimation
   (make-transcoder make-decimation-alphabet #f))
 (define string-decrypt/decimation
@@ -171,49 +284,6 @@
   (make-transcoder make-keyword-alphabet #t))
 
 
-#| (struct bigbadmofo (alphabet) |#
-#|   (bingbangboom ( |#
-#|   (define x 3) |#
-#|    (define y 7) |#
-#|    (+ x y)))) |#
-
-#| (define ATBASH_ALPHABET |#
-#|   (make-atbash ALPHABET)) |#
-
-#| (define ATPAIR |#
-#|   (xpair ALPHABET ATBASH_ALPHABET)) |#
-
-
-#| (define enumerate |#
-#|   (lambda (iterable [rev #f]) |#
-#|     (for/list ([k (in-naturals)] |#
-#|                [x iterable]) |#
-#|       (cond |#
-#|         [rev (cons x k)] |#
-#|         [else (cons k x)])))) |#
-#| (define (enumerate iterable) |#
-#|     (for/list ([k (in-naturals)] |#
-#|                [x iterable]) |#
-#|       (cons k x))) |#
-#| (define (char-index iterable) |#
-#|     (for/list ([k (in-naturals)] |#
-#|                [x iterable]) |#
-#|       (cons x k))) |#
-
-
-#| (define FROM_ALPHA_MAPPING |#
-#|   (make-immutable-hash |#
-#|     (char-index ALPHABET))) |#
-
-
-#| (define (xform s mm) |#
-#|   (map (lambda (c) |#
-#|          (or c c) |#
-#|          ) |#
-#|   (string->list s))) |#
-
-#| (define AFF (affinal ALPHABET 5 8)) |#
-#| (printf "AFF: ~a\n\n\n" AFF) |#
 
 #| (define (lrotated s i) |#
 #|   (let ([i (modulo i (string-length s))]) |#
@@ -298,30 +368,6 @@
 #| (define encxtable (xtable ALPHABET CAESAR_ALPHABET)) |#
 #| (define decxtable (xtable CAESAR_ALPHABET ALPHABET)) |#
 
-#| (define (xlate2 somextable strict s) |#
-#|   (map (lambda (i) |#
-#|          (hash-ref somextable i i)) |#
-#|        (string->list s))) |#
-
-#| (map (lambda (i) |#
-#| (map list a b)) |#
-#| (define (zip xs) (apply map list xs)) |#
-
-#| (define zip2 |#
-#|   (lambda xs |#
-#|     (display xs))) |#
-#| (define (xtable s a b) |#
-#|   (zip (string->list a) (string->list b))) |#
-
-#| (define z (xtable s ALPHABET CAESAR_ALPHABET)) |#
-#| (printf "~a\n" (#hash(z))) |#
-#| (define p1 '(1 2 3 4 12)) |#
-#| (define p2 '(6 7 8 9 10)) |#
-#| (define p3 '(11 12 13 14 15)) |#
-#| (define assns (xtable s ALPHABET CAESAR_ALPHABET)) |#
-#| (display assns) |#
-#| (cdr (assoc 6 ngoo)) |#
-
 #| (display (xlate s ALPHABET CAESAR_ALPHABET)) |#
 
 #|   (list->string (for/list ([c (in-string s)]) |#
@@ -353,5 +399,6 @@
 (provide string-encrypt/affine string-decrypt/affine
          string-encrypt/atbash string-decrypt/atbash
          string-encrypt/caesar string-decrypt/caesar
+         string-encrypt/rot13 string-decrypt/rot13
          string-encrypt/decimation string-decrypt/decimation
          string-encrypt/keyword string-decrypt/keyword)
