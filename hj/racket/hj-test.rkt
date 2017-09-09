@@ -3,6 +3,29 @@
 (require rackunit
          "hj.rkt")
 
+
+(require racket/list)
+
+
+; [TODO] check egcd
+
+; modinv
+(check-equal? 9 (modinv 5 11))
+(check-equal? 5 (modinv 9 11))
+(check-equal? 8 (modinv 7 11))
+(check-equal? #f (modinv 8 12))
+(check-equal? 5 (modinv 5 12))
+
+; [TODO] break out into utils
+(let ([e (wrap-affineenc 5 8 26)]
+      [d (wrap-affinedec 5 8 26)]
+      [p '(0 5 5 8 13 4 2 8 15 7 4 17)]
+      [q '(8 7 7 22 21 2 18 22 5 17 2 15)]
+      [alpha '(8 13 18 23 2 7 12 17 22 1 6 11 16 21 0 5 10 15 20 25 4 9 14 19 24 3)])
+  (check-equal? q (map e p))
+  (check-equal? p (map d q))
+  (check-equal? alpha (map e (range 26))))
+
 #| (check-equal? (my-+ 1 1) 2 "Simple addition") |#
 #| (check-equal? (my-* 1 2) 2 "Simple multiplication") |#
 

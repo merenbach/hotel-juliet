@@ -1,6 +1,9 @@
 #lang racket/base
+;(require math/number-theory)
 (require racket/list)
 (require racket/set)
+(require racket/generator)
+(require memoize)
 #| (require racket/string) |#
 
 ; NOTE: about mechanism
@@ -17,24 +20,69 @@
 (define (coprime? . rest-id)
   ;; Are all arguments coprime?
   (= 1 (apply gcd rest-id)))
+
+; from https://stackoverflow.com/questions/13096491/multiplicative-inverse-of-modulo-m-in-scheme
+(define (egcd a b)
+  (if (zero? a)
+      (values b 0 1)
+      (let-values (((g y x) (egcd (modulo b a) a)))
+        (values g (- x (* (quotient b a) y)) y))))
+      ;(let-values (((g x y) (egcd (modulo b a) a)))
+      ;  (values g (- y (* (quotient b a) x)) x))))
+
+; todo: use b n instead of a m
+(define (modinv a m)
+  (let-values (((g x y) (egcd a m)))
+    (if (not (= g 1))
+        #f
+        (modulo x m))))
+; end from stackoverflow
+
+;;; memoize affine output because we can
+(define/memo (affineenc a b m x)
+  ; Store affine parameters to operate on individual numbers
+  (modulo (+ b (* x a)) m))
+
+(define/memo (affinedec a b m x)
+  (modulo (* (modinv a m) (- x b)) m))
+
+;; (define (lcg modulus a c seed)
+;;   ;; a = multiplier, c = increment, m = modulus, seed is initial term (seed or start value)
+;;   (generator ()
+;;              (let loop ([seed seed])
+;;                (yield seed)
+;;                (loop (modulo (+ c (* seed a)) modulus)))))
+
 #| (define (member? v lst [is-equal? equal?]) |#
 #|   (ormap (lambda (i) (is-equal? v i)) lst)) |#
 
 ; end nice done functions
 
+; closures
+(define (wrap-affineenc a b m)
+  ; Store affine enc parameters to operate on individual numbers
+  (lambda (k)
+    (affineenc a b m k)))
+
+(define (wrap-affinedec a b m)
+  ; Store affine dec parameters to operate on individual numbers
+  (lambda (k)
+    (affinedec a b m k)))
+
+; end closures
+
+;(map r '(0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27))
+
 #| (require srfi/13) |#
 #| (member? 3 '(1 2 3)) |#
 
+;(define (affine m a c)
+;  (lcg m a c))
 
 
 #| (struct tableau (pt ct)) |#
 #| (define xlateify (tableau (lambda (i) (+ 3 i)) 7)) |#
 #| ((tableau-pt xlateify) 3) |#
-
-
-
-
-
 
 
 #| (define (lrotate s n) |#
@@ -54,8 +102,6 @@
 (define (from-number lst num)
   ; what is the element at position num in lst?
   (list-ref lst num))
-
-
 
 (define (make-affine a b m)
   ; Store affine parameters to operate on individual numbers
@@ -403,3 +449,4 @@
          string-encrypt/rot13 string-decrypt/rot13
          string-encrypt/decimation string-decrypt/decimation
          string-encrypt/keyword string-decrypt/keyword)
+(provide egcd modinv wrap-affineenc wrap-affinedec)
