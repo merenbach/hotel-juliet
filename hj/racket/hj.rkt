@@ -106,13 +106,13 @@
 (define (make-transcoder alphamaker)
   (lambda (s #:strict strict #:alphabet [alphabet DEFAULT_ALPHABET] . rest-id)
     (list->string
-     (let ([alpha1 (string->list alphabet)]
+     (let ([alphabet (string->list alphabet)]
            [transcoder (apply alphamaker (string-length alphabet) rest-id)])
        (for/list ([char (in-string s)]
-                  #:when (or (not strict) (member char alpha1)))
-         (if (member char alpha1)
-             (string-ref alphabet
-                         (transcoder (index-of alpha1 char)))
+                  #:when (or (not strict) (member char alphabet)))
+         (if (member char alphabet)
+             (list-ref alphabet
+                         (transcoder (index-of alphabet char)))
              char))))))
 ;        (filter values
 ;          (for/list ([char (in-string s)]
