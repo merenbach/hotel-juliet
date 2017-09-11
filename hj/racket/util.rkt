@@ -6,10 +6,11 @@
 ; [TODO] can define affine as lcg, as well
 
 (define/memo (affineenc a b m x)
-  ; Store affine parameters to operate on individual numbers
+  ; Store affine encryption parameters to operate on individual numbers
   (modulo (+ b (* x a)) m))
 
 (define/memo (affinedec a b m x)
+  ; Store affine decryption parameters to operate on individual numbers
   (modulo (* (modular-inverse a m) (- x b)) m))
 
 (define (wrap-affineenc m a b)
@@ -42,6 +43,20 @@
 (define (wrap-decimationdec m a)
   (wrap-affinedec m a 0))
 
+(define/memo (tabularectaenc b m . rest-id)
+  ; Store tabula recta encryption parameters to operate on individual numbers
+  (modulo (apply + b rest-id) m))
+
+(define/memo (tabularectadec b m . rest-id)
+  ; Store tabula recta decryption parameters to operate on individual numbers
+  (modulo (- b (apply + rest-id)) m))
+
+(define (wrap-tabularectaenc m)
+  (lambda (b . rest-id)
+    (apply tabularectaenc b m rest-id)))
+(define (wrap-tabularectadec m)
+  (lambda (b . rest-id)
+    (apply tabularectadec b m rest-id)))
 
 ;; to encode:
 ;; zeroeth: convert alphabet to list
