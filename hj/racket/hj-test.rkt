@@ -7,7 +7,7 @@
 (require racket/list)
 
 
-; [TODO] check egcd
+; [TODO] check more util output values
 
 ; modinv
 ;; (check-equal? 9 (modinv 5 11))

@@ -90,4 +90,5 @@
          wrap-atbashenc wrap-atbashdec
          wrap-caesarenc wrap-caesardec
          wrap-rot13enc wrap-rot13dec
-         wrap-decimationenc wrap-decimationdec)
+         wrap-decimationenc wrap-decimationdec
+         wrap-tabularectaenc wrap-tabularectadec)

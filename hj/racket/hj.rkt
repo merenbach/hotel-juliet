@@ -68,9 +68,19 @@
 
 (define (make-keyword-alphabet ab kw)
   (remove-duplicates
-    (string->list
-      (string-append (filterab ab kw) ab))))
+   (string->list
+    (string-append (filterab ab kw) ab))))
 
+;; (define x (make-keyword-alphabet DEFAULT_ALPHABET "MONKEY"))
+;; (define (make-keyword-nums s alphabet)
+;;   (let ([alphabet (string->list alphabet)])
+;;     (for/list ([char s]
+;;                #:when (member char alphabet))
+;;       (index-of alphabet char))))
+;; (make-keyword-nums (make-keyword-alphabet DEFAULT_ALPHABET "MONKEY") DEFAULT_ALPHABET)
+;; (define (wrap-keywordenc lst)
+;;   (lambda (k)
+;;     (list-ref lst k)))
 #| (define (list-intersect lst someset) |#
 #|   (reverse |#
 #|     (set-intersect lst someset))) |#
@@ -146,8 +156,35 @@
 
 (define string-encrypt/keyword
   (old-make-transcoder make-keyword-alphabet #f))
+  ;(make-transcoder wrap-keywordenc))
 (define string-decrypt/keyword
   (old-make-transcoder make-keyword-alphabet #t))
+  ;(make-transcoder wrap-keyworddec))
+
+;; (define string-encrypt/vigenere
+;;   (make-transcoder wrap-tabularectaenc))
+;; (define string-decrypt/vigenere
+;;   (make-transcoder wrap-tabularectadec))
+;; (define string-encrypt/beaufort
+;;   (make-transcoder wrap-tabularectaenc))
+;; (define string-decrypt/beaufort
+;;   (make-transcoder wrap-tabularectadec))
+;; (define string-encrypt/variantbeaufort
+;;   (make-transcoder wrap-tabularectaenc))
+;; (define string-decrypt/variantbeaufort
+;;   (make-transcoder wrap-tabularectadec))
+;; (define string-encrypt/gronsfeld
+;;   (make-transcoder wrap-tabularectaenc))
+;; (define string-decrypt/gronsfeld
+;;   (make-transcoder wrap-tabularectadec))
+;; (define string-encrypt/trithemius
+;;   (make-transcoder wrap-tabularectaenc))
+;; (define string-decrypt/trithemius
+;;   (make-transcoder wrap-tabularectadec))
+;; (define string-encrypt/porta
+;;   (make-transcoder wrap-tabularectaenc))
+;; (define string-decrypt/porta
+;;   (make-transcoder wrap-tabularectadec))
 
 (provide string-encrypt/affine string-decrypt/affine
          string-encrypt/atbash string-decrypt/atbash
