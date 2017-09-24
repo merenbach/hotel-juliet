@@ -113,7 +113,7 @@
         #|            #1| #:when (or (not strict) (set-member? source-alpha char))) |1# |#
         #|   (hash-ref current-map char char)) |#
 
-(define (make-transcoder alphamaker)
+(define (make-affine-transcoder alphamaker)
   (lambda (s #:strict strict #:alphabet [alphabet DEFAULT_ALPHABET] . rest-id)
     (list->string
      (let ([alphabet (string->list alphabet)]
@@ -124,35 +124,49 @@
              (list-ref alphabet
                          (transcoder (index-of alphabet char)))
              char))))))
+
+(define (make-vigenere-transcoder alphamaker)
+  (lambda (s keystr #:strict strict #:alphabet [alphabet DEFAULT_ALPHABET])
+    (list->string
+     (let ([alphabet (string->list alphabet)]
+           [transcoder (alphamaker (string-length alphabet))])
+       (for/list ([char (in-string s)]
+                  [kchar (in-string keystr)]
+                  #:when (or (not strict) (member char alphabet)))
+         (if (member char alphabet)
+             (list-ref alphabet
+                         (transcoder (index-of alphabet char) (index-of alphabet kchar)))
+             char))))))
+
 ;        (filter values
 ;          (for/list ([char (in-string s)]
 ;                     #:when (or (not strict) (hash-has-key? current-map char)))
 ;            (hash-ref current-map char char)))))))
 
 (define string-encrypt/affine
-  (make-transcoder wrap-affineenc))
+  (make-affine-transcoder wrap-affineenc))
 (define string-decrypt/affine
-  (make-transcoder wrap-affinedec))
+  (make-affine-transcoder wrap-affinedec))
 
 (define string-encrypt/atbash
-  (make-transcoder wrap-atbashenc))
+  (make-affine-transcoder wrap-atbashenc))
 (define string-decrypt/atbash
-  (make-transcoder wrap-atbashdec))
+  (make-affine-transcoder wrap-atbashdec))
 
 (define string-encrypt/caesar
-  (make-transcoder wrap-caesarenc))
+  (make-affine-transcoder wrap-caesarenc))
 (define string-decrypt/caesar
-  (make-transcoder wrap-caesardec))
+  (make-affine-transcoder wrap-caesardec))
 
 (define string-encrypt/rot13
-  (make-transcoder wrap-rot13enc))
+  (make-affine-transcoder wrap-rot13enc))
 (define string-decrypt/rot13
-  (make-transcoder wrap-rot13dec))
+  (make-affine-transcoder wrap-rot13dec))
 
 (define string-encrypt/decimation
-  (make-transcoder wrap-decimationenc))
+  (make-affine-transcoder wrap-decimationenc))
 (define string-decrypt/decimation
-  (make-transcoder wrap-decimationdec))
+  (make-affine-transcoder wrap-decimationdec))
 
 (define string-encrypt/keyword
   (old-make-transcoder make-keyword-alphabet #f))
@@ -161,10 +175,11 @@
   (old-make-transcoder make-keyword-alphabet #t))
   ;(make-transcoder wrap-keyworddec))
 
-;; (define string-encrypt/vigenere
-;;   (make-transcoder wrap-tabularectaenc))
-;; (define string-decrypt/vigenere
-;;   (make-transcoder wrap-tabularectadec))
+(define string-encrypt/vigenere
+  (make-vigenere-transcoder wrap-tabularectaenc))
+(define string-decrypt/vigenere
+  (make-vigenere-transcoder wrap-tabularectadec))
+
 ;; (define string-encrypt/beaufort
 ;;   (make-transcoder wrap-tabularectaenc))
 ;; (define string-decrypt/beaufort
@@ -191,5 +206,6 @@
          string-encrypt/caesar string-decrypt/caesar
          string-encrypt/rot13 string-decrypt/rot13
          string-encrypt/decimation string-decrypt/decimation
-         string-encrypt/keyword string-decrypt/keyword)
+         string-encrypt/keyword string-decrypt/keyword
+         string-encrypt/vigenere string-decrypt/vigenere)
 

@@ -67,3 +67,5 @@
 (check-equal? (string-decrypt/keyword "CRHHLWLQHG" "KANGAROO" #:strict #t) MESSAGE-STRICT)
 (check-equal? (string-decrypt/keyword "CRHHL, WLQHG!" "KANGAROO" #:strict #t) MESSAGE-STRICT)
 (check-equal? (string-decrypt/keyword "CRHHL, WLQHG!" "KANGAROO" #:strict #f) MESSAGE-PLAIN)
+
+;(check-equal? (string-encrypt/vigenere MESSAGE-PLAIN "OCEANOGRAPHY" #:strict #t) "DRHHLWLQHG")
