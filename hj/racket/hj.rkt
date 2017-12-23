@@ -4,7 +4,7 @@
 (require racket/list)
 (require racket/set)
 (require racket/generator)
-(require memoize)
+;(require memoize)
 #| (require racket/string) |#
 
 

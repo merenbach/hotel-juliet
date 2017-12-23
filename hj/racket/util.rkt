@@ -1,15 +1,17 @@
 #lang racket/base
 
 (require math/number-theory)
-(require memoize)
+;(require memoize)
 
 ; [TODO] can define affine as lcg, as well
 
-(define/memo (affineenc a b m x)
+;(define/memo (affineenc a b m x)
+(define (affineenc a b m x)
   ; Store affine encryption parameters to operate on individual numbers
   (modulo (+ b (* x a)) m))
 
-(define/memo (affinedec a b m x)
+;(define/memo (affinedec a b m x)
+(define (affinedec a b m x)
   ; Store affine decryption parameters to operate on individual numbers
   (modulo (* (modular-inverse a m) (- x b)) m))
 
@@ -43,11 +45,13 @@
 (define (wrap-decimationdec m a)
   (wrap-affinedec m a 0))
 
-(define/memo (tabularectaenc b m . rest-id)
+;(define/memo (tabularectaenc b m . rest-id)
+(define (tabularectaenc b m . rest-id)
   ; Store tabula recta encryption parameters to operate on individual numbers
   (modulo (apply + b rest-id) m))
 
-(define/memo (tabularectadec b m . rest-id)
+;(define/memo (tabularectadec b m . rest-id)
+(define (tabularectadec b m . rest-id)
   ; Store tabula recta decryption parameters to operate on individual numbers
   (modulo (- b (apply + rest-id)) m))
 
