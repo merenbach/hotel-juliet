@@ -1,5 +1,6 @@
 #lang racket/base
 
+(require "affine.rkt")
 (require "util.rkt")
 (require racket/list)
 (require racket/set)
