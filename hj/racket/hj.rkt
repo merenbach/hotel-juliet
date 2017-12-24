@@ -23,6 +23,34 @@
 ; [TODO] break out into utils
 ; end from stackoverflow
 
+(define (new-make-xtable a b)
+  ; Turn two lists into a hash
+  (make-immutable-hash (map cons a b)))
+
+(define (xtable-to lst)
+  ; Convert from natural integers to lst
+  (new-make-xtable (in-naturals) (in-range 26)))
+
+
+(define (idx2fun fun limit)
+  ; map n => fun(n) sequentially
+  (for/hash ([n (in-range limit)])
+    (values n (fun n))))
+
+(define (fun2idx fun limit)
+  ; map fun(n) => n sequentially
+  (for/hash ([n (in-range limit)])
+    (values (fun n) n)))
+
+;(define abc (wrap-caesarenc 26 3))
+;(define xyz (idx2fun abc 26))
+;(println xyz)
+
+;(define x (new-make-xtable '(2 3 4 5 6) '(8 9 10 11 12)))
+;(println (hash-ref x 7 3))
+
+
+
 ;;; memoize affine output because we can
 ;; (define (lcg modulus a c seed)
 ;;   ;; a = multiplier, c = increment, m = modulus, seed is initial term (seed or start value)
@@ -53,7 +81,7 @@
 #| (define (filterab2 mesh kw) |#
 #|   (filter (lambda (c) (member c mesh)) kw)) |#
 
-#| (define (xpair a b) |#
+#| (define (xpair a b) |# 
 #|   (let ([a (string->list a)] |#
 #|         [b (string->list b)]) |#
 #|     (cons (make-immutable-hash (map cons a b)) |#
@@ -113,16 +141,21 @@
         #|            #1| #:when (or (not strict) (set-member? source-alpha char))) |1# |#
         #|   (hash-ref current-map char char)) |#
 
-(define (make-affine-transcoder alphamaker)
+(define (make-affine-transcoder isrev alphamaker)
   (lambda (s #:strict strict #:alphabet [alphabet DEFAULT_ALPHABET] . rest-id)
     (list->string
      (let ([alphabet (string->list alphabet)]
-           [transcoder (apply alphamaker (string-length alphabet) rest-id)])
+           [forward (idx2fun (apply alphamaker (string-length alphabet) rest-id) (string-length alphabet))]
+           [backward (fun2idx (apply alphamaker (string-length alphabet) rest-id) (string-length alphabet))]
+           ;[xtable (apply alphamaker (string-length alphabet) rest-id)]
+           )
        (for/list ([char (in-string s)]
                   #:when (or (not strict) (member char alphabet)))
          (if (member char alphabet)
              (list-ref alphabet
-                         (transcoder (index-of alphabet char)))
+                       (hash-ref
+                        (if isrev backward forward)
+                        (index-of alphabet char)))
              char))))))
 
 (define (make-vigenere-transcoder alphamaker)
@@ -144,29 +177,29 @@
 ;            (hash-ref current-map char char)))))))
 
 (define string-encrypt/affine
-  (make-affine-transcoder wrap-affineenc))
+  (make-affine-transcoder #f wrap-affineenc))
 (define string-decrypt/affine
-  (make-affine-transcoder wrap-affinedec))
+  (make-affine-transcoder #t wrap-affineenc))
 
 (define string-encrypt/atbash
-  (make-affine-transcoder wrap-atbashenc))
+  (make-affine-transcoder #f wrap-atbashenc))
 (define string-decrypt/atbash
-  (make-affine-transcoder wrap-atbashdec))
+  (make-affine-transcoder #t wrap-atbashenc))
 
 (define string-encrypt/caesar
-  (make-affine-transcoder wrap-caesarenc))
+  (make-affine-transcoder #f wrap-caesarenc))
 (define string-decrypt/caesar
-  (make-affine-transcoder wrap-caesardec))
+  (make-affine-transcoder #t wrap-caesarenc))
 
 (define string-encrypt/rot13
-  (make-affine-transcoder wrap-rot13enc))
+  (make-affine-transcoder #f wrap-rot13enc))
 (define string-decrypt/rot13
-  (make-affine-transcoder wrap-rot13dec))
+  (make-affine-transcoder #t wrap-rot13enc))
 
 (define string-encrypt/decimation
-  (make-affine-transcoder wrap-decimationenc))
+  (make-affine-transcoder #f wrap-decimationenc))
 (define string-decrypt/decimation
-  (make-affine-transcoder wrap-decimationdec))
+  (make-affine-transcoder #t wrap-decimationenc))
 
 (define string-encrypt/keyword
   (old-make-transcoder make-keyword-alphabet #f))

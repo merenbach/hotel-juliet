@@ -1,6 +1,6 @@
 #lang racket/base
 
-(require math/number-theory)
+;(require math/number-theory)
 ;(require memoize)
 
 ; [TODO] can define affine as lcg, as well
@@ -10,40 +10,27 @@
   ; Store affine encryption parameters to operate on individual numbers
   (modulo (+ b (* x a)) m))
 
-;(define/memo (affinedec a b m x)
-(define (affinedec a b m x)
-  ; Store affine decryption parameters to operate on individual numbers
-  (modulo (* (modular-inverse a m) (- x b)) m))
+;;(define/memo (affinedec a b m x)
+;(define (affinedec a b m x)
+;  ; Store affine decryption parameters to operate on individual numbers
+;  (modulo (* (modular-inverse a m) (- x b)) m))
 
 (define (wrap-affineenc m a b)
   ; Store affine enc parameters to operate on individual numbers
   (lambda (k)
     (affineenc a b m k)))
 
-(define (wrap-affinedec m a b)
-  ; Store affine dec parameters to operate on individual numbers
-  (lambda (k)
-    (affinedec a b m k)))
-
 (define (wrap-atbashenc m)
-  (wrap-affineenc m -1 -1))
-(define (wrap-atbashdec m)
   (wrap-affineenc m -1 -1))
 
 (define (wrap-caesarenc m b)
   (wrap-affineenc m 1 b))
-(define (wrap-caesardec m b)
-  (wrap-affinedec m 1 b))
 
 (define (wrap-rot13enc m)
   (wrap-affineenc m 1 13))
-(define (wrap-rot13dec m)
-  (wrap-affinedec m 1 13))
 
 (define (wrap-decimationenc m a)
   (wrap-affineenc m a 0))
-(define (wrap-decimationdec m a)
-  (wrap-affinedec m a 0))
 
 ;(define/memo (tabularectaenc b m . rest-id)
 (define (tabularectaenc b m . rest-id)
@@ -90,9 +77,9 @@
 ;;         #f
 ;;         (modulo x m))))
 
-(provide wrap-affineenc wrap-affinedec
-         wrap-atbashenc wrap-atbashdec
-         wrap-caesarenc wrap-caesardec
-         wrap-rot13enc wrap-rot13dec
-         wrap-decimationenc wrap-decimationdec
+(provide wrap-affineenc
+         wrap-atbashenc
+         wrap-caesarenc
+         wrap-rot13enc
+         wrap-decimationenc
          wrap-tabularectaenc wrap-tabularectadec)
