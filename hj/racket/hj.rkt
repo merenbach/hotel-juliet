@@ -24,23 +24,6 @@
 ; [TODO] break out into utils
 ; end from stackoverflow
 
-(define (new-make-xtable a b)
-  ; Turn two lists into a hash
-  (make-immutable-hash (map cons a b)))
-
-(define (xtable-to lst)
-  ; Convert from natural integers to lst
-  (new-make-xtable (in-naturals) (in-range 26)))
-
-;(define abc (wrap-caesarenc 26 3))
-;(define xyz (idx2fun abc 26))
-;(println xyz)
-
-;(define x (new-make-xtable '(2 3 4 5 6) '(8 9 10 11 12)))
-;(println (hash-ref x 7 3))
-
-
-
 ;;; memoize affine output because we can
 ;; (define (lcg modulus a c seed)
 ;;   ;; a = multiplier, c = increment, m = modulus, seed is initial term (seed or start value)
@@ -135,18 +118,12 @@
   (lambda (s #:strict strict #:alphabet [alphabet DEFAULT_ALPHABET] . rest-id)
     (list->string
      (let ([alphabet (string->list alphabet)]
-           ; TODO: abstract some of the below out using assocs to determine which should be key and which value?
-           [xtable (apply alphamaker (string-length alphabet) rest-id)]
-           )
+           [xtable (apply alphamaker (string-length alphabet) rest-id)])
        (for/list ([char (in-string s)]
                   #:when (or (not strict) (member char alphabet)))
          (if (member char alphabet)
              (list-ref alphabet
-                       (hash-ref
-                        xtable
-                        (index-of alphabet char)
-                        ;(index-of alphabet char)
-                        ))
+                       (hash-ref xtable (index-of alphabet char)))
              char))))))
 
 (define (make-vigenere-transcoder alphamaker)

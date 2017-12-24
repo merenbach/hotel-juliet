@@ -25,7 +25,6 @@
   (for/hash ([k (in-range m)])
     (values (affineenc a b m k) k)))
 
-
 (define (wrap-affineenc m a b)
   ; Store affine enc parameters to operate on individual numbers
   (hash-affineenc a b m))
