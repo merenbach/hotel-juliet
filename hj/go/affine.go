@@ -6,18 +6,51 @@ package main
 import (
 		"fmt"
 		"strings"
-		"math/big"
+	//	"math/big"
        )
 
 func affine(x, a, b, m int) int {
 	return (a * x + b) % m
 }
+
+// adapted from: https://en.wikibooks.org/wiki/Algorithm_Implementation/Mathematics/Extended_Euclidean_algorithm#Iterative_algorithm_3
+func xgcd(b, a int) (int, int, int) {
+    x0, x1, y0, y1 := 1, 0, 0, 1
+    for a != 0 {
+        q := b / a
+        b, a = a, b % a
+        x0, x1 = x1, x0 - q * x1
+        y0, y1 = y1, y0 - q * y1
+    }
+    return  b, x0, y0
+}
+// adapted from: https://en.wikibooks.org/wiki/Algorithm_Implementation/Mathematics/Extended_Euclidean_algorithm#Iterative_algorithm_3
+/*
+# return (g, x, y) a*x + b*y = gcd(x, y)
+def egcd(a, b):
+    if a == 0:
+        return (b, 0, 1)
+    else:
+        g, x, y = egcd(b % a, a)
+        return (g, y - (b // a) * x, x)*/
+// adapted from: https://en.wikibooks.org/wiki/Algorithm_Implementation/Mathematics/Extended_Euclidean_algorithm#Iterative_algorithm_3
+// x = mulinv(b) mod n, (x * b) % n == 1
+func mulinv(b, n int) int {
+    g, x, _ := xgcd(b, n)
+    if g == 1 {
+        return x % n
+    }
+return -1
+}
+
 func invaffine(x, a, b, m int) int {
-aprime := big.NewInt(int64(a))
+modinv := mulinv(a, m)
+return (modinv * (x - b)) % m
+/*aprime := big.NewInt(int64(a))
 //bprime := big.NewInt(b)
 mprime := big.NewInt(int64(m))
 modinv := new(big.Int).ModInverse(aprime, mprime)
-	return (int(modinv.Int64()) * (x - b)) % m
+	return (int(modinv.Int64()) * (x - b)) % m*/
 }
 
 
