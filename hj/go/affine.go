@@ -25,18 +25,19 @@ func xgcd(b, a int) (int, int, int) {
     return  b, x0, y0
 }
 // adapted from: https://en.wikibooks.org/wiki/Algorithm_Implementation/Mathematics/Extended_Euclidean_algorithm#Iterative_algorithm_3
-/*
-# return (g, x, y) a*x + b*y = gcd(x, y)
-def egcd(a, b):
-    if a == 0:
-        return (b, 0, 1)
-    else:
-        g, x, y = egcd(b % a, a)
-        return (g, y - (b // a) * x, x)*/
+// return (g, x, y) a*x + b*y = gcd(x, y)
+func egcd(a, b int) (int, int, int) {
+    if a == 0 {
+        return b, 0, 1
+    } else {
+        g, x, y := egcd(b % a, a)
+        return g, y - (b / a) * x, x
+    }
+}
 // adapted from: https://en.wikibooks.org/wiki/Algorithm_Implementation/Mathematics/Extended_Euclidean_algorithm#Iterative_algorithm_3
 // x = mulinv(b) mod n, (x * b) % n == 1
 func mulinv(b, n int) int {
-    g, x, _ := xgcd(b, n)
+    g, x, _ := egcd(b, n)
     if g == 1 {
         return x % n
     }
