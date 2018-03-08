@@ -124,13 +124,13 @@ func (msg Message) DecryptDecimation(a int) Message {
 }
 
 func (msg Message) EncryptAtbash() Message {
-    coefficient := len(msg.alphabet) - 1
-    return msg.EncryptAffine(coefficient, coefficient)
+    // Or use `len(msg.alphabet) - 1` for both fields
+    return msg.EncryptAffine(-1, -1)
 }
 
 func (msg Message) DecryptAtbash() Message {
-    coefficient := len(msg.alphabet) - 1
-    return msg.DecryptAffine(coefficient, coefficient)
+    // Or use `len(msg.alphabet) - 1` for both fields
+    return msg.DecryptAffine(-1, -1)
 }
 
 
@@ -140,7 +140,7 @@ func main() {
     ptmsg := "hello, world"
     msg := MakeMessage(ptmsg)
 msg2 := MakeMessage("abcdefghijklmnopqrstuvwxyz")
-	enc1 := msg2.EncryptRot13()
+	enc1 := msg2.DecryptAtbash()
 fmt.Println(enc1)
 enc2 := enc1.DecryptRot13()
 fmt.Println(enc2)
