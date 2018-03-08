@@ -44,20 +44,15 @@ func mulinv(b, n int) int {
 return -1
 }
 
-func invaffine(x, a, b, m int) int {
-modinv := mulinv(a, m)
-// TODO: ensure b > 0
+func modulus(a, b int) int {
+// since the % is "remainder," not "modulus"...
 // work around https://github.com/golang/go/issues/448
-for b > x {
-b -= m
+    return ((a % b) + b) % b
 }
-// might instead just do `b % m + m` below
-return (modinv * (x - b)) % m
-/*aprime := big.NewInt(int64(a))
-//bprime := big.NewInt(b)
-mprime := big.NewInt(int64(m))
-modinv := new(big.Int).ModInverse(aprime, mprime)
-	return (int(modinv.Int64()) * (x - b)) % m*/
+
+func invaffine(x, a, b, m int) int {
+	modinv := mulinv(a, m)
+	return modulus(modinv * (x - b), m)
 }
 
 
