@@ -32,17 +32,17 @@ func egcd(a, b int) (int, int, int) {
 // adapted from: https://en.wikibooks.org/wiki/Algorithm_Implementation/Mathematics/Extended_Euclidean_algorithm#Iterative_algorithm_3
 // x = mulinv(b) mod n, (x * b) % n == 1
 func mulinv(b, n int) int {
-    g, x, _ := egcd(b, n)
-    if g == 1 {
-        return x % n
-    }
-return -1
+	g, x, _ := egcd(b, n)
+	if g == 1 {
+		return x % n
+	}
+	return -1
 }
 
 func modulus(a, b int) int {
-// since the % is "remainder," not "modulus"...
-// work around https://github.com/golang/go/issues/448
-    return ((a % b) + b) % b
+	// since the % is "remainder," not "modulus"...
+	// work around https://github.com/golang/go/issues/448
+	return ((a % b) + b) % b
 }
 
 func affine(x, a, b, m int) int {
@@ -60,16 +60,13 @@ type Message struct {
 	alphabet string
 }
 
-func NewMessageWithAlphabet(alphabet, s string) (msg Message) {
-    msg.text = []rune(s)
-    msg.alphabet = alphabet
-    return
+func NewMessageWithAlphabet(alphabet, s string) *Message {
+	return &Message{[]rune(s), alphabet}
 }
 
-func NewMessage(s string) (msg Message) {
-    alphabet := "abcdefghijklmnopqrstuvwxyz"
-    msg = NewMessageWithAlphabet(alphabet, s)
-    return
+func NewMessage(s string) *Message {
+	alphabet := "abcdefghijklmnopqrstuvwxyz"
+	return NewMessageWithAlphabet(alphabet, s)
 }
 
 func (msg *Message) String() string {
