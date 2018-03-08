@@ -46,6 +46,12 @@ return -1
 
 func invaffine(x, a, b, m int) int {
 modinv := mulinv(a, m)
+// TODO: ensure b > 0
+// work around https://github.com/golang/go/issues/448
+for b > x {
+b -= m
+}
+// might instead just do `b % m + m` below
 return (modinv * (x - b)) % m
 /*aprime := big.NewInt(int64(a))
 //bprime := big.NewInt(b)
@@ -76,12 +82,12 @@ func (msg *Message) String() string {
 	return string(msg.text)
 }
 
-func (msg *Message) Encrypt() *Message {
+func (msg *Message) EncryptAffine(a, b int) *Message {
 out := msg
 	     for idx, rn := range msg.text {
 			runeindex := strings.IndexRune(msg.alphabet, rn)
 		   if runeindex != -1 {
-		pos := affine(runeindex, 1, 3, len(msg.alphabet))
+		pos := affine(runeindex, a, b, len(msg.alphabet))
 	     outrune := rune(msg.alphabet[pos])
 	     out.text[idx] = outrune
 		   }
@@ -89,23 +95,66 @@ out := msg
 	     return out
 }
 
-func (msg *Message) Decrypt() *Message {
+func (msg *Message) DecryptAffine(a, b int) *Message {
 out := msg
 	     for idx, rn := range msg.text {
 			runeindex := strings.IndexRune(msg.alphabet, rn)
 		   if runeindex != -1 {
-		pos := invaffine(runeindex, 1, 3, len(msg.alphabet))
+		pos := invaffine(runeindex, a, b, len(msg.alphabet))
 	     outrune := rune(msg.alphabet[pos])
 	     out.text[idx] = outrune
 		   }
 	     }
 	     return out
 }
+
+func (msg *Message) EncryptCaesar(b int) *Message {
+    return msg.EncryptAffine(1, b)
+}
+
+func (msg *Message) DecryptCaesar(b int) *Message {
+    return msg.DecryptAffine(1, b)
+}
+
+func (msg *Message) EncryptRot13() *Message {
+    return msg.EncryptCaesar(13)
+}
+
+func (msg *Message) DecryptRot13() *Message {
+    return msg.DecryptCaesar(13)
+}
+
+func (msg *Message) EncryptDecimation(a int) *Message {
+    return msg.EncryptAffine(a, 0)
+}
+
+func (msg *Message) DecryptDecimation(a int) *Message {
+    return msg.DecryptAffine(a, 0)
+}
+
+func (msg *Message) EncryptAtbash() *Message {
+    coefficient := len(msg.alphabet) - 1
+    return msg.EncryptAffine(coefficient, coefficient)
+}
+
+func (msg *Message) DecryptAtbash() *Message {
+    coefficient := len(msg.alphabet) - 1
+    return msg.DecryptAffine(coefficient, coefficient)
+}
+
+
 
 func main() {
 	fmt.Println("hello", affine(5,3,2,26))
-		msg := NewMessage("hello, world")
-	fmt.Println(msg.Encrypt())
-		msg = NewMessage("khoor, zruog")
-	fmt.Println(msg.Decrypt())
+    ptmsg := "hello, world"
+    msg := NewMessage(ptmsg)
+msg2 := NewMessage("abcdefghijklmnopqrstuvwxyz")
+	enc1 := msg2.EncryptRot13()
+fmt.Println(enc1)
+enc2 := enc1.DecryptRot13()
+fmt.Println(enc2)
+	fmt.Println(msg.EncryptCaesar(3))
+//	fmt.Println(msg.EncryptAtbash())
+//		msg = NewMessage("khoor, zruog")
+//	fmt.Println(msg.DecryptCaesar(3))
 }
