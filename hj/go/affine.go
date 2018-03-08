@@ -60,17 +60,16 @@ type Message struct {
 	alphabet string
 }
 
-func NewMessageWithAlphabet(alphabet, s string) (*Message) {
-    msg := new(Message)
+func NewMessageWithAlphabet(alphabet, s string) (msg Message) {
     msg.text = []rune(s)
     msg.alphabet = alphabet
-    return msg
+    return
 }
 
-func NewMessage(s string) *Message {
+func NewMessage(s string) (msg Message) {
     alphabet := "abcdefghijklmnopqrstuvwxyz"
-    msg := NewMessageWithAlphabet(alphabet, s)
-    return msg
+    msg = NewMessageWithAlphabet(alphabet, s)
+    return
 }
 
 func (msg *Message) String() string {
