@@ -4,14 +4,9 @@ package main
 //todo: param groups (caesar, atbash, etc)
 
 import (
-		"fmt"
-		"strings"
-	//	"math/big"
-       )
-
-func affine(x, a, b, m int) int {
-	return (a * x + b) % m
-}
+	"fmt"
+	"strings"
+)
 
 // adapted from: https://en.wikibooks.org/wiki/Algorithm_Implementation/Mathematics/Extended_Euclidean_algorithm#Iterative_algorithm_3
 func xgcd(b, a int) (int, int, int) {
@@ -48,6 +43,10 @@ func modulus(a, b int) int {
 // since the % is "remainder," not "modulus"...
 // work around https://github.com/golang/go/issues/448
     return ((a % b) + b) % b
+}
+
+func affine(x, a, b, m int) int {
+	return modulus(a * x + b, m)
 }
 
 func invaffine(x, a, b, m int) int {
