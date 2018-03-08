@@ -56,48 +56,57 @@ modinv := new(big.Int).ModInverse(aprime, mprime)
 
 
 type Message struct {
-	text string
-		alphabet string
+	text []rune
+	alphabet string
+}
+
+func NewMessageWithAlphabet(alphabet, s string) (*Message) {
+    msg := new(Message)
+    msg.text = []rune(s)
+    msg.alphabet = alphabet
+    return msg
+}
+
+func NewMessage(s string) *Message {
+    alphabet := "abcdefghijklmnopqrstuvwxyz"
+    msg := NewMessageWithAlphabet(alphabet, s)
+    return msg
 }
 
 func (msg *Message) String() string {
-	return msg.text
+	return string(msg.text)
 }
 
 func (msg *Message) Encrypt() *Message {
 out := msg
-	     runiedumplings := []rune(msg.text)
 	     for idx, rn := range msg.text {
 			runeindex := strings.IndexRune(msg.alphabet, rn)
 		   if runeindex != -1 {
 		pos := affine(runeindex, 1, 3, len(msg.alphabet))
 	     outrune := rune(msg.alphabet[pos])
-	     runiedumplings[idx] = outrune
+	     out.text[idx] = outrune
 		   }
 	     }
-     out.text = string(runiedumplings)
 	     return out
 }
 
 func (msg *Message) Decrypt() *Message {
 out := msg
-	     runiedumplings := []rune(msg.text)
 	     for idx, rn := range msg.text {
 			runeindex := strings.IndexRune(msg.alphabet, rn)
 		   if runeindex != -1 {
 		pos := invaffine(runeindex, 1, 3, len(msg.alphabet))
 	     outrune := rune(msg.alphabet[pos])
-	     runiedumplings[idx] = outrune
+	     out.text[idx] = outrune
 		   }
 	     }
-     out.text = string(runiedumplings)
 	     return out
 }
 
 func main() {
 	fmt.Println("hello", affine(5,3,2,26))
-		msg := &Message{text:"hello, world", alphabet:"abcdefghijklmnopqrstuvwxyz"}
+		msg := NewMessage("hello, world")
 	fmt.Println(msg.Encrypt())
-		msg = &Message{text:"khoor, zruog", alphabet:"abcdefghijklmnopqrstuvwxyz"}
+		msg = NewMessage("khoor, zruog")
 	fmt.Println(msg.Decrypt())
 }
