@@ -60,20 +60,20 @@ type Message struct {
 	alphabet string
 }
 
-func NewMessageWithAlphabet(alphabet, s string) *Message {
-	return &Message{[]rune(s), alphabet}
+func MakeMessageWithAlphabet(alphabet, s string) Message {
+	return Message{[]rune(s), alphabet}
 }
 
-func NewMessage(s string) *Message {
+func MakeMessage(s string) Message {
 	alphabet := "abcdefghijklmnopqrstuvwxyz"
-	return NewMessageWithAlphabet(alphabet, s)
+	return MakeMessageWithAlphabet(alphabet, s)
 }
 
-func (msg *Message) String() string {
+func (msg Message) String() string {
 	return string(msg.text)
 }
 
-func (msg *Message) EncryptAffine(a, b int) *Message {
+func (msg Message) EncryptAffine(a, b int) Message {
 out := msg
 	     for idx, rn := range msg.text {
 			runeindex := strings.IndexRune(msg.alphabet, rn)
@@ -86,7 +86,7 @@ out := msg
 	     return out
 }
 
-func (msg *Message) DecryptAffine(a, b int) *Message {
+func (msg Message) DecryptAffine(a, b int) Message {
 out := msg
 	     for idx, rn := range msg.text {
 			runeindex := strings.IndexRune(msg.alphabet, rn)
@@ -99,36 +99,36 @@ out := msg
 	     return out
 }
 
-func (msg *Message) EncryptCaesar(b int) *Message {
+func (msg Message) EncryptCaesar(b int) Message {
     return msg.EncryptAffine(1, b)
 }
 
-func (msg *Message) DecryptCaesar(b int) *Message {
+func (msg Message) DecryptCaesar(b int) Message {
     return msg.DecryptAffine(1, b)
 }
 
-func (msg *Message) EncryptRot13() *Message {
+func (msg Message) EncryptRot13() Message {
     return msg.EncryptCaesar(13)
 }
 
-func (msg *Message) DecryptRot13() *Message {
+func (msg Message) DecryptRot13() Message {
     return msg.DecryptCaesar(13)
 }
 
-func (msg *Message) EncryptDecimation(a int) *Message {
+func (msg Message) EncryptDecimation(a int) Message {
     return msg.EncryptAffine(a, 0)
 }
 
-func (msg *Message) DecryptDecimation(a int) *Message {
+func (msg Message) DecryptDecimation(a int) Message {
     return msg.DecryptAffine(a, 0)
 }
 
-func (msg *Message) EncryptAtbash() *Message {
+func (msg Message) EncryptAtbash() Message {
     coefficient := len(msg.alphabet) - 1
     return msg.EncryptAffine(coefficient, coefficient)
 }
 
-func (msg *Message) DecryptAtbash() *Message {
+func (msg Message) DecryptAtbash() Message {
     coefficient := len(msg.alphabet) - 1
     return msg.DecryptAffine(coefficient, coefficient)
 }
@@ -138,8 +138,8 @@ func (msg *Message) DecryptAtbash() *Message {
 func main() {
 	fmt.Println("hello", affine(5,3,2,26))
     ptmsg := "hello, world"
-    msg := NewMessage(ptmsg)
-msg2 := NewMessage("abcdefghijklmnopqrstuvwxyz")
+    msg := MakeMessage(ptmsg)
+msg2 := MakeMessage("abcdefghijklmnopqrstuvwxyz")
 	enc1 := msg2.EncryptRot13()
 fmt.Println(enc1)
 enc2 := enc1.DecryptRot13()
