@@ -7,13 +7,64 @@ const MESSAGE_STRICT = "HELLOWORLD"
 const PASSPHRASE = "OCEANOGRAPHYWHAT"
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-func TestAtbash(t *testing.T) {
-    m := MakeAtbashCipher(ALPHABET)
-	expected := "SVOOL, DLIOW!"
-    encoded := m.Encrypt(MESSAGE_PLAIN)
-    if encoded != expected {
-	    t.Errorf("Sum was incorrect, got: %s, want: %s.", encoded, expected)
-    }
+func TestAtbashCipher(t *testing.T) {
+	m := MakeAtbashCipher(ALPHABET)
+	tables := []struct{
+		plaintext string
+		ciphertext string
+	}{
+		{ "HELLO, WORLD!", "SVOOL, DLIOW!" },
+		{ "SVOOL, DLIOW!", "HELLO, WORLD!" },
+	}
+	for _, table := range tables {
+		encrypted := m.Encrypt(table.plaintext)
+		decrypted := m.Decrypt(table.ciphertext)
+		unencrypted := m.Decrypt(encrypted)
+		undecrypted := m.Encrypt(decrypted)
+		if encrypted != table.ciphertext {
+			t.Errorf("Ciphertext was incorrect, got: %s, want: %s.", encrypted, table.ciphertext)
+		}
+		if decrypted != table.plaintext {
+			t.Errorf("Plaintext was incorrect, got: %s, want: %s.", decrypted, table.plaintext)
+		}
+		if unencrypted != table.plaintext {
+			t.Errorf("Reverse operation on original encryption was incorrect, got: %s, want: %s.", unencrypted, table.plaintext)
+		}
+		if undecrypted != table.ciphertext {
+			t.Errorf("Reverse operation on original decryption was incorrect, got: %s, want: %s.", undecrypted, table.ciphertext)
+		}
+
+	}
+}
+
+func TestCaesarCipher(t *testing.T) {
+	m := MakeCaesarCipher(ALPHABET, 3)
+	tables := []struct{
+		plaintext string
+		ciphertext string
+	}{
+		{ "HELLO, WORLD!", "KHOOR, ZRUOG!" },
+		{ "EBIIL, TLOIA!", "HELLO, WORLD!" },
+	}
+	for _, table := range tables {
+		encrypted := m.Encrypt(table.plaintext)
+		decrypted := m.Decrypt(table.ciphertext)
+		unencrypted := m.Decrypt(encrypted)
+		undecrypted := m.Encrypt(decrypted)
+		if encrypted != table.ciphertext {
+			t.Errorf("Ciphertext was incorrect, got: %s, want: %s.", encrypted, table.ciphertext)
+		}
+		if decrypted != table.plaintext {
+			t.Errorf("Plaintext was incorrect, got: %s, want: %s.", decrypted, table.plaintext)
+		}
+		if unencrypted != table.plaintext {
+			t.Errorf("Reverse operation on original encryption was incorrect, got: %s, want: %s.", unencrypted, table.plaintext)
+		}
+		if undecrypted != table.ciphertext {
+			t.Errorf("Reverse operation on original decryption was incorrect, got: %s, want: %s.", undecrypted, table.ciphertext)
+		}
+
+	}
 }
 /*
     
