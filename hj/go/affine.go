@@ -89,10 +89,10 @@ func ziprunes(a, b []rune) map[rune]rune {
 // then zip (a) with a[OUTARRAY[current element of a]]
 
 // transform transforms a rune array (alphabet) based on a function
-func (cipher affineCipher) transform(alphabet []rune, fn func (int, int, int, int) int) []rune {
+func (cipher affineCipher) transform(alphabet []rune, fn func (int) int) []rune {
 	out := make([]rune, 0)
 	for i := range alphabet {
-		pos := fn(i, cipher.a, cipher.b, len(alphabet))
+		pos := fn(i)
 		out = append(out, alphabet[pos])
 	}
 	return out
@@ -112,14 +112,16 @@ func (cipher affineCipher) transcode(message string, xtable map[rune]rune) strin
 
 func (cipher affineCipher) Encrypt(message string) string {
 	ptalphabet := []rune(cipher.alphabet)
-	ctalphabet := cipher.transform(ptalphabet, affine)
+	myfn := func(i int) int { return affine(i, cipher.a, cipher.b, len(ptalphabet)) }
+	ctalphabet := cipher.transform(ptalphabet, myfn)
 	xtable := ziprunes(ptalphabet, ctalphabet)
 	return cipher.transcode(message, xtable)
 }
 
 func (cipher affineCipher) Decrypt(message string) string {
 	ptalphabet := []rune(cipher.alphabet)
-	ctalphabet := cipher.transform(ptalphabet, affine)
+	myfn := func(i int) int { return affine(i, cipher.a, cipher.b, len(ptalphabet)) }
+	ctalphabet := cipher.transform(ptalphabet, myfn)
 	xtable := ziprunes(ctalphabet, ptalphabet)
 	return cipher.transcode(message, xtable)
 }
