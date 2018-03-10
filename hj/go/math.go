@@ -31,8 +31,8 @@ func mulinv(b, n int) int {
 	return -1
 }
 
-func modulus(a, b int) int {
-	// since the % is "remainder," not "modulus"...
-	// work around https://github.com/golang/go/issues/448
+// Modulus returns the remainder of a Euclidean division operation.
+// This works around https://github.com/golang/go/issues/448
+func Modulus(a, b int) int {
 	return ((a % b) + b) % b
 }

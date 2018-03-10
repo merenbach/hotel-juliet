@@ -25,12 +25,12 @@ import (
 // TODO: Needs error option or ok option
 // TODO: just use an LCG function?
 func affine(x, a, b, m int) int {
-	return modulus(a * x + b, m)
+	return Modulus(a * x + b, m)
 }
 
 func invaffine(x, a, b, m int) int {
 	modinv := mulinv(a, m)
-	return modulus(modinv * (x - b), m)
+	return Modulus(modinv * (x - b), m)
 }
 
 /*type Cipher interface {
@@ -78,6 +78,16 @@ func (cipher affineCipher) transcode(message string, fn func (int, int, int, int
 	return string(out)
 }*/
 
+/*func makeXtable(s string, fn func(s string, outpipe chan rune)) map[rune]rune {
+	out := make(map[rune]rune)
+	nextrune := make(chan rune)
+	go fn(s, nextrune)
+	for _, rn := range []rune(s) {
+		out[rn] = <-nextrune
+	}
+	return out
+}*/
+
 func (cipher affineCipher) transcode(message string, fn func (int, int, int, int) int) map[rune]rune {
 	out := make(map[rune]rune)
 	for _, rn := range []rune(message) {
@@ -91,8 +101,7 @@ func (cipher affineCipher) transcode(message string, fn func (int, int, int, int
 	return out
 }
 
-func (cipher affineCipher) Encrypt(message string) string {
-	xtable := cipher.transcode(cipher.alphabet, affine)
+func (cipher affineCipher) tcode2(message string, xtable map[rune]rune) string {
 	out := make([]rune, 0)
 	for _, rn := range []rune(message) {
 		xcoded, ok := xtable[rn]
@@ -104,17 +113,14 @@ func (cipher affineCipher) Encrypt(message string) string {
 	return string(out)
 }
 
+func (cipher affineCipher) Encrypt(message string) string {
+	xtable := cipher.transcode(cipher.alphabet, affine)
+	return cipher.tcode2(message, xtable)
+}
+
 func (cipher affineCipher) Decrypt(message string) string {
 	xtable := cipher.transcode(cipher.alphabet, invaffine)
-	out := make([]rune, 0)
-	for _, rn := range []rune(message) {
-		xcoded, ok := xtable[rn]
-		if !ok {
-			xcoded = rn
-		}
-		out = append(out, xcoded)
-	}
-	return string(out)
+	return cipher.tcode2(message, xtable)
 }
 
 func (cipher affineCipher) String() string {
@@ -123,10 +129,16 @@ func (cipher affineCipher) String() string {
 
 func main() {
 	fmt.Println("hello", affine(5,3,2,26))
-c := MakeCaesarCipher("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 3)
+	alphabet := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	c := MakeCaesarCipher(alphabet, 3)
+/*	myfn := func(s string, outpipe chan rune) {
+		for i, x := range s {
+			
+		}
+	}
+	o := makeXtable(alphabet, myfn)
+	fmt.Println(o)*/
 fmt.Println(c)
 fmt.Println(c.Encrypt("HELLOWORLD"))
-//	fmt.Println(msg.EncryptAtbash())
-//		msg = NewMessage("khoor, zruog")
 //	fmt.Println(msg.DecryptCaesar(3))
 }
