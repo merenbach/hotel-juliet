@@ -21,6 +21,17 @@ import (
 	"strings"
 )
 
+// affine returns the result of `(ax + b) mod m`
+// TODO: Needs error option or ok option
+func affine(x, a, b, m int) int {
+	return modulus(a * x + b, m)
+}
+
+func invaffine(x, a, b, m int) int {
+	modinv := mulinv(a, m)
+	return modulus(modinv * (x - b), m)
+}
+
 /*type Cipher interface {
     encrypt() string
     decrypt() string
@@ -52,12 +63,12 @@ func MakeRot13Cipher(alphabet string) affineCipher {
 	return MakeCaesarCipher(alphabet, 13)
 }
 
-func (cipher affineCipher) Encrypt(message string) string {
+func (cipher affineCipher) transcode(message string, fn func (int, int, int, int) int) string {
 	out := []rune(message)
 	for idx, rn := range out {
 		runeindex := strings.IndexRune(cipher.alphabet, rn)
 		if runeindex != -1 {
-			pos := affine(runeindex, cipher.a, cipher.b, len(cipher.alphabet))
+			pos := fn(runeindex, cipher.a, cipher.b, len(cipher.alphabet))
 			outrune := rune(cipher.alphabet[pos])
 			out[idx] = outrune
 		}
@@ -65,17 +76,13 @@ func (cipher affineCipher) Encrypt(message string) string {
 	return string(out)
 }
 
+func (cipher affineCipher) Encrypt(message string) string {
+	return cipher.transcode(message, affine)
+}
+
 func (cipher affineCipher) Decrypt(message string) string {
-	out := []rune(message)
-	for idx, rn := range out {
-		runeindex := strings.IndexRune(cipher.alphabet, rn)
-		if runeindex != -1 {
-			pos := invaffine(runeindex, cipher.a, cipher.b, len(cipher.alphabet))
-		     	outrune := rune(cipher.alphabet[pos])
-			out[idx] = outrune
-		}
-	}
-	return string(out)
+	return cipher.transcode(message, invaffine)
+
 }
 
 func (cipher affineCipher) String() string {

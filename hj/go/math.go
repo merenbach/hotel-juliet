@@ -36,12 +36,3 @@ func modulus(a, b int) int {
 	// work around https://github.com/golang/go/issues/448
 	return ((a % b) + b) % b
 }
-
-func affine(x, a, b, m int) int {
-	return modulus(a * x + b, m)
-}
-
-func invaffine(x, a, b, m int) int {
-	modinv := mulinv(a, m)
-	return modulus(modinv * (x - b), m)
-}
