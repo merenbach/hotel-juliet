@@ -23,6 +23,7 @@ import (
 
 // affine returns the result of `(ax + b) mod m`
 // TODO: Needs error option or ok option
+// TODO: just use an LCG function?
 func affine(x, a, b, m int) int {
 	return modulus(a * x + b, m)
 }
@@ -63,26 +64,57 @@ func MakeRot13Cipher(alphabet string) affineCipher {
 	return MakeCaesarCipher(alphabet, 13)
 }
 
+/*
 func (cipher affineCipher) transcode(message string, fn func (int, int, int, int) int) string {
-	out := []rune(message)
-	for idx, rn := range out {
+	out := make([]rune, len(message))
+	for _, rn := range []rune(message) {
 		runeindex := strings.IndexRune(cipher.alphabet, rn)
 		if runeindex != -1 {
 			pos := fn(runeindex, cipher.a, cipher.b, len(cipher.alphabet))
 			outrune := rune(cipher.alphabet[pos])
-			out[idx] = outrune
+			out = append(out, outrune)
 		}
+	}
+	return string(out)
+}*/
+
+func (cipher affineCipher) transcode(message string, fn func (int, int, int, int) int) map[rune]rune {
+	out := make(map[rune]rune)
+	for _, rn := range []rune(message) {
+		runeindex := strings.IndexRune(cipher.alphabet, rn)
+		if runeindex != -1 {
+			pos := fn(runeindex, cipher.a, cipher.b, len(cipher.alphabet))
+			outrune := rune(cipher.alphabet[pos])
+			out[rn] = outrune
+		}
+	}
+	return out
+}
+
+func (cipher affineCipher) Encrypt(message string) string {
+	xtable := cipher.transcode(cipher.alphabet, affine)
+	out := make([]rune, 0)
+	for _, rn := range []rune(message) {
+		xcoded, ok := xtable[rn]
+		if !ok {
+			xcoded = rn
+		}
+		out = append(out, xcoded)
 	}
 	return string(out)
 }
 
-func (cipher affineCipher) Encrypt(message string) string {
-	return cipher.transcode(message, affine)
-}
-
 func (cipher affineCipher) Decrypt(message string) string {
-	return cipher.transcode(message, invaffine)
-
+	xtable := cipher.transcode(cipher.alphabet, invaffine)
+	out := make([]rune, 0)
+	for _, rn := range []rune(message) {
+		xcoded, ok := xtable[rn]
+		if !ok {
+			xcoded = rn
+		}
+		out = append(out, xcoded)
+	}
+	return string(out)
 }
 
 func (cipher affineCipher) String() string {
