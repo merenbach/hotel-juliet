@@ -38,9 +38,9 @@ func mulinv(b, n int) int {
 
 // Modulus returns the remainder of a Euclidean division operation.
 // This works around https://github.com/golang/go/issues/448
-func Modulus(a, b int) int {
+/*func Modulus(a, b int) int {
 	return ((a % b) + b) % b
-}
+}*/
 
 // Divides tests if a number `b` evenly divides `a`.
 func Divides(a, b *big.Int) bool {
@@ -54,6 +54,9 @@ func Coprime(a, b *big.Int) bool {
         return gcd.Int64() == 1
 }
 
+// TODO: document
+// TODO: TESTS
+// TODO: USE GOROUTINES and channel and then emulate yield in inner func???
 func makeLCG(m, a, c, seed *big.Int) (f func() *big.Int, hull_dobell bool) {
 A_MINUS_ONE := new(big.Int).Sub(a, big.NewInt(1))
 DIVISIBLE_BY_FOUR := func(a *big.Int) bool { return Divides(a, big.NewInt(4)) }
