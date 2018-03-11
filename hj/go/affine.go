@@ -87,14 +87,6 @@ func (cipher affineCipher) transcode(message string, fn func (int, int, int, int
 	return string(out)
 }*/
 
-func ziprunes(a, b []rune) map[rune]rune {
-	out := make(map[rune]rune)
-	for i, e := range a {
-		out[e] = b[i]
-	}
-	return out
-}
-
 // run fn on range(0..len of alphabet) to produce OUTARRAY []int
 // then zip (a) with a[OUTARRAY[current element of a]]
 
