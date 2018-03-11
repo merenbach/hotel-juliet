@@ -139,25 +139,3 @@ func (cipher affineCipher) Decrypt(message string) string {
 func (cipher affineCipher) String() string {
 	return fmt.Sprintf("Affine Cipher (alphabet = %s, a = %d, b = %d)", cipher.alphabet, cipher.a, cipher.b)
 }
-
-func main() {
-	//fmt.Println("hello", affine(5,3,2,26))
-fn := makeAffine(26, 1, 3)
-for i:=0;i<52;i++ {
-fmt.Print(fn(), " ")
-}
-	alphabet := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	c := MakeCaesarCipher(alphabet, 3)
-//	mymap := ziprunes([]rune(alphabet), []rune("QADCFGBEZIJKLMNOPRSTUVWXYH"))
-//	fmt.Println(mymap)
-/*	myfn := func(s string, outpipe chan rune) {
-		for i, x := range s {
-			
-		}
-	}
-	o := makeXtable(alphabet, myfn)
-	fmt.Println(o)*/
-fmt.Println(c)
-fmt.Println(c.Encrypt("HELLOWORLD"))
-//	fmt.Println(msg.DecryptCaesar(3))
-}
