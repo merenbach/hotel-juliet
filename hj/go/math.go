@@ -62,7 +62,7 @@ A_MINUS_ONE := new(big.Int).Sub(a, big.NewInt(1))
 DIVISIBLE_BY_FOUR := func(a *big.Int) bool { return Divides(a, big.NewInt(4)) }
 switch {
         case !Coprime(m, c):
-                fmt.Println("Multiplier and increment should be coprime", m, c)
+                fmt.Println("Multiplier and increment should be coprime:", m, c)
                 hull_dobell = false
         case !Regular(m, A_MINUS_ONE):
                 fmt.Println("Prime factors of `m` should also divide `a - 1`")

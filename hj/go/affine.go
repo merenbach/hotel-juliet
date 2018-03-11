@@ -1,9 +1,6 @@
 package main
 
-import (
-	"fmt"
-	"math/big"
-)
+import "math/big"
 
 
 // TODO: Needs error option or ok option
@@ -17,64 +14,62 @@ func makeAffine(m, a, b int) (func() *big.Int) {
 	return f
 }
 
-/*func affine(x, a, b, m int) int {
-	return Modulus(a * x + b, m)
-}
-
-func invaffine(x, a, b, m int) int {
-	modinv := mulinv(a, m)
-	return Modulus(modinv * (x - b), m)
-}/*
-
-/*type Cipher interface {
-    encrypt() string
-    decrypt() string
-}*/
-
-type affineCipher struct {
-	ptAlphabet string
-	ctAlphabet string
-	a int
-	b int
-}
-
-func MakeAffineCipher(alphabet string, a, b int) affineCipher {
+func makeAffineAlphabets(alphabet string, a, b int) ([]rune, []rune) {
 	ptAlphabet := removeRuneDuplicates([]rune(alphabet))
 	myfn := makeAffine(len(ptAlphabet), a, b)
 	ctAlphabet := removeRuneDuplicates(affineTransform(ptAlphabet, myfn))
-	return affineCipher{string(ptAlphabet), string(ctAlphabet), a, b}
+	return ptAlphabet, ctAlphabet
 }
 
-func MakeAtbashCipher(alphabet string) affineCipher {
-	ab := len([]rune(alphabet)) - 1
-	return MakeAffineCipher(alphabet, ab, ab)
-}
 
-func MakeCaesarCipher(alphabet string, b int) affineCipher {
-	return MakeAffineCipher(alphabet, 1, b)
-}
-
-func MakeDecimationCipher(alphabet string, a int) affineCipher {
-	return MakeAffineCipher(alphabet, a, 0)
-}
-
-func MakeRot13Cipher(alphabet string) affineCipher {
-	return MakeCaesarCipher(alphabet, 13)
-}
-
-/*
-func (cipher affineCipher) transcode(message string, fn func (int, int, int, int) int) string {
-	out := make([]rune, len(message))
-	for _, rn := range []rune(message) {
-		runeindex := strings.IndexRune(cipher.alphabet, rn)
-		if runeindex != -1 {
-			pos := fn(runeindex, cipher.a, cipher.b, len(cipher.alphabet))
-			outrune := rune(cipher.alphabet[pos])
-			out = append(out, outrune)
-		}
+func MakeAffineEncrypt(alphabet string, a, b int) (func(string) string) {
+	ptAlphabet, ctAlphabet := makeAffineAlphabets(alphabet, a, b)
+	xtable := ziprunes(ptAlphabet, ctAlphabet)
+	return func(message string) string {
+		return mapRuneTransform(message, xtable)
 	}
-	return string(out)
-}*/
+}
+
+
+func MakeAffineDecrypt(alphabet string, a, b int) (func(string) string) {
+	ptAlphabet, ctAlphabet := makeAffineAlphabets(alphabet, a, b)
+	xtable := ziprunes(ctAlphabet, ptAlphabet)
+	return func(message string) string {
+		return mapRuneTransform(message, xtable)
+	}
+}
+
+
+func MakeAtbashEncrypt(alphabet string) (func(string) string) {
+	ab := len([]rune(alphabet)) - 1
+	return MakeAffineEncrypt(alphabet, ab, ab)
+}
+func MakeAtbashDecrypt(alphabet string) (func(string) string) {
+	ab := len([]rune(alphabet)) - 1
+	return MakeAffineDecrypt(alphabet, ab, ab)
+}
+
+func MakeCaesarEncrypt(alphabet string, b int) func(string) string {
+	return MakeAffineEncrypt(alphabet, 1, b)
+}
+func MakeCaesarDecrypt(alphabet string, b int) func(string) string {
+	return MakeAffineDecrypt(alphabet, 1, b)
+}
+
+func MakeDecimationEncrypt(alphabet string, a int) func(string) string {
+	return MakeAffineEncrypt(alphabet, a, 0)
+}
+func MakeDecimationDecrypt(alphabet string, a int) func(string) string {
+	return MakeAffineDecrypt(alphabet, a, 0)
+}
+
+func MakeRot13Encrypt(alphabet string) func(string) string {
+	return MakeCaesarEncrypt(alphabet, 13)
+}
+func MakeRot13Decrypt(alphabet string) func(string) string {
+	return MakeCaesarDecrypt(alphabet, 13)
+}
+
 
 // transform transforms a rune array (alphabet) based on a function
 func affineTransform(alphabet []rune, fn func () *big.Int) []rune {
@@ -86,28 +81,3 @@ func affineTransform(alphabet []rune, fn func () *big.Int) []rune {
 	return out
 }
 
-func (cipher affineCipher) transcode(message string, xtable map[rune]rune) string {
-	out := make([]rune, 0)
-	for _, rn := range []rune(message) {
-		xcoded, ok := xtable[rn]
-		if !ok {
-			xcoded = rn
-		}
-		out = append(out, xcoded)
-	}
-	return string(out)
-}
-
-func (cipher affineCipher) Encrypt(message string) string {
-	xtable := ziprunes([]rune(cipher.ptAlphabet), []rune(cipher.ctAlphabet))
-	return cipher.transcode(message, xtable)
-}
-
-func (cipher affineCipher) Decrypt(message string) string {
-	xtable := ziprunes([]rune(cipher.ctAlphabet), []rune(cipher.ptAlphabet))
-	return cipher.transcode(message, xtable)
-}
-
-func (cipher affineCipher) String() string {
-	return fmt.Sprintf("Affine Cipher (ptAlphabet = %s, ctAlphabet = %s, a = %d, b = %d)", cipher.ptAlphabet, cipher.ctAlphabet, cipher.a, cipher.b)
-}

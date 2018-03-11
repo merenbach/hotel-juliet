@@ -2,100 +2,104 @@ package main
 
 import "testing"
 
-const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+const TEST_AFFINE_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-func runReciprocalTests(t *testing.T, cipher affineCipher, plaintext, ciphertext string) {
-	encrypted := cipher.Encrypt(plaintext)
-	decrypted := cipher.Decrypt(ciphertext)
-	unencrypted := cipher.Decrypt(encrypted)
-	undecrypted := cipher.Encrypt(decrypted)
-	if encrypted != ciphertext {
-		t.Errorf("Ciphertext was incorrect, got: %s, want: %s.", encrypted, ciphertext)
-	}
-	if decrypted != plaintext {
-		t.Errorf("Plaintext was incorrect, got: %s, want: %s.", decrypted, plaintext)
-	}
-	if unencrypted != plaintext {
-		t.Errorf("Reverse operation on original encryption was incorrect, got: %s, want: %s.", unencrypted, plaintext)
-	}
-	if undecrypted != ciphertext {
-		t.Errorf("Reverse operation on original decryption was incorrect, got: %s, want: %s.", undecrypted, ciphertext)
-	}
+func runAffineReciprocalTests(t *testing.T, alphabet string, plaintext, ciphertext string, enc, dec func(string) string) {
+        message := Message{Alphabet: alphabet, Text: plaintext}
+        encrypted := message.Transform(enc)
+        decrypted := encrypted.Transform(dec)
+        if encrypted.Text != ciphertext {
+                t.Errorf("Ciphertext was incorrect, got: %s, want: %s.", encrypted.Text, ciphertext)
+        }
+        if decrypted.Text != plaintext {
+                t.Errorf("Plaintext was incorrect, got: %s, want: %s.", decrypted.Text, plaintext)
+        }
 }
 
 func TestAffineCipher(t *testing.T) {
 	tables := []struct{
+		alphabet string
 		plaintext string
 		ciphertext string
 		a int
 		b int
 	}{
-		{ "HELLO, WORLD!", "AFCCX, BXSCY!", 7, 3 },
-		{ "IPQQJ, ZJCQA!", "HELLO, WORLD!", 7, 3 },
+		{ TEST_AFFINE_ALPHABET, "HELLO, WORLD!", "AFCCX, BXSCY!", 7, 3 },
+		{ TEST_AFFINE_ALPHABET, "IPQQJ, ZJCQA!", "HELLO, WORLD!", 7, 3 },
 	}
 	for _, table := range tables {
-		cipher := MakeAffineCipher(ALPHABET, table.a, table.b)
-		runReciprocalTests(t, cipher, table.plaintext, table.ciphertext)
+                affineEncrypt := MakeAffineEncrypt(table.alphabet, table.a, table.b)
+                affineDecrypt := MakeAffineDecrypt(table.alphabet, table.a, table.b)
+                runAffineReciprocalTests(t, table.alphabet, table.plaintext, table.ciphertext, affineEncrypt, affineDecrypt)
+
 	}
 }
 
 func TestAtbashCipher(t *testing.T) {
 	tables := []struct{
+		alphabet string
 		plaintext string
 		ciphertext string
 	}{
-		{ "HELLO, WORLD!", "SVOOL, DLIOW!" },
-		{ "SVOOL, DLIOW!", "HELLO, WORLD!" },
+		{ TEST_AFFINE_ALPHABET, "HELLO, WORLD!", "SVOOL, DLIOW!" },
+		{ TEST_AFFINE_ALPHABET, "SVOOL, DLIOW!", "HELLO, WORLD!" },
 	}
 	for _, table := range tables {
-		cipher := MakeAtbashCipher(ALPHABET)
-		runReciprocalTests(t, cipher, table.plaintext, table.ciphertext)
+                atbashEncrypt := MakeAtbashEncrypt(table.alphabet)
+                atbashDecrypt := MakeAtbashDecrypt(table.alphabet)
+                runAffineReciprocalTests(t, table.alphabet, table.plaintext, table.ciphertext, atbashEncrypt, atbashDecrypt)
 	}
 }
 
 func TestCaesarCipher(t *testing.T) {
 	tables := []struct{
+		alphabet string
 		plaintext string
 		ciphertext string
 		b int
 	}{
-		{ "HELLO, WORLD!", "KHOOR, ZRUOG!", 3 },
-		{ "EBIIL, TLOIA!", "HELLO, WORLD!", 3 },
-		{ "HELLO, WORLD!", "YVCCF, NFICU!", 17 },
-		{ "QNUUX, FXAUM!", "HELLO, WORLD!", 17 },
+		{ TEST_AFFINE_ALPHABET, "HELLO, WORLD!", "KHOOR, ZRUOG!", 3 },
+		{ TEST_AFFINE_ALPHABET, "EBIIL, TLOIA!", "HELLO, WORLD!", 3 },
+		{ TEST_AFFINE_ALPHABET, "HELLO, WORLD!", "YVCCF, NFICU!", 17 },
+		{ TEST_AFFINE_ALPHABET, "QNUUX, FXAUM!", "HELLO, WORLD!", 17 },
 	}
 	for _, table := range tables {
-		cipher := MakeCaesarCipher(ALPHABET, table.b)
-		runReciprocalTests(t, cipher, table.plaintext, table.ciphertext)
+                caesarEncrypt := MakeCaesarEncrypt(table.alphabet, table.b)
+                caesarDecrypt := MakeCaesarDecrypt(table.alphabet, table.b)
+                runAffineReciprocalTests(t, table.alphabet, table.plaintext, table.ciphertext, caesarEncrypt, caesarDecrypt)
 	}
 }
 
 func TestDecimationCipher(t *testing.T) {
 	tables := []struct{
+		alphabet string
 		plaintext string
 		ciphertext string
 		a int
 	}{
-		{ "HELLO, WORLD!", "XCZZU, YUPZV!", 7 },
-		{ "BIJJC, SCVJT!", "HELLO, WORLD!", 7 },
+		{ TEST_AFFINE_ALPHABET, "HELLO, WORLD!", "XCZZU, YUPZV!", 7 },
+		{ TEST_AFFINE_ALPHABET, "BIJJC, SCVJT!", "HELLO, WORLD!", 7 },
 	}
 	for _, table := range tables {
-		cipher := MakeDecimationCipher(ALPHABET, table.a)
-		runReciprocalTests(t, cipher, table.plaintext, table.ciphertext)
+                decimationEncrypt := MakeDecimationEncrypt(table.alphabet, table.a)
+                decimationDecrypt := MakeDecimationDecrypt(table.alphabet, table.a)
+                runAffineReciprocalTests(t, table.alphabet, table.plaintext, table.ciphertext, decimationEncrypt, decimationDecrypt)
 	}
 }
 
 func TestRot13Cipher(t *testing.T) {
 	tables := []struct{
+		alphabet string
 		plaintext string
 		ciphertext string
 	}{
-		{ "HELLO, WORLD!", "URYYB, JBEYQ!" },
-		{ "URYYB, JBEYQ!", "HELLO, WORLD!" },
+		{ TEST_AFFINE_ALPHABET, "HELLO, WORLD!", "URYYB, JBEYQ!" },
+		{ TEST_AFFINE_ALPHABET, "URYYB, JBEYQ!", "HELLO, WORLD!" },
 	}
 	for _, table := range tables {
-		cipher := MakeRot13Cipher(ALPHABET)
-		runReciprocalTests(t, cipher, table.plaintext, table.ciphertext)
+                rot13Encrypt := MakeRot13Encrypt(table.alphabet)
+                rot13Decrypt := MakeRot13Decrypt(table.alphabet)
+                runAffineReciprocalTests(t, table.alphabet, table.plaintext, table.ciphertext, rot13Encrypt, rot13Decrypt)
 	}
 }
 
