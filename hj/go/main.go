@@ -8,7 +8,8 @@ package main
 //  * documentation
 //  * formatting
 //  * separate files
-//  * strict mode
+//  * strict mode: on new Message struct type
+//  * should be able to print out cipher alphabet tableaux
 //  * multicase alphabets?
 //  * multi value returns (e.g., out, error)
 //  * keyword cipher
