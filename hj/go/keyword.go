@@ -1,9 +1,7 @@
 package main
 
+import "fmt"
 
-import (
-	"fmt"
-)
 
 type keywordCipher struct {
 	ptAlphabet string
@@ -12,22 +10,11 @@ type keywordCipher struct {
 }
 
 func MakeKeywordCipher(alphabet, keyword string) keywordCipher {
-	ctAlphabet := removeDupes(keyword + alphabet)
-	return keywordCipher{alphabet, ctAlphabet, keyword}
+	ptAlphabet := removeStringDuplicates(alphabet)
+	ctAlphabet := removeStringDuplicates(keyword + alphabet)
+	return keywordCipher{ptAlphabet, ctAlphabet, keyword}
 }
 
-func removeDupes(s string) string {
-	seen := make([]rune, 0)
-	seenMap := make(map[rune]bool)
-
-	for _, e := range []rune(s) {
-		if _, ok := seenMap[e]; !ok {
-			seen = append(seen, e)
-			seenMap[e] = true
-		}
-	}
-	return string(seen)
-}
 
 func (cipher keywordCipher) transcode(message string, xtable map[rune]rune) string {
 	out := make([]rune, 0)

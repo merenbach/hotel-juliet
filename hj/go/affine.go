@@ -42,7 +42,9 @@ func MakeAffineCipher(alphabet string, a, b int) affineCipher {
 	ptAlphabet := []rune(alphabet)
 	myfn := makeAffine(len(ptAlphabet), a, b)
 	ctAlphabet := affineTransform(ptAlphabet, myfn)
-	return affineCipher{string(ptAlphabet), string(ctAlphabet), a, b}
+	ptAlphabet2 := removeStringDuplicates(string(ptAlphabet))
+	ctAlphabet2 := removeStringDuplicates(string(ctAlphabet))
+	return affineCipher{string(ptAlphabet2), string(ctAlphabet2), a, b}
 }
 
 func MakeAtbashCipher(alphabet string) affineCipher {

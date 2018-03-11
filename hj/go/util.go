@@ -10,3 +10,16 @@ func ziprunes(a, b []rune) map[rune]rune {
 	return out
 }
 
+// remove string duplicates, preserving order of first appearance
+func removeStringDuplicates(s string) string {
+	out := make([]rune, 0)
+	seen := make(map[rune]bool)
+
+	for _, e := range []rune(s) {
+		if _, ok := seen[e]; !ok {
+			out = append(out, e)
+			seen[e] = true
+		}
+	}
+	return string(out)
+}
