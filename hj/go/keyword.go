@@ -14,6 +14,19 @@ func MakeKeywordCipher(alphabet, keyword string) keywordCipher {
 	return keywordCipher{alphabet, keyword}
 }
 
+func removeDupes(s string) string {
+	seen := make([]rune, 0)
+	seenMap := make(map[rune]bool)
+
+	for _, e := range []rune(s) {
+		if _, ok := seenMap[e]; !ok {
+			seen = append(seen, e)
+			seenMap[e] = true
+		}
+	}
+	return string(seen)
+}
+
 func (cipher keywordCipher) transcode(message string, xtable map[rune]rune) string {
 	out := make([]rune, 0)
 	for _, rn := range []rune(message) {
@@ -28,14 +41,14 @@ func (cipher keywordCipher) transcode(message string, xtable map[rune]rune) stri
 
 func (cipher keywordCipher) Encrypt(message string) string {
 	ptalphabet := []rune(cipher.alphabet)
-	ctalphabet := []rune(cipher.keyword + cipher.alphabet)
+	ctalphabet := []rune(removeDupes(cipher.keyword + cipher.alphabet))
 	xtable := ziprunes(ptalphabet, ctalphabet)
 	return cipher.transcode(message, xtable)
 }
 
 func (cipher keywordCipher) Decrypt(message string) string {
 	ptalphabet := []rune(cipher.alphabet)
-	ctalphabet := []rune(cipher.keyword + cipher.alphabet)
+	ctalphabet := []rune(removeDupes(cipher.keyword + cipher.alphabet))
 	xtable := ziprunes(ctalphabet, ptalphabet)
 	return cipher.transcode(message, xtable)
 }
