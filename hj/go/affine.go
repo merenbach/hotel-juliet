@@ -26,12 +26,10 @@ import (
 // affine returns the result of `(ax + b) mod m`
 // TODO: enforce constraints such as m > 0
 // https://en.wikipedia.org/wiki/Linear_congruential_generator
-func makeAffine(m, a, b int) (func() int64) {
+func makeAffine(m, a, b int) (func() *big.Int) {
    m_, a_, b_ := int64(m), int64(a), int64(b)
    f, _ := makeLCG(big.NewInt(m_), big.NewInt(1), big.NewInt(a_), big.NewInt(b_))
-   return func() int64 {
-	return f().Int64()
-   }
+   return f
 }
 
 /*func affine(x, a, b, m int) int {
@@ -101,10 +99,11 @@ func ziprunes(a, b []rune) map[rune]rune {
 // then zip (a) with a[OUTARRAY[current element of a]]
 
 // transform transforms a rune array (alphabet) based on a function
-func (cipher affineCipher) transform(alphabet []rune, fn func () int64) []rune {
+func (cipher affineCipher) transform(alphabet []rune, fn func () *big.Int) []rune {
 	out := make([]rune, 0)
 	for range alphabet {
-		out = append(out, alphabet[fn()])
+		pos := fn().Int64()
+		out = append(out, alphabet[pos])
 	}
 	return out
 }
