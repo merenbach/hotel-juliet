@@ -10,9 +10,9 @@ type keywordCipher struct {
 }
 
 func MakeKeywordCipher(alphabet, keyword string) keywordCipher {
-	ptAlphabet := removeStringDuplicates(alphabet)
-	ctAlphabet := removeStringDuplicates(keyword + alphabet)
-	return keywordCipher{ptAlphabet, ctAlphabet, keyword}
+	ptAlphabet := removeRuneDuplicates([]rune(alphabet))
+	ctAlphabet := removeRuneDuplicates([]rune(keyword + alphabet))
+	return keywordCipher{string(ptAlphabet), string(ctAlphabet), keyword}
 }
 
 
