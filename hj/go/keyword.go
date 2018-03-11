@@ -6,12 +6,14 @@ import (
 )
 
 type keywordCipher struct {
-	alphabet string
+	ptAlphabet string
+	ctAlphabet string
 	keyword string
 }
 
 func MakeKeywordCipher(alphabet, keyword string) keywordCipher {
-	return keywordCipher{alphabet, keyword}
+	ctAlphabet := removeDupes(keyword + alphabet)
+	return keywordCipher{alphabet, ctAlphabet, keyword}
 }
 
 func removeDupes(s string) string {
@@ -40,19 +42,15 @@ func (cipher keywordCipher) transcode(message string, xtable map[rune]rune) stri
 }
 
 func (cipher keywordCipher) Encrypt(message string) string {
-	ptalphabet := []rune(cipher.alphabet)
-	ctalphabet := []rune(removeDupes(cipher.keyword + cipher.alphabet))
-	xtable := ziprunes(ptalphabet, ctalphabet)
+	xtable := ziprunes([]rune(cipher.ptAlphabet), []rune(cipher.ctAlphabet))
 	return cipher.transcode(message, xtable)
 }
 
 func (cipher keywordCipher) Decrypt(message string) string {
-	ptalphabet := []rune(cipher.alphabet)
-	ctalphabet := []rune(removeDupes(cipher.keyword + cipher.alphabet))
-	xtable := ziprunes(ctalphabet, ptalphabet)
+	xtable := ziprunes([]rune(cipher.ctAlphabet), []rune(cipher.ptAlphabet))
 	return cipher.transcode(message, xtable)
 }
 
 func (cipher keywordCipher) String() string {
-	return fmt.Sprintf("Keyword Cipher (alphabet = %s, keyword = %s)", cipher.alphabet, cipher.keyword)
+	return fmt.Sprintf("Keyword Cipher (ptAlphabet = %s, ctAlphabet = %s, keyword = %s)", cipher.ptAlphabet, cipher.ctAlphabet, cipher.keyword)
 }

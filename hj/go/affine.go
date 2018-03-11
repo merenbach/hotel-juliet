@@ -31,13 +31,16 @@ func invaffine(x, a, b, m int) int {
 }*/
 
 type affineCipher struct {
-	alphabet string
+	ptAlphabet string
+	ctAlphabet string
 	a int
 	b int
 }
 
 func MakeAffineCipher(alphabet string, a, b int) affineCipher {
-	return affineCipher{alphabet, a, b}
+	myfn := makeAffine(len(alphabet), a, b)
+	ctAlphabet := affineTransform(alphabet, myfn)
+	return affineCipher{alphabet, ctAlphabet, a, b}
 }
 
 func MakeAtbashCipher(alphabet string) affineCipher {
@@ -75,13 +78,14 @@ func (cipher affineCipher) transcode(message string, fn func (int, int, int, int
 // then zip (a) with a[OUTARRAY[current element of a]]
 
 // transform transforms a rune array (alphabet) based on a function
-func (cipher affineCipher) transform(alphabet []rune, fn func () *big.Int) []rune {
+func affineTransform(alphabet string, fn func () *big.Int) string {
 	out := make([]rune, 0)
-	for range alphabet {
+	alphabet_ := []rune(alphabet)
+	for range []rune(alphabet) {
 		pos := fn().Int64()
-		out = append(out, alphabet[pos])
+		out = append(out, alphabet_[pos])
 	}
-	return out
+	return string(out)
 }
 
 func (cipher affineCipher) transcode(message string, xtable map[rune]rune) string {
@@ -97,21 +101,15 @@ func (cipher affineCipher) transcode(message string, xtable map[rune]rune) strin
 }
 
 func (cipher affineCipher) Encrypt(message string) string {
-	ptalphabet := []rune(cipher.alphabet)
-	myfn := makeAffine(len(ptalphabet), cipher.a, cipher.b)
-	ctalphabet := cipher.transform(ptalphabet, myfn)
-	xtable := ziprunes(ptalphabet, ctalphabet)
+	xtable := ziprunes([]rune(cipher.ptAlphabet), []rune(cipher.ctAlphabet))
 	return cipher.transcode(message, xtable)
 }
 
 func (cipher affineCipher) Decrypt(message string) string {
-	ptalphabet := []rune(cipher.alphabet)
-	myfn := makeAffine(len(ptalphabet), cipher.a, cipher.b)
-	ctalphabet := cipher.transform(ptalphabet, myfn)
-	xtable := ziprunes(ctalphabet, ptalphabet)
+	xtable := ziprunes([]rune(cipher.ctAlphabet), []rune(cipher.ptAlphabet))
 	return cipher.transcode(message, xtable)
 }
 
 func (cipher affineCipher) String() string {
-	return fmt.Sprintf("Affine Cipher (alphabet = %s, a = %d, b = %d)", cipher.alphabet, cipher.a, cipher.b)
+	return fmt.Sprintf("Affine Cipher (ptAlphabet = %s, ctAlphabet = %s, a = %d, b = %d)", cipher.ptAlphabet, cipher.ctAlphabet, cipher.a, cipher.b)
 }
