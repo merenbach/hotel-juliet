@@ -17,14 +17,14 @@ func runKeywordReciprocalTests(t *testing.T, alphabet string, plaintext, ciphert
 }
 
 func TestKeywordCipher(t *testing.T) {
-	tables := []struct{
-		alphabet string
-		plaintext string
+	tables := []struct {
+		alphabet   string
+		plaintext  string
 		ciphertext string
-		keyword string
+		keyword    string
 	}{
-		{ TEST_KEYWORD_ALPHABET, "HELLO, WORLD!", "CRHHL, WLQHG!", "KANGROOO" },
-		{ TEST_KEYWORD_ALPHABET, "LJOOF, WFEOI!", "HELLO, WORLD!", "KANGAROO" },
+		{TEST_KEYWORD_ALPHABET, "HELLO, WORLD!", "CRHHL, WLQHG!", "KANGROOO"},
+		{TEST_KEYWORD_ALPHABET, "LJOOF, WFEOI!", "HELLO, WORLD!", "KANGAROO"},
 	}
 	for _, table := range tables {
 		keywordEncrypt := MakeKeywordEncrypt(table.alphabet, table.keyword)
@@ -32,4 +32,3 @@ func TestKeywordCipher(t *testing.T) {
 		runKeywordReciprocalTests(t, table.alphabet, table.plaintext, table.ciphertext, keywordEncrypt, keywordDecrypt)
 	}
 }
-

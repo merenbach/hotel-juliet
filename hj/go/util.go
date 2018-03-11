@@ -36,4 +36,3 @@ func mapRuneTransform(message string, xtable map[rune]rune) string {
 	}
 	return string(out)
 }
-
