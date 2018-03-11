@@ -11,9 +11,10 @@ import (
 // TODO: enforce constraints such as m > 0
 // https://en.wikipedia.org/wiki/Linear_congruential_generator
 func makeAffine(m, a, b int) (func() *big.Int) {
-   m_, a_, b_ := int64(m), int64(a), int64(b)
-   f, _ := makeLCG(big.NewInt(m_), big.NewInt(1), big.NewInt(a_), big.NewInt(b_))
-   return f
+	m_, a_, b_ := int64(m), int64(a), int64(b)
+	// TODO: consider using Hull-Dobell satisfaction to determine if `a` is valid (must be coprime with `m`)
+	f, _ := makeLCG(big.NewInt(m_), big.NewInt(1), big.NewInt(a_), big.NewInt(b_))
+	return f
 }
 
 /*func affine(x, a, b, m int) int {
@@ -38,9 +39,10 @@ type affineCipher struct {
 }
 
 func MakeAffineCipher(alphabet string, a, b int) affineCipher {
-	myfn := makeAffine(len(alphabet), a, b)
-	ctAlphabet := affineTransform(alphabet, myfn)
-	return affineCipher{alphabet, ctAlphabet, a, b}
+	ptAlphabet := []rune(alphabet)
+	myfn := makeAffine(len(ptAlphabet), a, b)
+	ctAlphabet := affineTransform(ptAlphabet, myfn)
+	return affineCipher{string(ptAlphabet), string(ctAlphabet), a, b}
 }
 
 func MakeAtbashCipher(alphabet string) affineCipher {
@@ -74,18 +76,14 @@ func (cipher affineCipher) transcode(message string, fn func (int, int, int, int
 	return string(out)
 }*/
 
-// run fn on range(0..len of alphabet) to produce OUTARRAY []int
-// then zip (a) with a[OUTARRAY[current element of a]]
-
 // transform transforms a rune array (alphabet) based on a function
-func affineTransform(alphabet string, fn func () *big.Int) string {
+func affineTransform(alphabet []rune, fn func () *big.Int) []rune {
 	out := make([]rune, 0)
-	alphabet_ := []rune(alphabet)
-	for range []rune(alphabet) {
+	for range alphabet {
 		pos := fn().Int64()
-		out = append(out, alphabet_[pos])
+		out = append(out, alphabet[pos])
 	}
-	return string(out)
+	return out
 }
 
 func (cipher affineCipher) transcode(message string, xtable map[rune]rune) string {
