@@ -18,19 +18,30 @@ package main
 
 import (
 	"fmt"
+"math/big"
 )
 
-// affine returns the result of `(ax + b) mod m`
+
 // TODO: Needs error option or ok option
-// TODO: just use an LCG function?
-func affine(x, a, b, m int) int {
+// affine returns the result of `(ax + b) mod m`
+// TODO: enforce constraints such as m > 0
+// https://en.wikipedia.org/wiki/Linear_congruential_generator
+func makeAffine(m, a, b int) (func() int64) {
+   m_, a_, b_ := int64(m), int64(a), int64(b)
+   f, _ := makeLCG(big.NewInt(m_), big.NewInt(1), big.NewInt(a_), big.NewInt(b_))
+   return func() int64 {
+	return f().Int64()
+   }
+}
+
+/*func affine(x, a, b, m int) int {
 	return Modulus(a * x + b, m)
 }
 
 func invaffine(x, a, b, m int) int {
 	modinv := mulinv(a, m)
 	return Modulus(modinv * (x - b), m)
-}
+}/*
 
 /*type Cipher interface {
     encrypt() string
@@ -48,7 +59,8 @@ func MakeAffineCipher(alphabet string, a, b int) affineCipher {
 }
 
 func MakeAtbashCipher(alphabet string) affineCipher {
-	return MakeAffineCipher(alphabet, -1, -1)
+	ab := len([]rune(alphabet)) - 1
+	return MakeAffineCipher(alphabet, ab, ab)
 }
 
 func MakeCaesarCipher(alphabet string, b int) affineCipher {
@@ -89,11 +101,10 @@ func ziprunes(a, b []rune) map[rune]rune {
 // then zip (a) with a[OUTARRAY[current element of a]]
 
 // transform transforms a rune array (alphabet) based on a function
-func (cipher affineCipher) transform(alphabet []rune, fn func (int) int) []rune {
+func (cipher affineCipher) transform(alphabet []rune, fn func () int64) []rune {
 	out := make([]rune, 0)
-	for i := range alphabet {
-		pos := fn(i)
-		out = append(out, alphabet[pos])
+	for range alphabet {
+		out = append(out, alphabet[fn()])
 	}
 	return out
 }
@@ -112,7 +123,7 @@ func (cipher affineCipher) transcode(message string, xtable map[rune]rune) strin
 
 func (cipher affineCipher) Encrypt(message string) string {
 	ptalphabet := []rune(cipher.alphabet)
-	myfn := func(i int) int { return affine(i, cipher.a, cipher.b, len(ptalphabet)) }
+	myfn := makeAffine(len(ptalphabet), cipher.a, cipher.b)
 	ctalphabet := cipher.transform(ptalphabet, myfn)
 	xtable := ziprunes(ptalphabet, ctalphabet)
 	return cipher.transcode(message, xtable)
@@ -120,7 +131,7 @@ func (cipher affineCipher) Encrypt(message string) string {
 
 func (cipher affineCipher) Decrypt(message string) string {
 	ptalphabet := []rune(cipher.alphabet)
-	myfn := func(i int) int { return affine(i, cipher.a, cipher.b, len(ptalphabet)) }
+	myfn := makeAffine(len(ptalphabet), cipher.a, cipher.b)
 	ctalphabet := cipher.transform(ptalphabet, myfn)
 	xtable := ziprunes(ctalphabet, ptalphabet)
 	return cipher.transcode(message, xtable)
@@ -131,7 +142,11 @@ func (cipher affineCipher) String() string {
 }
 
 func main() {
-	fmt.Println("hello", affine(5,3,2,26))
+	//fmt.Println("hello", affine(5,3,2,26))
+fn := makeAffine(26, 1, 3)
+for i:=0;i<52;i++ {
+fmt.Print(fn(), " ")
+}
 	alphabet := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	c := MakeCaesarCipher(alphabet, 3)
 //	mymap := ziprunes([]rune(alphabet), []rune("QADCFGBEZIJKLMNOPRSTUVWXYH"))
