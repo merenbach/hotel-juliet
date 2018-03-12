@@ -4,15 +4,15 @@ import "testing"
 
 const TEST_AFFINE_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-func runAffineReciprocalTests(t *testing.T, alphabet string, plaintext, ciphertext string, enc, dec func(string) string) {
-	message := Message{Alphabet: alphabet, Text: plaintext}
+func runAffineReciprocalTests(t *testing.T, plaintext, ciphertext string, enc, dec func(string) string) {
+	message := Message(plaintext)
 	encrypted := message.Transform(enc)
 	decrypted := encrypted.Transform(dec)
-	if encrypted.Text != ciphertext {
-		t.Errorf("Ciphertext was incorrect, got: %s, want: %s.", encrypted.Text, ciphertext)
+	if string(encrypted) != ciphertext {
+		t.Errorf("Ciphertext was incorrect, got: %s, want: %s.", encrypted, ciphertext)
 	}
-	if decrypted.Text != plaintext {
-		t.Errorf("Plaintext was incorrect, got: %s, want: %s.", decrypted.Text, plaintext)
+	if string(decrypted) != plaintext {
+		t.Errorf("Plaintext was incorrect, got: %s, want: %s.", decrypted, plaintext)
 	}
 }
 
@@ -30,7 +30,7 @@ func TestAffineCipher(t *testing.T) {
 	for _, table := range tables {
 		affineEncrypt := MakeAffineEncrypt(table.alphabet, table.a, table.b)
 		affineDecrypt := MakeAffineDecrypt(table.alphabet, table.a, table.b)
-		runAffineReciprocalTests(t, table.alphabet, table.plaintext, table.ciphertext, affineEncrypt, affineDecrypt)
+		runAffineReciprocalTests(t, table.plaintext, table.ciphertext, affineEncrypt, affineDecrypt)
 
 	}
 }
@@ -47,7 +47,7 @@ func TestAtbashCipher(t *testing.T) {
 	for _, table := range tables {
 		atbashEncrypt := MakeAtbashEncrypt(table.alphabet)
 		atbashDecrypt := MakeAtbashDecrypt(table.alphabet)
-		runAffineReciprocalTests(t, table.alphabet, table.plaintext, table.ciphertext, atbashEncrypt, atbashDecrypt)
+		runAffineReciprocalTests(t, table.plaintext, table.ciphertext, atbashEncrypt, atbashDecrypt)
 	}
 }
 
@@ -66,7 +66,7 @@ func TestCaesarCipher(t *testing.T) {
 	for _, table := range tables {
 		caesarEncrypt := MakeCaesarEncrypt(table.alphabet, table.b)
 		caesarDecrypt := MakeCaesarDecrypt(table.alphabet, table.b)
-		runAffineReciprocalTests(t, table.alphabet, table.plaintext, table.ciphertext, caesarEncrypt, caesarDecrypt)
+		runAffineReciprocalTests(t, table.plaintext, table.ciphertext, caesarEncrypt, caesarDecrypt)
 	}
 }
 
@@ -83,7 +83,7 @@ func TestDecimationCipher(t *testing.T) {
 	for _, table := range tables {
 		decimationEncrypt := MakeDecimationEncrypt(table.alphabet, table.a)
 		decimationDecrypt := MakeDecimationDecrypt(table.alphabet, table.a)
-		runAffineReciprocalTests(t, table.alphabet, table.plaintext, table.ciphertext, decimationEncrypt, decimationDecrypt)
+		runAffineReciprocalTests(t, table.plaintext, table.ciphertext, decimationEncrypt, decimationDecrypt)
 	}
 }
 
@@ -99,6 +99,6 @@ func TestRot13Cipher(t *testing.T) {
 	for _, table := range tables {
 		rot13Encrypt := MakeRot13Encrypt(table.alphabet)
 		rot13Decrypt := MakeRot13Decrypt(table.alphabet)
-		runAffineReciprocalTests(t, table.alphabet, table.plaintext, table.ciphertext, rot13Encrypt, rot13Decrypt)
+		runAffineReciprocalTests(t, table.plaintext, table.ciphertext, rot13Encrypt, rot13Decrypt)
 	}
 }

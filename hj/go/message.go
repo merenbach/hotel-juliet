@@ -5,13 +5,10 @@ import (
 	"strings"
 )
 
-type Message struct {
-	Text     string
-	Alphabet string
-}
+type Message string
 
 func (message Message) String() string {
-	return fmt.Sprintf("Message (alphabet=%s): %s", message.Alphabet, message.Text)
+	return fmt.Sprintf("Message: %s", string(message))
 }
 
 // Chunk breaks up a copy of a Message into space-delimited chunks of a given size.
@@ -19,7 +16,7 @@ func (message Message) Chunk(sz int, alphabet string) Message {
 	newRunes := make([]rune, 0)
 	runeCount := 0
 	SPACE := " "
-	for _, c := range []rune(message.Text) {
+	for _, c := range []rune(string(message)) {
 		if strings.ContainsRune(alphabet, c) {
 			newRunes = append(newRunes, c)
 			runeCount += 1
@@ -28,10 +25,10 @@ func (message Message) Chunk(sz int, alphabet string) Message {
 			}
 		}
 	}
-	return Message{Alphabet: message.Alphabet, Text: string(newRunes)}
+	return Message(newRunes)
 }
 
 // Transform returns a copy of a Message transformed by a function.
 func (message Message) Transform(fn func(string) string) Message {
-	return Message{Alphabet: message.Alphabet, Text: fn(message.Text)}
+	return Message(fn(string(message)))
 }
