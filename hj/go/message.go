@@ -19,6 +19,7 @@ func (message Message) String() string {
 	return fmt.Sprintf("Message (alphabet=%s): %s", message.Alphabet, message.Text)
 }
 
+// Chunk breaks up a copy of a Message into space-delimited chunks of a given size.
 func (message Message) Chunk(sz int, alphabet string) Message {
 	newRunes := make([]rune, 0)
 	runeCount := 0
@@ -35,6 +36,7 @@ func (message Message) Chunk(sz int, alphabet string) Message {
 	return Message{Alphabet: message.Alphabet, Text: string(newRunes)}
 }
 
+// Transform returns a copy of a Message transformed by a function.
 func (message Message) Transform(fn func(string) string) Message {
 	return Message{Alphabet: message.Alphabet, Text: fn(message.Text)}
 }
