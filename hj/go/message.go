@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-type Message string
+type Message []rune
 
 func (message Message) String() string {
 	return fmt.Sprintf("Message: %s", string(message))
@@ -16,7 +16,7 @@ func (message Message) Chunk(sz int, alphabet string) Message {
 	newRunes := make([]rune, 0)
 	runeCount := 0
 	SPACE := " "
-	for _, c := range []rune(string(message)) {
+	for _, c := range message {
 		if strings.ContainsRune(alphabet, c) {
 			newRunes = append(newRunes, c)
 			runeCount += 1
