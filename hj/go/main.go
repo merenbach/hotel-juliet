@@ -22,5 +22,7 @@ import (
 )
 
 func main() {
-	fmt.Println("Hello, world!")
+	m := Message{Alphabet: "", Text: "HELLO, WORLD!!! I LOVE YOU!"}
+	m2 := m.Chunk(5, "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	fmt.Println("Hello, world!... [", m2.Text, "]")
 }

@@ -9,15 +9,11 @@ func makeKeywordAlphabets(alphabet1, alphabet2 string) ([]rune, []rune) {
 func MakeKeywordEncrypt(alphabet, keyword string) func(string) string {
 	ptAlphabet, ctAlphabet := makeKeywordAlphabets(alphabet, keyword+alphabet)
 	xtable := ziprunes(ptAlphabet, ctAlphabet)
-	return func(message string) string {
-		return mapRuneTransform(message, xtable)
-	}
+	return mapRuneTransform(xtable)
 }
 
 func MakeKeywordDecrypt(alphabet, keyword string) func(string) string {
 	ptAlphabet, ctAlphabet := makeKeywordAlphabets(alphabet, keyword+alphabet)
 	xtable := ziprunes(ctAlphabet, ptAlphabet)
-	return func(message string) string {
-		return mapRuneTransform(message, xtable)
-	}
+	return mapRuneTransform(xtable)
 }

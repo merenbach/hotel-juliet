@@ -23,17 +23,13 @@ func makeAffineAlphabets(alphabet string, a, b int) ([]rune, []rune) {
 func MakeAffineEncrypt(alphabet string, a, b int) func(string) string {
 	ptAlphabet, ctAlphabet := makeAffineAlphabets(alphabet, a, b)
 	xtable := ziprunes(ptAlphabet, ctAlphabet)
-	return func(message string) string {
-		return mapRuneTransform(message, xtable)
-	}
+	return mapRuneTransform(xtable)
 }
 
 func MakeAffineDecrypt(alphabet string, a, b int) func(string) string {
 	ptAlphabet, ctAlphabet := makeAffineAlphabets(alphabet, a, b)
 	xtable := ziprunes(ctAlphabet, ptAlphabet)
-	return func(message string) string {
-		return mapRuneTransform(message, xtable)
-	}
+	return mapRuneTransform(xtable)
 }
 
 func MakeAtbashEncrypt(alphabet string) func(string) string {
