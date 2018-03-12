@@ -5,11 +5,6 @@ import (
 	"strings"
 )
 
-type Cipher interface {
-	Encrypt(string) string
-	Decrypt(string) string
-}
-
 type Message struct {
 	Text     string
 	Alphabet string
