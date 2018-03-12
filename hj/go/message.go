@@ -29,6 +29,6 @@ func (message Message) Chunk(sz int, alphabet string) Message {
 }
 
 // Transform returns a copy of a Message transformed by a function.
-func (message Message) Transform(fn func(string) string) Message {
-	return Message(fn(string(message)))
+func (message Message) Transform(fn func([]rune) string) Message {
+	return Message(fn(message))
 }

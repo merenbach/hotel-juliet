@@ -6,13 +6,13 @@ func makeKeywordAlphabets(alphabet1, alphabet2 string) ([]rune, []rune) {
 	return ptAlphabet, ctAlphabet
 }
 
-func MakeKeywordEncrypt(alphabet, keyword string) func(string) string {
+func MakeKeywordEncrypt(alphabet, keyword string) func([]rune) string {
 	ptAlphabet, ctAlphabet := makeKeywordAlphabets(alphabet, keyword+alphabet)
 	xtable := ziprunes(ptAlphabet, ctAlphabet)
 	return mapRuneTransform(xtable)
 }
 
-func MakeKeywordDecrypt(alphabet, keyword string) func(string) string {
+func MakeKeywordDecrypt(alphabet, keyword string) func([]rune) string {
 	ptAlphabet, ctAlphabet := makeKeywordAlphabets(alphabet, keyword+alphabet)
 	xtable := ziprunes(ctAlphabet, ptAlphabet)
 	return mapRuneTransform(xtable)

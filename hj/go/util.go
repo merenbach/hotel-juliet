@@ -25,8 +25,8 @@ func removeRuneDuplicates(runes []rune) []rune {
 }
 
 // TODO: document
-func mapRuneTransform(xtable map[rune]rune) func(string) string {
-	return func(message string) string {
+func mapRuneTransform(xtable map[rune]rune) func([]rune) string {
+	return func(message []rune) string {
 		out := make([]rune, 0)
 		for _, rn := range []rune(message) {
 			xcoded, ok := xtable[rn]

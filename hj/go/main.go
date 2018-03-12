@@ -22,5 +22,9 @@ import (
 )
 
 func main() {
-	fmt.Println("Hello, world!")
+	m := Message("HELLO, WORLD!")
+	m2 := m.Chunk(5, "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	c := MakeCaesarEncrypt("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 3)
+	m2 = m.Transform(c)
+	fmt.Println("Hello, world!", m, m2)
 }

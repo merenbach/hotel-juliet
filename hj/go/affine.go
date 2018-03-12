@@ -20,45 +20,45 @@ func makeAffineAlphabets(alphabet string, a, b int) ([]rune, []rune) {
 	return ptAlphabet, ctAlphabet
 }
 
-func MakeAffineEncrypt(alphabet string, a, b int) func(string) string {
+func MakeAffineEncrypt(alphabet string, a, b int) func([]rune) string {
 	ptAlphabet, ctAlphabet := makeAffineAlphabets(alphabet, a, b)
 	xtable := ziprunes(ptAlphabet, ctAlphabet)
 	return mapRuneTransform(xtable)
 }
 
-func MakeAffineDecrypt(alphabet string, a, b int) func(string) string {
+func MakeAffineDecrypt(alphabet string, a, b int) func([]rune) string {
 	ptAlphabet, ctAlphabet := makeAffineAlphabets(alphabet, a, b)
 	xtable := ziprunes(ctAlphabet, ptAlphabet)
 	return mapRuneTransform(xtable)
 }
 
-func MakeAtbashEncrypt(alphabet string) func(string) string {
+func MakeAtbashEncrypt(alphabet string) func([]rune) string {
 	ab := len([]rune(alphabet)) - 1
 	return MakeAffineEncrypt(alphabet, ab, ab)
 }
-func MakeAtbashDecrypt(alphabet string) func(string) string {
+func MakeAtbashDecrypt(alphabet string) func([]rune) string {
 	ab := len([]rune(alphabet)) - 1
 	return MakeAffineDecrypt(alphabet, ab, ab)
 }
 
-func MakeCaesarEncrypt(alphabet string, b int) func(string) string {
+func MakeCaesarEncrypt(alphabet string, b int) func([]rune) string {
 	return MakeAffineEncrypt(alphabet, 1, b)
 }
-func MakeCaesarDecrypt(alphabet string, b int) func(string) string {
+func MakeCaesarDecrypt(alphabet string, b int) func([]rune) string {
 	return MakeAffineDecrypt(alphabet, 1, b)
 }
 
-func MakeDecimationEncrypt(alphabet string, a int) func(string) string {
+func MakeDecimationEncrypt(alphabet string, a int) func([]rune) string {
 	return MakeAffineEncrypt(alphabet, a, 0)
 }
-func MakeDecimationDecrypt(alphabet string, a int) func(string) string {
+func MakeDecimationDecrypt(alphabet string, a int) func([]rune) string {
 	return MakeAffineDecrypt(alphabet, a, 0)
 }
 
-func MakeRot13Encrypt(alphabet string) func(string) string {
+func MakeRot13Encrypt(alphabet string) func([]rune) string {
 	return MakeCaesarEncrypt(alphabet, 13)
 }
-func MakeRot13Decrypt(alphabet string) func(string) string {
+func MakeRot13Decrypt(alphabet string) func([]rune) string {
 	return MakeCaesarDecrypt(alphabet, 13)
 }
 
