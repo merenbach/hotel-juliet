@@ -22,13 +22,13 @@ func makeAffineAlphabets(alphabet string, a, b int) (string, string) {
 
 func MakeAffineEncrypt(alphabet string, a, b int) func(string) string {
 	ptAlphabet, ctAlphabet := makeAffineAlphabets(alphabet, a, b)
-	tableau := Tableau{ptAlphabet, ctAlphabet}
+	tableau := MakeTableau(ptAlphabet, ctAlphabet)
 	return tableau.Pt2Ct()
 }
 
 func MakeAffineDecrypt(alphabet string, a, b int) func(string) string {
 	ptAlphabet, ctAlphabet := makeAffineAlphabets(alphabet, a, b)
-	tableau := Tableau{ptAlphabet, ctAlphabet}
+	tableau := MakeTableau(ptAlphabet, ctAlphabet)
 	return tableau.Ct2Pt()
 }
 
