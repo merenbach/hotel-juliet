@@ -4,12 +4,9 @@ package main
 //todo: param groups (caesar, atbash, etc)
 // TODO:
 //  * additional unit tests, esp. with int'l charsets
-//  * should alphabets be specified on encrypt/decrypt or on cipher creation?
 //  * documentation
 //  * formatting
-//  * separate files
 //  * strict mode: on new Message struct type
-//  * should be able to print out cipher alphabet tableaux
 //  * multicase alphabets?
 //  * multi value returns (e.g., out, error)
 //  * keyword cipher
