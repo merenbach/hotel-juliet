@@ -1,19 +1,17 @@
 package main
 
-func makeKeywordAlphabets(alphabet1, alphabet2 string) (string, string) {
+func makeKeywordTableau(alphabet1, alphabet2 string) tableau {
 	ptAlphabet := removeRuneDuplicates([]rune(alphabet1))
 	ctAlphabet := removeRuneDuplicates([]rune(alphabet2))
-	return string(ptAlphabet), string(ctAlphabet)
+	return MakeTableau(string(ptAlphabet), string(ctAlphabet))
 }
 
 func MakeKeywordEncrypt(alphabet, keyword string) func(string) string {
-	ptAlphabet, ctAlphabet := makeKeywordAlphabets(alphabet, keyword+alphabet)
-	tableau := MakeTableau(ptAlphabet, ctAlphabet)
+	tableau := makeKeywordTableau(alphabet, keyword+alphabet)
 	return tableau.Pt2Ct()
 }
 
 func MakeKeywordDecrypt(alphabet, keyword string) func(string) string {
-	ptAlphabet, ctAlphabet := makeKeywordAlphabets(alphabet, keyword+alphabet)
-	tableau := MakeTableau(ptAlphabet, ctAlphabet)
+	tableau := makeKeywordTableau(alphabet, keyword+alphabet)
 	return tableau.Ct2Pt()
 }

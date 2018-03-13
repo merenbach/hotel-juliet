@@ -13,22 +13,20 @@ func makeAffine(m, a, b int) func() *big.Int {
 	return f
 }
 
-func makeAffineAlphabets(alphabet string, a, b int) (string, string) {
+func makeAffineTableau(alphabet string, a, b int) tableau {
 	ptAlphabet := removeRuneDuplicates([]rune(alphabet))
 	myfn := makeAffine(len(ptAlphabet), a, b)
 	ctAlphabet := removeRuneDuplicates(affineTransform(ptAlphabet, myfn))
-	return string(ptAlphabet), string(ctAlphabet)
+	return MakeTableau(string(ptAlphabet), string(ctAlphabet))
 }
 
 func MakeAffineEncrypt(alphabet string, a, b int) func(string) string {
-	ptAlphabet, ctAlphabet := makeAffineAlphabets(alphabet, a, b)
-	tableau := MakeTableau(ptAlphabet, ctAlphabet)
+	tableau := makeAffineTableau(alphabet, a, b)
 	return tableau.Pt2Ct()
 }
 
 func MakeAffineDecrypt(alphabet string, a, b int) func(string) string {
-	ptAlphabet, ctAlphabet := makeAffineAlphabets(alphabet, a, b)
-	tableau := MakeTableau(ptAlphabet, ctAlphabet)
+	tableau := makeAffineTableau(alphabet, a, b)
 	return tableau.Ct2Pt()
 }
 
