@@ -15,3 +15,6 @@
     // back to: HELLO, WORLD!
     m3 := m2.Transform(dec)
 
+    // encrypt and decrypt back to: HELLO, WORLD!
+    m4 := m.Transform(enc).Transform(dec)
+
