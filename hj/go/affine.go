@@ -13,23 +13,23 @@ func makeAffine(m, a, b int) func() *big.Int {
 	return f
 }
 
-func makeAffineAlphabets(alphabet string, a, b int) ([]rune, []rune) {
+func makeAffineAlphabets(alphabet string, a, b int) (string, string) {
 	ptAlphabet := removeRuneDuplicates([]rune(alphabet))
 	myfn := makeAffine(len(ptAlphabet), a, b)
 	ctAlphabet := removeRuneDuplicates(affineTransform(ptAlphabet, myfn))
-	return ptAlphabet, ctAlphabet
+	return string(ptAlphabet), string(ctAlphabet)
 }
 
 func MakeAffineEncrypt(alphabet string, a, b int) func(string) string {
 	ptAlphabet, ctAlphabet := makeAffineAlphabets(alphabet, a, b)
-	xtable := ziprunes(ptAlphabet, ctAlphabet)
-	return mapRuneTransform(xtable)
+	tableau := Tableau{ptAlphabet, ctAlphabet}
+	return tableau.Pt2Ct()
 }
 
 func MakeAffineDecrypt(alphabet string, a, b int) func(string) string {
 	ptAlphabet, ctAlphabet := makeAffineAlphabets(alphabet, a, b)
-	xtable := ziprunes(ctAlphabet, ptAlphabet)
-	return mapRuneTransform(xtable)
+	tableau := Tableau{ptAlphabet, ctAlphabet}
+	return tableau.Ct2Pt()
 }
 
 func MakeAtbashEncrypt(alphabet string) func(string) string {
