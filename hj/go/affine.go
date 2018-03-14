@@ -17,7 +17,7 @@ func makeAffineTableau(alphabet string, a, b int) tableau {
 	ptAlphabet := removeRuneDuplicates([]rune(alphabet))
 	myfn := makeAffine(len(ptAlphabet), a, b)
 	ctAlphabet := removeRuneDuplicates(affineTransform(ptAlphabet, myfn))
-	return MakeTableau(string(ptAlphabet), string(ctAlphabet))
+	return tableau{string(ptAlphabet), string(ctAlphabet)}
 }
 
 func MakeAffineEncrypt(alphabet string, a, b int) func(string) string {

@@ -8,10 +8,6 @@ type tableau struct {
 	ctAlphabet string
 }
 
-func MakeTableau(ptAlphabet, ctAlphabet string) tableau {
-	return tableau{ptAlphabet, ctAlphabet}
-}
-
 func (t tableau) String() string {
 	return fmt.Sprintf("PT: %s\nCT: %s", t.ptAlphabet, t.ctAlphabet)
 }
