@@ -17,7 +17,7 @@ func TestMessageConstrain(t *testing.T) {
 	for _, table := range tables {
 		message := Message(table.text)
 		if output := message.ConstrainRunes(table.charset); string(output) != table.expected {
-			t.Errorf("Constraining runes on \"%s\" to \"%s\" incorrect. Received: %s; expected: %s", table.text, table.charset, string(output), table.expected)
+			t.Errorf("Constrained runes on %q to %q incorrect. Received: %s; expected: %s", table.text, table.charset, string(output), table.expected)
 		}
 	}
 }
