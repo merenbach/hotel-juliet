@@ -2,6 +2,12 @@ package main
 
 import "fmt"
 
+// Tableau represents a simple monoalphabetic substitution cipher
+type Tableau struct {
+	ptAlphabet string
+	ctAlphabet string
+}
+
 // Simple monoalphabetic substitution cipher
 type tableau struct {
 	ptAlphabet string

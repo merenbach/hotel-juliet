@@ -16,8 +16,65 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"strings"
 )
+
+// TODO: works great, but how to prevent repeat characters (e.g., {3,3,4} from gumming up the works?
+func invert(a []int) ([]int, error) {
+	out := make([]int, len(a))
+
+	for idx, n := range a {
+		if n >= 0 && n < len(a) {
+			out[n] = idx
+		} else {
+			return nil, fmt.Errorf("character index out of bounds")
+		}
+	}
+	return out, nil
+}
+
+func zipper(a, b string) ([]int, []int, error) {
+	lennya := len(a)
+	lennyb := len(b)
+	// var out1 uint[lennya]
+	// var out2 uint[lennyb]
+	out1 := make([]int, lennya)
+	out2 := make([]int, lennyb)
+	for idx, char := range b {
+		if idxOfBInA := strings.IndexRune(a, char); idxOfBInA != (-1) {
+			out1[idx] = idxOfBInA
+			out2[idxOfBInA] = idx
+		} else {
+			return nil, nil, fmt.Errorf("character sets did not match")
+		}
+	}
+	return out1, out2, nil
+}
 
 func main() {
 	fmt.Println("Hello, world!")
+	ct := []int{3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 0, 1, 2}
+	ct_inverse, err := invert(ct)
+	if err != nil {
+		log.Fatal(err)
+	}
+	ab1 := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	for _, n := range ct {
+		fmt.Printf(string(ab1[ct_inverse[n]]))
+
+	}
+	fmt.Println()
+	for idx, _ := range ct {
+		fmt.Printf(string(ab1[ct[idx]]))
+
+	}
+	fmt.Println()
+	fmt.Println(ct)
+	fmt.Println(ct_inverse)
+	// ab1 := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	// ab2 := "DEFGHIJKLMNOPQRSTUVWXYZABC"
+	// fmt.Println(zipper(ab1, ab2))
+	// ab2 = "EFGHIJKLMNOPQRSTUVWXYZABCd"
+	// fmt.Println(zipper(ab1, ab2))
 }
