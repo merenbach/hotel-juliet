@@ -1,11 +1,17 @@
 package main
 
-// ziprunes creates a map from two sets of runes
-// TODO: any repeats in `a` should be ignored, in effect preventing overwrites
+// zipstrings creates a map from two strings (as rune arrays)
+// zipstrings will panic if any runes in `a` occur more than once in `a`
+// zipstrings will NOT panic if runes repeat in `b`, but often zipstrings will be invoked reciprocally
 func ziprunes(a, b []rune) map[rune]rune {
+	seen := make(map[rune]bool)
 	out := make(map[rune]rune)
-	for i, e := range []rune(a) {
+	for i, e := range a {
+		if _, found := seen[e]; found {
+			panic("runes may not repeat")
+		}
 		out[e] = b[i]
+		seen[e] = true
 	}
 	return out
 }

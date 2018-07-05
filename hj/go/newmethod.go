@@ -14,7 +14,10 @@ func runePositionsOfString(needle, haystack string) []int {
 	return out
 }
 
-func revarray(positions []int) ([]int, error) {
+// invertArray swaps indices and values in an array of integers.
+// If values are not constrained within the number of positions, an error is returned.
+// TODO: panic on duplicates? panic instead of error for bounds issues too?
+func invertArray(positions []int) ([]int, error) {
 	out := make([]int, len(positions))
 	for idx, element := range positions {
 		if element < 0 || element >= len(out) {
@@ -34,6 +37,7 @@ func revarray(positions []int) ([]int, error) {
 func main() {
 	fmt.Println("vim-go")
 	alphabet := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	// kwalphabet := "MONKEYABCDFGHIJLPQRSTUVWXZ"
 	message := "MEET AT NOON my FRIEND"
 	positions := runePositionsOfString(message, alphabet)
 	fmt.Println(positions)
@@ -46,8 +50,9 @@ func main() {
 	// Thus outside of input and output, we use _only_ numbers.
 	a := runePositionsOfString(ctAlphabet, alphabet)
 	fmt.Println(a)
-	a = []int{3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 0, 1, 2}
-	b, err := revarray(a)
+	// a = []int{3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 0, 1, 2}
+	a = runePositionsOfString(ctAlphabet, alphabet)
+	b, err := invertArray(a)
 	if err != nil {
 		log.Fatal(err)
 	}
