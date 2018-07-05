@@ -1,5 +1,7 @@
 package main
 
+import "strings"
+
 // zipstrings creates a map from two strings (as rune arrays)
 // zipstrings will panic if any runes in `a` occur more than once in `a`
 // zipstrings will NOT panic if runes repeat in `b`, but often zipstrings will be invoked reciprocally
@@ -14,6 +16,18 @@ func ziprunes(a, b []rune) map[rune]rune {
 		seen[e] = true
 	}
 	return out
+}
+
+// Backpermute transforms a string based on a function.
+// Backpermute will panic if the transform function returns any invalid string index values.
+func Backpermute(s string, f func(int) int) string {
+	var out strings.Builder
+	asRunes := []rune(s)
+	for idx := range asRunes {
+		newRune := asRunes[f(idx)]
+		out.WriteRune(newRune)
+	}
+	return out.String()
 }
 
 // remove string duplicates, preserving order of first appearance

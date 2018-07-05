@@ -27,19 +27,14 @@ func (t Tableau) String() string {
 	return pt.String() + "\n" + ct.String()
 }
 
-func MakeTableau(alphabet string, transform func(int) int) Tableau {
-	var ctAlphabet strings.Builder
-	ptRunes := []rune(alphabet)
-	for idx := range ptRunes {
-		newRune := ptRunes[transform(idx)]
-		ctAlphabet.WriteRune(newRune)
-	}
-	ctRunes := []rune(ctAlphabet.String())
+// MakeTableau creates a tableau based on the given plaintext alphabet and transform function.
+func MakeTableau(ptAlphabet string, transform func(int) int) Tableau {
+	ctAlphabet := Backpermute(ptAlphabet, transform)
 
 	t := Tableau{
-		Alphabet: alphabet,
-		Pt2Ct:    ziprunes(ptRunes, ctRunes),
-		Ct2Pt:    ziprunes(ctRunes, ptRunes),
+		Alphabet: ptAlphabet,
+		Pt2Ct:    ziprunes([]rune(ptAlphabet), []rune(ctAlphabet)),
+		Ct2Pt:    ziprunes([]rune(ctAlphabet), []rune(ptAlphabet)),
 	}
 	return t
 }
