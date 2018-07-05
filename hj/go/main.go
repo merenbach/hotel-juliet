@@ -16,22 +16,18 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"strings"
 )
 
-// TODO: works great, but how to prevent repeat characters (e.g., {3,3,4} from gumming up the works?
-func invert(a []int) ([]int, error) {
+// Invert swaps indices and values in an array of integers.
+// Invert panics upon encountering elements that don't represent valid indices in the source array.
+// TODO: panic on duplicates?
+func invert(a []int) []int {
 	out := make([]int, len(a))
-
-	for idx, n := range a {
-		if n >= 0 && n < len(a) {
-			out[n] = idx
-		} else {
-			return nil, fmt.Errorf("character index out of bounds")
-		}
+	for idx, elem := range a {
+		out[elem] = idx
 	}
-	return out, nil
+	return out
 }
 
 func zipper(a, b string) ([]int, []int, error) {
@@ -55,10 +51,7 @@ func zipper(a, b string) ([]int, []int, error) {
 func main() {
 	fmt.Println("Hello, world!")
 	ct := []int{3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 0, 1, 2}
-	ct_inverse, err := invert(ct)
-	if err != nil {
-		log.Fatal(err)
-	}
+	ct_inverse := invert(ct)
 	ab1 := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	for _, n := range ct {
 		fmt.Printf(string(ab1[ct_inverse[n]]))
