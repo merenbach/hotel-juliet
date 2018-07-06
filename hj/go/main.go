@@ -56,10 +56,12 @@ func main() {
 	// when we could use maps of runes in O(1) or O(2).
 	// A table is how it would be done by hand, rather than calculating each time.
 	// So use a map!
-	t := MakeTableau(alphabet, func(i int) int {
+	t := MakeTableau(alphabet, "", func(i int) int {
 		return (i + 3) % len(alphabet)
 	})
 	fmt.Println(t)
+	// fmt.Println(t.Pt2Ct("HELLOWORLD"))
+	// fmt.Println(t.Ct2Pt("KHOORZRUOG"))
 
 	// ct := []int{3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 0, 1, 2}
 	// ct_inverse := invert(ct)
