@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"strings"
-	"unicode/utf8"
 )
 
 type RuneMap map[rune]rune
@@ -81,39 +80,6 @@ func MakeSimpleTableau(ptAlphabet string, ctAlphabet string) Cipher {
 		// },
 	}
 	return t
-}
-
-func MakeSimpleTableauForAffine(ptAlphabet string, a, b int) Cipher {
-	m := utf8.RuneCountInString(ptAlphabet)
-
-	// TODO: consider using Hull-Dobell satisfaction to determine if `a` is valid (must be coprime with `m`)
-	for a < 0 {
-		a += m
-	}
-	for b < 0 {
-		b += m
-	}
-	aff, _ := makeLCG2(m, 1, a, b)
-
-	ctAlphabet := Backpermute(ptAlphabet, aff)
-
-	return MakeSimpleTableau(ptAlphabet, ctAlphabet)
-}
-
-func MakeSimpleTableauForAtbash(ptAlphabet string) Cipher {
-	return MakeSimpleTableauForAffine(ptAlphabet, -1, -1)
-}
-
-func MakeSimpleTableauForCaesar(ptAlphabet string, b int) Cipher {
-	return MakeSimpleTableauForAffine(ptAlphabet, 1, b)
-}
-
-func MakeSimpleTableauForDecimation(ptAlphabet string, a int) Cipher {
-	return MakeSimpleTableauForAffine(ptAlphabet, a, 0)
-}
-
-func MakeSimpleTableauForRot13(ptAlphabet string, a int) Cipher {
-	return MakeSimpleTableauForCaesar(ptAlphabet, 13)
 }
 
 // [TODO] Maybe these should be methods on a Message struct, as we explored before, for ease of chaining.
