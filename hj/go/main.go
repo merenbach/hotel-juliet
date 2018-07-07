@@ -12,7 +12,8 @@ package main
 //  * keyword cipher
 //  * polyalphabetic ciphers
 //  * should we use pointers instead of values after all?... (probably not)
-//  * also do interface, maybe, for enc/decrypt since not everything is affine based or monoalphabetic
+//  * clean up method/function names
+//  * re-explore Message struct type for chaining
 
 import (
 	"fmt"
