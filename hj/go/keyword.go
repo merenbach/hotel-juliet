@@ -5,7 +5,7 @@ func rmStringDuplicates(s string) string {
 	return string(out)
 }
 
-func MakeSimpleTableauForKeyword(alphabet, keyword string) Cipher {
+func NewKeywordCipher(alphabet, keyword string) Cipher {
 	ctAlphabet := rmStringDuplicates(keyword + alphabet)
-	return MakeSimpleTableau(alphabet, ctAlphabet)
+	return NewSimpleTableau(alphabet, ctAlphabet)
 }

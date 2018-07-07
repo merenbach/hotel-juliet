@@ -8,7 +8,7 @@ import (
 // affine returns the result of `(ax + b) mod m`
 // TODO: enforce constraints such as m > 0
 // https://en.wikipedia.org/wiki/Linear_congruential_generator
-func MakeSimpleTableauForAffine(ptAlphabet string, a, b int) Cipher {
+func NewAffineCipher(ptAlphabet string, a, b int) Cipher {
 	m := utf8.RuneCountInString(ptAlphabet)
 
 	// TODO: consider using Hull-Dobell satisfaction to determine if `a` is valid (must be coprime with `m`)
@@ -22,21 +22,21 @@ func MakeSimpleTableauForAffine(ptAlphabet string, a, b int) Cipher {
 
 	ctAlphabet := Backpermute(ptAlphabet, aff)
 
-	return MakeSimpleTableau(ptAlphabet, ctAlphabet)
+	return NewSimpleTableau(ptAlphabet, ctAlphabet)
 }
 
-func MakeSimpleTableauForAtbash(ptAlphabet string) Cipher {
-	return MakeSimpleTableauForAffine(ptAlphabet, -1, -1)
+func NewAtbashCipher(ptAlphabet string) Cipher {
+	return NewAffineCipher(ptAlphabet, -1, -1)
 }
 
-func MakeSimpleTableauForCaesar(ptAlphabet string, b int) Cipher {
-	return MakeSimpleTableauForAffine(ptAlphabet, 1, b)
+func NewCaesarCipher(ptAlphabet string, b int) Cipher {
+	return NewAffineCipher(ptAlphabet, 1, b)
 }
 
-func MakeSimpleTableauForDecimation(ptAlphabet string, a int) Cipher {
-	return MakeSimpleTableauForAffine(ptAlphabet, a, 0)
+func NewDecimationCipher(ptAlphabet string, a int) Cipher {
+	return NewAffineCipher(ptAlphabet, a, 0)
 }
 
-func MakeSimpleTableauForRot13(ptAlphabet string) Cipher {
-	return MakeSimpleTableauForCaesar(ptAlphabet, 13)
+func NewRot13Cipher(ptAlphabet string) Cipher {
+	return NewCaesarCipher(ptAlphabet, 13)
 }

@@ -26,7 +26,7 @@ func TestKeywordCipher(t *testing.T) {
 		{TEST_KEYWORD_ALPHABET, "LJOOF, WFEOI!", "HELLO, WORLD!", "KANGAROO"},
 	}
 	for _, table := range tables {
-		c := MakeSimpleTableauForKeyword(table.alphabet, table.keyword)
+		c := NewKeywordCipher(table.alphabet, table.keyword)
 		runKeywordReciprocalTests(t, table.plaintext, table.ciphertext, c)
 	}
 }

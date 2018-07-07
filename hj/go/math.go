@@ -43,6 +43,7 @@ import (
 	return ((a % b) + b) % b
 }*/
 
+// abs returns the absolute value of an integer.
 func abs(a int) int {
 	if a < 0 {
 		return -a
@@ -50,6 +51,7 @@ func abs(a int) int {
 	return a
 }
 
+// gcd returns the greatest common divisor for the provided parameters.
 func gcd(a, b int) int {
 	for b != 0 {
 		a, b = b, a%b
@@ -62,6 +64,18 @@ func gcd(a, b int) int {
 func Coprime(a, b int) bool {
 	return gcd(a, b) == 1
 }
+
+// type LCG struct {
+// 	m    int
+// 	a    int
+// 	c    int
+// 	seed int
+// }
+
+// func NewLCG() *LCG {
+// 	lcg := LCG{}
+// 	return &lcg
+// }
 
 func makeLCG2(m, a, c, seed int) (func() int, bool) {
 	if m <= 0 {

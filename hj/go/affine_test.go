@@ -27,7 +27,7 @@ func TestAffineCipher(t *testing.T) {
 		{TEST_AFFINE_ALPHABET, "IPQQJ, ZJCQA!", "HELLO, WORLD!", 7, 3},
 	}
 	for _, table := range tables {
-		c := MakeSimpleTableauForAffine(table.alphabet, table.a, table.b)
+		c := NewAffineCipher(table.alphabet, table.a, table.b)
 		runAffineReciprocalTests(t, table.plaintext, table.ciphertext, c)
 
 	}
@@ -43,7 +43,7 @@ func TestAtbashCipher(t *testing.T) {
 		{TEST_AFFINE_ALPHABET, "SVOOL, DLIOW!", "HELLO, WORLD!"},
 	}
 	for _, table := range tables {
-		c := MakeSimpleTableauForAtbash(table.alphabet)
+		c := NewAtbashCipher(table.alphabet)
 		runAffineReciprocalTests(t, table.plaintext, table.ciphertext, c)
 	}
 }
@@ -61,7 +61,7 @@ func TestCaesarCipher(t *testing.T) {
 		{TEST_AFFINE_ALPHABET, "QNUUX, FXAUM!", "HELLO, WORLD!", 17},
 	}
 	for _, table := range tables {
-		c := MakeSimpleTableauForCaesar(table.alphabet, table.b)
+		c := NewCaesarCipher(table.alphabet, table.b)
 		runAffineReciprocalTests(t, table.plaintext, table.ciphertext, c)
 	}
 }
@@ -77,7 +77,7 @@ func TestDecimationCipher(t *testing.T) {
 		{TEST_AFFINE_ALPHABET, "BIJJC, SCVJT!", "HELLO, WORLD!", 7},
 	}
 	for _, table := range tables {
-		c := MakeSimpleTableauForDecimation(table.alphabet, table.a)
+		c := NewDecimationCipher(table.alphabet, table.a)
 		runAffineReciprocalTests(t, table.plaintext, table.ciphertext, c)
 	}
 }
@@ -92,7 +92,7 @@ func TestRot13Cipher(t *testing.T) {
 		{TEST_AFFINE_ALPHABET, "URYYB, JBEYQ!", "HELLO, WORLD!"},
 	}
 	for _, table := range tables {
-		c := MakeSimpleTableauForRot13(table.alphabet)
+		c := NewRot13Cipher(table.alphabet)
 		runAffineReciprocalTests(t, table.plaintext, table.ciphertext, c)
 	}
 }
