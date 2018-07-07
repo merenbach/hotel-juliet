@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 )
 
@@ -72,24 +73,8 @@ type LCG struct {
 	state      uint
 }
 
+// NewLCG creates a pointer to a new LCG.
 func NewLCG(m, a, c, seed uint) *LCG {
-	lcg := LCG{
-		modulus:    m,
-		multiplier: a,
-		increment:  c,
-		state:      seed % m,
-	}
-	return &lcg
-}
-
-// Next returns the next value in the generator.
-func (g *LCG) Next() uint {
-	state := g.state
-	g.state = (state*g.multiplier + g.increment) % g.modulus
-	return state
-}
-
-func makeLCG2(m, a, c, seed uint) (func() uint, bool) {
 	if m == 0 {
 		panic("modulus must be greater than zero")
 	}
@@ -97,24 +82,34 @@ func makeLCG2(m, a, c, seed uint) (func() uint, bool) {
 		panic("multiplier must be greater than zero")
 	}
 
-	hull_dobell := true
-
-	switch {
-	case !Coprime(m, c):
-		fmt.Println("Multiplier and increment should be coprime:", m, c)
-		hull_dobell = false
-	case !Regular(m, a-1):
-		fmt.Println("Prime factors of `m` should also divide `a - 1`")
-		hull_dobell = false
-	case m%4 == 0 && (a-1)%4 != 0:
-		fmt.Println("If 4 divides `m`, 4 should divide `a - 1`")
-		hull_dobell = false
+	return &LCG{
+		modulus:    m,
+		multiplier: a,
+		increment:  c,
+		state:      seed % m,
 	}
+}
 
-	lcg := NewLCG(m, a, c, seed)
-	out := lcg.Next
+// HullDobell tests for compliance with the Hull-Dobell theorem.
+// The error parameter, if set, will contain the first-found failing constraint.
+func (g *LCG) HullDobell() (bool, error) {
+	switch {
+	case !Coprime(g.modulus, g.increment):
+		return false, errors.New("multiplier and increment should be coprime")
+	case !Regular(g.modulus, g.multiplier-1):
+		return false, errors.New("prime factors of modulus should also divide multiplier-minus-one")
+	case g.modulus%4 == 0 && (g.multiplier-1)%4 != 0:
+		return false, errors.New("if 4 divides modulus, 4 should divide multiplier-minus-one")
+	default:
+		return true, nil
+	}
+}
 
-	return out, hull_dobell
+// Next returns the next value in the generator.
+func (g *LCG) Next() uint {
+	state := g.state
+	g.state = (state*g.multiplier + g.increment) % g.modulus
+	return state
 }
 
 // Regular tests if all prime factors of `a` also divide `b`.

@@ -23,9 +23,9 @@ func NewAffineCipher(ptAlphabet string, a, b int) Cipher {
 	for b < 0 {
 		b += m
 	}
-	aff, _ := makeLCG2(uint(m), 1, uint(a), uint(b))
 
-	ctAlphabet := Backpermute(ptAlphabet, aff)
+	lcg := NewLCG(uint(m), 1, uint(a), uint(b))
+	ctAlphabet := Backpermute(ptAlphabet, lcg.Next)
 
 	return NewSimpleTableau(ptAlphabet, ctAlphabet)
 }
