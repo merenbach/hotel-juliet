@@ -14,6 +14,7 @@ package main
 //  * should we use pointers instead of values after all?... (probably not)
 //  * clean up method/function names
 //  * re-explore Message struct type for chaining
+//  * add tests for more util funcs and LCG
 
 import (
 	"fmt"
