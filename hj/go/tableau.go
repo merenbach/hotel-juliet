@@ -21,7 +21,7 @@ func (m *RuneMap) Transform(s string, strict bool) string {
 	return out.String()
 }
 
-type Tableau interface {
+type Cipher interface {
 	Encrypt(string, bool) string
 	Decrypt(string, bool) string
 }
@@ -45,7 +45,7 @@ func (t SimpleTableau) String() string {
 
 // MakeTableau creates a tableau based on the given plaintext alphabet and transform function.
 // If ctAlphabet is blank, it will be set to the ptAlphabet.
-func MakeTableau(ptAlphabet string, ctAlphabet string) Tableau {
+func MakeSimpleTableau(ptAlphabet string, ctAlphabet string) Cipher {
 	if ctAlphabet == "" {
 		ctAlphabet = ptAlphabet
 	}

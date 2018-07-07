@@ -60,7 +60,7 @@ func main() {
 	// t := MakeTableau(alphabet, "", func(i int) int {
 	// 	return (i + 3) % len(alphabet)
 	// })
-	t := MakeTableau(alphabet, alphabet2)
+	t := MakeSimpleTableau(alphabet, alphabet2)
 	fmt.Println(t)
 	fmt.Println("E:", t.Encrypt("HELLO, WORLD", true))
 	fmt.Println("D:", t.Decrypt("KHOOR, ZRUOG", false))
