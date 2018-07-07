@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"math/big"
 )
 
 // adapted from: https://en.wikibooks.org/wiki/Algorithm_Implementation/Mathematics/Extended_Euclidean_algorithm#Iterative_algorithm_3
@@ -97,9 +96,9 @@ func makeLCG2(m, a, c, seed int) (func() int, bool) {
 	case !Coprime(m, c):
 		fmt.Println("Multiplier and increment should be coprime:", m, c)
 		hull_dobell = false
-	// case !Regular(m, A_MINUS_ONE):
-	// 	fmt.Println("Prime factors of `m` should also divide `a - 1`")
-	// 	hull_dobell = false
+	case !Regular(m, a-1):
+		fmt.Println("Prime factors of `m` should also divide `a - 1`")
+		hull_dobell = false
 	case m%4 == 0 && (a-1)%4 != 0:
 		fmt.Println("If 4 divides `m`, 4 should divide `a - 1`")
 		hull_dobell = false
@@ -109,19 +108,18 @@ func makeLCG2(m, a, c, seed int) (func() int, bool) {
 }
 
 // just return true if either a or b is zero?
-func Regular(a, b *big.Int) bool {
-	if a.Int64() == 0 {
+func Regular(a, b int) bool {
+	if a == 0 {
 		fmt.Println("Parameter `a` must be nonzero.")
 		//raise ValueError('')
 	}
-	if b.Int64() == 0 {
+	if b == 0 {
 		return true
 	}
 
-	a_, b_ := new(big.Int).Set(a), new(big.Int).Set(b)
-	for b_.Int64() != 1 {
-		b_.GCD(nil, nil, b_, a_)
-		a_.Div(a_, b_)
+	for b != 1 {
+		b = gcd(a, b)
+		a /= b
 	}
-	return a_.Int64() == 1
+	return a == 1
 }
