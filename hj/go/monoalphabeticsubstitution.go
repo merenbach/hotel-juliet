@@ -4,6 +4,16 @@ import (
 	"unicode/utf8"
 )
 
+func rmStringDuplicates(s string) string {
+	out := removeRuneDuplicates([]rune(s))
+	return string(out)
+}
+
+func NewKeywordCipher(alphabet, keyword string) Cipher {
+	ctAlphabet := rmStringDuplicates(keyword + alphabet)
+	return NewSimpleTableau(alphabet, ctAlphabet)
+}
+
 // TODO: cleanup these docs and add some errors
 // affine returns the result of `(ax + b) mod m`
 // TODO: enforce constraints such as m > 0
