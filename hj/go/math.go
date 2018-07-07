@@ -64,8 +64,6 @@ func Coprime(a, b int) bool {
 }
 
 func makeLCG2(m, a, c, seed int) (func() int, bool) {
-	hull_dobell := true
-
 	if m <= 0 {
 		panic("modulus must be greater than zero")
 	}
@@ -90,8 +88,8 @@ func makeLCG2(m, a, c, seed int) (func() int, bool) {
 		return prevseed
 	}
 
-	// A_MINUS_ONE := a - 1
-	// DIVISIBLE_BY_FOUR := func(a int) bool { return a%4 == 0 }
+	hull_dobell := true
+
 	switch {
 	case !Coprime(m, c):
 		fmt.Println("Multiplier and increment should be coprime:", m, c)
@@ -107,6 +105,8 @@ func makeLCG2(m, a, c, seed int) (func() int, bool) {
 	return out, hull_dobell
 }
 
+// Regular tests if all prime factors of `a` also divide `b`.
+// Note that the order of the parameters is important, as `b` may have additional prime factors.
 // just return true if either a or b is zero?
 func Regular(a, b int) bool {
 	if a == 0 {
