@@ -64,9 +64,10 @@ func main() {
 	fmt.Println(t)
 	fmt.Println("E:", t.Encrypt("HELLO, WORLD", true))
 	fmt.Println("D:", t.Decrypt("KHOOR, ZRUOG", false))
-	t = MakeSimpleTableauFromFunc(alphabet, func(i int) int {
-		return (i + 3) % len(alphabet)
-	})
+	t = MakeSimpleTableauFromFunc(alphabet, Caesar(29, 26))
+	// t = MakeSimpleTableauFromFunc(alphabet, func(i int) int {
+	// 	return (i + 3) % len(alphabet)
+	// })
 	fmt.Println(t)
 	fmt.Println("E:", t.Encrypt("HELLO, WORLD", true))
 	fmt.Println("D:", t.Decrypt("KHOOR, ZRUOG", false))

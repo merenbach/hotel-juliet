@@ -76,7 +76,7 @@ func makeLCG(m, a, c, seed *big.Int) (f func() *big.Int, hull_dobell bool) {
 		hull_dobell = true
 	}
 
-	newseed := new(big.Int).Set(seed)
+	newseed := new(big.Int).Mod(seed, m)
 	prevseed := new(big.Int)
 	f = func() *big.Int {
 		// seed = (newseed * a + c) % m

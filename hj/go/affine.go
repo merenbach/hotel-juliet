@@ -39,6 +39,16 @@ func MakeAtbashDecrypt(alphabet string) func(string) string {
 	return MakeAffineDecrypt(alphabet, ab, ab)
 }
 
+func Affine(a, b, m int) func(int) int {
+	aff := makeAffine(m, a, b)
+	return func(int) int {
+		return int(aff().Int64())
+	}
+}
+func Caesar(b int, m int) func(int) int {
+	return Affine(1, b, m)
+}
+
 func MakeCaesarEncrypt(alphabet string, b int) func(string) string {
 	return MakeAffineEncrypt(alphabet, 1, b)
 }
