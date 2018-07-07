@@ -31,13 +31,13 @@ func ziprunes(a, b []rune) map[rune]rune {
 	return out
 }
 
-// Backpermute transforms a string based on a function.
+// Backpermute transforms a string based on a generator function.
 // Backpermute will panic if the transform function returns any invalid string index values.
-func Backpermute(s string, f func(int) int) string {
+func Backpermute(s string, g func() int) string {
 	var out strings.Builder
 	asRunes := []rune(s)
-	for idx := range asRunes {
-		newRune := asRunes[f(idx)]
+	for _ = range asRunes {
+		newRune := asRunes[g()]
 		out.WriteRune(newRune)
 	}
 	return out.String()

@@ -64,7 +64,7 @@ func main() {
 	fmt.Println(t)
 	fmt.Println("E:", t.Encrypt("HELLO, WORLD", true))
 	fmt.Println("D:", t.Decrypt("KHOOR, ZRUOG", false))
-	t = MakeSimpleTableauFromFunc(alphabet, Atbash(26))
+	t = MakeSimpleTableauForAtbash(alphabet)
 	// t = MakeSimpleTableauFromFunc(alphabet, func(i int) int {
 	// 	return (i + 3) % len(alphabet)
 	// })

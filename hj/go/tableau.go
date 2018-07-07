@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strings"
+	"unicode/utf8"
 )
 
 type RuneMap map[rune]rune
@@ -82,16 +83,37 @@ func MakeSimpleTableau(ptAlphabet string, ctAlphabet string) Cipher {
 	return t
 }
 
-// MakeTableau creates a tableau based on the given plaintext alphabet and transform function.
-// If ctAlphabet is blank, it will be set to the ptAlphabet.
-func MakeSimpleTableauFromFunc(ptAlphabet string, fn func() int) Cipher {
-	var ctAlphabet strings.Builder
-	asRunes := []rune(ptAlphabet)
-	for _ = range asRunes {
-		newRune := asRunes[fn()]
-		ctAlphabet.WriteRune(newRune)
+func MakeSimpleTableauForAffine(ptAlphabet string, a, b int) Cipher {
+	m := utf8.RuneCountInString(ptAlphabet)
+
+	// TODO: consider using Hull-Dobell satisfaction to determine if `a` is valid (must be coprime with `m`)
+	for a < 0 {
+		a += m
 	}
-	return MakeSimpleTableau(ptAlphabet, ctAlphabet.String())
+	for b < 0 {
+		b += m
+	}
+	aff, _ := makeLCG2(m, 1, a, b)
+
+	ctAlphabet := Backpermute(ptAlphabet, aff)
+
+	return MakeSimpleTableau(ptAlphabet, ctAlphabet)
+}
+
+func MakeSimpleTableauForAtbash(ptAlphabet string) Cipher {
+	return MakeSimpleTableauForAffine(ptAlphabet, -1, -1)
+}
+
+func MakeSimpleTableauForCaesar(ptAlphabet string, b int) Cipher {
+	return MakeSimpleTableauForAffine(ptAlphabet, 1, b)
+}
+
+func MakeSimpleTableauForDecimation(ptAlphabet string, a int) Cipher {
+	return MakeSimpleTableauForAffine(ptAlphabet, a, 0)
+}
+
+func MakeSimpleTableauForRot13(ptAlphabet string, a int) Cipher {
+	return MakeSimpleTableauForCaesar(ptAlphabet, 13)
 }
 
 // [TODO] Maybe these should be methods on a Message struct, as we explored before, for ease of chaining.
