@@ -39,24 +39,22 @@ func MakeAtbashDecrypt(alphabet string) func(string) string {
 	return MakeAffineDecrypt(alphabet, ab, ab)
 }
 
-func Affine(a, b, m int) func(int) int {
+func Affine(a, b, m int) func() int {
 	// m_, a_, b_ := int64(m), int64(a), int64(b)
 	// TODO: consider using Hull-Dobell satisfaction to determine if `a` is valid (must be coprime with `m`)
 	aff, _ := makeLCG2(m, 1, a, b)
-	return func(int) int {
-		return aff()
-	}
+	return aff
 }
-func Atbash(m int) func(int) int {
+func Atbash(m int) func() int {
 	return Affine(m-1, m-1, m)
 }
-func Caesar(b int, m int) func(int) int {
+func Caesar(b int, m int) func() int {
 	return Affine(1, b, m)
 }
-func Decimation(a int, m int) func(int) int {
+func Decimation(a int, m int) func() int {
 	return Affine(a, 0, m)
 }
-func Rot13(m int) func(int) int {
+func Rot13(m int) func() int {
 	return Caesar(13, m)
 }
 

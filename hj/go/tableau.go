@@ -84,9 +84,14 @@ func MakeSimpleTableau(ptAlphabet string, ctAlphabet string) Cipher {
 
 // MakeTableau creates a tableau based on the given plaintext alphabet and transform function.
 // If ctAlphabet is blank, it will be set to the ptAlphabet.
-func MakeSimpleTableauFromFunc(ptAlphabet string, fn func(int) int) Cipher {
-	ctAlphabet := Backpermute(ptAlphabet, fn)
-	return MakeSimpleTableau(ptAlphabet, ctAlphabet)
+func MakeSimpleTableauFromFunc(ptAlphabet string, fn func() int) Cipher {
+	var ctAlphabet strings.Builder
+	asRunes := []rune(ptAlphabet)
+	for _ = range asRunes {
+		newRune := asRunes[fn()]
+		ctAlphabet.WriteRune(newRune)
+	}
+	return MakeSimpleTableau(ptAlphabet, ctAlphabet.String())
 }
 
 // [TODO] Maybe these should be methods on a Message struct, as we explored before, for ease of chaining.
