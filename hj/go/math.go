@@ -59,7 +59,9 @@ func Coprime(a, b *big.Int) bool {
 // TODO: document
 // TODO: TESTS
 // TODO: USE GOROUTINES and channel and then emulate yield in inner func???
-func makeLCG(m, a, c, seed *big.Int) (f func() *big.Int, hull_dobell bool) {
+func makeLCG(m, a, c, seed *big.Int) (func() *big.Int, bool) {
+	hull_dobell := true
+
 	A_MINUS_ONE := new(big.Int).Sub(a, big.NewInt(1))
 	DIVISIBLE_BY_FOUR := func(a *big.Int) bool { return Divides(a, big.NewInt(4)) }
 	switch {
@@ -72,21 +74,16 @@ func makeLCG(m, a, c, seed *big.Int) (f func() *big.Int, hull_dobell bool) {
 	case DIVISIBLE_BY_FOUR(m) && !DIVISIBLE_BY_FOUR(A_MINUS_ONE):
 		fmt.Println("If 4 divides `m`, 4 should divide `a - 1`")
 		hull_dobell = false
-	default:
-		hull_dobell = true
 	}
 
 	newseed := new(big.Int).Mod(seed, m)
 	prevseed := new(big.Int)
-	f = func() *big.Int {
+	return func() *big.Int {
 		// seed = (newseed * a + c) % m
 		prevseed.Set(newseed)
-		newseed.Mul(newseed, a)
-		newseed.Add(newseed, c)
-		newseed.Mod(newseed, m)
+		newseed.Mul(newseed, a).Add(newseed, c).Mod(newseed, m)
 		return prevseed
-	}
-	return
+	}, hull_dobell
 }
 
 // just return true if either a or b is zero?
