@@ -5,6 +5,21 @@ import (
 	"strings"
 )
 
+type RuneMap map[rune]rune
+
+// Transform a string based on a rune-to-rune mapping.
+func (m *RuneMap) Transform(s string, strict bool) string {
+	var out strings.Builder
+	for _, r := range []rune(s) {
+		o, found := (*m)[r]
+		if !found && !strict {
+			o = r
+		}
+		out.WriteRune(o)
+	}
+	return out.String()
+}
+
 // Tableau represents a simple monoalphabetic substitution cipher
 // PROBLEM WITH THIS MODEL: we need two functions, one for decryption
 // WE CAN USE the invert/backpermute concept to map numbers...
@@ -14,77 +29,62 @@ type Tableau struct {
 	ptAlphabet string
 	ctAlphabet string
 
-	f func(int) int
-
-	pt2num map[rune]int
-	num2pt map[int]rune
-
-	ct2num map[rune]int
-	num2ct map[int]rune
+	Encrypt func(string, bool) string
+	Decrypt func(string, bool) string
 }
 
 func (t Tableau) String() string {
-	return fmt.Sprintf("PT: %s\nCT: %s", t.ptAlphabet, t.Pt2Ct(t.ptAlphabet))
+	return fmt.Sprintf("PT: %s\nCT: %s", t.ptAlphabet, t.ctAlphabet)
 }
 
 // MakeTableau creates a tableau based on the given plaintext alphabet and transform function.
 // If ctAlphabet is blank, it will be set to the ptAlphabet.
-func MakeTableau(ptAlphabet string, ctAlphabet string, transform func(int) int) Tableau {
+func MakeTableau(ptAlphabet string, ctAlphabet string) Tableau {
 	if ctAlphabet == "" {
 		ctAlphabet = ptAlphabet
 	}
 
 	// ctAlphabet := Backpermute(ptAlphabet, transform)
 
-	pt2num := make(map[rune]int)
-	num2pt := make(map[int]rune)
-	for i, r := range []rune(ptAlphabet) {
-		pt2num[r] = i
-		num2pt[i] = r
-	}
+	// pt2ct := make(map[rune]rune)
+	// ct2pt := make(map[rune]rune)
+	pt2ct := make(RuneMap)
+	ct2pt := make(RuneMap)
 
-	ct2num := make(map[rune]int)
-	num2ct := make(map[int]rune)
-	for i, r := range []rune(ctAlphabet) {
-		ct2num[r] = i
-		num2ct[i] = r
+	ptRunes := []rune(ptAlphabet)
+	ctRunes := []rune(ctAlphabet)
+
+	for i := range []rune(ptAlphabet) {
+		ptRune := ptRunes[i]
+		ctRune := ctRunes[i]
+		pt2ct[ptRune] = ctRune
+		ct2pt[ctRune] = ptRune
 	}
 
 	t := Tableau{
 		ptAlphabet: ptAlphabet,
 		ctAlphabet: ctAlphabet,
-		f:          transform,
-		pt2num:     pt2num,
-		num2pt:     num2pt,
-		ct2num:     ct2num,
-		num2ct:     num2ct,
+		Encrypt: func(s string, strict bool) string {
+			return pt2ct.Transform(s, strict)
+		},
+		Decrypt: func(s string, strict bool) string {
+			return ct2pt.Transform(s, strict)
+		},
 	}
 	return t
 }
 
-// Pt2Ct converts plaintext to ciphertext.
-func (t Tableau) Pt2Ct(s string) string {
-	var out strings.Builder
-	for _, r := range []rune(s) {
-		i := t.pt2num[r]
-		o := t.f(i)
-		r2 := t.num2ct[o]
-		out.WriteRune(r2)
-	}
-	return out.String()
-}
+// [TODO] Maybe these should be methods on a Message struct, as we explored before, for ease of chaining.
 
-// Ct2Pt converts ciphertext to plaintext.
-func (t Tableau) Ct2Pt(s string) string {
-	var out strings.Builder
-	for _, r := range []rune(s) {
-		i := t.ct2num[r]
-		o := t.f(i)
-		r2 := t.num2pt[o]
-		out.WriteRune(r2)
-	}
-	return out.String()
-}
+// // Pt2Ct converts plaintext to ciphertext.
+// func (t Tableau) Encrypt(s string, strict bool) string {
+// 	return t.pt2ct(s, strict)
+// }
+
+// // Ct2Pt converts ciphertext to plaintext.
+// func (t Tableau) Decrypt(s string, strict bool) string {
+// 	return t.ct2pt(s, strict)
+// }
 
 // Simple monoalphabetic substitution cipher
 type tableau struct {

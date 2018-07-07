@@ -2,6 +2,19 @@ package main
 
 import "strings"
 
+// // MapRunes transforms a string by mapping runes through a function.
+// func MapRunes(s string, f func(rune) rune) string {
+// 	var out strings.Builder
+// 	for _, r := range []rune(s) {
+// 		o, found := m[r]
+// 		if !found && !strict {
+// 			o = r
+// 		}
+// 		out.WriteRune(o)
+// 	}
+// 	return out.String()
+// }
+
 // zipstrings creates a map from two strings (as rune arrays)
 // zipstrings will panic if any runes in `a` occur more than once in `a`
 // zipstrings will NOT panic if runes repeat in `b`, but often zipstrings will be invoked reciprocally

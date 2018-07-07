@@ -51,15 +51,19 @@ func zipper(a, b string) ([]int, []int, error) {
 func main() {
 	fmt.Println("Hello, world!")
 	alphabet := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	alphabet2 := "DEFGHIJKLMNOPQRSTUVWXYZABC"
 	// THE MATH IS BEAUTIFUL... but.... it makes no sense to look up rune
 	// positions in other strings, convert, and convert back, in O(2n),
 	// when we could use maps of runes in O(1) or O(2).
 	// A table is how it would be done by hand, rather than calculating each time.
 	// So use a map!
-	t := MakeTableau(alphabet, "", func(i int) int {
-		return (i + 3) % len(alphabet)
-	})
+	// t := MakeTableau(alphabet, "", func(i int) int {
+	// 	return (i + 3) % len(alphabet)
+	// })
+	t := MakeTableau(alphabet, alphabet2)
 	fmt.Println(t)
+	fmt.Println("E:", t.Encrypt("HELLO, WORLD", true))
+	fmt.Println("D:", t.Decrypt("KHOOR, ZRUOG", false))
 	// fmt.Println(t.Pt2Ct("HELLOWORLD"))
 	// fmt.Println(t.Ct2Pt("KHOORZRUOG"))
 
