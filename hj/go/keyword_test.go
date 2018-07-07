@@ -4,15 +4,14 @@ import "testing"
 
 const TEST_KEYWORD_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-func runKeywordReciprocalTests(t *testing.T, plaintext, ciphertext string, enc, dec func(string) string) {
-	message := Message(plaintext)
-	encrypted := message.Transform(enc)
-	decrypted := encrypted.Transform(dec)
+func runKeywordReciprocalTests(t *testing.T, plaintext, ciphertext string, c Cipher) {
+	encrypted := c.Encrypt(plaintext, false)
+	decrypted := c.Decrypt(ciphertext, false)
 	if string(encrypted) != ciphertext {
-		t.Errorf("Ciphertext was incorrect, got: %s, want: %s.", encrypted, ciphertext)
+		t.Errorf("ciphertext %q was incorrect; wanted %q", encrypted, ciphertext)
 	}
 	if string(decrypted) != plaintext {
-		t.Errorf("Plaintext was incorrect, got: %s, want: %s.", decrypted, plaintext)
+		t.Errorf("plaintext %q was incorrect; wanted: %q", decrypted, plaintext)
 	}
 }
 
@@ -27,8 +26,7 @@ func TestKeywordCipher(t *testing.T) {
 		{TEST_KEYWORD_ALPHABET, "LJOOF, WFEOI!", "HELLO, WORLD!", "KANGAROO"},
 	}
 	for _, table := range tables {
-		keywordEncrypt := MakeKeywordEncrypt(table.alphabet, table.keyword)
-		keywordDecrypt := MakeKeywordDecrypt(table.alphabet, table.keyword)
-		runKeywordReciprocalTests(t, table.plaintext, table.ciphertext, keywordEncrypt, keywordDecrypt)
+		c := MakeSimpleTableauForKeyword(table.alphabet, table.keyword)
+		runKeywordReciprocalTests(t, table.plaintext, table.ciphertext, c)
 	}
 }
