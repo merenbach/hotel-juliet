@@ -43,63 +43,58 @@ import (
 	return ((a % b) + b) % b
 }*/
 
-// abs returns the absolute value of an integer.
-func abs(a int) int {
-	if a < 0 {
-		return -a
+// // abs returns the absolute value of an integer.
+// func abs(a int) int {
+// 	if a < 0 {
+// 		return -a
+// 	}
+// 	return a
+// }
+
+// gcd returns the greatest common divisor for the provided parameters.
+func gcd(a, b uint) uint {
+	for b != 0 {
+		a, b = b, a%b
 	}
 	return a
 }
 
-// gcd returns the greatest common divisor for the provided parameters.
-func gcd(a, b int) int {
-	for b != 0 {
-		a, b = b, a%b
-	}
-	return abs(a)
-}
-
 // Coprime tests if two numbers `a` and `b` are relatively prime.
 // The order of the parameters does not matter.
-func Coprime(a, b int) bool {
+func Coprime(a, b uint) bool {
 	return gcd(a, b) == 1
 }
 
-// type LCG struct {
-// 	m    int
-// 	a    int
-// 	c    int
-// 	seed int
-// }
+type LCG struct {
+	modulus    uint // m
+	multiplier uint // a
+	increment  uint // c
+	state      uint
+}
 
-// func NewLCG() *LCG {
-// 	lcg := LCG{}
-// 	return &lcg
-// }
+func NewLCG(m, a, c, seed uint) *LCG {
+	lcg := LCG{
+		modulus:    m,
+		multiplier: a,
+		increment:  c,
+		state:      seed % m,
+	}
+	return &lcg
+}
 
-func makeLCG2(m, a, c, seed int) (func() int, bool) {
-	if m <= 0 {
+// Next returns the next value in the generator.
+func (g *LCG) Next() uint {
+	state := g.state
+	g.state = (state*g.multiplier + g.increment) % g.modulus
+	return state
+}
+
+func makeLCG2(m, a, c, seed uint) (func() uint, bool) {
+	if m == 0 {
 		panic("modulus must be greater than zero")
 	}
-	if a <= 0 {
+	if a == 0 {
 		panic("multiplier must be greater than zero")
-	}
-	if c < 0 {
-		panic("increment must be greater than or equal to zero")
-	}
-	if seed < 0 {
-		panic("start value must be greater than or equal to zero")
-	}
-
-	newseed := seed % m
-	var prevseed int
-	out := func() int {
-		// seed = (newseed * a + c) % m
-		// prevseed.Set(newseed)
-		prevseed = newseed
-		newseed = (newseed*a + c) % m
-		// newseed.Mul(newseed, a).Add(newseed, c).Mod(newseed, m)
-		return prevseed
 	}
 
 	hull_dobell := true
@@ -116,13 +111,16 @@ func makeLCG2(m, a, c, seed int) (func() int, bool) {
 		hull_dobell = false
 	}
 
+	lcg := NewLCG(m, a, c, seed)
+	out := lcg.Next
+
 	return out, hull_dobell
 }
 
 // Regular tests if all prime factors of `a` also divide `b`.
 // Note that the order of the parameters is important, as `b` may have additional prime factors.
 // just return true if either a or b is zero?
-func Regular(a, b int) bool {
+func Regular(a, b uint) bool {
 	if a == 0 {
 		fmt.Println("Parameter `a` must be nonzero.")
 		//raise ValueError('')

@@ -23,7 +23,7 @@ func NewAffineCipher(ptAlphabet string, a, b int) Cipher {
 	for b < 0 {
 		b += m
 	}
-	aff, _ := makeLCG2(m, 1, a, b)
+	aff, _ := makeLCG2(uint(m), 1, uint(a), uint(b))
 
 	ctAlphabet := Backpermute(ptAlphabet, aff)
 
