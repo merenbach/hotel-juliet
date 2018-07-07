@@ -82,6 +82,13 @@ func MakeSimpleTableau(ptAlphabet string, ctAlphabet string) Cipher {
 	return t
 }
 
+// MakeTableau creates a tableau based on the given plaintext alphabet and transform function.
+// If ctAlphabet is blank, it will be set to the ptAlphabet.
+func MakeSimpleTableauFromFunc(ptAlphabet string, fn func(int) int) Cipher {
+	ctAlphabet := Backpermute(ptAlphabet, fn)
+	return MakeSimpleTableau(ptAlphabet, ctAlphabet)
+}
+
 // [TODO] Maybe these should be methods on a Message struct, as we explored before, for ease of chaining.
 
 // Encrypt a message from plaintext to ciphertext.
