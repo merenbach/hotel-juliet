@@ -72,30 +72,32 @@ func makeLCG2(m, a, c, seed int) (func() int, bool) {
 		panic("start value must be greater than or equal to zero")
 	}
 
-	// A_MINUS_ONE := new(big.Int).Sub(a, big.NewInt(1))
-	// DIVISIBLE_BY_FOUR := func(a *big.Int) bool { return Divides(a, big.NewInt(4)) }
-	// switch {
-	// case !Coprime(m, c):
-	// 	fmt.Println("Multiplier and increment should be coprime:", m, c)
-	// 	hull_dobell = false
-	// case !Regular(m, A_MINUS_ONE):
-	// 	fmt.Println("Prime factors of `m` should also divide `a - 1`")
-	// 	hull_dobell = false
-	// case DIVISIBLE_BY_FOUR(m) && !DIVISIBLE_BY_FOUR(A_MINUS_ONE):
-	// 	fmt.Println("If 4 divides `m`, 4 should divide `a - 1`")
-	// 	hull_dobell = false
-	// }
-
 	newseed := seed % m
 	var prevseed int
-	return func() int {
+	out := func() int {
 		// seed = (newseed * a + c) % m
 		// prevseed.Set(newseed)
 		prevseed = newseed
 		newseed = (newseed*a + c) % m
 		// newseed.Mul(newseed, a).Add(newseed, c).Mod(newseed, m)
 		return prevseed
-	}, hull_dobell
+	}
+
+	// A_MINUS_ONE := a - 1
+	// DIVISIBLE_BY_FOUR := func(a int) bool { return a%4 == 0 }
+	switch {
+	// case !Coprime(m, c):
+	// 	fmt.Println("Multiplier and increment should be coprime:", m, c)
+	// 	hull_dobell = false
+	// case !Regular(m, A_MINUS_ONE):
+	// 	fmt.Println("Prime factors of `m` should also divide `a - 1`")
+	// 	hull_dobell = false
+	case m%4 == 0 && (a-1)%4 != 0:
+		fmt.Println("If 4 divides `m`, 4 should divide `a - 1`")
+		hull_dobell = false
+	}
+
+	return out, hull_dobell
 }
 
 // TODO: document
