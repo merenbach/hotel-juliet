@@ -57,16 +57,16 @@ func Deduplicate(s string) string {
 	return out.String()
 }
 
-// TODO: document
-func mapRuneTransform(xtable map[rune]rune) func(string) string {
-	return func(message string) string {
-		out := []rune(message)
-		for i, e := range []rune(message) {
-			xcoded, ok := xtable[e]
-			if ok {
-				out[i] = xcoded
-			}
-		}
-		return string(out)
-	}
-}
+// // TODO: document
+// func mapRuneTransform(xtable map[rune]rune) func(string) string {
+// 	return func(message string) string {
+// 		out := []rune(message)
+// 		for i, e := range []rune(message) {
+// 			xcoded, ok := xtable[e]
+// 			if ok {
+// 				out[i] = xcoded
+// 			}
+// 		}
+// 		return string(out)
+// 	}
+// }
