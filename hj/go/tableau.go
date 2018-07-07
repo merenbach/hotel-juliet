@@ -12,12 +12,18 @@ func (m *RuneMap) Transform(s string, strict bool) string {
 	var out strings.Builder
 	for _, r := range []rune(s) {
 		o, found := (*m)[r]
-		if !found && !strict {
-			o = r
+		if found {
+			out.WriteRune(o)
+		} else if !strict {
+			out.WriteRune(r)
 		}
-		out.WriteRune(o)
 	}
 	return out.String()
+}
+
+type Tableau interface {
+	Encrypt(string, bool) string
+	Decrypt(string, bool) string
 }
 
 // Tableau represents a simple monoalphabetic substitution cipher
@@ -25,15 +31,15 @@ func (m *RuneMap) Transform(s string, strict bool) string {
 // WE CAN USE the invert/backpermute concept to map numbers...
 // or just use a table directly and find a way to permute in the constructor??
 // then we can still do all the work here (MakeTableau).
-type Tableau struct {
+type SimpleTableau struct {
 	ptAlphabet string
 	ctAlphabet string
 
-	Encrypt func(string, bool) string
-	Decrypt func(string, bool) string
+	pt2ct *RuneMap
+	ct2pt *RuneMap
 }
 
-func (t Tableau) String() string {
+func (t SimpleTableau) String() string {
 	return fmt.Sprintf("PT: %s\nCT: %s", t.ptAlphabet, t.ctAlphabet)
 }
 
@@ -61,30 +67,32 @@ func MakeTableau(ptAlphabet string, ctAlphabet string) Tableau {
 		ct2pt[ctRune] = ptRune
 	}
 
-	t := Tableau{
+	t := SimpleTableau{
 		ptAlphabet: ptAlphabet,
 		ctAlphabet: ctAlphabet,
-		Encrypt: func(s string, strict bool) string {
-			return pt2ct.Transform(s, strict)
-		},
-		Decrypt: func(s string, strict bool) string {
-			return ct2pt.Transform(s, strict)
-		},
+		pt2ct:      &pt2ct,
+		ct2pt:      &ct2pt,
+		// Encrypt: func(s string, strict bool) string {
+		// 	return pt2ct.Transform(s, strict)
+		// },
+		// Decrypt: func(s string, strict bool) string {
+		// 	return ct2pt.Transform(s, strict)
+		// },
 	}
 	return t
 }
 
 // [TODO] Maybe these should be methods on a Message struct, as we explored before, for ease of chaining.
 
-// // Pt2Ct converts plaintext to ciphertext.
-// func (t Tableau) Encrypt(s string, strict bool) string {
-// 	return t.pt2ct(s, strict)
-// }
+// Encrypt a message from plaintext to ciphertext.
+func (t SimpleTableau) Encrypt(s string, strict bool) string {
+	return t.pt2ct.Transform(s, strict)
+}
 
-// // Ct2Pt converts ciphertext to plaintext.
-// func (t Tableau) Decrypt(s string, strict bool) string {
-// 	return t.ct2pt(s, strict)
-// }
+// Decrypt a message from ciphertext to plaintext.
+func (t SimpleTableau) Decrypt(s string, strict bool) string {
+	return t.ct2pt.Transform(s, strict)
+}
 
 // Simple monoalphabetic substitution cipher
 type tableau struct {
