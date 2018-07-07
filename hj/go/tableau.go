@@ -23,6 +23,7 @@ func (m *RuneMap) Transform(s string, strict bool) string {
 
 // TODO: should `strict` be in creation, not Encryption/Decryption?
 type Cipher interface {
+	String() string
 	Encrypt(string, bool) string
 	Decrypt(string, bool) string
 }
