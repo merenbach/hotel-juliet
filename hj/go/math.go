@@ -56,6 +56,35 @@ func Coprime(a, b *big.Int) bool {
 	return gcd.Int64() == 1
 }
 
+func makeLCG2(m, a, c, seed int) (func() int, bool) {
+	hull_dobell := true
+
+	// A_MINUS_ONE := new(big.Int).Sub(a, big.NewInt(1))
+	// DIVISIBLE_BY_FOUR := func(a *big.Int) bool { return Divides(a, big.NewInt(4)) }
+	// switch {
+	// case !Coprime(m, c):
+	// 	fmt.Println("Multiplier and increment should be coprime:", m, c)
+	// 	hull_dobell = false
+	// case !Regular(m, A_MINUS_ONE):
+	// 	fmt.Println("Prime factors of `m` should also divide `a - 1`")
+	// 	hull_dobell = false
+	// case DIVISIBLE_BY_FOUR(m) && !DIVISIBLE_BY_FOUR(A_MINUS_ONE):
+	// 	fmt.Println("If 4 divides `m`, 4 should divide `a - 1`")
+	// 	hull_dobell = false
+	// }
+
+	newseed := seed % m
+	var prevseed int
+	return func() int {
+		// seed = (newseed * a + c) % m
+		// prevseed.Set(newseed)
+		prevseed = newseed
+		newseed = (newseed*a + c) % m
+		// newseed.Mul(newseed, a).Add(newseed, c).Mod(newseed, m)
+		return prevseed
+	}, hull_dobell
+}
+
 // TODO: document
 // TODO: TESTS
 // TODO: USE GOROUTINES and channel and then emulate yield in inner func???
