@@ -59,6 +59,19 @@ func Coprime(a, b *big.Int) bool {
 func makeLCG2(m, a, c, seed int) (func() int, bool) {
 	hull_dobell := true
 
+	if m <= 0 {
+		panic("modulus must be greater than zero")
+	}
+	if a <= 0 {
+		panic("multiplier must be greater than zero")
+	}
+	if c < 0 {
+		panic("increment must be greater than or equal to zero")
+	}
+	if seed < 0 {
+		panic("start value must be greater than or equal to zero")
+	}
+
 	// A_MINUS_ONE := new(big.Int).Sub(a, big.NewInt(1))
 	// DIVISIBLE_BY_FOUR := func(a *big.Int) bool { return Divides(a, big.NewInt(4)) }
 	// switch {
