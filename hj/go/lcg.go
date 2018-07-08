@@ -92,6 +92,7 @@ func NewLCG(m, a, c, seed uint) *LCG {
 
 // HullDobell tests for compliance with the Hull-Dobell theorem.
 // The error parameter, if set, will contain the first-found failing constraint.
+// When c != 0, this test passing means that the cycle is equal to g.multiplier.
 func (g *LCG) HullDobell() (bool, error) {
 	switch {
 	case !Coprime(g.modulus, g.increment):
