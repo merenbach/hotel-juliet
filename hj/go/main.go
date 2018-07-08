@@ -15,6 +15,7 @@ package main
 //  * clean up method/function names
 //  * re-explore Message struct type for chaining
 //  * add tests for more util funcs and LCG
+//  * add more informative documentation
 
 import (
 	"fmt"

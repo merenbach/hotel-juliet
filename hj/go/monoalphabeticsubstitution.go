@@ -10,11 +10,6 @@ func NewKeywordCipher(alphabet, keyword string) Cipher {
 	return NewSimpleTableau(alphabet, ctAlphabet)
 }
 
-// TODO: cleanup these docs and add some errors
-// affine returns the result of `(ax + b) mod m`
-// TODO: enforce constraints such as m > 0
-// https://en.wikipedia.org/wiki/Linear_congruential_generator
-
 // NewAffineCipher creates a new affine cipher.
 func NewAffineCipher(ptAlphabet string, a, b int) Cipher {
 	m := utf8.RuneCountInString(ptAlphabet)
