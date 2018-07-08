@@ -1,5 +1,7 @@
 package main
 
+// Simple (one glyph at a time) monoalphabetic substitution ciphers
+
 import (
 	"unicode/utf8"
 )
