@@ -74,6 +74,14 @@ func NewSimpleTableau(ptAlphabet string, ctAlphabet string) Cipher {
 	}
 }
 
+// func (t *SimpleTableau) Plaintext() string {
+// 	return t.ptAlphabet
+
+// }
+// func (t *SimpleTableau) Ciphertext() string {
+// 	return t.ctAlphabet
+// }
+
 func (t *SimpleTableau) String() string {
 	return fmt.Sprintf("PT: %s\nCT: %s", t.ptAlphabet, t.ctAlphabet)
 }
