@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 )
 
 // adapted from: https://en.wikibooks.org/wiki/Algorithm_Implementation/Mathematics/Extended_Euclidean_algorithm#Iterative_algorithm_3
@@ -118,8 +117,7 @@ func (g *LCG) Next() uint {
 // just return true if either a or b is zero?
 func Regular(a, b uint) bool {
 	if a == 0 {
-		fmt.Println("Parameter `a` must be nonzero.")
-		//raise ValueError('')
+		panic("Parameter `a` must be nonzero.")
 	}
 	if b == 0 {
 		return true
