@@ -15,6 +15,7 @@ func runMonoalphabeticReciprocalTests(t *testing.T, plaintext, ciphertext string
 	}
 }
 
+// TestKeywordCipher tests the keyword cipher.
 func TestKeywordCipher(t *testing.T) {
 	tables := []struct {
 		alphabet   string
@@ -31,6 +32,7 @@ func TestKeywordCipher(t *testing.T) {
 	}
 }
 
+// TestAffineCipher tests the affine cipher.
 func TestAffineCipher(t *testing.T) {
 	tables := []struct {
 		alphabet   string
@@ -49,6 +51,7 @@ func TestAffineCipher(t *testing.T) {
 	}
 }
 
+// TestAtbashCipher tests the Atbash cipher.
 func TestAtbashCipher(t *testing.T) {
 	tables := []struct {
 		alphabet   string
@@ -64,6 +67,7 @@ func TestAtbashCipher(t *testing.T) {
 	}
 }
 
+// TestCaesarCipher tests the Caesar cipher.
 func TestCaesarCipher(t *testing.T) {
 	tables := []struct {
 		alphabet   string
@@ -82,6 +86,7 @@ func TestCaesarCipher(t *testing.T) {
 	}
 }
 
+// TestDecimationCipher tests the decimation cipher.
 func TestDecimationCipher(t *testing.T) {
 	tables := []struct {
 		alphabet   string
@@ -98,6 +103,7 @@ func TestDecimationCipher(t *testing.T) {
 	}
 }
 
+// TestRot13Cipher tests the Rot13 cipher.
 func TestRot13Cipher(t *testing.T) {
 	tables := []struct {
 		alphabet   string
