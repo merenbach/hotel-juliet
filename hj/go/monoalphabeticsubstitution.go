@@ -4,6 +4,7 @@ import (
 	"unicode/utf8"
 )
 
+// NewKeywordCipher creates a new keyword cipher.
 func NewKeywordCipher(alphabet, keyword string) Cipher {
 	ctAlphabet := Deduplicate(keyword + alphabet)
 	return NewSimpleTableau(alphabet, ctAlphabet)
@@ -13,6 +14,8 @@ func NewKeywordCipher(alphabet, keyword string) Cipher {
 // affine returns the result of `(ax + b) mod m`
 // TODO: enforce constraints such as m > 0
 // https://en.wikipedia.org/wiki/Linear_congruential_generator
+
+// NewAffineCipher creates a new affine cipher.
 func NewAffineCipher(ptAlphabet string, a, b int) Cipher {
 	m := utf8.RuneCountInString(ptAlphabet)
 
@@ -30,18 +33,22 @@ func NewAffineCipher(ptAlphabet string, a, b int) Cipher {
 	return NewSimpleTableau(ptAlphabet, ctAlphabet)
 }
 
+// NewAtbashCipher creates a new Atbash cipher.
 func NewAtbashCipher(ptAlphabet string) Cipher {
 	return NewAffineCipher(ptAlphabet, -1, -1)
 }
 
+// NewCaesarCipher creates a new Caesar cipher.
 func NewCaesarCipher(ptAlphabet string, b int) Cipher {
 	return NewAffineCipher(ptAlphabet, 1, b)
 }
 
+// NewDecimationCipher creates a new decimation cipher.
 func NewDecimationCipher(ptAlphabet string, a int) Cipher {
 	return NewAffineCipher(ptAlphabet, a, 0)
 }
 
+// NewRot13Cipher creates a new Rot13 (Caesar shift of 13) cipher.
 func NewRot13Cipher(ptAlphabet string) Cipher {
 	return NewCaesarCipher(ptAlphabet, 13)
 }
