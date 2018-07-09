@@ -5,8 +5,8 @@ import (
 	"strings"
 )
 
-// wrapString wraps a string a specified number of indices.
-// wrapString will error out if the provided offset is negative.
+// WrapString wraps a string a specified number of indices.
+// WrapString will error out if the provided offset is negative.
 func wrapString(s string, i int) string {
 	// if we simply `return s[i:] + s[:i]`, we're operating on bytes, not runes
 	u := []rune(s)
@@ -14,13 +14,27 @@ func wrapString(s string, i int) string {
 	return string(v)
 }
 
-// reverseString reverses the runes in a string.
+// ReverseString reverses the runes in a string.
 func reverseString(s string) string {
 	r := []rune(s)
 	sort.SliceStable(r, func(i, j int) bool {
 		return true
 	})
 	return string(r)
+}
+
+// Deduplicate removes recurrences for runes from a string, preserving order of first appearance.
+func deduplicateString(s string) string {
+	var out strings.Builder
+	seen := make(map[rune]bool)
+
+	for _, e := range []rune(s) {
+		if _, ok := seen[e]; !ok {
+			out.WriteRune(e)
+			seen[e] = true
+		}
+	}
+	return out.String()
 }
 
 // // MapRunes transforms a string by mapping runes through a function.
@@ -60,20 +74,6 @@ func Backpermute(s string, g func() uint) string {
 	for _ = range asRunes {
 		newRune := asRunes[g()]
 		out.WriteRune(newRune)
-	}
-	return out.String()
-}
-
-// Deduplicate removes recurrences for runes from a string, preserving order of first appearance.
-func Deduplicate(s string) string {
-	var out strings.Builder
-	seen := make(map[rune]bool)
-
-	for _, e := range []rune(s) {
-		if _, ok := seen[e]; !ok {
-			out.WriteRune(e)
-			seen[e] = true
-		}
 	}
 	return out.String()
 }

@@ -8,7 +8,7 @@ import (
 
 // NewKeywordCipher creates a new keyword cipher.
 func NewKeywordCipher(alphabet, keyword string) Cipher {
-	ctAlphabet := Deduplicate(keyword + alphabet)
+	ctAlphabet := deduplicateString(keyword + alphabet)
 	return NewSimpleTableau(alphabet, ctAlphabet)
 }
 
