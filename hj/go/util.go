@@ -1,6 +1,9 @@
 package main
 
-import "strings"
+import (
+	"sort"
+	"strings"
+)
 
 // wrapString wraps a string a specified number of indices.
 // wrapString will error out if the provided offset is negative.
@@ -9,6 +12,15 @@ func wrapString(s string, i int) string {
 	u := []rune(s)
 	v := append(u[i:], u[:i]...)
 	return string(v)
+}
+
+// reverseString reverses the runes in a string.
+func reverseString(s string) string {
+	r := []rune(s)
+	sort.SliceStable(r, func(i, j int) bool {
+		return true
+	})
+	return string(r)
 }
 
 // // MapRunes transforms a string by mapping runes through a function.
