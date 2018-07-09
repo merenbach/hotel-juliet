@@ -98,8 +98,15 @@ func main() {
 	// // fmt.Println(zipper(ab1, ab2))
 	// // ab2 = "EFGHIJKLMNOPQRSTUVWXYZABCd"
 	// // fmt.Println(zipper(ab1, ab2))
-	t2 := NewTabulaRecta(alphabet, alphabet, alphabet)
-	fmt.Println(t2)
-	fmt.Println(t2.Encrypt("THIS IS MY VOICE", "SOCRATES", false))
-	fmt.Println(t2.Decrypt("VGPLB, KUILS!", "OCEANOGRAPHYWHAT", true))
+	// t2 := NewTabulaRecta(alphabet, alphabet, alphabet)
+	// fmt.Println(t2)
+	// fmt.Println(t2.Encrypt("THIS IS MY VOICE", "SOCRATES", false))
+	// fmt.Println(t2.Decrypt("VGPLB, KUILS!", "OCEANOGRAPHYWHAT", true))
+	t3 := NewBeaufortCipher(alphabet)
+	fmt.Println(t3)
+	o := t3.Encrypt("HELLO, WORLD", "OCEANOGRAPHYWHAT", false)
+	// o := t3.Encrypt("HYTPZ, SSAPM!", "OCEANOGRAPHYWHAT", false)
+	fmt.Println("this is it: ", o)
+	fmt.Println("hey", t3.Encrypt(o, "OCEANOGRAPHYWHAT", false))
+	// HYTPZ, SSAPM!
 }

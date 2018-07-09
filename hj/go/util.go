@@ -2,6 +2,15 @@ package main
 
 import "strings"
 
+// wrapString wraps a string a specified number of indices.
+// wrapString will error out if the provided offset is negative.
+func wrapString(s string, i int) string {
+	// if we simply `return s[i:] + s[:i]`, we're operating on bytes, not runes
+	u := []rune(s)
+	v := append(u[i:], u[:i]...)
+	return string(v)
+}
+
 // // MapRunes transforms a string by mapping runes through a function.
 // func MapRunes(s string, f func(rune) rune) string {
 // 	var out strings.Builder
