@@ -29,6 +29,11 @@ func NewVariantBeaufortCipher(alphabet string) *TabulaRecta {
 // 	return NewTabulaRecta(alphabet, alphabet, "0123456789")
 // }
 
+// // NewDellaPortaCipher creates a new DellaPorta cipher.
+// func NewDellaPortaCipher(alphabet string) *TabulaRecta {
+// 	return NewTabulaRecta(alphabet, alphabet, "0123456789")
+// }
+
 // // NewAffineCipher creates a new affine cipher.
 // func NewAffineCipher(ptAlphabet string, a, b int) Cipher {
 // 	m := utf8.RuneCountInString(ptAlphabet)
