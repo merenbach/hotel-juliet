@@ -3,6 +3,7 @@ package main
 // Monoalphabetic substitution ciphers
 
 import (
+	"strings"
 	"unicode/utf8"
 )
 
@@ -25,7 +26,7 @@ func NewAffineCipher(ptAlphabet string, a, b int) Cipher {
 	}
 
 	lcg := NewLCG(uint(m), 1, uint(a), uint(b))
-	ctAlphabet := Backpermute(ptAlphabet, lcg.Next)
+	ctAlphabet := backpermute(ptAlphabet, lcg.Next)
 
 	return NewSimpleTableau(ptAlphabet, ctAlphabet)
 }
@@ -48,4 +49,16 @@ func NewDecimationCipher(ptAlphabet string, a int) Cipher {
 // NewRot13Cipher creates a new Rot13 (Caesar shift of 13) cipher.
 func NewRot13Cipher(ptAlphabet string) Cipher {
 	return NewCaesarCipher(ptAlphabet, 13)
+}
+
+// Backpermute transforms a string based on a generator function.
+// Backpermute will panic if the transform function returns any invalid string index values.
+func backpermute(s string, g func() uint) string {
+	var out strings.Builder
+	asRunes := []rune(s)
+	for _ = range asRunes {
+		newRune := asRunes[g()]
+		out.WriteRune(newRune)
+	}
+	return out.String()
 }

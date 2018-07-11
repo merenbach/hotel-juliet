@@ -53,18 +53,6 @@ func deduplicateString(s string) string {
 // 	return out
 // }
 
-// Backpermute transforms a string based on a generator function.
-// Backpermute will panic if the transform function returns any invalid string index values.
-func Backpermute(s string, g func() uint) string {
-	var out strings.Builder
-	asRunes := []rune(s)
-	for _ = range asRunes {
-		newRune := asRunes[g()]
-		out.WriteRune(newRune)
-	}
-	return out.String()
-}
-
 // // TODO: document
 // func mapRuneTransform(xtable map[rune]rune) func(string) string {
 // 	return func(message string) string {

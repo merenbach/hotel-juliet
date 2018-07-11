@@ -138,3 +138,7 @@ func TestRot13Cipher(t *testing.T) {
 		runMonoalphabeticReciprocalTests(t, table.plaintext, table.ciphertext, c, table.strict)
 	}
 }
+
+func TestBackpermute(t *testing.T) {
+	t.Errorf("Please add test for backpermute!")
+}
