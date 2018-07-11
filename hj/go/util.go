@@ -2,7 +2,6 @@ package main
 
 import (
 	"sort"
-	"strings"
 )
 
 // WrapString wraps a string a specified number of indices.
@@ -21,20 +20,6 @@ func reverseString(s string) string {
 		return true
 	})
 	return string(r)
-}
-
-// Deduplicate removes recurrences for runes from a string, preserving order of first appearance.
-func deduplicateString(s string) string {
-	var out strings.Builder
-	seen := make(map[rune]bool)
-
-	for _, e := range []rune(s) {
-		if _, ok := seen[e]; !ok {
-			out.WriteRune(e)
-			seen[e] = true
-		}
-	}
-	return out.String()
 }
 
 // zipstrings creates a map from two strings (as rune arrays)

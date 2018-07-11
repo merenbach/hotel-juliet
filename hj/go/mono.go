@@ -62,3 +62,17 @@ func backpermute(s string, g func() uint) string {
 	}
 	return out.String()
 }
+
+// Deduplicate removes recurrences for runes from a string, preserving order of first appearance.
+func deduplicateString(s string) string {
+	var out strings.Builder
+	seen := make(map[rune]bool)
+
+	for _, e := range []rune(s) {
+		if _, ok := seen[e]; !ok {
+			out.WriteRune(e)
+			seen[e] = true
+		}
+	}
+	return out.String()
+}
