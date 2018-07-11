@@ -61,7 +61,7 @@ func gcd(a, b uint) uint {
 
 // Coprime tests if two numbers `a` and `b` are relatively prime.
 // The order of the parameters does not matter.
-func Coprime(a, b uint) bool {
+func coprime(a, b uint) bool {
 	return gcd(a, b) == 1
 }
 
@@ -94,7 +94,7 @@ func NewLCG(m, a, c, seed uint) *LCG {
 // When c != 0, this test passing means that the cycle is equal to g.multiplier.
 func (g *LCG) HullDobell() (bool, error) {
 	switch {
-	case !Coprime(g.modulus, g.increment):
+	case !coprime(g.modulus, g.increment):
 		return false, errors.New("multiplier and increment should be coprime")
 	case !Regular(g.modulus, g.multiplier-1):
 		return false, errors.New("prime factors of modulus should also divide multiplier-minus-one")
