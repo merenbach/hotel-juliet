@@ -15,7 +15,7 @@ func runPolyalphabeticReciprocalTests(t *testing.T, plaintext, ciphertext string
 	}
 }
 
-// TestVigenereCipher tests the keyword cipher.
+// TestVigenereCipher tests the Vigenere cipher.
 func TestVigenereCipher(t *testing.T) {
 	tables := []struct {
 		alphabet    string
@@ -35,7 +35,7 @@ func TestVigenereCipher(t *testing.T) {
 	}
 }
 
-// TestBeaufortCipher tests the keyword cipher.
+// TestBeaufortCipher tests the Beaufort cipher.
 func TestBeaufortCipher(t *testing.T) {
 	tables := []struct {
 		alphabet    string
@@ -55,7 +55,7 @@ func TestBeaufortCipher(t *testing.T) {
 	}
 }
 
-// TestGronsfeldCipher tests the keyword cipher.
+// TestGronsfeldCipher tests the Gronsfeld cipher.
 func TestGronsfeldCipher(t *testing.T) {
 	tables := []struct {
 		alphabet    string
@@ -75,7 +75,7 @@ func TestGronsfeldCipher(t *testing.T) {
 	}
 }
 
-// TestTrithemiusCipher tests the keyword cipher.
+// TestTrithemiusCipher tests the Trithemius cipher.
 func TestTrithemiusCipher(t *testing.T) {
 	tables := []struct {
 		alphabet   string
@@ -94,7 +94,7 @@ func TestTrithemiusCipher(t *testing.T) {
 	}
 }
 
-// TestVariantBeaufortCipher tests the keyword cipher.
+// TestVariantBeaufortCipher tests the variant Beaufort cipher.
 func TestVariantBeaufortCipher(t *testing.T) {
 	tables := []struct {
 		alphabet    string
@@ -113,107 +113,3 @@ func TestVariantBeaufortCipher(t *testing.T) {
 		runPolyalphabeticReciprocalTests(t, table.plaintext, table.ciphertext, c, table.strict)
 	}
 }
-
-// // TestAffineCipher tests the affine cipher.
-// func TestAffineCipher(t *testing.T) {
-// 	tables := []struct {
-// 		alphabet   string
-// 		plaintext  string
-// 		ciphertext string
-// 		a          int
-// 		b          int
-// 		strict     bool
-// 	}{
-// 		// {defaultPolyalphabeticAlphabet, "VGPLB, KUILS!", "HELLO, WORLD!", "OCEANOGRAPHYWHAT", false},
-// 		// {defaultPolyalphabeticAlphabet, "HELLO, WORLD!", "VGPLB, KUILS!", "OCEANOGRAPHYWHAT", false},
-// 		// {defaultPolyalphabeticAlphabet, "VGPLB, KUILS!", "HELLO, WORLD!", "OCEANOGRAPHYWHAT", false},
-// 		// self._transcode_reverse(c, self.MESSAGE_PLAIN, None, 'TCHLB, IIALO!', block=None)
-// 	}
-// 	for _, table := range tables {
-// 		c := NewVigenereCipher(table.alphabet, table.a, table.b)
-// 		runPolyalphabeticReciprocalTests(t, table.plaintext, table.ciphertext, c, table.strict)
-
-// 	}
-// }
-
-// // TestAtbashCipher tests the Atbash cipher.
-// func TestAtbashCipher(t *testing.T) {
-// 	tables := []struct {
-// 		alphabet   string
-// 		plaintext  string
-// 		ciphertext string
-// 		strict     bool
-// 	}{
-// 		{defaultPolyalphabeticAlphabet, "HELLO, WORLD!", "SVOOL, DLIOW!", false},
-// 		{defaultPolyalphabeticAlphabet, "SVOOL, DLIOW!", "HELLO, WORLD!", false},
-// 		// {defaultPolyalphabeticAlphabet, "HELLO, WORLD!", "SVOOLDLIOW", true},
-// 		// {defaultPolyalphabeticAlphabet, "SVOOL, DLIOW!", "HELLOWORLD", true},
-// 	}
-// 	for _, table := range tables {
-// 		c := NewAtbashCipher(table.alphabet)
-// 		runPolyalphabeticReciprocalTests(t, table.plaintext, table.ciphertext, c, table.strict)
-// 	}
-// }
-
-// // TestCaesarCipher tests the Caesar cipher.
-// func TestCaesarCipher(t *testing.T) {
-// 	tables := []struct {
-// 		alphabet   string
-// 		plaintext  string
-// 		ciphertext string
-// 		b          int
-// 		strict     bool
-// 	}{
-// 		{defaultPolyalphabeticAlphabet, "HELLO, WORLD!", "KHOOR, ZRUOG!", 3, false},
-// 		{defaultPolyalphabeticAlphabet, "EBIIL, TLOIA!", "HELLO, WORLD!", 3, false},
-// 		{defaultPolyalphabeticAlphabet, "HELLO, WORLD!", "YVCCF, NFICU!", 17, false},
-// 		{defaultPolyalphabeticAlphabet, "QNUUX, FXAUM!", "HELLO, WORLD!", 17, false},
-// 		// {defaultPolyalphabeticAlphabet, "HELLO, WORLD!", "KHOORZRUOG", 3, true},
-// 		// {defaultPolyalphabeticAlphabet, "EBIIL, TLOIA!", "HELLOWORLD", 3, true},
-// 		// {defaultPolyalphabeticAlphabet, "HELLO, WORLD!", "YVCCFNFICU", 17, true},
-// 		// {defaultPolyalphabeticAlphabet, "QNUUX, FXAUM!", "HELLOWORLD", 17, true},
-// 	}
-// 	for _, table := range tables {
-// 		c := NewCaesarCipher(table.alphabet, table.b)
-// 		runPolyalphabeticReciprocalTests(t, table.plaintext, table.ciphertext, c, table.strict)
-// 	}
-// }
-
-// // TestDecimationCipher tests the decimation cipher.
-// func TestDecimationCipher(t *testing.T) {
-// 	tables := []struct {
-// 		alphabet   string
-// 		plaintext  string
-// 		ciphertext string
-// 		a          int
-// 		strict     bool
-// 	}{
-// 		{defaultPolyalphabeticAlphabet, "HELLO, WORLD!", "XCZZU, YUPZV!", 7, false},
-// 		{defaultPolyalphabeticAlphabet, "BIJJC, SCVJT!", "HELLO, WORLD!", 7, false},
-// 		// {defaultPolyalphabeticAlphabet, "HELLO, WORLD!", "XCZZUYUPZV", 7, true},
-// 		// {defaultPolyalphabeticAlphabet, "BIJJC, SCVJT!", "HELLOWORLD", 7, true},
-// 	}
-// 	for _, table := range tables {
-// 		c := NewDecimationCipher(table.alphabet, table.a)
-// 		runPolyalphabeticReciprocalTests(t, table.plaintext, table.ciphertext, c, table.strict)
-// 	}
-// }
-
-// // TestRot13Cipher tests the Rot13 cipher.
-// func TestRot13Cipher(t *testing.T) {
-// 	tables := []struct {
-// 		alphabet   string
-// 		plaintext  string
-// 		ciphertext string
-// 		strict     bool
-// 	}{
-// 		{defaultPolyalphabeticAlphabet, "HELLO, WORLD!", "URYYB, JBEYQ!", false},
-// 		{defaultPolyalphabeticAlphabet, "URYYB, JBEYQ!", "HELLO, WORLD!", false},
-// 		// {defaultPolyalphabeticAlphabet, "HELLO, WORLD!", "URYYBJBEYQ", true},
-// 		// {defaultPolyalphabeticAlphabet, "URYYB, JBEYQ!", "HELLOWORLD", true},
-// 	}
-// 	for _, table := range tables {
-// 		c := NewRot13Cipher(table.alphabet)
-// 		runPolyalphabeticReciprocalTests(t, table.plaintext, table.ciphertext, c, table.strict)
-// 	}
-// }
