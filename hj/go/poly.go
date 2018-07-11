@@ -1,5 +1,7 @@
 package main
 
+import "sort"
+
 // Monoalphabetic substitution ciphers
 
 // NewVigenereCipher creates a new Vigenere cipher.
@@ -49,3 +51,12 @@ func NewTrithemiusCipher(alphabet string) Cipher {
 // func NewDellaPortaCipher(alphabet string) Cipher {
 // 	return NewTabulaRecta(alphabet, alphabet, "0123456789")
 // }
+
+// ReverseString reverses the runes in a string.
+func reverseString(s string) string {
+	r := []rune(s)
+	sort.SliceStable(r, func(i, j int) bool {
+		return true
+	})
+	return string(r)
+}

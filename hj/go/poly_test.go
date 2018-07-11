@@ -155,3 +155,17 @@ func TestVariantBeaufortCipher(t *testing.T) {
 		runPolyalphabeticReciprocalTests(t, table.plaintext, table.ciphertext, c, table.strict)
 	}
 }
+
+// TestReverseString tests the reverseString function.
+func TestReverseString(t *testing.T) {
+	table := map[string]string{
+		"hello": "olleh",
+		"world": "dlrow",
+	}
+
+	for k, v := range table {
+		if o := reverseString(k); o != v {
+			t.Errorf("Reverse of string %q was %q; expected %q", k, o, v)
+		}
+	}
+}
