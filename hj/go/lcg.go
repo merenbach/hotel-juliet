@@ -65,6 +65,24 @@ func coprime(a, b uint) bool {
 	return gcd(a, b) == 1
 }
 
+// Regular tests if all prime factors of `a` also divide `b`.
+// Note that the order of the parameters is important, as `b` may have additional prime factors.
+// just return true if either a or b is zero?
+func regular(a, b uint) bool {
+	if a == 0 {
+		panic("Parameter `a` must be nonzero.")
+	}
+	if b == 0 {
+		return true
+	}
+
+	for b != 1 {
+		b = gcd(a, b)
+		a /= b
+	}
+	return a == 1
+}
+
 type LCG struct {
 	modulus    uint // m
 	multiplier uint // a
@@ -110,22 +128,4 @@ func (g *LCG) Next() uint {
 	state := g.state
 	g.state = (state*g.multiplier + g.increment) % g.modulus
 	return state
-}
-
-// Regular tests if all prime factors of `a` also divide `b`.
-// Note that the order of the parameters is important, as `b` may have additional prime factors.
-// just return true if either a or b is zero?
-func regular(a, b uint) bool {
-	if a == 0 {
-		panic("Parameter `a` must be nonzero.")
-	}
-	if b == 0 {
-		return true
-	}
-
-	for b != 1 {
-		b = gcd(a, b)
-		a /= b
-	}
-	return a == 1
 }

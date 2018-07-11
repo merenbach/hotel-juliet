@@ -4,6 +4,28 @@ import (
 	"testing"
 )
 
+// TestGCD tests for GCDs.
+func TestGCD(t *testing.T) {
+	tables := []struct {
+		a        uint
+		b        uint
+		expected uint
+	}{
+		{3, 5, 1},
+		{15, 5, 5},
+		{24, 16, 8},
+		{2, 4, 2},
+		{2, 22, 2},
+		{6, 15, 3},
+		{14, 28, 14},
+	}
+	for _, table := range tables {
+		if out := gcd(table.a, table.b); out != table.expected {
+			t.Errorf("expected GCD of %d and %d to be %d, but got %d instead", table.a, table.b, table.expected, out)
+		}
+	}
+}
+
 // TestCoprime tests the comprimality tester.
 func TestCoprime(t *testing.T) {
 	tables := []struct {
