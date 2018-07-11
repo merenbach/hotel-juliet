@@ -96,7 +96,7 @@ func (g *LCG) HullDobell() (bool, error) {
 	switch {
 	case !coprime(g.modulus, g.increment):
 		return false, errors.New("multiplier and increment should be coprime")
-	case !Regular(g.modulus, g.multiplier-1):
+	case !regular(g.modulus, g.multiplier-1):
 		return false, errors.New("prime factors of modulus should also divide multiplier-minus-one")
 	case g.modulus%4 == 0 && (g.multiplier-1)%4 != 0:
 		return false, errors.New("if 4 divides modulus, 4 should divide multiplier-minus-one")
@@ -115,7 +115,7 @@ func (g *LCG) Next() uint {
 // Regular tests if all prime factors of `a` also divide `b`.
 // Note that the order of the parameters is important, as `b` may have additional prime factors.
 // just return true if either a or b is zero?
-func Regular(a, b uint) bool {
+func regular(a, b uint) bool {
 	if a == 0 {
 		panic("Parameter `a` must be nonzero.")
 	}

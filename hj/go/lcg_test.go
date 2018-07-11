@@ -31,6 +31,35 @@ func TestCoprime(t *testing.T) {
 	}
 }
 
+// TestRegular tests the regularity tester.
+func TestRegular(t *testing.T) {
+	tables := []struct {
+		a        uint
+		b        uint
+		expected bool
+	}{
+		{98, 168, true},
+		{24, 6, true},
+		{6, 24, true},
+		{12, 18, true},
+		{3, 0, true},
+		{1, 1, true},
+		{168, 98, false},
+		{168, 132, false},
+		{132, 168, false},
+		{2, 1, false},
+	}
+	for _, table := range tables {
+		if out := regular(table.a, table.b); out != table.expected {
+			if table.expected {
+				t.Errorf("%d and %d were expected to be regular, but were not", table.a, table.b)
+			} else {
+				t.Errorf("%d and %d were not expected to be regular, but were", table.a, table.b)
+			}
+		}
+	}
+}
+
 // TestLCG tests the linear congruential generator.
 func TestLCG(t *testing.T) {
 	// Some sequences for verification borrowed from: <https://www.mi.fu-berlin.de/inf/groups/ag-tech/teaching/2012_SS/L_19540_Modeling_and_Performance_Analysis_with_Simulation/06.pdf>
