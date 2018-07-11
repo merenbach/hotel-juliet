@@ -25,9 +25,10 @@ func NewVariantBeaufortCipher(countersign, alphabet string) Cipher {
 }
 
 // NewTrithemiusCipher creates a new Trithemius cipher.
+// NewTrithemiusCipher considers this simply the Vigenere cipher with the countersign equal to the alphabet.
 func NewTrithemiusCipher(alphabet string) Cipher {
 	countersign := alphabet
-	return NewTabulaRecta(countersign, alphabet, alphabet, alphabet)
+	return NewVigenereCipher(countersign, alphabet)
 }
 
 // // NewDellaPortaCipher creates a new DellaPorta cipher.
