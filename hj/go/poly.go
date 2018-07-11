@@ -9,12 +9,16 @@ func NewVigenereCipher(countersign, alphabet string) Cipher {
 
 // NewVigenereTextAutoclaveCipher creates a new Vigenere (text autoclave) cipher.
 func NewVigenereTextAutoclaveCipher(countersign, alphabet string) Cipher {
-	return NewTabulaRecta(countersign, alphabet, alphabet, alphabet)
+	c := NewTabulaRecta(countersign, alphabet, alphabet, alphabet)
+	c.(*TabulaRecta).Textautoclave = true
+	return c
 }
 
 // NewVigenereKeyAutoclaveCipher creates a new Vigenere (key autoclave) cipher.
 func NewVigenereKeyAutoclaveCipher(countersign, alphabet string) Cipher {
-	return NewTabulaRecta(countersign, alphabet, alphabet, alphabet)
+	c := NewTabulaRecta(countersign, alphabet, alphabet, alphabet)
+	c.(*TabulaRecta).Keyautoclave = true
+	return c
 }
 
 // NewBeaufortCipher creates a new Beaufort cipher.

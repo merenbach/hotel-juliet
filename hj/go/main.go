@@ -16,8 +16,8 @@ package main
 //  * re-explore Message struct type for chaining
 //  * add tests for more util funcs and LCG
 //  * add more informative documentation
-//  * add autoclave functionality
 //  * explore use of tabwriter for tabula recta, tableau printing
+//  * tabula recta seems inefficient converting runes to strings each time
 
 import (
 	"fmt"

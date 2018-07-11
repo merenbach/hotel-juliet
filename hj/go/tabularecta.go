@@ -13,6 +13,8 @@ type TabulaRecta struct {
 	tableaux      []Cipher
 	keysToCiphers map[rune]Cipher
 	countersign   string
+	Textautoclave bool
+	Keyautoclave  bool
 }
 
 func (tr *TabulaRecta) String() string {
@@ -62,6 +64,12 @@ func (tr *TabulaRecta) Encrypt(s string, strict bool) string {
 		if o != "" {
 			out.WriteRune([]rune(o)[0])
 			transcodedCharCount++
+
+			if tr.Textautoclave {
+				kRunes = append(kRunes, r)
+			} else if tr.Keyautoclave {
+				kRunes = append(kRunes, []rune(o)...)
+			}
 		} else if !strict {
 			out.WriteRune(r)
 		}
@@ -80,6 +88,11 @@ func (tr *TabulaRecta) Decrypt(s string, strict bool) string {
 		if o != "" {
 			out.WriteRune([]rune(o)[0])
 			transcodedCharCount++
+			if tr.Textautoclave {
+				kRunes = append(kRunes, []rune(o)...)
+			} else if tr.Keyautoclave {
+				kRunes = append(kRunes, r)
+			}
 		} else if !strict {
 			out.WriteRune(r)
 		}
