@@ -1,6 +1,9 @@
 package main
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 const defaultMonoalphabeticAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -139,10 +142,23 @@ func TestRot13Cipher(t *testing.T) {
 	}
 }
 
+// TestBackpermute tests the backpermute function.
 func TestBackpermute(t *testing.T) {
-	t.Errorf("Please add test for backpermute!")
+	tables := []struct {
+		expected string
+		s        string
+		f        func() uint
+	}{
+		{"eeeee", "hello", func() uint { return 1 }},
+	}
+	for _, table := range tables {
+		if out := backpermute(table.s, table.f); out != table.expected {
+			t.Errorf("for backpermutation of %q with function %s, expected output %q, but got %q instead", table.s, reflect.ValueOf(table.f), table.expected, out)
+		}
+	}
 }
 
+// TestDeduplicateString tests the deduplicateString function.
 func TestDeduplicateString(t *testing.T) {
 	table := map[string]string{
 		"hello":       "helo",

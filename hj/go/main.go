@@ -18,6 +18,9 @@ package main
 //  * add more informative documentation
 //  * explore use of tabwriter for tabula recta, tableau printing
 //  * tabula recta seems inefficient converting runes to strings each time
+//  * explore ways to make backpermute more easily testable, or explore ways to replace it
+//  * --> backpermute should probably take an int slice, so when using the LCG we'd
+//        want a consumer method of some sort that goes out to the length of the string being permuted
 
 import (
 	"fmt"
