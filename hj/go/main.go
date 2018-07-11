@@ -17,6 +17,7 @@ package main
 //  * add tests for more util funcs and LCG
 //  * add more informative documentation
 //  * add autoclave functionality
+//  * explore use of tabwriter for tabula recta, tableau printing
 
 import (
 	"fmt"
@@ -110,6 +111,7 @@ func main() {
 	// fmt.Println("this is it: ", o)
 	// fmt.Println("hey", t3.Encrypt(o, "OCEANOGRAPHYWHAT", false))
 	t4 := NewGronsfeldCipher("23132", alphabet)
+	fmt.Println(t4)
 	fmt.Println(t4.Encrypt("HELLO, WORLD!", false))
 	// HYTPZ, SSAPM!
 }
