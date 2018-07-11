@@ -4,9 +4,9 @@ import "testing"
 
 const defaultPolyalphabeticAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-func runPolyalphabeticReciprocalTests(t *testing.T, plaintext, ciphertext string, countersign string, c *TabulaRecta, strict bool) {
-	encrypted := c.Encrypt(plaintext, countersign, strict)
-	decrypted := c.Decrypt(ciphertext, countersign, strict)
+func runPolyalphabeticReciprocalTests(t *testing.T, plaintext, ciphertext string, c Cipher, strict bool) {
+	encrypted := c.Encrypt(plaintext, strict)
+	decrypted := c.Decrypt(ciphertext, strict)
 	if string(encrypted) != ciphertext {
 		t.Errorf("ciphertext %q was incorrect; wanted %q", encrypted, ciphertext)
 	}
@@ -30,8 +30,8 @@ func TestVigenereCipher(t *testing.T) {
 		// {defaultPolyalphabeticAlphabet, "LJOOF, WFEOI!", "HELLOWORLD", "KANGAROO", true},
 	}
 	for _, table := range tables {
-		c := NewVigenereCipher(table.alphabet)
-		runPolyalphabeticReciprocalTests(t, table.plaintext, table.ciphertext, table.countersign, c, table.strict)
+		c := NewVigenereCipher(table.countersign, table.alphabet)
+		runPolyalphabeticReciprocalTests(t, table.plaintext, table.ciphertext, c, table.strict)
 	}
 }
 
@@ -50,8 +50,8 @@ func TestBeaufortCipher(t *testing.T) {
 		// {defaultPolyalphabeticAlphabet, "LJOOF, WFEOI!", "HELLOWORLD", "KANGAROO", true},
 	}
 	for _, table := range tables {
-		c := NewBeaufortCipher(table.alphabet)
-		runPolyalphabeticReciprocalTests(t, table.plaintext, table.ciphertext, table.countersign, c, table.strict)
+		c := NewBeaufortCipher(table.countersign, table.alphabet)
+		runPolyalphabeticReciprocalTests(t, table.plaintext, table.ciphertext, c, table.strict)
 	}
 }
 
@@ -70,30 +70,29 @@ func TestGronsfeldCipher(t *testing.T) {
 		// {defaultPolyalphabeticAlphabet, "LJOOF, WFEOI!", "HELLOWORLD", "KANGAROO", true},
 	}
 	for _, table := range tables {
-		c := NewGronsfeldCipher(table.alphabet)
-		runPolyalphabeticReciprocalTests(t, table.plaintext, table.ciphertext, table.countersign, c, table.strict)
+		c := NewGronsfeldCipher(table.countersign, table.alphabet)
+		runPolyalphabeticReciprocalTests(t, table.plaintext, table.ciphertext, c, table.strict)
 	}
 }
 
-// // TestTrithemiusCipher tests the keyword cipher.
-// func TestTrithemiusCipher(t *testing.T) {
-// 	tables := []struct {
-// 		alphabet    string
-// 		plaintext   string
-// 		ciphertext  string
-// 		countersign string
-// 		strict      bool
-// 	}{
-// 		{defaultPolyalphabeticAlphabet, "HELLO, WORLD!", "HFNOS, BUYTM!", false},
-// 		// {defaultPolyalphabeticAlphabet, "LJOOF, WFEOI!", "HELLO, WORLD!", "KANGAROO", false},
-// 		// {defaultPolyalphabeticAlphabet, "HELLO, WORLD!", "CRHHLWLQHG", "KANGROOO", true},
-// 		// {defaultPolyalphabeticAlphabet, "LJOOF, WFEOI!", "HELLOWORLD", "KANGAROO", true},
-// 	}
-// 	for _, table := range tables {
-// 		c := NewTrithemiusCipher(table.alphabet)
-// 		runPolyalphabeticReciprocalTests(t, table.plaintext, table.ciphertext, table.countersign, c, table.strict)
-// 	}
-// }
+// TestTrithemiusCipher tests the keyword cipher.
+func TestTrithemiusCipher(t *testing.T) {
+	tables := []struct {
+		alphabet   string
+		plaintext  string
+		ciphertext string
+		strict     bool
+	}{
+		{defaultPolyalphabeticAlphabet, "HELLO, WORLD!", "HFNOS, BUYTM!", false},
+		// {defaultPolyalphabeticAlphabet, "LJOOF, WFEOI!", "HELLO, WORLD!", "KANGAROO", false},
+		// {defaultPolyalphabeticAlphabet, "HELLO, WORLD!", "CRHHLWLQHG", "KANGROOO", true},
+		// {defaultPolyalphabeticAlphabet, "LJOOF, WFEOI!", "HELLOWORLD", "KANGAROO", true},
+	}
+	for _, table := range tables {
+		c := NewTrithemiusCipher(table.alphabet)
+		runPolyalphabeticReciprocalTests(t, table.plaintext, table.ciphertext, c, table.strict)
+	}
+}
 
 // TestVariantBeaufortCipher tests the keyword cipher.
 func TestVariantBeaufortCipher(t *testing.T) {
@@ -110,8 +109,8 @@ func TestVariantBeaufortCipher(t *testing.T) {
 		// {defaultPolyalphabeticAlphabet, "LJOOF, WFEOI!", "HELLOWORLD", "KANGAROO", true},
 	}
 	for _, table := range tables {
-		c := NewVariantBeaufortCipher(table.alphabet)
-		runPolyalphabeticReciprocalTests(t, table.plaintext, table.ciphertext, table.countersign, c, table.strict)
+		c := NewVariantBeaufortCipher(table.countersign, table.alphabet)
+		runPolyalphabeticReciprocalTests(t, table.plaintext, table.ciphertext, c, table.strict)
 	}
 }
 

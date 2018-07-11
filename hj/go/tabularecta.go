@@ -12,6 +12,7 @@ type TabulaRecta struct {
 	keyAlphabet   string
 	tableaux      []Cipher
 	keysToCiphers map[rune]Cipher
+	countersign   string
 }
 
 func (tr *TabulaRecta) String() string {
@@ -30,12 +31,15 @@ func (tr *TabulaRecta) String() string {
 	return strings.Join(out, "\n")
 }
 
-func NewTabulaRecta(ptAlphabet, ctAlphabet string, keyAlphabet string) *TabulaRecta {
+// NOTE: we roll the countersign into the tabula recta so it has all the data it needs
+// to decode/encode a string reusably, for parallelism with the monoalphabetic ciphers.
+func NewTabulaRecta(countersign, ptAlphabet, ctAlphabet, keyAlphabet string) Cipher {
 	tr := TabulaRecta{
 		ptAlphabet:    ptAlphabet,
 		ctAlphabet:    ctAlphabet,
 		tableaux:      make([]Cipher, 0),
 		keyAlphabet:   keyAlphabet,
+		countersign:   countersign,
 		keysToCiphers: make(map[rune]Cipher),
 	}
 	for i, r := range []rune(keyAlphabet) {
@@ -47,12 +51,12 @@ func NewTabulaRecta(ptAlphabet, ctAlphabet string, keyAlphabet string) *TabulaRe
 	return &tr
 }
 
-func (tr *TabulaRecta) Encrypt(s, key string, strict bool) string {
+func (tr *TabulaRecta) Encrypt(s string, strict bool) string {
 	var out strings.Builder
-	kRunes := []rune(key)
+	kRunes := []rune(tr.countersign)
 	var transcodedCharCount = 0
 	for _, r := range []rune(s) {
-		k := kRunes[transcodedCharCount%len(key)]
+		k := kRunes[transcodedCharCount%len(kRunes)]
 		cipher := tr.keysToCiphers[k]
 		o := cipher.Encrypt(string(r), true)
 		if o != "" {
@@ -65,12 +69,12 @@ func (tr *TabulaRecta) Encrypt(s, key string, strict bool) string {
 	return out.String()
 }
 
-func (tr *TabulaRecta) Decrypt(s, key string, strict bool) string {
+func (tr *TabulaRecta) Decrypt(s string, strict bool) string {
 	var out strings.Builder
-	kRunes := []rune(key)
+	kRunes := []rune(tr.countersign)
 	var transcodedCharCount = 0
 	for _, r := range []rune(s) {
-		k := kRunes[transcodedCharCount%len(key)]
+		k := kRunes[transcodedCharCount%len(kRunes)]
 		cipher := tr.keysToCiphers[k]
 		o := cipher.Decrypt(string(r), true)
 		if o != "" {

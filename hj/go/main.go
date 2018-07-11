@@ -109,7 +109,7 @@ func main() {
 	// // o := t3.Encrypt("HYTPZ, SSAPM!", "OCEANOGRAPHYWHAT", false)
 	// fmt.Println("this is it: ", o)
 	// fmt.Println("hey", t3.Encrypt(o, "OCEANOGRAPHYWHAT", false))
-	t4 := NewGronsfeldCipher(alphabet)
-	fmt.Println(t4.Encrypt("HELLO, WORLD!", "23132", false))
+	t4 := NewGronsfeldCipher("23132", alphabet)
+	fmt.Println(t4.Encrypt("HELLO, WORLD!", false))
 	// HYTPZ, SSAPM!
 }

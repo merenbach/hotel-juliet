@@ -3,34 +3,35 @@ package main
 // Monoalphabetic substitution ciphers
 
 // NewVigenereCipher creates a new Vigenere cipher.
-func NewVigenereCipher(alphabet string) *TabulaRecta {
-	return NewTabulaRecta(alphabet, alphabet, alphabet)
+func NewVigenereCipher(countersign, alphabet string) Cipher {
+	return NewTabulaRecta(countersign, alphabet, alphabet, alphabet)
 }
 
 // NewBeaufortCipher creates a new Beaufort cipher.
-func NewBeaufortCipher(alphabet string) *TabulaRecta {
+func NewBeaufortCipher(countersign, alphabet string) Cipher {
 	revAlphabet := reverseString(alphabet)
-	return NewTabulaRecta(alphabet, revAlphabet, revAlphabet)
+	return NewTabulaRecta(countersign, alphabet, revAlphabet, revAlphabet)
 }
 
 // NewGronsfeldCipher creates a new Gronsfeld cipher.
-func NewGronsfeldCipher(alphabet string) *TabulaRecta {
-	return NewTabulaRecta(alphabet, alphabet, "0123456789")
+func NewGronsfeldCipher(countersign, alphabet string) Cipher {
+	return NewTabulaRecta(countersign, alphabet, alphabet, "0123456789")
 }
 
 // NewVariantBeaufortCipher creates a new Vigenere cipher.
-func NewVariantBeaufortCipher(alphabet string) *TabulaRecta {
+func NewVariantBeaufortCipher(countersign, alphabet string) Cipher {
 	revAlphabet := reverseString(alphabet)
-	return NewTabulaRecta(revAlphabet, revAlphabet, alphabet)
+	return NewTabulaRecta(countersign, revAlphabet, revAlphabet, alphabet)
 }
 
-// // NewTrithemiusCipher creates a new Trithemius cipher.
-// func NewTrithemiusCipher(alphabet string) *TabulaRecta {
-// 	return NewTabulaRecta(alphabet, alphabet, "0123456789")
-// }
+// NewTrithemiusCipher creates a new Trithemius cipher.
+func NewTrithemiusCipher(alphabet string) Cipher {
+	countersign := alphabet
+	return NewTabulaRecta(countersign, alphabet, alphabet, alphabet)
+}
 
 // // NewDellaPortaCipher creates a new DellaPorta cipher.
-// func NewDellaPortaCipher(alphabet string) *TabulaRecta {
+// func NewDellaPortaCipher(alphabet string) Cipher {
 // 	return NewTabulaRecta(alphabet, alphabet, "0123456789")
 // }
 
