@@ -65,8 +65,12 @@ func NewDellaPortaReciprocalTable(countersign, ptAlphabet, ctAlphabet, keyAlphab
 		countersign:   countersign,
 		keysToCiphers: make(map[rune]Cipher),
 	}
+	if len(ctAlphabet)%2 != 0 {
+		panic("Della Porta cipher alphabets must have even length")
+	}
+	ctAlphabet2 := wrapString(ctAlphabet, len(ctAlphabet)/2)
 	for i, r := range []rune(keyAlphabet) {
-		ctAlphabet_ := wrapString(ctAlphabet, i)
+		ctAlphabet_ := owrapString(ctAlphabet2, i/2)
 		t := NewSimpleTableau(ptAlphabet, ctAlphabet_)
 		tr.tableaux = append(tr.tableaux, t)
 		tr.keysToCiphers[r] = t
@@ -128,4 +132,16 @@ func wrapString(s string, i int) string {
 	u := []rune(s)
 	v := append(u[i:], u[:i]...)
 	return string(v)
+}
+
+// WrapString wraps a string a specified number of indices.
+// WrapString will error out if the provided offset is negative.
+func owrapString(s string, i int) string {
+	// if we simply `return s[i:] + s[:i]`, we're operating on bytes, not runes
+	if len([]rune(s))%2 != 0 {
+		panic("owrapString sequence length must be divisible by two")
+	}
+	sRunes := []rune(s)
+	u, v := sRunes[:len(sRunes)/2], sRunes[len(sRunes)/2:]
+	return wrapString(string(u), i) + wrapString(string(v), len(v)-i)
 }

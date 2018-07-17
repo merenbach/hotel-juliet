@@ -21,6 +21,7 @@ package main
 //  * explore ways to make backpermute more easily testable, or explore ways to replace it
 //  * --> backpermute should probably take an int slice, so when using the LCG we'd
 //        want a consumer method of some sort that goes out to the length of the string being permuted
+//  * print key attached to tabula recta when displaying tabula recta, or don't require key in init (for Trithemius, maybe use closure or partial application to avoid needing key immediately?)
 
 import (
 	"fmt"
@@ -116,5 +117,7 @@ func main() {
 	t4 := NewGronsfeldCipher("23132", alphabet)
 	fmt.Println(t4)
 	fmt.Println(t4.Encipher("HELLO, WORLD!", false))
+	t5 := NewDellaPortaCipher("OCEANOGRAPHYWHAT", alphabet)
+	fmt.Println(t5)
 	// HYTPZ, SSAPM!
 }
