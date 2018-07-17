@@ -11,7 +11,7 @@ type RuneMap map[rune]rune
 // Transform a string based on a rune-to-rune mapping.
 func (m *RuneMap) Transform(s string, strict bool) string {
 	var out strings.Builder
-	for _, r := range []rune(s) {
+	for _, r := range s {
 		o, found := (*m)[r]
 		if found {
 			out.WriteRune(o)
