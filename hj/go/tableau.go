@@ -52,11 +52,9 @@ func NewSimpleTableau(ptAlphabet string, ctAlphabet string) Cipher {
 	pt2ct := make(RuneMap)
 	ct2pt := make(RuneMap)
 
-	ptRunes := []rune(ptAlphabet)
 	ctRunes := []rune(ctAlphabet)
 
-	for i := range []rune(ptAlphabet) {
-		ptRune := ptRunes[i]
+	for i, ptRune := range []rune(ptAlphabet) {
 		ctRune := ctRunes[i]
 		pt2ct[ptRune] = ctRune
 		ct2pt[ctRune] = ptRune
