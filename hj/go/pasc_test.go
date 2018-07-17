@@ -156,6 +156,26 @@ func TestVariantBeaufortCipher(t *testing.T) {
 	}
 }
 
+// TestDellaPortaCipher tests the Della Porta cipher.
+func TestDellaPortaCipher(t *testing.T) {
+	tables := []struct {
+		alphabet    string
+		plaintext   string
+		ciphertext  string
+		countersign string
+		strict      bool
+	}{
+		{defaultPolyalphabeticAlphabet, "HELLO, WORLD!", "OSNYI, CLJYX!", "OCEANOGRAPHYWHAT", false},
+		// {defaultPolyalphabeticAlphabet, "LJOOF, WFEOI!", "HELLO, WORLD!", "KANGAROO", false},
+		// {defaultPolyalphabeticAlphabet, "HELLO, WORLD!", "CRHHLWLQHG", "KANGROOO", true},
+		// {defaultPolyalphabeticAlphabet, "LJOOF, WFEOI!", "HELLOWORLD", "KANGAROO", true},
+	}
+	for _, table := range tables {
+		c := NewDellaPortaCipher(table.countersign, table.alphabet)
+		runPolyalphabeticReciprocalTests(t, table.plaintext, table.ciphertext, c, table.strict)
+	}
+}
+
 // TestReverseString tests the reverseString function.
 func TestReverseString(t *testing.T) {
 	table := map[string]string{

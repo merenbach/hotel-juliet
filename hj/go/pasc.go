@@ -47,10 +47,10 @@ func NewTrithemiusCipher(alphabet string) Cipher {
 	return NewVigenereCipher(countersign, alphabet)
 }
 
-// // NewDellaPortaCipher creates a new DellaPorta cipher.
-// func NewDellaPortaCipher(alphabet string) Cipher {
-// 	return NewTabulaRecta(alphabet, alphabet, "0123456789")
-// }
+// NewDellaPortaCipher creates a new DellaPorta cipher.
+func NewDellaPortaCipher(countersign, alphabet string) Cipher {
+	return NewDellaPortaReciprocalTable(countersign, alphabet, alphabet, alphabet)
+}
 
 // ReverseString reverses the runes in a string.
 func reverseString(s string) string {

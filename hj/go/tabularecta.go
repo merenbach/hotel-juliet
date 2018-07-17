@@ -56,6 +56,24 @@ func NewTabulaRecta(countersign, ptAlphabet, ctAlphabet, keyAlphabet string) Cip
 	return &tr
 }
 
+func NewDellaPortaReciprocalTable(countersign, ptAlphabet, ctAlphabet, keyAlphabet string) Cipher {
+	tr := TabulaRecta{
+		ptAlphabet:    ptAlphabet,
+		ctAlphabet:    ctAlphabet,
+		tableaux:      make([]Cipher, 0),
+		keyAlphabet:   keyAlphabet,
+		countersign:   countersign,
+		keysToCiphers: make(map[rune]Cipher),
+	}
+	for i, r := range []rune(keyAlphabet) {
+		ctAlphabet_ := wrapString(ctAlphabet, i)
+		t := NewSimpleTableau(ptAlphabet, ctAlphabet_)
+		tr.tableaux = append(tr.tableaux, t)
+		tr.keysToCiphers[r] = t
+	}
+	return &tr
+}
+
 func (tr *TabulaRecta) Encipher(s string, strict bool) string {
 	var out strings.Builder
 	kRunes := []rune(tr.countersign)
