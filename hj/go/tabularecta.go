@@ -53,14 +53,14 @@ func NewTabulaRecta(countersign, ptAlphabet, ctAlphabet, keyAlphabet string) Cip
 	return &tr
 }
 
-func (tr *TabulaRecta) Encrypt(s string, strict bool) string {
+func (tr *TabulaRecta) Encipher(s string, strict bool) string {
 	var out strings.Builder
 	kRunes := []rune(tr.countersign)
 	var transcodedCharCount = 0
 	for _, r := range []rune(s) {
 		k := kRunes[transcodedCharCount%len(kRunes)]
 		cipher := tr.keysToCiphers[k]
-		o := cipher.Encrypt(string(r), true)
+		o := cipher.Encipher(string(r), true)
 		if o != "" {
 			out.WriteRune([]rune(o)[0])
 			transcodedCharCount++
@@ -77,14 +77,14 @@ func (tr *TabulaRecta) Encrypt(s string, strict bool) string {
 	return out.String()
 }
 
-func (tr *TabulaRecta) Decrypt(s string, strict bool) string {
+func (tr *TabulaRecta) Decipher(s string, strict bool) string {
 	var out strings.Builder
 	kRunes := []rune(tr.countersign)
 	var transcodedCharCount = 0
 	for _, r := range []rune(s) {
 		k := kRunes[transcodedCharCount%len(kRunes)]
 		cipher := tr.keysToCiphers[k]
-		o := cipher.Decrypt(string(r), true)
+		o := cipher.Decipher(string(r), true)
 		if o != "" {
 			out.WriteRune([]rune(o)[0])
 			transcodedCharCount++

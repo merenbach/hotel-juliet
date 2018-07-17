@@ -8,8 +8,8 @@ import (
 const defaultMonoalphabeticAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 func runMonoalphabeticReciprocalTests(t *testing.T, plaintext, ciphertext string, c Cipher, strict bool) {
-	encrypted := c.Encrypt(plaintext, strict)
-	decrypted := c.Decrypt(ciphertext, strict)
+	encrypted := c.Encipher(plaintext, strict)
+	decrypted := c.Decipher(ciphertext, strict)
 	if string(encrypted) != ciphertext {
 		t.Errorf("ciphertext %q was incorrect; wanted %q", encrypted, ciphertext)
 	}

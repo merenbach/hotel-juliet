@@ -21,11 +21,11 @@ func (m *RuneMap) Transform(s string, strict bool) string {
 	return out.String()
 }
 
-// TODO: should `strict` be in creation, not Encryption/Decryption?
+// TODO: should `strict` be in creation, not Encipherion/Decipherion?
 type Cipher interface {
 	String() string
-	Encrypt(string, bool) string
-	Decrypt(string, bool) string
+	Encipher(string, bool) string
+	Decipher(string, bool) string
 }
 
 // Tableau represents a simple monoalphabetic substitution cipher
@@ -65,10 +65,10 @@ func NewSimpleTableau(ptAlphabet string, ctAlphabet string) Cipher {
 		ctAlphabet: ctAlphabet,
 		pt2ct:      &pt2ct,
 		ct2pt:      &ct2pt,
-		// Encrypt: func(s string, strict bool) string {
+		// Encipher: func(s string, strict bool) string {
 		// 	return pt2ct.Transform(s, strict)
 		// },
-		// Decrypt: func(s string, strict bool) string {
+		// Decipher: func(s string, strict bool) string {
 		// 	return ct2pt.Transform(s, strict)
 		// },
 	}
@@ -88,13 +88,13 @@ func (t *SimpleTableau) String() string {
 
 // [TODO] Maybe these should be methods on a Message struct, as we explored before, for ease of chaining.
 
-// Encrypt a message from plaintext to ciphertext.
-func (t *SimpleTableau) Encrypt(s string, strict bool) string {
+// Encipher a message from plaintext to ciphertext.
+func (t *SimpleTableau) Encipher(s string, strict bool) string {
 	return t.pt2ct.Transform(s, strict)
 }
 
-// Decrypt a message from ciphertext to plaintext.
-func (t *SimpleTableau) Decrypt(s string, strict bool) string {
+// Decipher a message from ciphertext to plaintext.
+func (t *SimpleTableau) Decipher(s string, strict bool) string {
 	return t.ct2pt.Transform(s, strict)
 }
 
