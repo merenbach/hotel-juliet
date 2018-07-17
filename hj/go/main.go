@@ -3,6 +3,7 @@ package main
 //todo: strict
 //todo: param groups (caesar, atbash, etc)
 // TODO:
+//  * return runes from all ciphers, and only convert to strings in message?
 //  * additional unit tests, esp. with int'l charsets
 //  * documentation
 //  * formatting
