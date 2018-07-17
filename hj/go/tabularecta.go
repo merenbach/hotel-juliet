@@ -24,11 +24,11 @@ func (tr *TabulaRecta) String() string {
 		return strings.Join(spl, " ")
 	}
 	out.WriteString("    " + formatForPrinting(tr.ptAlphabet) + "\n  +")
-	for range []rune(tr.ptAlphabet) {
+	for range tr.ptAlphabet {
 		out.WriteRune('-')
 		out.WriteRune('-')
 	}
-	for _, r := range []rune(tr.keyAlphabet) {
+	for _, r := range tr.keyAlphabet {
 		c := tr.keysToCiphers[r]
 		ctAlpha := fmt.Sprintf("\n%c | %s", r, formatForPrinting(c.(*SimpleTableau).ctAlphabet))
 		out.WriteString(ctAlpha)
@@ -85,7 +85,7 @@ func (tr *TabulaRecta) Encipher(s string, strict bool) string {
 	var out strings.Builder
 	keyRunes := []rune(tr.countersign)
 	var transcodedCharCount = 0
-	for _, r := range []rune(s) {
+	for _, r := range s {
 		k := keyRunes[transcodedCharCount%len(keyRunes)]
 		cipher := tr.keysToCiphers[k]
 		o := cipher.Encipher(string(r), true)
@@ -110,7 +110,7 @@ func (tr *TabulaRecta) Decipher(s string, strict bool) string {
 	var out strings.Builder
 	keyRunes := []rune(tr.countersign)
 	var transcodedCharCount = 0
-	for _, r := range []rune(s) {
+	for _, r := range s {
 		k := keyRunes[transcodedCharCount%len(keyRunes)]
 		cipher := tr.keysToCiphers[k]
 		o := cipher.Decipher(string(r), true)
