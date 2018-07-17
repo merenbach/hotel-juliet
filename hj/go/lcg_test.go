@@ -4,7 +4,6 @@ import (
 	"testing"
 )
 
-// TestGCD tests for GCDs.
 func TestGCD(t *testing.T) {
 	tables := []struct {
 		a        uint
@@ -26,7 +25,6 @@ func TestGCD(t *testing.T) {
 	}
 }
 
-// TestCoprime tests the comprimality tester.
 func TestCoprime(t *testing.T) {
 	tables := []struct {
 		a        uint
@@ -53,7 +51,6 @@ func TestCoprime(t *testing.T) {
 	}
 }
 
-// TestRegular tests the regularity tester.
 func TestRegular(t *testing.T) {
 	tables := []struct {
 		a        uint
@@ -82,7 +79,6 @@ func TestRegular(t *testing.T) {
 	}
 }
 
-// TestLCG tests the linear congruential generator.
 func TestLCG(t *testing.T) {
 	// Some sequences for verification borrowed from: <https://www.mi.fu-berlin.de/inf/groups/ag-tech/teaching/2012_SS/L_19540_Modeling_and_Performance_Analysis_with_Simulation/06.pdf>
 	tables := []struct {

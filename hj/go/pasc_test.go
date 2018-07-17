@@ -18,7 +18,6 @@ func runPolyalphabeticReciprocalTests(t *testing.T, plaintext, ciphertext string
 	}
 }
 
-// TestVigenereCipher tests the Vigenere cipher.
 func TestVigenereCipher(t *testing.T) {
 	tables := []struct {
 		alphabet    string
@@ -38,7 +37,6 @@ func TestVigenereCipher(t *testing.T) {
 	}
 }
 
-// TestVigenereTextAutoclaveCipher tests the Vigenere (text autoclave) cipher.
 func TestVigenereTextAutoclaveCipher(t *testing.T) {
 	tables := []struct {
 		alphabet    string
@@ -59,7 +57,6 @@ func TestVigenereTextAutoclaveCipher(t *testing.T) {
 	}
 }
 
-// TestVigenereKeyAutoclaveCipher tests the Vigenere (key autoclave) cipher.
 func TestVigenereKeyAutoclaveCipher(t *testing.T) {
 	tables := []struct {
 		alphabet    string
@@ -80,7 +77,6 @@ func TestVigenereKeyAutoclaveCipher(t *testing.T) {
 	}
 }
 
-// TestBeaufortCipher tests the Beaufort cipher.
 func TestBeaufortCipher(t *testing.T) {
 	tables := []struct {
 		alphabet    string
@@ -100,7 +96,6 @@ func TestBeaufortCipher(t *testing.T) {
 	}
 }
 
-// TestGronsfeldCipher tests the Gronsfeld cipher.
 func TestGronsfeldCipher(t *testing.T) {
 	tables := []struct {
 		alphabet    string
@@ -120,7 +115,6 @@ func TestGronsfeldCipher(t *testing.T) {
 	}
 }
 
-// TestTrithemiusCipher tests the Trithemius cipher.
 func TestTrithemiusCipher(t *testing.T) {
 	tables := []struct {
 		alphabet   string
@@ -139,7 +133,6 @@ func TestTrithemiusCipher(t *testing.T) {
 	}
 }
 
-// TestVariantBeaufortCipher tests the variant Beaufort cipher.
 func TestVariantBeaufortCipher(t *testing.T) {
 	tables := []struct {
 		alphabet    string
@@ -159,7 +152,6 @@ func TestVariantBeaufortCipher(t *testing.T) {
 	}
 }
 
-// TestDellaPortaCipher tests the Della Porta cipher.
 func TestDellaPortaCipher(t *testing.T) {
 	tables := []struct {
 		alphabet    string
@@ -179,7 +171,6 @@ func TestDellaPortaCipher(t *testing.T) {
 	}
 }
 
-// TestReverseString tests the reverseString function.
 func TestReverseString(t *testing.T) {
 	table := map[string]string{
 		"hello": "olleh",

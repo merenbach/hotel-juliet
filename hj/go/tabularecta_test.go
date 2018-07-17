@@ -26,7 +26,6 @@ import "testing"
 // 	}
 // }
 
-// TestWrapString tests the wrapString function.
 func TestWrapString(t *testing.T) {
 	tables := []struct {
 		s        string
