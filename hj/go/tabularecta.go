@@ -18,19 +18,22 @@ type TabulaRecta struct {
 }
 
 func (tr *TabulaRecta) String() string {
-	out := make([]string, 0)
+	var out strings.Builder
 	formatForPrinting := func(s string) string {
 		spl := strings.Split(s, "")
 		return strings.Join(spl, " ")
 	}
-	out = append(out, "    "+formatForPrinting(tr.ptAlphabet))
-	out = append(out, "-----")
+	out.WriteString("    " + formatForPrinting(tr.ptAlphabet) + "\n  +")
+	for _ = range []rune(tr.ptAlphabet) {
+		out.WriteRune('-')
+		out.WriteRune('-')
+	}
 	for _, r := range []rune(tr.keyAlphabet) {
 		c := tr.keysToCiphers[r]
-		ctAlpha := fmt.Sprintf("%c | %s", r, formatForPrinting(c.(*SimpleTableau).ctAlphabet))
-		out = append(out, ctAlpha)
+		ctAlpha := fmt.Sprintf("\n%c | %s", r, formatForPrinting(c.(*SimpleTableau).ctAlphabet))
+		out.WriteString(ctAlpha)
 	}
-	return strings.Join(out, "\n")
+	return out.String()
 }
 
 // NOTE: we roll the countersign into the tabula recta so it has all the data it needs
