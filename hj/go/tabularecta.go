@@ -90,13 +90,14 @@ func (tr *TabulaRecta) Encipher(s string, strict bool) string {
 		cipher := tr.keysToCiphers[k]
 		o := cipher.Encipher(string(r), true)
 		if o != "" {
-			out.WriteRune([]rune(o)[0])
+			outRune := []rune(o)[0]
+			out.WriteRune(outRune)
 			transcodedCharCount++
 
 			if tr.Textautoclave {
 				keyRunes = append(keyRunes, r)
 			} else if tr.Keyautoclave {
-				keyRunes = append(keyRunes, []rune(o)...)
+				keyRunes = append(keyRunes, outRune)
 			}
 		} else if !strict {
 			out.WriteRune(r)
@@ -115,10 +116,11 @@ func (tr *TabulaRecta) Decipher(s string, strict bool) string {
 		cipher := tr.keysToCiphers[k]
 		o := cipher.Decipher(string(r), true)
 		if o != "" {
-			out.WriteRune([]rune(o)[0])
+			outRune := []rune(o)[0]
+			out.WriteRune(outRune)
 			transcodedCharCount++
 			if tr.Textautoclave {
-				keyRunes = append(keyRunes, []rune(o)...)
+				keyRunes = append(keyRunes, outRune)
 			} else if tr.Keyautoclave {
 				keyRunes = append(keyRunes, r)
 			}
