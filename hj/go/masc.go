@@ -56,7 +56,7 @@ func NewRot13Cipher(ptAlphabet string) Cipher {
 func backpermute(s string, g func() uint) string {
 	var out strings.Builder
 	asRunes := []rune(s)
-	for _ = range asRunes {
+	for range asRunes {
 		newRune := asRunes[g()]
 		out.WriteRune(newRune)
 	}

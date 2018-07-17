@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// RuneMap maps a rune to another rune.  TODO: We may or may not keep it long-term.
 type RuneMap map[rune]rune
 
 // Transform a string based on a rune-to-rune mapping.
@@ -21,6 +22,7 @@ func (m *RuneMap) Transform(s string, strict bool) string {
 	return out.String()
 }
 
+// A Cipher interfaces a data structure than can encipher and decipher strings.
 // TODO: should `strict` be in creation, not Encipherion/Decipherion?
 type Cipher interface {
 	String() string
@@ -28,7 +30,7 @@ type Cipher interface {
 	Decipher(string, bool) string
 }
 
-// Tableau represents a simple monoalphabetic substitution cipher
+// A SimpleTableau represents a simple monoalphabetic substitution cipher
 // PROBLEM WITH THIS MODEL: we need two functions, one for decryption
 // WE CAN USE the invert/backpermute concept to map numbers...
 // or just use a table directly and find a way to permute in the constructor??
@@ -41,7 +43,7 @@ type SimpleTableau struct {
 	ct2pt *RuneMap
 }
 
-// NewTableau creates a reciprocal, monoalphabetic substitution cipher.
+// NewSimpleTableau creates a reciprocal, monoalphabetic substitution cipher.
 func NewSimpleTableau(ptAlphabet string, ctAlphabet string) Cipher {
 	// ctAlphabet := Backpermute(ptAlphabet, transform)
 

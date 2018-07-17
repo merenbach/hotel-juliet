@@ -50,6 +50,8 @@ func regular(a, b uint) bool {
 	return a == 1
 }
 
+// An LCG is a linear congruential generator, a method of generating pseudo-random numbers.
+// TODO: this may be better as a simple generator function, rather than a struct.
 type LCG struct {
 	modulus    uint // m
 	multiplier uint // a

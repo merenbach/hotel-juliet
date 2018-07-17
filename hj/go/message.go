@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// Message holds a message string.
 type Message string
 
 func (message Message) String() string {
@@ -19,7 +20,7 @@ func (message Message) Chunk(sz int, alphabet string) Message {
 	for _, c := range []rune(string(message)) {
 		if strings.ContainsRune(alphabet, c) {
 			newRunes = append(newRunes, c)
-			runeCount += 1
+			runeCount++
 			if runeCount%sz == 0 {
 				newRunes = append(newRunes, []rune(SPACE)[0])
 			}
