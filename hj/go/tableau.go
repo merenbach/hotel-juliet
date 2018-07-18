@@ -5,23 +5,6 @@ import (
 	"strings"
 )
 
-// RuneMap maps a rune to another rune.  TODO: We may or may not keep it long-term.
-type RuneMap map[rune]rune
-
-// Transform a string based on a rune-to-rune mapping.
-func (m *RuneMap) Transform(s string, strict bool) string {
-	var out strings.Builder
-	for _, r := range s {
-		o, found := (*m)[r]
-		if found {
-			out.WriteRune(o)
-		} else if !strict {
-			out.WriteRune(r)
-		}
-	}
-	return out.String()
-}
-
 // A Cipher interfaces a data structure than can encipher and decipher strings.
 // TODO: should `strict` be in creation, not Encipherion/Decipherion?
 type Cipher interface {
@@ -41,18 +24,16 @@ type SimpleTableau struct {
 	ptAlphabet string
 	ctAlphabet string
 
-	pt2ct *RuneMap
-	ct2pt *RuneMap
+	pt2ct map[rune]rune
+	ct2pt map[rune]rune
 }
 
 // NewSimpleTableau creates a reciprocal, monoalphabetic substitution cipher.
 func NewSimpleTableau(ptAlphabet string, ctAlphabet string) Cipher {
 	// ctAlphabet := Backpermute(ptAlphabet, transform)
 
-	// pt2ct := make(map[rune]rune)
-	// ct2pt := make(map[rune]rune)
-	pt2ct := make(RuneMap)
-	ct2pt := make(RuneMap)
+	pt2ct := make(map[rune]rune)
+	ct2pt := make(map[rune]rune)
 
 	ctRunes := []rune(ctAlphabet)
 
@@ -65,8 +46,8 @@ func NewSimpleTableau(ptAlphabet string, ctAlphabet string) Cipher {
 	return &SimpleTableau{
 		ptAlphabet: ptAlphabet,
 		ctAlphabet: ctAlphabet,
-		pt2ct:      &pt2ct,
-		ct2pt:      &ct2pt,
+		pt2ct:      pt2ct,
+		ct2pt:      ct2pt,
 		// Encipher: func(s string, strict bool) string {
 		// 	return pt2ct.Transform(s, strict)
 		// },
@@ -92,17 +73,31 @@ func (t *SimpleTableau) String() string {
 
 // Encipher a message from plaintext to ciphertext.
 func (t *SimpleTableau) Encipher(s string, strict bool) string {
-	return t.pt2ct.Transform(s, strict)
+	var out strings.Builder
+	for _, r := range s {
+		o, found := t.EncipherRune(r)
+		if found || !strict {
+			out.WriteRune(o)
+		}
+	}
+	return out.String()
 }
 
 // Decipher a message from ciphertext to plaintext.
 func (t *SimpleTableau) Decipher(s string, strict bool) string {
-	return t.ct2pt.Transform(s, strict)
+	var out strings.Builder
+	for _, r := range s {
+		o, found := t.DecipherRune(r)
+		if found || !strict {
+			out.WriteRune(o)
+		}
+	}
+	return out.String()
 }
 
 // EncipherRune transforms a rune from plaintext to ciphertext, returning it unchanged if transformation fails.
 func (t *SimpleTableau) EncipherRune(r rune) (rune, bool) {
-	if o, ok := (*t.pt2ct)[r]; ok {
+	if o, ok := t.pt2ct[r]; ok {
 		return o, ok
 	}
 	return r, false
@@ -110,7 +105,7 @@ func (t *SimpleTableau) EncipherRune(r rune) (rune, bool) {
 
 // DecipherRune transforms a rune from ciphertext to plaintext, returning it unchanged if transformation fails.
 func (t *SimpleTableau) DecipherRune(r rune) (rune, bool) {
-	if o, ok := (*t.ct2pt)[r]; ok {
+	if o, ok := t.ct2pt[r]; ok {
 		return o, ok
 	}
 	return r, false
