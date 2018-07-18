@@ -131,16 +131,6 @@ func (tr *TabulaRecta) Decipher(s string, strict bool) string {
 	return out.String()
 }
 
-// EncipherRune transforms a rune from plaintext to ciphertext.
-func (tr *TabulaRecta) EncipherRune(r rune) (rune, bool) {
-	return '\x00', false
-}
-
-// DecipherRune transforms a rune from ciphertext to plaintext.
-func (tr *TabulaRecta) DecipherRune(r rune) (rune, bool) {
-	return '\x00', false
-}
-
 // WrapString wraps a string a specified number of indices.
 // WrapString will error out if the provided offset is negative.
 func wrapString(s string, i int) string {
