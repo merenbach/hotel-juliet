@@ -28,6 +28,8 @@ type Cipher interface {
 	String() string
 	Encipher(string, bool) string
 	Decipher(string, bool) string
+	EncipherRune(rune) (rune, bool)
+	DecipherRune(rune) (rune, bool)
 }
 
 // A SimpleTableau represents a simple monoalphabetic substitution cipher
@@ -96,6 +98,22 @@ func (t *SimpleTableau) Encipher(s string, strict bool) string {
 // Decipher a message from ciphertext to plaintext.
 func (t *SimpleTableau) Decipher(s string, strict bool) string {
 	return t.ct2pt.Transform(s, strict)
+}
+
+// EncipherRune transforms a rune from plaintext to ciphertext, returning it unchanged if transformation fails.
+func (t *SimpleTableau) EncipherRune(r rune) (rune, bool) {
+	if o, ok := (*t.pt2ct)[r]; ok {
+		return o, ok
+	}
+	return r, false
+}
+
+// DecipherRune transforms a rune from ciphertext to plaintext, returning it unchanged if transformation fails.
+func (t *SimpleTableau) DecipherRune(r rune) (rune, bool) {
+	if o, ok := (*t.ct2pt)[r]; ok {
+		return o, ok
+	}
+	return r, false
 }
 
 // // Simple monoalphabetic substitution cipher
