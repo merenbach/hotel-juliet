@@ -11,8 +11,6 @@ type Cipher interface {
 	String() string
 	Encipher(string, bool) string
 	Decipher(string, bool) string
-	EncipherRune(rune) (rune, bool)
-	DecipherRune(rune) (rune, bool)
 }
 
 // A SimpleTableau represents a simple monoalphabetic substitution cipher
@@ -75,7 +73,7 @@ func (t *SimpleTableau) String() string {
 func (t *SimpleTableau) Encipher(s string, strict bool) string {
 	var out strings.Builder
 	for _, r := range s {
-		o, found := t.EncipherRune(r)
+		o, found := t.encipherRune(r)
 		if found || !strict {
 			out.WriteRune(o)
 		}
@@ -87,7 +85,7 @@ func (t *SimpleTableau) Encipher(s string, strict bool) string {
 func (t *SimpleTableau) Decipher(s string, strict bool) string {
 	var out strings.Builder
 	for _, r := range s {
-		o, found := t.DecipherRune(r)
+		o, found := t.decipherRune(r)
 		if found || !strict {
 			out.WriteRune(o)
 		}
@@ -96,7 +94,7 @@ func (t *SimpleTableau) Decipher(s string, strict bool) string {
 }
 
 // EncipherRune transforms a rune from plaintext to ciphertext, returning it unchanged if transformation fails.
-func (t *SimpleTableau) EncipherRune(r rune) (rune, bool) {
+func (t *SimpleTableau) encipherRune(r rune) (rune, bool) {
 	if o, ok := t.pt2ct[r]; ok {
 		return o, ok
 	}
@@ -104,7 +102,7 @@ func (t *SimpleTableau) EncipherRune(r rune) (rune, bool) {
 }
 
 // DecipherRune transforms a rune from ciphertext to plaintext, returning it unchanged if transformation fails.
-func (t *SimpleTableau) DecipherRune(r rune) (rune, bool) {
+func (t *SimpleTableau) decipherRune(r rune) (rune, bool) {
 	if o, ok := t.ct2pt[r]; ok {
 		return o, ok
 	}
