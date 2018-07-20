@@ -377,3 +377,41 @@ func ExampleDellaPortaCipher() {
 	// Y | Z N O P Q R S T U V W X Y B C D E F G H I J K L M A
 	// Z | Z N O P Q R S T U V W X Y B C D E F G H I J K L M A
 }
+
+func TestWrapString(t *testing.T) {
+	tables := []struct {
+		s        string
+		i        int
+		expected string
+	}{
+		{"hello", 3, "lohel"},
+		{"hello world", 0, "hello world"},
+		{"hello world", 11, "hello world"},
+	}
+	for _, table := range tables {
+		if o := wrapString(table.s, table.i); o != table.expected {
+			t.Errorf("Wrapping of string %q by %d places was %q; expected %q", table.s, table.i, o, table.expected)
+		}
+	}
+}
+
+func ExampleWrapString() {
+	s := "HELLO,_WORLD!"
+	for i := range []rune(s) {
+		fmt.Println(wrapString(s, i))
+	}
+	// Output:
+	// HELLO,_WORLD!
+	// ELLO,_WORLD!H
+	// LLO,_WORLD!HE
+	// LO,_WORLD!HEL
+	// O,_WORLD!HELL
+	// ,_WORLD!HELLO
+	// _WORLD!HELLO,
+	// WORLD!HELLO,_
+	// ORLD!HELLO,_W
+	// RLD!HELLO,_WO
+	// LD!HELLO,_WOR
+	// D!HELLO,_WORL
+	// !HELLO,_WORLD
+}
