@@ -46,6 +46,7 @@ func NewTabulaRecta(countersign, ptAlphabet, ctAlphabet, keyAlphabet string) Cip
 		countersign: countersign,
 		ciphers:     make(map[rune]Cipher),
 	}
+	// this cast is necessary to ensure that the index increases without gaps
 	for i, r := range []rune(keyAlphabet) {
 		ctAlphabet3 := wrapString(ctAlphabet, i)
 		tr.ciphers[r] = NewSimpleSubstitutionCipher(ptAlphabet, ctAlphabet3)
@@ -66,6 +67,7 @@ func NewDellaPortaReciprocalTable(countersign, ptAlphabet, ctAlphabet, keyAlphab
 		panic("Della Porta cipher alphabets must have even length")
 	}
 	ctAlphabet2 := wrapString(ctAlphabet, len(ctAlphabet)/2)
+	// this cast is necessary to ensure that the index increases without gaps
 	for i, r := range []rune(keyAlphabet) {
 		ctAlphabet3 := owrapString(ctAlphabet2, i/2)
 		tr.ciphers[r] = NewSimpleSubstitutionCipher(ptAlphabet, ctAlphabet3)
