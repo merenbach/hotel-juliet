@@ -48,9 +48,7 @@ func NewTabulaRecta(countersign, ptAlphabet, ctAlphabet, keyAlphabet string) Cip
 	}
 	for i, r := range []rune(keyAlphabet) {
 		ctAlphabet3 := wrapString(ctAlphabet, i)
-		t := NewSimpleSubstitutionCipher(ptAlphabet, ctAlphabet3)
-		// t := NewSimpleSubstitutionCipher(ptAlphabet, ctAlphabet3)
-		tr.ciphers[r] = t
+		tr.ciphers[r] = NewSimpleSubstitutionCipher(ptAlphabet, ctAlphabet3)
 	}
 	return &tr
 }
@@ -70,8 +68,7 @@ func NewDellaPortaReciprocalTable(countersign, ptAlphabet, ctAlphabet, keyAlphab
 	ctAlphabet2 := wrapString(ctAlphabet, len(ctAlphabet)/2)
 	for i, r := range []rune(keyAlphabet) {
 		ctAlphabet3 := owrapString(ctAlphabet2, i/2)
-		t := NewSimpleSubstitutionCipher(ptAlphabet, ctAlphabet3)
-		tr.ciphers[r] = t
+		tr.ciphers[r] = NewSimpleSubstitutionCipher(ptAlphabet, ctAlphabet3)
 	}
 	return &tr
 }
