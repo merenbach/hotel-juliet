@@ -73,8 +73,7 @@ func (t *SimpleTableau) String() string {
 func (t *SimpleTableau) Encipher(s string, strict bool) string {
 	var out strings.Builder
 	for _, r := range s {
-		o, found := t.encipherRune(r)
-		if found || !strict {
+		if o, found := t.encipherRune(r); found || !strict {
 			out.WriteRune(o)
 		}
 	}
@@ -85,8 +84,7 @@ func (t *SimpleTableau) Encipher(s string, strict bool) string {
 func (t *SimpleTableau) Decipher(s string, strict bool) string {
 	var out strings.Builder
 	for _, r := range s {
-		o, found := t.decipherRune(r)
-		if found || !strict {
+		if o, found := t.decipherRune(r); found || !strict {
 			out.WriteRune(o)
 		}
 	}
