@@ -5,8 +5,8 @@ import (
 	"strings"
 )
 
-// A Cipher interfaces a data structure than can encipher and decipher strings.
-// TODO: should `strict` be in creation, not Encipherion/Decipherion?
+// A Cipher implementation can encipher and decipher strings.
+// TODO: should `strict` be in creation, not Encipher/Decipher?
 type Cipher interface {
 	String() string
 	Encipher(string, bool) string
