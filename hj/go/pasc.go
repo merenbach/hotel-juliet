@@ -9,7 +9,7 @@ import (
 // Polyalphabetic substitution ciphers
 
 // TabulaRecta holds a tabula recta.
-type TabulaRecta struct {
+type tabulaRecta struct {
 	ptAlphabet    string
 	ctAlphabet    string
 	keyAlphabet   string
@@ -19,7 +19,7 @@ type TabulaRecta struct {
 	Keyautoclave  bool
 }
 
-func (tr *TabulaRecta) String() string {
+func (tr *tabulaRecta) String() string {
 	var out strings.Builder
 	formatForPrinting := func(s string) string {
 		spl := strings.Split(s, "")
@@ -42,7 +42,7 @@ func (tr *TabulaRecta) String() string {
 // NOTE: we roll the countersign into the tabula recta so it has all the data it needs
 // to decode/encode a string reusably, for parallelism with the monoalphabetic ciphers.
 func NewTabulaRecta(countersign, ptAlphabet, ctAlphabet, keyAlphabet string) Cipher {
-	tr := TabulaRecta{
+	tr := tabulaRecta{
 		ptAlphabet:  ptAlphabet,
 		ctAlphabet:  ctAlphabet,
 		keyAlphabet: keyAlphabet,
@@ -59,7 +59,7 @@ func NewTabulaRecta(countersign, ptAlphabet, ctAlphabet, keyAlphabet string) Cip
 
 // NewDellaPortaReciprocalTable creates a new tabula recta suitable for use with the Della Porta cipher.
 func NewDellaPortaReciprocalTable(countersign, ptAlphabet, ctAlphabet, keyAlphabet string) Cipher {
-	tr := TabulaRecta{
+	tr := tabulaRecta{
 		ptAlphabet:  ptAlphabet,
 		ctAlphabet:  ctAlphabet,
 		keyAlphabet: keyAlphabet,
@@ -79,7 +79,7 @@ func NewDellaPortaReciprocalTable(countersign, ptAlphabet, ctAlphabet, keyAlphab
 }
 
 // Encipher a message from plaintext to ciphertext.
-func (tr *TabulaRecta) Encipher(s string, strict bool) string {
+func (tr *tabulaRecta) Encipher(s string, strict bool) string {
 	var out strings.Builder
 	keyRunes := []rune(tr.countersign)
 	var transcodedCharCount = 0
@@ -103,7 +103,7 @@ func (tr *TabulaRecta) Encipher(s string, strict bool) string {
 }
 
 // Decipher a message from ciphertext to plaintext.
-func (tr *TabulaRecta) Decipher(s string, strict bool) string {
+func (tr *tabulaRecta) Decipher(s string, strict bool) string {
 	var out strings.Builder
 	keyRunes := []rune(tr.countersign)
 	var transcodedCharCount = 0
@@ -153,14 +153,14 @@ func NewVigenereCipher(countersign, alphabet string) Cipher {
 // NewVigenereTextAutoclaveCipher creates a new Vigenere (text autoclave) cipher.
 func NewVigenereTextAutoclaveCipher(countersign, alphabet string) Cipher {
 	c := NewTabulaRecta(countersign, alphabet, alphabet, alphabet)
-	c.(*TabulaRecta).Textautoclave = true
+	c.(*tabulaRecta).Textautoclave = true
 	return c
 }
 
 // NewVigenereKeyAutoclaveCipher creates a new Vigenere (key autoclave) cipher.
 func NewVigenereKeyAutoclaveCipher(countersign, alphabet string) Cipher {
 	c := NewTabulaRecta(countersign, alphabet, alphabet, alphabet)
-	c.(*TabulaRecta).Keyautoclave = true
+	c.(*tabulaRecta).Keyautoclave = true
 	return c
 }
 
