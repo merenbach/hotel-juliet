@@ -18,6 +18,30 @@ func runMonoalphabeticReciprocalTests(t *testing.T, plaintext, ciphertext string
 	}
 }
 
+func TestSimpleSubstitutionCipher(t *testing.T) {
+
+	tables := []struct {
+		pt       string
+		ct       string
+		expected string
+	}{
+		{"ABCDE", "DEFGH", "PT: ABCDE\nCT: DEFGH"},
+		{"ABCDEFGHIJKLMNOPQRSTUVWXYZ", "DEFGHIJKLMNOPQRSTUVWXYZABC", "PT: ABCDEFGHIJKLMNOPQRSTUVWXYZ\nCT: DEFGHIJKLMNOPQRSTUVWXYZABC"},
+	}
+	for _, table := range tables {
+		c := NewSimpleSubstitutionCipher(table.pt, table.ct)
+		if output := c.String(); output != table.expected {
+			t.Errorf("Tableau printout doesn't match for PT %q and CT %q. Received: %s; expected: %s", table.pt, table.ct, output, table.expected)
+		}
+		if output := c.Encipher(table.pt, false); output != table.ct {
+			t.Errorf("Tableau Pt2Ct doesn't match for PT %q and CT %q. Received: %s", table.pt, table.ct, output)
+		}
+		if output := c.Decipher(table.ct, false); output != table.pt {
+			t.Errorf("Tableau Ct2Pt doesn't match for PT %q and CT %q. Received: %s", table.pt, table.ct, output)
+		}
+	}
+}
+
 func TestKeywordCipher(t *testing.T) {
 	tables := []struct {
 		alphabet   string

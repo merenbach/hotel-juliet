@@ -3,14 +3,95 @@ package main
 // Monoalphabetic substitution ciphers
 
 import (
+	"fmt"
 	"strings"
 	"unicode/utf8"
 )
 
+// A SimpleSubstitutionCipher represents a simple monoalphabetic substitution cipher.
+type simpleSubstitutionCipher struct {
+	ptAlphabet string
+	ctAlphabet string
+
+	pt2ct map[rune]rune
+	ct2pt map[rune]rune
+}
+
+// NewSimpleSubstitutionCipher creates a reciprocal, monoalphabetic substitution cipher.
+func NewSimpleSubstitutionCipher(ptAlphabet string, ctAlphabet string) Cipher {
+	// ctAlphabet := Backpermute(ptAlphabet, transform)
+
+	pt2ct := make(map[rune]rune)
+	ct2pt := make(map[rune]rune)
+
+	ctRunes := []rune(ctAlphabet)
+
+	for i, ptRune := range []rune(ptAlphabet) {
+		ctRune := ctRunes[i]
+		pt2ct[ptRune] = ctRune
+		ct2pt[ctRune] = ptRune
+	}
+
+	return &simpleSubstitutionCipher{
+		ptAlphabet: ptAlphabet,
+		ctAlphabet: ctAlphabet,
+		pt2ct:      pt2ct,
+		ct2pt:      ct2pt,
+		// Encipher: func(s string, strict bool) string {
+		// 	return pt2ct.Transform(s, strict)
+		// },
+		// Decipher: func(s string, strict bool) string {
+		// 	return ct2pt.Transform(s, strict)
+		// },
+	}
+}
+
+func (c *simpleSubstitutionCipher) String() string {
+	return fmt.Sprintf("PT: %s\nCT: %s", c.ptAlphabet, c.ctAlphabet)
+}
+
+// Encipher a message from plaintext to ciphertext.
+func (c *simpleSubstitutionCipher) Encipher(s string, strict bool) string {
+	var out strings.Builder
+	for _, r := range s {
+		if o, found := c.encipherRune(r); found || !strict {
+			out.WriteRune(o)
+		}
+	}
+	return out.String()
+}
+
+// Decipher a message from ciphertext to plaintext.
+func (c *simpleSubstitutionCipher) Decipher(s string, strict bool) string {
+	var out strings.Builder
+	for _, r := range s {
+		if o, found := c.decipherRune(r); found || !strict {
+			out.WriteRune(o)
+		}
+	}
+	return out.String()
+}
+
+// EncipherRune transforms a rune from plaintext to ciphertext, returning it unchanged if transformation fails.
+func (c *simpleSubstitutionCipher) encipherRune(r rune) (rune, bool) {
+	if o, ok := c.pt2ct[r]; ok {
+		return o, ok
+	}
+	return r, false
+}
+
+// DecipherRune transforms a rune from ciphertext to plaintext, returning it unchanged if transformation fails.
+func (c *simpleSubstitutionCipher) decipherRune(r rune) (rune, bool) {
+	if o, ok := c.ct2pt[r]; ok {
+		return o, ok
+	}
+	return r, false
+}
+
 // NewKeywordCipher creates a new keyword cipher.
 func NewKeywordCipher(alphabet, keyword string) Cipher {
 	ctAlphabet := deduplicateString(keyword + alphabet)
-	return NewSimpleTableau(alphabet, ctAlphabet)
+	return NewSimpleSubstitutionCipher(alphabet, ctAlphabet)
 }
 
 // NewAffineCipher creates a new affine cipher.
@@ -28,7 +109,7 @@ func NewAffineCipher(ptAlphabet string, a, b int) Cipher {
 	lcg := NewLCG(uint(m), 1, uint(a), uint(b))
 	ctAlphabet := backpermute(ptAlphabet, lcg.Next)
 
-	return NewSimpleTableau(ptAlphabet, ctAlphabet)
+	return NewSimpleSubstitutionCipher(ptAlphabet, ctAlphabet)
 }
 
 // NewAtbashCipher creates a new Atbash cipher.

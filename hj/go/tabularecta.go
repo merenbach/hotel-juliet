@@ -29,7 +29,7 @@ func (tr *TabulaRecta) String() string {
 	}
 	for _, r := range tr.keyAlphabet {
 		c := tr.ciphers[r]
-		ctAlpha := fmt.Sprintf("\n%c | %s", r, formatForPrinting(c.(*SimpleTableau).ctAlphabet))
+		ctAlpha := fmt.Sprintf("\n%c | %s", r, formatForPrinting(c.(*simpleSubstitutionCipher).ctAlphabet))
 		out.WriteString(ctAlpha)
 	}
 	return out.String()
@@ -48,8 +48,8 @@ func NewTabulaRecta(countersign, ptAlphabet, ctAlphabet, keyAlphabet string) Cip
 	}
 	for i, r := range []rune(keyAlphabet) {
 		ctAlphabet3 := wrapString(ctAlphabet, i)
-		t := NewSimpleTableau(ptAlphabet, ctAlphabet3)
-		// t := NewSimpleTableau(ptAlphabet, ctAlphabet3)
+		t := NewSimpleSubstitutionCipher(ptAlphabet, ctAlphabet3)
+		// t := NewSimpleSubstitutionCipher(ptAlphabet, ctAlphabet3)
 		tr.ciphers[r] = t
 	}
 	return &tr
@@ -70,7 +70,7 @@ func NewDellaPortaReciprocalTable(countersign, ptAlphabet, ctAlphabet, keyAlphab
 	ctAlphabet2 := wrapString(ctAlphabet, len(ctAlphabet)/2)
 	for i, r := range []rune(keyAlphabet) {
 		ctAlphabet3 := owrapString(ctAlphabet2, i/2)
-		t := NewSimpleTableau(ptAlphabet, ctAlphabet3)
+		t := NewSimpleSubstitutionCipher(ptAlphabet, ctAlphabet3)
 		tr.ciphers[r] = t
 	}
 	return &tr
@@ -84,7 +84,7 @@ func (tr *TabulaRecta) Encipher(s string, strict bool) string {
 	for _, r := range s {
 		k := keyRunes[transcodedCharCount%len(keyRunes)]
 		cipher := tr.ciphers[k]
-		if o, ok := cipher.(*SimpleTableau).encipherRune(r); ok {
+		if o, ok := cipher.(*simpleSubstitutionCipher).encipherRune(r); ok {
 			out.WriteRune(o)
 			transcodedCharCount++
 
@@ -108,7 +108,7 @@ func (tr *TabulaRecta) Decipher(s string, strict bool) string {
 	for _, r := range s {
 		k := keyRunes[transcodedCharCount%len(keyRunes)]
 		cipher := tr.ciphers[k]
-		if o, ok := cipher.(*SimpleTableau).decipherRune(r); ok {
+		if o, ok := cipher.(*simpleSubstitutionCipher).decipherRune(r); ok {
 			out.WriteRune(o)
 			transcodedCharCount++
 			if tr.Textautoclave {

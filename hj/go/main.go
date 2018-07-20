@@ -29,6 +29,14 @@ import (
 	"strings"
 )
 
+// A Cipher implementation can encipher and decipher strings.
+// TODO: should `strict` be in creation, not Encipher/Decipher?
+type Cipher interface {
+	String() string
+	Encipher(string, bool) string
+	Decipher(string, bool) string
+}
+
 // Invert swaps indices and values in an array of integers.
 // Invert panics upon encountering elements that don't represent valid indices in the source array.
 // TODO: panic on duplicates?
