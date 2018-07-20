@@ -10,7 +10,7 @@ type TabulaRecta struct {
 	ptAlphabet    string
 	ctAlphabet    string
 	keyAlphabet   string
-	keysToCiphers map[rune]Cipher
+	ciphers       map[rune]Cipher
 	countersign   string
 	Textautoclave bool
 	Keyautoclave  bool
@@ -28,7 +28,7 @@ func (tr *TabulaRecta) String() string {
 		out.WriteRune('-')
 	}
 	for _, r := range tr.keyAlphabet {
-		c := tr.keysToCiphers[r]
+		c := tr.ciphers[r]
 		ctAlpha := fmt.Sprintf("\n%c | %s", r, formatForPrinting(c.(*SimpleTableau).ctAlphabet))
 		out.WriteString(ctAlpha)
 	}
@@ -40,17 +40,17 @@ func (tr *TabulaRecta) String() string {
 // to decode/encode a string reusably, for parallelism with the monoalphabetic ciphers.
 func NewTabulaRecta(countersign, ptAlphabet, ctAlphabet, keyAlphabet string) Cipher {
 	tr := TabulaRecta{
-		ptAlphabet:    ptAlphabet,
-		ctAlphabet:    ctAlphabet,
-		keyAlphabet:   keyAlphabet,
-		countersign:   countersign,
-		keysToCiphers: make(map[rune]Cipher),
+		ptAlphabet:  ptAlphabet,
+		ctAlphabet:  ctAlphabet,
+		keyAlphabet: keyAlphabet,
+		countersign: countersign,
+		ciphers:     make(map[rune]Cipher),
 	}
 	for i, r := range []rune(keyAlphabet) {
 		ctAlphabet3 := wrapString(ctAlphabet, i)
 		t := NewSimpleTableau(ptAlphabet, ctAlphabet3)
 		// t := NewSimpleTableau(ptAlphabet, ctAlphabet3)
-		tr.keysToCiphers[r] = t
+		tr.ciphers[r] = t
 	}
 	return &tr
 }
@@ -58,11 +58,11 @@ func NewTabulaRecta(countersign, ptAlphabet, ctAlphabet, keyAlphabet string) Cip
 // NewDellaPortaReciprocalTable creates a new tabula recta suitable for use with the Della Porta cipher.
 func NewDellaPortaReciprocalTable(countersign, ptAlphabet, ctAlphabet, keyAlphabet string) Cipher {
 	tr := TabulaRecta{
-		ptAlphabet:    ptAlphabet,
-		ctAlphabet:    ctAlphabet,
-		keyAlphabet:   keyAlphabet,
-		countersign:   countersign,
-		keysToCiphers: make(map[rune]Cipher),
+		ptAlphabet:  ptAlphabet,
+		ctAlphabet:  ctAlphabet,
+		keyAlphabet: keyAlphabet,
+		countersign: countersign,
+		ciphers:     make(map[rune]Cipher),
 	}
 	if len(ctAlphabet)%2 != 0 {
 		panic("Della Porta cipher alphabets must have even length")
@@ -71,7 +71,7 @@ func NewDellaPortaReciprocalTable(countersign, ptAlphabet, ctAlphabet, keyAlphab
 	for i, r := range []rune(keyAlphabet) {
 		ctAlphabet3 := owrapString(ctAlphabet2, i/2)
 		t := NewSimpleTableau(ptAlphabet, ctAlphabet3)
-		tr.keysToCiphers[r] = t
+		tr.ciphers[r] = t
 	}
 	return &tr
 }
@@ -83,7 +83,7 @@ func (tr *TabulaRecta) Encipher(s string, strict bool) string {
 	var transcodedCharCount = 0
 	for _, r := range s {
 		k := keyRunes[transcodedCharCount%len(keyRunes)]
-		cipher := tr.keysToCiphers[k]
+		cipher := tr.ciphers[k]
 		if o, ok := cipher.(*SimpleTableau).encipherRune(r); ok {
 			out.WriteRune(o)
 			transcodedCharCount++
@@ -107,7 +107,7 @@ func (tr *TabulaRecta) Decipher(s string, strict bool) string {
 	var transcodedCharCount = 0
 	for _, r := range s {
 		k := keyRunes[transcodedCharCount%len(keyRunes)]
-		cipher := tr.keysToCiphers[k]
+		cipher := tr.ciphers[k]
 		if o, ok := cipher.(*SimpleTableau).decipherRune(r); ok {
 			out.WriteRune(o)
 			transcodedCharCount++
