@@ -10,7 +10,6 @@ type TabulaRecta struct {
 	ptAlphabet    string
 	ctAlphabet    string
 	keyAlphabet   string
-	tableaux      []Cipher
 	keysToCiphers map[rune]Cipher
 	countersign   string
 	Textautoclave bool
@@ -43,7 +42,6 @@ func NewTabulaRecta(countersign, ptAlphabet, ctAlphabet, keyAlphabet string) Cip
 	tr := TabulaRecta{
 		ptAlphabet:    ptAlphabet,
 		ctAlphabet:    ctAlphabet,
-		tableaux:      make([]Cipher, 0),
 		keyAlphabet:   keyAlphabet,
 		countersign:   countersign,
 		keysToCiphers: make(map[rune]Cipher),
@@ -51,7 +49,7 @@ func NewTabulaRecta(countersign, ptAlphabet, ctAlphabet, keyAlphabet string) Cip
 	for i, r := range []rune(keyAlphabet) {
 		ctAlphabet3 := wrapString(ctAlphabet, i)
 		t := NewSimpleTableau(ptAlphabet, ctAlphabet3)
-		tr.tableaux = append(tr.tableaux, t)
+		// t := NewSimpleTableau(ptAlphabet, ctAlphabet3)
 		tr.keysToCiphers[r] = t
 	}
 	return &tr
@@ -62,7 +60,6 @@ func NewDellaPortaReciprocalTable(countersign, ptAlphabet, ctAlphabet, keyAlphab
 	tr := TabulaRecta{
 		ptAlphabet:    ptAlphabet,
 		ctAlphabet:    ctAlphabet,
-		tableaux:      make([]Cipher, 0),
 		keyAlphabet:   keyAlphabet,
 		countersign:   countersign,
 		keysToCiphers: make(map[rune]Cipher),
@@ -74,7 +71,6 @@ func NewDellaPortaReciprocalTable(countersign, ptAlphabet, ctAlphabet, keyAlphab
 	for i, r := range []rune(keyAlphabet) {
 		ctAlphabet3 := owrapString(ctAlphabet2, i/2)
 		t := NewSimpleTableau(ptAlphabet, ctAlphabet3)
-		tr.tableaux = append(tr.tableaux, t)
 		tr.keysToCiphers[r] = t
 	}
 	return &tr
