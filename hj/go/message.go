@@ -31,13 +31,7 @@ func (message Message) Chunk(sz int, alphabet string) Message {
 
 // ConstrainRunes returns a copy of a message containing only runes shared with the provided character set.
 func (message Message) ConstrainRunes(charset string) Message {
-	out := make([]rune, 0)
-	for _, e := range message {
-		if strings.ContainsRune(charset, e) {
-			out = append(out, e)
-		}
-	}
-	return Message(out)
+	return Message(intersect(string(message), charset))
 }
 
 // Transform returns a copy of a Message transformed by a function.

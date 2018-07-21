@@ -16,12 +16,12 @@ func TestBackpermute(t *testing.T) {
 	}
 	for _, table := range tables {
 		if out := backpermute(table.s, table.f); out != table.expected {
-			t.Errorf("for backpermutation of %q with function %s, expected output %q, but got %q instead", table.s, reflect.ValueOf(table.f), table.expected, out)
+			t.Errorf("For backpermutation of %q with function %s, expected output %q, but got %q instead", table.s, reflect.ValueOf(table.f), table.expected, out)
 		}
 	}
 }
 
-func TestDeduplicateString(t *testing.T) {
+func TestDeduplicate(t *testing.T) {
 	table := map[string]string{
 		"hello":       "helo",
 		"world":       "world",
@@ -29,8 +29,8 @@ func TestDeduplicateString(t *testing.T) {
 	}
 
 	for k, v := range table {
-		if o := deduplicateString(k); o != v {
-			t.Errorf("deduplication of string %q was %q; expected %q", k, o, v)
+		if o := deduplicate(k); o != v {
+			t.Errorf("Deduplication of string %q was %q; expected %q", k, o, v)
 		}
 	}
 }

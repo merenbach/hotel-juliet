@@ -90,7 +90,7 @@ func (c *simpleSubstitutionCipher) decipherRune(r rune) (rune, bool) {
 
 // NewKeywordCipher creates a new keyword cipher.
 func NewKeywordCipher(alphabet, keyword string) Cipher {
-	ctAlphabet := deduplicateString(keyword + alphabet)
+	ctAlphabet := deduplicate(keyword + alphabet)
 	return NewSimpleSubstitutionCipher(alphabet, ctAlphabet)
 }
 
