@@ -13,20 +13,18 @@ func (message Message) String() string {
 }
 
 // Chunk breaks up a copy of a Message into space-delimited chunks of a given size.
+// TODO: end padding with null
 func (message Message) Chunk(sz int, alphabet string) Message {
-	newRunes := make([]rune, 0)
-	runeCount := 0
-	SPACE := " "
-	for _, c := range []rune(string(message)) {
-		if strings.ContainsRune(alphabet, c) {
-			newRunes = append(newRunes, c)
-			runeCount++
-			if runeCount%sz == 0 {
-				newRunes = append(newRunes, []rune(SPACE)[0])
-			}
+	const SPACE = ' '
+	var out strings.Builder
+	msg := []rune(string(message.ConstrainRunes(alphabet)))
+	for i, r := range msg {
+		out.WriteRune(r)
+		if i%sz == sz-1 && i != len(msg)-1 {
+			out.WriteRune(SPACE)
 		}
 	}
-	return Message(newRunes)
+	return Message(out.String())
 }
 
 // ConstrainRunes returns a copy of a message containing only runes shared with the provided character set.
