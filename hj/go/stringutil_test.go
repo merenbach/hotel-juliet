@@ -35,6 +35,21 @@ func TestDeduplicate(t *testing.T) {
 	}
 }
 
+func TestIntersect(t *testing.T) {
+	tables := [][]string{
+		{"HELLO, WORLD!", "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "HELLOWORLD"},
+		{"world", "word", "word"},
+		{"world", "hello", "ol"},
+		{"hello", "world", "llo"},
+	}
+
+	for _, table := range tables {
+		if o := intersect(table[0], table[1]); o != table[2] {
+			t.Errorf("Intersection of string %q with charset %q was %q; expected %q", table[0], table[1], o, table[2])
+		}
+	}
+}
+
 func TestWrapString(t *testing.T) {
 	tables := []struct {
 		s        string

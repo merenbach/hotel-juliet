@@ -69,6 +69,10 @@ func zipper(a, b string) ([]int, []int, error) {
 func main() {
 	fmt.Println("Hello, world!")
 	alphabet := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	message := Message("HELLO, WORLD!")
+	fmt.Printf("Message is %q\n", message)
+	msg2 := message.ConstrainRunes(alphabet)
+	fmt.Printf("Message 2 is %q\n", msg2)
 	// alphabet2 := "DEFGHIJKLMNOPQRSTUVWXYZABC"
 	// THE MATH IS BEAUTIFUL... but.... it makes no sense to look up rune
 	// positions in other strings, convert, and convert back, in O(2n),
