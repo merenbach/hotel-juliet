@@ -14,6 +14,7 @@ func (message Message) String() string {
 
 // Chunk breaks up a copy of a Message into space-delimited chunks of a given size.
 // TODO: end padding with null
+// TODO: farm this out to a stringutil function
 func (message Message) Chunk(sz int, alphabet string) Message {
 	const SPACE = ' '
 	var out strings.Builder
