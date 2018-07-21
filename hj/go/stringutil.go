@@ -1,6 +1,9 @@
 package main
 
-import "strings"
+import (
+	"sort"
+	"strings"
+)
 
 // Backpermute transforms a string based on a generator function.
 // Backpermute will panic if the transform function returns any invalid string index values.
@@ -26,4 +29,13 @@ func deduplicateString(s string) string {
 		}
 	}
 	return out.String()
+}
+
+// ReverseString reverses the runes in a string.
+func reverseString(s string) string {
+	r := []rune(s)
+	sort.SliceStable(r, func(i, j int) bool {
+		return true
+	})
+	return string(r)
 }

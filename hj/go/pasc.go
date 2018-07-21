@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"sort"
 	"strings"
 )
 
@@ -191,13 +190,4 @@ func NewTrithemiusCipher(alphabet string) Cipher {
 // NewDellaPortaCipher creates a new DellaPorta cipher.
 func NewDellaPortaCipher(countersign, alphabet string) Cipher {
 	return NewDellaPortaReciprocalTable(countersign, alphabet, alphabet, alphabet)
-}
-
-// ReverseString reverses the runes in a string.
-func reverseString(s string) string {
-	r := []rune(s)
-	sort.SliceStable(r, func(i, j int) bool {
-		return true
-	})
-	return string(r)
 }
