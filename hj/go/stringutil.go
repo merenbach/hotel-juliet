@@ -22,10 +22,10 @@ func deduplicateString(s string) string {
 	var out strings.Builder
 	seen := make(map[rune]bool)
 
-	for _, e := range s {
-		if _, ok := seen[e]; !ok {
-			out.WriteRune(e)
-			seen[e] = true
+	for _, r := range s {
+		if _, ok := seen[r]; !ok {
+			out.WriteRune(r)
+			seen[r] = true
 		}
 	}
 	return out.String()
