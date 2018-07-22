@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strings"
 )
 
 // Message holds a message string.
@@ -17,15 +16,9 @@ func (message Message) String() string {
 // TODO: farm this out to a stringutil function
 func (message Message) Chunk(sz int, alphabet string) Message {
 	const SPACE = ' '
-	var out strings.Builder
-	msg := []rune(string(message.ConstrainRunes(alphabet)))
-	for i, r := range msg {
-		out.WriteRune(r)
-		if i%sz == sz-1 && i != len(msg)-1 {
-			out.WriteRune(SPACE)
-		}
-	}
-	return Message(out.String())
+	msg := string(message.ConstrainRunes(alphabet))
+	out := chunk(msg, sz, SPACE)
+	return Message(out)
 }
 
 // ConstrainRunes returns a copy of a message containing only runes shared with the provided character set.

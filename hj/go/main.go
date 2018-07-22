@@ -69,10 +69,8 @@ func zipper(a, b string) ([]int, []int, error) {
 func main() {
 	fmt.Println("Hello, world!")
 	alphabet := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	message := Message("HELLO, WORLD!")
-	fmt.Printf("Message is %q\n", message)
-	msg2 := message.ConstrainRunes(alphabet)
-	fmt.Printf("Message 2 is %q\n", msg2)
+	message := Message("HELLO, WORLD! YOU ARE A WONDERFUL WORLD.  I LOVE YOU WORLD.  WORLD IS GOOD.")
+	fmt.Printf("Message is %q\n", message.Chunk(4, alphabet))
 	// alphabet2 := "DEFGHIJKLMNOPQRSTUVWXYZABC"
 	// THE MATH IS BEAUTIFUL... but.... it makes no sense to look up rune
 	// positions in other strings, convert, and convert back, in O(2n),
@@ -91,46 +89,4 @@ func main() {
 	// 	return (i + 3) % len(alphabet)
 	// })
 	fmt.Println(t)
-	fmt.Println("E:", t.Encipher("HELLO, WORLD", true))
-	fmt.Println("E:", t.Decipher("SVOOL, DLIOW", true))
-	fmt.Println("D:", t.Decipher("KHOOR, ZRUOG", false))
-	// fmt.Println(t.Pt2Ct("HELLOWORLD"))
-	// fmt.Println(t.Ct2Pt("KHOORZRUOG"))
-
-	// ct := []int{3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 0, 1, 2}
-	// ct_inverse := invert(ct)
-	// ab1 := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	// for _, n := range ct {
-	// 	fmt.Printf(string(ab1[ct_inverse[n]]))
-
-	// }
-	// fmt.Println()
-	// for idx, _ := range ct {
-	// 	fmt.Printf(string(ab1[ct[idx]]))
-
-	// }
-	// fmt.Println()
-	// fmt.Println(ct)
-	// fmt.Println(ct_inverse)
-	// // ab1 := "ABCDEFGHIJKLMNOPQRSTUVWXYZ
-	// // ab2 := "DEFGHIJKLMNOPQRSTUVWXYZABC"
-	// // fmt.Println(zipper(ab1, ab2))
-	// // ab2 = "EFGHIJKLMNOPQRSTUVWXYZABCd"
-	// // fmt.Println(zipper(ab1, ab2))
-	// t2 := NewTabulaRecta(alphabet, alphabet, alphabet)
-	// fmt.Println(t2)
-	// fmt.Println(t2.Encipher("THIS IS MY VOICE", "SOCRATES", false))
-	// fmt.Println(t2.Decipher("VGPLB, KUILS!", "OCEANOGRAPHYWHAT", true))
-	t3 := NewVigenereCipher("OCEANOGRAPHYWHAT", alphabet)
-	fmt.Println(t3)
-	// o := t3.Encipher("HELLO, WORLD", "OCEANOGRAPHYWHAT", false)
-	// // o := t3.Encipher("HYTPZ, SSAPM!", "OCEANOGRAPHYWHAT", false)
-	// fmt.Println("this is it: ", o)
-	// fmt.Println("hey", t3.Encipher(o, "OCEANOGRAPHYWHAT", false))
-	t4 := NewGronsfeldCipher("23132", alphabet)
-	fmt.Println(t4)
-	fmt.Println(t4.Encipher("HELLO, WORLD!", false))
-	t5 := NewDellaPortaCipher("OCEANOGRAPHYWHAT", alphabet)
-	fmt.Println(t5)
-	// HYTPZ, SSAPM!
 }

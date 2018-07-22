@@ -87,3 +87,22 @@ func ExampleWrapString() {
 	// D!HELLO,_WORL
 	// !HELLO,_WORLD
 }
+
+func TestChunk(t *testing.T) {
+	tables := []struct {
+		s         string
+		size      int
+		delimiter rune
+		expected  string
+	}{
+		{"HELLOWORLD", 2, ' ', "HE LL OW OR LD"},
+		{"HELLOWORLD", 3, ' ', "HEL LOW ORL D"},
+		{"HELLOWORLD", 4, ' ', "HELL OWOR LD"},
+	}
+
+	for _, table := range tables {
+		if o := chunk(table.s, table.size, table.delimiter); o != table.expected {
+			t.Errorf("Chunking of string %q with size %d and delimiter %q was %q; expected %q", table.s, table.size, table.delimiter, o, table.expected)
+		}
+	}
+}
