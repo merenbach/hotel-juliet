@@ -59,12 +59,20 @@ func reverseString(s string) string {
 
 // Chunk divides a string into groups separated by a delimiter.
 func chunk(s string, size int, delimiter rune) string {
-	var out strings.Builder
-	for i, r := range []rune(s) {
-		out.WriteRune(r)
-		if i%size == size-1 && i != len(s)-1 {
-			out.WriteRune(delimiter)
+	return strings.Join(groupString(s, size, 'X'), string(delimiter))
+}
+
+// GroupString divides a string into groups.
+func groupString(s string, size int, padding rune) []string {
+	out := make([]string, 0)
+	var sb strings.Builder
+	nulls := strings.Repeat(string(padding), size-(len(s)-1)%size)
+	for i, r := range []rune(s + nulls) {
+		sb.WriteRune(r)
+		if i%size == size-1 {
+			out = append(out, sb.String())
+			sb.Reset()
 		}
 	}
-	return out.String()
+	return out
 }

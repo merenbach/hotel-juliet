@@ -69,7 +69,7 @@ func zipper(a, b string) ([]int, []int, error) {
 func main() {
 	fmt.Println("Hello, world!")
 	alphabet := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	message := Message("HELLO, WORLD! YOU ARE A WONDERFUL WORLD.  I LOVE YOU WORLD.  WORLD IS GOOD.")
+	message := Message("HELLO, WORLD! YOU ARE A WONDERFUL WORLD.  I LOVE YOU WORLD.  WORLD IS GOOD.  AND I LOVE CREAM ABCDEFGAB")
 	fmt.Printf("Message is %q\n", message.Chunk(4, alphabet))
 	// alphabet2 := "DEFGHIJKLMNOPQRSTUVWXYZABC"
 	// THE MATH IS BEAUTIFUL... but.... it makes no sense to look up rune

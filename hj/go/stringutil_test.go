@@ -96,13 +96,32 @@ func TestChunk(t *testing.T) {
 		expected  string
 	}{
 		{"HELLOWORLD", 2, ' ', "HE LL OW OR LD"},
-		{"HELLOWORLD", 3, ' ', "HEL LOW ORL D"},
-		{"HELLOWORLD", 4, ' ', "HELL OWOR LD"},
+		{"HELLOWORLD", 3, ' ', "HEL LOW ORL DXX"},
+		{"HELLOWORLD", 4, ' ', "HELL OWOR LDXX"},
 	}
 
 	for _, table := range tables {
 		if o := chunk(table.s, table.size, table.delimiter); o != table.expected {
 			t.Errorf("Chunking of string %q with size %d and delimiter %q was %q; expected %q", table.s, table.size, table.delimiter, o, table.expected)
+		}
+	}
+}
+
+func TestGroupString(t *testing.T) {
+	tables := []struct {
+		s        string
+		size     int
+		padding  rune
+		expected []string
+	}{
+		{"HELLOWORLD", 2, 'X', []string{"HE", "LL", "OW", "OR", "LD"}},
+		{"HELLOWORLD", 3, 'X', []string{"HEL", "LOW", "ORL", "DXX"}},
+		{"HELLOWORLD", 4, 'X', []string{"HELL", "OWOR", "LDXX"}},
+	}
+
+	for _, table := range tables {
+		if o := groupString(table.s, table.size, table.padding); !reflect.DeepEqual(o, table.expected) {
+			t.Errorf("Grouping of string %q with size %d and padding %q was %q; expected %q", table.s, table.size, table.padding, o, table.expected)
 		}
 	}
 }
