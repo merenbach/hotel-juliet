@@ -74,15 +74,11 @@ func diffToMod(a, m int) int {
 // GroupString divides a string into groups.
 func groupString(s string, size int, padding rune) []string {
 	out := make([]string, 0)
-	var sb strings.Builder
 	nullCount := diffToMod(utf8.RuneCountInString(s), size)
 	nulls := strings.Repeat(string(padding), nullCount)
-	for i, r := range []rune(s + nulls) {
-		sb.WriteRune(r)
-		if i%size == size-1 {
-			out = append(out, sb.String())
-			sb.Reset()
-		}
+	padded := []rune(s + nulls)
+	for i := 0; i < len(padded); i += size {
+		out = append(out, string(padded[i:i+size]))
 	}
 	return out
 }
