@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strings"
+	"unicode/utf8"
 )
 
 // Polyalphabetic substitution ciphers
@@ -65,10 +66,10 @@ func NewDellaPortaReciprocalTable(countersign, ptAlphabet, ctAlphabet, keyAlphab
 		countersign: countersign,
 		ciphers:     make(map[rune]Cipher),
 	}
-	if len(ctAlphabet)%2 != 0 {
+	if utf8.RuneCountInString(ctAlphabet)%2 != 0 {
 		panic("Della Porta cipher alphabets must have even length")
 	}
-	ctAlphabet2 := wrapString(ctAlphabet, len(ctAlphabet)/2)
+	ctAlphabet2 := wrapString(ctAlphabet, utf8.RuneCountInString(ctAlphabet)/2)
 	// this cast is necessary to ensure that the index increases without gaps
 	for i, r := range []rune(keyAlphabet) {
 		ctAlphabet3 := owrapString(ctAlphabet2, i/2)
@@ -136,10 +137,10 @@ func wrapString(s string, i int) string {
 // WrapString will error out if the provided offset is negative.
 func owrapString(s string, i int) string {
 	// if we simply `return s[i:] + s[:i]`, we're operating on bytes, not runes
-	if len([]rune(s))%2 != 0 {
+	sRunes := []rune(s)
+	if len(sRunes)%2 != 0 {
 		panic("owrapString sequence length must be divisible by two")
 	}
-	sRunes := []rune(s)
 	u, v := sRunes[:len(sRunes)/2], sRunes[len(sRunes)/2:]
 	return wrapString(string(u), i) + wrapString(string(v), len(v)-i)
 }

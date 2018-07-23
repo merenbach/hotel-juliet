@@ -3,6 +3,7 @@ package main
 import (
 	"sort"
 	"strings"
+	"unicode/utf8"
 )
 
 // Backpermute transforms a string based on a generator function.
@@ -57,7 +58,7 @@ func reverseString(s string) string {
 	return string(r)
 }
 
-// Chunk divides a string into groups separated by a delimiter.
+// Chunk divides a string into groups.
 func chunk(s string, size int, delimiter rune) string {
 	return strings.Join(groupString(s, size, 'X'), string(delimiter))
 }
@@ -66,7 +67,8 @@ func chunk(s string, size int, delimiter rune) string {
 func groupString(s string, size int, padding rune) []string {
 	out := make([]string, 0)
 	var sb strings.Builder
-	nulls := strings.Repeat(string(padding), size-(len(s)-1)%size)
+	lenS := utf8.RuneCountInString(s)
+	nulls := strings.Repeat(string(padding), size-(lenS-1)%size)
 	for i, r := range []rune(s + nulls) {
 		sb.WriteRune(r)
 		if i%size == size-1 {
