@@ -65,11 +65,10 @@ func chunk(s string, size int, delimiter rune) string {
 
 // DiffToMod returns the difference between a and the nearest multiple of m.
 func diffToMod(a, m int) int {
-	rem := a % m
-	if a%m == 0 {
-		return rem
+	if remainder := a % m; remainder != 0 {
+		return m - remainder
 	}
-	return m - rem
+	return 0
 }
 
 // GroupString divides a string into groups.
