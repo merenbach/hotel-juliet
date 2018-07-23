@@ -63,12 +63,21 @@ func chunk(s string, size int, delimiter rune) string {
 	return strings.Join(groupString(s, size, 'X'), string(delimiter))
 }
 
+// DiffToMod returns the difference between a and the nearest multiple of m.
+func diffToMod(a, m int) int {
+	rem := a % m
+	if a%m == 0 {
+		return rem
+	}
+	return m - rem
+}
+
 // GroupString divides a string into groups.
 func groupString(s string, size int, padding rune) []string {
 	out := make([]string, 0)
 	var sb strings.Builder
-	lenS := utf8.RuneCountInString(s)
-	nulls := strings.Repeat(string(padding), size-(lenS-1)%size)
+	nullCount := diffToMod(utf8.RuneCountInString(s), size)
+	nulls := strings.Repeat(string(padding), nullCount)
 	for i, r := range []rune(s + nulls) {
 		sb.WriteRune(r)
 		if i%size == size-1 {

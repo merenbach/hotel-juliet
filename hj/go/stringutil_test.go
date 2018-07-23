@@ -125,3 +125,20 @@ func TestGroupString(t *testing.T) {
 		}
 	}
 }
+
+func TestDiffToMod(t *testing.T) {
+	tables := [][]int{
+		{6, 3, 0},
+		{6, 4, 2},
+		{7, 3, 2},
+		{10, 2, 0},
+		{10, 3, 2},
+		{10, 4, 2},
+	}
+
+	for _, table := range tables {
+		if o := diffToMod(table[0], table[1]); o != table[2] {
+			t.Errorf("Diff to mod of %d %% %d was %d; expected %d", table[0], table[1], o, table[2])
+		}
+	}
+}
