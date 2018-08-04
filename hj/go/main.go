@@ -26,7 +26,6 @@ package main
 
 import (
 	"fmt"
-	"strings"
 )
 
 // A Cipher implementation can encipher and decipher strings.
@@ -37,56 +36,38 @@ type Cipher interface {
 	Decipher(string, bool) string
 }
 
-// Invert swaps indices and values in an array of integers.
-// Invert panics upon encountering elements that don't represent valid indices in the source array.
-// TODO: panic on duplicates?
-func invert(a []int) []int {
-	out := make([]int, len(a))
-	for idx, elem := range a {
-		out[elem] = idx
-	}
-	return out
-}
+// not needed if we're returning a Cipher from the func, thanks to static typing
+// var _ Cipher = NewAtbashCipher()
 
-func zipper(a, b string) ([]int, []int, error) {
-	lennya := len(a)
-	lennyb := len(b)
-	// var out1 uint[lennya]
-	// var out2 uint[lennyb]
-	out1 := make([]int, lennya)
-	out2 := make([]int, lennyb)
-	for idx, char := range b {
-		if idxOfBInA := strings.IndexRune(a, char); idxOfBInA != (-1) {
-			out1[idx] = idxOfBInA
-			out2[idxOfBInA] = idx
-		} else {
-			return nil, nil, fmt.Errorf("character sets did not match")
-		}
-	}
-	return out1, out2, nil
-}
+// // Invert swaps indices and values in an array of integers.
+// // Invert panics upon encountering elements that don't represent valid indices in the source array.
+// // TODO: panic on duplicates?
+// func invert(a []int) []int {
+// 	out := make([]int, len(a))
+// 	for idx, elem := range a {
+// 		out[elem] = idx
+// 	}
+// 	return out
+// }
+
+// func zipper(a, b string) ([]int, []int, error) {
+// 	lennya := len(a)
+// 	lennyb := len(b)
+// 	// var out1 uint[lennya]
+// 	// var out2 uint[lennyb]
+// 	out1 := make([]int, lennya)
+// 	out2 := make([]int, lennyb)
+// 	for idx, char := range b {
+// 		if idxOfBInA := strings.IndexRune(a, char); idxOfBInA != (-1) {
+// 			out1[idx] = idxOfBInA
+// 			out2[idxOfBInA] = idx
+// 		} else {
+// 			return nil, nil, fmt.Errorf("character sets did not match")
+// 		}
+// 	}
+// 	return out1, out2, nil
+// }
 
 func main() {
 	fmt.Println("Hello, world!")
-	alphabet := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	message := Message("HELLO, WORLD! YOU ARE A WONDERFUL WORLD.  I LOVE YOU WORLD.  WORLD IS GOOD.  AND I LOVE CREAM ABCDEFGAB")
-	fmt.Printf("Message is %q\n", message.Chunk(4, alphabet))
-	// alphabet2 := "DEFGHIJKLMNOPQRSTUVWXYZABC"
-	// THE MATH IS BEAUTIFUL... but.... it makes no sense to look up rune
-	// positions in other strings, convert, and convert back, in O(2n),
-	// when we could use maps of runes in O(1) or O(2).
-	// A table is how it would be done by hand, rather than calculating each time.
-	// So use a map!
-	// t := MakeTableau(alphabet, "", func(i int) int {
-	// 	return (i + 3) % len(alphabet)
-	// })
-	// t := MakeSimpleTableau(alphabet, alphabet2)
-	// fmt.Println(t)
-	// fmt.Println("E:", t.Encipher("HELLO, WORLD", true))
-	// fmt.Println("D:", t.Decipher("KHOOR, ZRUOG", false))
-	t := NewAtbashCipher(alphabet)
-	// t = MakeSimpleTableauFromFunc(alphabet, func(i int) int {
-	// 	return (i + 3) % len(alphabet)
-	// })
-	fmt.Println(t)
 }
