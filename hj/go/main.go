@@ -1,5 +1,6 @@
 package main
 
+// fix MASC inefficiencies
 //todo: strict
 //todo: param groups (caesar, atbash, etc)
 // TODO:

@@ -14,7 +14,7 @@ type SimpleSubstitutionCipher struct {
 	ctAlphabet string
 }
 
-// MakeRuneMap creates a reciprocal, monoalphabetic substitution cipher table.
+// MakeRuneMap creates a one-way, monoalphabetic substitution cipher table.
 func makeRuneMap(src, dst string) map[rune]rune {
 	out := make(map[rune]rune)
 
