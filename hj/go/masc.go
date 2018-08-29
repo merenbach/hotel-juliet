@@ -9,7 +9,7 @@ import (
 )
 
 // A SimpleSubstitutionCipher represents a simple monoalphabetic substitution cipher.
-type simpleSubstitutionCipher struct {
+type SimpleSubstitutionCipher struct {
 	ptAlphabet string
 	ctAlphabet string
 
@@ -32,7 +32,7 @@ func NewSimpleSubstitutionCipher(ptAlphabet string, ctAlphabet string) Cipher {
 		ct2pt[ctRune] = ptRune
 	}
 
-	return &simpleSubstitutionCipher{
+	return &SimpleSubstitutionCipher{
 		ptAlphabet: ptAlphabet,
 		ctAlphabet: ctAlphabet,
 		pt2ct:      pt2ct,
@@ -46,12 +46,12 @@ func NewSimpleSubstitutionCipher(ptAlphabet string, ctAlphabet string) Cipher {
 	}
 }
 
-func (c *simpleSubstitutionCipher) String() string {
+func (c *SimpleSubstitutionCipher) String() string {
 	return fmt.Sprintf("PT: %s\nCT: %s", c.ptAlphabet, c.ctAlphabet)
 }
 
 // Encipher a message from plaintext to ciphertext.
-func (c *simpleSubstitutionCipher) Encipher(s string, strict bool) string {
+func (c *SimpleSubstitutionCipher) Encipher(s string, strict bool) string {
 	var out strings.Builder
 	for _, r := range s {
 		if o, found := c.encipherRune(r); found || !strict {
@@ -62,7 +62,7 @@ func (c *simpleSubstitutionCipher) Encipher(s string, strict bool) string {
 }
 
 // Decipher a message from ciphertext to plaintext.
-func (c *simpleSubstitutionCipher) Decipher(s string, strict bool) string {
+func (c *SimpleSubstitutionCipher) Decipher(s string, strict bool) string {
 	var out strings.Builder
 	for _, r := range s {
 		if o, found := c.decipherRune(r); found || !strict {
@@ -73,7 +73,7 @@ func (c *simpleSubstitutionCipher) Decipher(s string, strict bool) string {
 }
 
 // EncipherRune transforms a rune from plaintext to ciphertext, returning it unchanged if transformation fails.
-func (c *simpleSubstitutionCipher) encipherRune(r rune) (rune, bool) {
+func (c *SimpleSubstitutionCipher) encipherRune(r rune) (rune, bool) {
 	if o, ok := c.pt2ct[r]; ok {
 		return o, ok
 	}
@@ -81,7 +81,7 @@ func (c *simpleSubstitutionCipher) encipherRune(r rune) (rune, bool) {
 }
 
 // DecipherRune transforms a rune from ciphertext to plaintext, returning it unchanged if transformation fails.
-func (c *simpleSubstitutionCipher) decipherRune(r rune) (rune, bool) {
+func (c *SimpleSubstitutionCipher) decipherRune(r rune) (rune, bool) {
 	if o, ok := c.ct2pt[r]; ok {
 		return o, ok
 	}

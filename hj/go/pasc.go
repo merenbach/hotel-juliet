@@ -32,7 +32,7 @@ func (tr *tabulaRecta) String() string {
 	}
 	for _, r := range tr.keyAlphabet {
 		c := tr.ciphers[r]
-		ctAlpha := fmt.Sprintf("\n%c | %s", r, formatForPrinting(c.(*simpleSubstitutionCipher).ctAlphabet))
+		ctAlpha := fmt.Sprintf("\n%c | %s", r, formatForPrinting(c.(*SimpleSubstitutionCipher).ctAlphabet))
 		out.WriteString(ctAlpha)
 	}
 	return out.String()
@@ -86,7 +86,7 @@ func (tr *tabulaRecta) Encipher(s string, strict bool) string {
 	for _, r := range s {
 		k := keyRunes[transcodedCharCount%len(keyRunes)]
 		cipher := tr.ciphers[k]
-		if o, ok := cipher.(*simpleSubstitutionCipher).encipherRune(r); ok {
+		if o, ok := cipher.(*SimpleSubstitutionCipher).encipherRune(r); ok {
 			out.WriteRune(o)
 			transcodedCharCount++
 
@@ -110,7 +110,7 @@ func (tr *tabulaRecta) Decipher(s string, strict bool) string {
 	for _, r := range s {
 		k := keyRunes[transcodedCharCount%len(keyRunes)]
 		cipher := tr.ciphers[k]
-		if o, ok := cipher.(*simpleSubstitutionCipher).decipherRune(r); ok {
+		if o, ok := cipher.(*SimpleSubstitutionCipher).decipherRune(r); ok {
 			out.WriteRune(o)
 			transcodedCharCount++
 			if tr.Textautoclave {
