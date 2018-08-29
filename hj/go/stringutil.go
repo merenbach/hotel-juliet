@@ -20,33 +20,30 @@ func backpermute(s string, g func() uint) string {
 
 // Deduplicate removes recurrences for runes from a string, preserving order of first appearance.
 func deduplicate(s string) string {
-	var out strings.Builder
 	seen := make(map[rune]bool)
-
-	for _, r := range s {
+	return strings.Map(func(r rune) rune {
 		if _, ok := seen[r]; !ok {
-			out.WriteRune(r)
 			seen[r] = true
+			return r
 		}
-	}
-	return out.String()
+		return -1
+	}, s)
 }
 
 // Intersect removes runes from a string if they don't occur in another string.
 func intersect(s, charset string) string {
-	var out strings.Builder
 	seen := make(map[rune]bool)
 
 	for _, r := range charset {
 		seen[r] = true
 	}
 
-	for _, r := range s {
+	return strings.Map(func(r rune) rune {
 		if _, ok := seen[r]; ok {
-			out.WriteRune(r)
+			return r
 		}
-	}
-	return out.String()
+		return -1
+	}, s)
 }
 
 // ReverseString reverses the runes in a string.

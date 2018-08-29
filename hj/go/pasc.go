@@ -89,49 +89,46 @@ func MakeDellaPortaReciprocalTable(countersign, ptAlphabet, ctAlphabet, keyAlpha
 
 // Encipher a message from plaintext to ciphertext.
 func (c VigenereFamilyCipher) Encipher(s string, strict bool) string {
-	var out strings.Builder
 	keyRunes := []rune(c.countersign)
 	var transcodedCharCount = 0
-	for _, r := range s {
+	return strings.Map(func(r rune) rune {
 		k := keyRunes[transcodedCharCount%len(keyRunes)]
 		cipher := c.ciphers[k]
 		if o, ok := cipher.encipherRune(r); ok {
-			out.WriteRune(o)
 			transcodedCharCount++
-
 			if c.Textautoclave {
 				keyRunes = append(keyRunes, r)
 			} else if c.Keyautoclave {
 				keyRunes = append(keyRunes, o)
 			}
+			return o
 		} else if !strict {
-			out.WriteRune(r)
+			return r
 		}
-	}
-	return out.String()
+		return -1
+	}, s)
 }
 
 // Decipher a message from ciphertext to plaintext.
 func (c VigenereFamilyCipher) Decipher(s string, strict bool) string {
-	var out strings.Builder
 	keyRunes := []rune(c.countersign)
 	var transcodedCharCount = 0
-	for _, r := range s {
+	return strings.Map(func(r rune) rune {
 		k := keyRunes[transcodedCharCount%len(keyRunes)]
 		cipher := c.ciphers[k]
 		if o, ok := cipher.decipherRune(r); ok {
-			out.WriteRune(o)
 			transcodedCharCount++
 			if c.Textautoclave {
 				keyRunes = append(keyRunes, o)
 			} else if c.Keyautoclave {
 				keyRunes = append(keyRunes, r)
 			}
+			return o
 		} else if !strict {
-			out.WriteRune(r)
+			return r
 		}
-	}
-	return out.String()
+		return -1
+	}, s)
 }
 
 // WrapString wraps a string a specified number of indices.

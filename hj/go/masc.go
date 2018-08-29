@@ -32,24 +32,24 @@ func (c SimpleSubstitutionCipher) String() string {
 
 // Encipher a message from plaintext to ciphertext.
 func (c SimpleSubstitutionCipher) Encipher(s string, strict bool) string {
-	var out strings.Builder
-	for _, r := range s {
+	return strings.Map(func(r rune) rune {
 		if o, found := c.encipherRune(r); found || !strict {
-			out.WriteRune(o)
+			return o
 		}
-	}
-	return out.String()
+		return -1
+
+	}, s)
 }
 
 // Decipher a message from ciphertext to plaintext.
 func (c SimpleSubstitutionCipher) Decipher(s string, strict bool) string {
-	var out strings.Builder
-	for _, r := range s {
+	return strings.Map(func(r rune) rune {
 		if o, found := c.decipherRune(r); found || !strict {
-			out.WriteRune(o)
+			return o
 		}
-	}
-	return out.String()
+		return -1
+
+	}, s)
 }
 
 // EncipherRune transforms a rune from plaintext to ciphertext, returning it unchanged if transformation fails.
