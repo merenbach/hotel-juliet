@@ -152,14 +152,14 @@ func NewVigenereCipher(countersign, alphabet string) *TabulaRecta {
 
 // NewVigenereTextAutoclaveCipher creates a new Vigenere (text autoclave) cipher.
 func NewVigenereTextAutoclaveCipher(countersign, alphabet string) *TabulaRecta {
-	c := NewTabulaRecta(countersign, alphabet, alphabet, alphabet)
+	c := NewVigenereCipher(countersign, alphabet)
 	c.Textautoclave = true
 	return c
 }
 
 // NewVigenereKeyAutoclaveCipher creates a new Vigenere (key autoclave) cipher.
 func NewVigenereKeyAutoclaveCipher(countersign, alphabet string) *TabulaRecta {
-	c := NewTabulaRecta(countersign, alphabet, alphabet, alphabet)
+	c := NewVigenereCipher(countersign, alphabet)
 	c.Keyautoclave = true
 	return c
 }
@@ -184,8 +184,7 @@ func NewVariantBeaufortCipher(countersign, alphabet string) *TabulaRecta {
 // NewTrithemiusCipher creates a new Trithemius cipher.
 // NewTrithemiusCipher considers this simply the Vigenere cipher with the countersign equal to the alphabet.
 func NewTrithemiusCipher(alphabet string) *TabulaRecta {
-	countersign := alphabet
-	return NewVigenereCipher(countersign, alphabet)
+	return NewVigenereCipher(alphabet, alphabet)
 }
 
 // NewDellaPortaCipher creates a new DellaPorta cipher.
