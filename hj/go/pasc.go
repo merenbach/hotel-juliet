@@ -56,7 +56,7 @@ func MakeVigenereFamilyCipher(countersign, ptAlphabet, ctAlphabet, keyAlphabet s
 	// this cast is necessary to ensure that the index increases without gaps
 	for i, r := range []rune(keyAlphabet) {
 		ctAlphabet3 := wrapString(ctAlphabet, i)
-		tr.ciphers[r] = MakeSimpleSubstitutionCipher(ptAlphabet, ctAlphabet3)
+		tr.ciphers[r] = SimpleSubstitutionCipher{ptAlphabet, ctAlphabet3}
 	}
 	return VigenereFamilyCipher{
 		TabulaRecta: tr,
@@ -79,7 +79,7 @@ func MakeDellaPortaReciprocalTable(countersign, ptAlphabet, ctAlphabet, keyAlpha
 	// this cast is necessary to ensure that the index increases without gaps
 	for i, r := range []rune(keyAlphabet) {
 		ctAlphabet3 := owrapString(ctAlphabet2, i/2)
-		tr.ciphers[r] = MakeSimpleSubstitutionCipher(ptAlphabet, ctAlphabet3)
+		tr.ciphers[r] = SimpleSubstitutionCipher{ptAlphabet, ctAlphabet3}
 	}
 	return VigenereFamilyCipher{
 		TabulaRecta: tr,
