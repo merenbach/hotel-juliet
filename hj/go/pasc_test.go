@@ -26,6 +26,8 @@ func TestVigenereCipher(t *testing.T) {
 		countersign string
 		strict      bool
 	}{
+		{"", "", "", "", false},
+		{defaultPolyalphabeticAlphabet, "", "", "OCEANOGRAPHYWHAT", false},
 		{defaultPolyalphabeticAlphabet, "HELLO, WORLD!", "VGPLB, KUILS!", "OCEANOGRAPHYWHAT", false},
 		// {defaultPolyalphabeticAlphabet, "LJOOF, WFEOI!", "HELLO, WORLD!", "KANGAROO", false},
 		// {defaultPolyalphabeticAlphabet, "HELLO, WORLD!", "CRHHLWLQHG", "KANGROOO", true},
