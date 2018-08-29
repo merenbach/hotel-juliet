@@ -24,6 +24,8 @@ func TestSimpleSubstitutionCipher(t *testing.T) {
 		ct       string
 		expected string
 	}{
+		{"", "", "PT: \nCT: "},
+		{"A", "A", "PT: A\nCT: A"},
 		{"ABCDE", "DEFGH", "PT: ABCDE\nCT: DEFGH"},
 		{"ABCDEFGHIJKLMNOPQRSTUVWXYZ", "DEFGHIJKLMNOPQRSTUVWXYZABC", "PT: ABCDEFGHIJKLMNOPQRSTUVWXYZ\nCT: DEFGHIJKLMNOPQRSTUVWXYZABC"},
 	}
