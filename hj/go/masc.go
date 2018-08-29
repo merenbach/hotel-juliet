@@ -33,41 +33,43 @@ func (c SimpleSubstitutionCipher) String() string {
 // Encipher a message from plaintext to ciphertext.
 func (c SimpleSubstitutionCipher) Encipher(s string, strict bool) string {
 	return strings.Map(func(r rune) rune {
-		if o, found := c.encipherRune(r); found || !strict {
+		if o := c.encipherRune(r); o != (-1) {
 			return o
+		} else if !strict {
+			return r
 		}
-		return -1
-
+		return (-1)
 	}, s)
 }
 
 // Decipher a message from ciphertext to plaintext.
 func (c SimpleSubstitutionCipher) Decipher(s string, strict bool) string {
 	return strings.Map(func(r rune) rune {
-		if o, found := c.decipherRune(r); found || !strict {
+		if o := c.decipherRune(r); o != (-1) {
 			return o
+		} else if !strict {
+			return r
 		}
-		return -1
-
+		return (-1)
 	}, s)
 }
 
-// EncipherRune transforms a rune from plaintext to ciphertext, returning it unchanged if transformation fails.
-func (c SimpleSubstitutionCipher) encipherRune(r rune) (rune, bool) {
+// EncipherRune transforms a rune from plaintext to ciphertext, returning (-1) if transformation fails.
+func (c SimpleSubstitutionCipher) encipherRune(r rune) rune {
 	xtable := makeRuneMap(c.ptAlphabet, c.ctAlphabet)
 	if o, ok := xtable[r]; ok {
-		return o, ok
+		return o
 	}
-	return r, false
+	return (-1)
 }
 
-// DecipherRune transforms a rune from ciphertext to plaintext, returning it unchanged if transformation fails.
-func (c SimpleSubstitutionCipher) decipherRune(r rune) (rune, bool) {
+// DecipherRune transforms a rune from ciphertext to plaintext, returning (-1) if transformation fails.
+func (c SimpleSubstitutionCipher) decipherRune(r rune) rune {
 	xtable := makeRuneMap(c.ctAlphabet, c.ptAlphabet)
 	if o, ok := xtable[r]; ok {
-		return o, ok
+		return o
 	}
-	return r, false
+	return (-1)
 }
 
 // NewKeywordCipher creates a new keyword cipher.
