@@ -13,7 +13,7 @@ type tabulaRecta struct {
 	ptAlphabet    string
 	ctAlphabet    string
 	keyAlphabet   string
-	ciphers       map[rune]Cipher
+	ciphers       map[rune]*SimpleSubstitutionCipher
 	countersign   string
 	Textautoclave bool
 	Keyautoclave  bool
@@ -32,7 +32,7 @@ func (tr *tabulaRecta) String() string {
 	}
 	for _, r := range tr.keyAlphabet {
 		c := tr.ciphers[r]
-		ctAlpha := fmt.Sprintf("\n%c | %s", r, formatForPrinting(c.(*SimpleSubstitutionCipher).ctAlphabet))
+		ctAlpha := fmt.Sprintf("\n%c | %s", r, formatForPrinting(c.ctAlphabet))
 		out.WriteString(ctAlpha)
 	}
 	return out.String()
@@ -47,7 +47,7 @@ func NewTabulaRecta(countersign, ptAlphabet, ctAlphabet, keyAlphabet string) Cip
 		ctAlphabet:  ctAlphabet,
 		keyAlphabet: keyAlphabet,
 		countersign: countersign,
-		ciphers:     make(map[rune]Cipher),
+		ciphers:     make(map[rune]*SimpleSubstitutionCipher),
 	}
 	// this cast is necessary to ensure that the index increases without gaps
 	for i, r := range []rune(keyAlphabet) {
@@ -64,7 +64,7 @@ func NewDellaPortaReciprocalTable(countersign, ptAlphabet, ctAlphabet, keyAlphab
 		ctAlphabet:  ctAlphabet,
 		keyAlphabet: keyAlphabet,
 		countersign: countersign,
-		ciphers:     make(map[rune]Cipher),
+		ciphers:     make(map[rune]*SimpleSubstitutionCipher),
 	}
 	if utf8.RuneCountInString(ctAlphabet)%2 != 0 {
 		panic("Della Porta cipher alphabets must have even length")
@@ -86,7 +86,7 @@ func (tr *tabulaRecta) Encipher(s string, strict bool) string {
 	for _, r := range s {
 		k := keyRunes[transcodedCharCount%len(keyRunes)]
 		cipher := tr.ciphers[k]
-		if o, ok := cipher.(*SimpleSubstitutionCipher).encipherRune(r); ok {
+		if o, ok := cipher.encipherRune(r); ok {
 			out.WriteRune(o)
 			transcodedCharCount++
 
@@ -110,7 +110,7 @@ func (tr *tabulaRecta) Decipher(s string, strict bool) string {
 	for _, r := range s {
 		k := keyRunes[transcodedCharCount%len(keyRunes)]
 		cipher := tr.ciphers[k]
-		if o, ok := cipher.(*SimpleSubstitutionCipher).decipherRune(r); ok {
+		if o, ok := cipher.decipherRune(r); ok {
 			out.WriteRune(o)
 			transcodedCharCount++
 			if tr.Textautoclave {

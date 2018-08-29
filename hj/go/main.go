@@ -1,5 +1,6 @@
 package main
 
+// TODO: question: can we do an encipherRune for pasc? something something key advancement closure mumble mumble something?
 //todo: strict
 //todo: param groups (caesar, atbash, etc)
 // TODO:
