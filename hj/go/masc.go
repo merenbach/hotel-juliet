@@ -17,8 +17,8 @@ type SimpleSubstitutionCipher struct {
 	ct2pt map[rune]rune
 }
 
-// NewSimpleSubstitutionCipher creates a reciprocal, monoalphabetic substitution cipher.
-func NewSimpleSubstitutionCipher(ptAlphabet string, ctAlphabet string) *SimpleSubstitutionCipher {
+// MakeSimpleSubstitutionCipher creates a reciprocal, monoalphabetic substitution cipher.
+func MakeSimpleSubstitutionCipher(ptAlphabet string, ctAlphabet string) SimpleSubstitutionCipher {
 	// ctAlphabet := Backpermute(ptAlphabet, transform)
 
 	pt2ct := make(map[rune]rune)
@@ -32,7 +32,7 @@ func NewSimpleSubstitutionCipher(ptAlphabet string, ctAlphabet string) *SimpleSu
 		ct2pt[ctRune] = ptRune
 	}
 
-	return &SimpleSubstitutionCipher{
+	return SimpleSubstitutionCipher{
 		ptAlphabet: ptAlphabet,
 		ctAlphabet: ctAlphabet,
 		pt2ct:      pt2ct,
@@ -46,12 +46,12 @@ func NewSimpleSubstitutionCipher(ptAlphabet string, ctAlphabet string) *SimpleSu
 	}
 }
 
-func (c *SimpleSubstitutionCipher) String() string {
+func (c SimpleSubstitutionCipher) String() string {
 	return fmt.Sprintf("PT: %s\nCT: %s", c.ptAlphabet, c.ctAlphabet)
 }
 
 // Encipher a message from plaintext to ciphertext.
-func (c *SimpleSubstitutionCipher) Encipher(s string, strict bool) string {
+func (c SimpleSubstitutionCipher) Encipher(s string, strict bool) string {
 	var out strings.Builder
 	for _, r := range s {
 		if o, found := c.encipherRune(r); found || !strict {
@@ -62,7 +62,7 @@ func (c *SimpleSubstitutionCipher) Encipher(s string, strict bool) string {
 }
 
 // Decipher a message from ciphertext to plaintext.
-func (c *SimpleSubstitutionCipher) Decipher(s string, strict bool) string {
+func (c SimpleSubstitutionCipher) Decipher(s string, strict bool) string {
 	var out strings.Builder
 	for _, r := range s {
 		if o, found := c.decipherRune(r); found || !strict {
@@ -73,7 +73,7 @@ func (c *SimpleSubstitutionCipher) Decipher(s string, strict bool) string {
 }
 
 // EncipherRune transforms a rune from plaintext to ciphertext, returning it unchanged if transformation fails.
-func (c *SimpleSubstitutionCipher) encipherRune(r rune) (rune, bool) {
+func (c SimpleSubstitutionCipher) encipherRune(r rune) (rune, bool) {
 	if o, ok := c.pt2ct[r]; ok {
 		return o, ok
 	}
@@ -81,7 +81,7 @@ func (c *SimpleSubstitutionCipher) encipherRune(r rune) (rune, bool) {
 }
 
 // DecipherRune transforms a rune from ciphertext to plaintext, returning it unchanged if transformation fails.
-func (c *SimpleSubstitutionCipher) decipherRune(r rune) (rune, bool) {
+func (c SimpleSubstitutionCipher) decipherRune(r rune) (rune, bool) {
 	if o, ok := c.ct2pt[r]; ok {
 		return o, ok
 	}
@@ -89,13 +89,13 @@ func (c *SimpleSubstitutionCipher) decipherRune(r rune) (rune, bool) {
 }
 
 // NewKeywordCipher creates a new keyword cipher.
-func NewKeywordCipher(alphabet, keyword string) *SimpleSubstitutionCipher {
+func MakeKeywordCipher(alphabet, keyword string) SimpleSubstitutionCipher {
 	ctAlphabet := deduplicate(keyword + alphabet)
-	return NewSimpleSubstitutionCipher(alphabet, ctAlphabet)
+	return MakeSimpleSubstitutionCipher(alphabet, ctAlphabet)
 }
 
 // NewAffineCipher creates a new affine cipher.
-func NewAffineCipher(ptAlphabet string, a, b int) *SimpleSubstitutionCipher {
+func MakeAffineCipher(ptAlphabet string, a, b int) SimpleSubstitutionCipher {
 	m := utf8.RuneCountInString(ptAlphabet)
 
 	// TODO: consider using Hull-Dobell satisfaction to determine if `a` is valid (must be coprime with `m`)
@@ -109,25 +109,25 @@ func NewAffineCipher(ptAlphabet string, a, b int) *SimpleSubstitutionCipher {
 	lcg := NewLCG(uint(m), 1, uint(a), uint(b))
 	ctAlphabet := backpermute(ptAlphabet, lcg.Next)
 
-	return NewSimpleSubstitutionCipher(ptAlphabet, ctAlphabet)
+	return MakeSimpleSubstitutionCipher(ptAlphabet, ctAlphabet)
 }
 
 // NewAtbashCipher creates a new Atbash cipher.
-func NewAtbashCipher(ptAlphabet string) *SimpleSubstitutionCipher {
-	return NewAffineCipher(ptAlphabet, -1, -1)
+func MakeAtbashCipher(ptAlphabet string) SimpleSubstitutionCipher {
+	return MakeAffineCipher(ptAlphabet, -1, -1)
 }
 
 // NewCaesarCipher creates a new Caesar cipher.
-func NewCaesarCipher(ptAlphabet string, b int) *SimpleSubstitutionCipher {
-	return NewAffineCipher(ptAlphabet, 1, b)
+func MakeCaesarCipher(ptAlphabet string, b int) SimpleSubstitutionCipher {
+	return MakeAffineCipher(ptAlphabet, 1, b)
 }
 
 // NewDecimationCipher creates a new decimation cipher.
-func NewDecimationCipher(ptAlphabet string, a int) *SimpleSubstitutionCipher {
-	return NewAffineCipher(ptAlphabet, a, 0)
+func MakeDecimationCipher(ptAlphabet string, a int) SimpleSubstitutionCipher {
+	return MakeAffineCipher(ptAlphabet, a, 0)
 }
 
 // NewRot13Cipher creates a new Rot13 (Caesar shift of 13) cipher.
-func NewRot13Cipher(ptAlphabet string) *SimpleSubstitutionCipher {
-	return NewCaesarCipher(ptAlphabet, 13)
+func MakeRot13Cipher(ptAlphabet string) SimpleSubstitutionCipher {
+	return MakeCaesarCipher(ptAlphabet, 13)
 }

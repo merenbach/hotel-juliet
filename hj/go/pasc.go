@@ -13,7 +13,7 @@ type TabulaRecta struct {
 	ptAlphabet    string
 	ctAlphabet    string
 	keyAlphabet   string
-	ciphers       map[rune]*SimpleSubstitutionCipher
+	ciphers       map[rune]SimpleSubstitutionCipher
 	countersign   string
 	Textautoclave bool
 	Keyautoclave  bool
@@ -47,12 +47,12 @@ func NewTabulaRecta(countersign, ptAlphabet, ctAlphabet, keyAlphabet string) *Ta
 		ctAlphabet:  ctAlphabet,
 		keyAlphabet: keyAlphabet,
 		countersign: countersign,
-		ciphers:     make(map[rune]*SimpleSubstitutionCipher),
+		ciphers:     make(map[rune]SimpleSubstitutionCipher),
 	}
 	// this cast is necessary to ensure that the index increases without gaps
 	for i, r := range []rune(keyAlphabet) {
 		ctAlphabet3 := wrapString(ctAlphabet, i)
-		tr.ciphers[r] = NewSimpleSubstitutionCipher(ptAlphabet, ctAlphabet3)
+		tr.ciphers[r] = MakeSimpleSubstitutionCipher(ptAlphabet, ctAlphabet3)
 	}
 	return &tr
 }
@@ -64,7 +64,7 @@ func NewDellaPortaReciprocalTable(countersign, ptAlphabet, ctAlphabet, keyAlphab
 		ctAlphabet:  ctAlphabet,
 		keyAlphabet: keyAlphabet,
 		countersign: countersign,
-		ciphers:     make(map[rune]*SimpleSubstitutionCipher),
+		ciphers:     make(map[rune]SimpleSubstitutionCipher),
 	}
 	if utf8.RuneCountInString(ctAlphabet)%2 != 0 {
 		panic("Della Porta cipher alphabets must have even length")
@@ -73,7 +73,7 @@ func NewDellaPortaReciprocalTable(countersign, ptAlphabet, ctAlphabet, keyAlphab
 	// this cast is necessary to ensure that the index increases without gaps
 	for i, r := range []rune(keyAlphabet) {
 		ctAlphabet3 := owrapString(ctAlphabet2, i/2)
-		tr.ciphers[r] = NewSimpleSubstitutionCipher(ptAlphabet, ctAlphabet3)
+		tr.ciphers[r] = MakeSimpleSubstitutionCipher(ptAlphabet, ctAlphabet3)
 	}
 	return &tr
 }

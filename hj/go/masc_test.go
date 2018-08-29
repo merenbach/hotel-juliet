@@ -6,7 +6,7 @@ import (
 
 const defaultMonoalphabeticAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-func runMonoalphabeticReciprocalTests(t *testing.T, plaintext, ciphertext string, c *SimpleSubstitutionCipher, strict bool) {
+func runMonoalphabeticReciprocalTests(t *testing.T, plaintext, ciphertext string, c SimpleSubstitutionCipher, strict bool) {
 	encrypted := c.Encipher(plaintext, strict)
 	decrypted := c.Decipher(ciphertext, strict)
 	if string(encrypted) != ciphertext {
@@ -28,7 +28,7 @@ func TestSimpleSubstitutionCipher(t *testing.T) {
 		{"ABCDEFGHIJKLMNOPQRSTUVWXYZ", "DEFGHIJKLMNOPQRSTUVWXYZABC", "PT: ABCDEFGHIJKLMNOPQRSTUVWXYZ\nCT: DEFGHIJKLMNOPQRSTUVWXYZABC"},
 	}
 	for _, table := range tables {
-		c := NewSimpleSubstitutionCipher(table.pt, table.ct)
+		c := MakeSimpleSubstitutionCipher(table.pt, table.ct)
 		if output := c.String(); output != table.expected {
 			t.Errorf("Tableau printout doesn't match for PT %q and CT %q. Received: %s; expected: %s", table.pt, table.ct, output, table.expected)
 		}
@@ -55,7 +55,7 @@ func TestKeywordCipher(t *testing.T) {
 		// {defaultMonoalphabeticAlphabet, "LJOOF, WFEOI!", "HELLOWORLD", "KANGAROO", true},
 	}
 	for _, table := range tables {
-		c := NewKeywordCipher(table.alphabet, table.keyword)
+		c := MakeKeywordCipher(table.alphabet, table.keyword)
 		runMonoalphabeticReciprocalTests(t, table.plaintext, table.ciphertext, c, table.strict)
 	}
 }
@@ -75,7 +75,7 @@ func TestAffineCipher(t *testing.T) {
 		// {defaultMonoalphabeticAlphabet, "IPQQJ, ZJCQA!", "HELLOWORLD", 7, 3, true},
 	}
 	for _, table := range tables {
-		c := NewAffineCipher(table.alphabet, table.a, table.b)
+		c := MakeAffineCipher(table.alphabet, table.a, table.b)
 		runMonoalphabeticReciprocalTests(t, table.plaintext, table.ciphertext, c, table.strict)
 
 	}
@@ -94,7 +94,7 @@ func TestAtbashCipher(t *testing.T) {
 		// {defaultMonoalphabeticAlphabet, "SVOOL, DLIOW!", "HELLOWORLD", true},
 	}
 	for _, table := range tables {
-		c := NewAtbashCipher(table.alphabet)
+		c := MakeAtbashCipher(table.alphabet)
 		runMonoalphabeticReciprocalTests(t, table.plaintext, table.ciphertext, c, table.strict)
 	}
 }
@@ -117,7 +117,7 @@ func TestCaesarCipher(t *testing.T) {
 		// {defaultMonoalphabeticAlphabet, "QNUUX, FXAUM!", "HELLOWORLD", 17, true},
 	}
 	for _, table := range tables {
-		c := NewCaesarCipher(table.alphabet, table.b)
+		c := MakeCaesarCipher(table.alphabet, table.b)
 		runMonoalphabeticReciprocalTests(t, table.plaintext, table.ciphertext, c, table.strict)
 	}
 }
@@ -136,7 +136,7 @@ func TestDecimationCipher(t *testing.T) {
 		// {defaultMonoalphabeticAlphabet, "BIJJC, SCVJT!", "HELLOWORLD", 7, true},
 	}
 	for _, table := range tables {
-		c := NewDecimationCipher(table.alphabet, table.a)
+		c := MakeDecimationCipher(table.alphabet, table.a)
 		runMonoalphabeticReciprocalTests(t, table.plaintext, table.ciphertext, c, table.strict)
 	}
 }
@@ -154,7 +154,7 @@ func TestRot13Cipher(t *testing.T) {
 		// {defaultMonoalphabeticAlphabet, "URYYB, JBEYQ!", "HELLOWORLD", true},
 	}
 	for _, table := range tables {
-		c := NewRot13Cipher(table.alphabet)
+		c := MakeRot13Cipher(table.alphabet)
 		runMonoalphabeticReciprocalTests(t, table.plaintext, table.ciphertext, c, table.strict)
 	}
 }
