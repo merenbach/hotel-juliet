@@ -18,7 +18,7 @@ type SimpleSubstitutionCipher struct {
 }
 
 // NewSimpleSubstitutionCipher creates a reciprocal, monoalphabetic substitution cipher.
-func NewSimpleSubstitutionCipher(ptAlphabet string, ctAlphabet string) Cipher {
+func NewSimpleSubstitutionCipher(ptAlphabet string, ctAlphabet string) *SimpleSubstitutionCipher {
 	// ctAlphabet := Backpermute(ptAlphabet, transform)
 
 	pt2ct := make(map[rune]rune)
@@ -89,13 +89,13 @@ func (c *SimpleSubstitutionCipher) decipherRune(r rune) (rune, bool) {
 }
 
 // NewKeywordCipher creates a new keyword cipher.
-func NewKeywordCipher(alphabet, keyword string) Cipher {
+func NewKeywordCipher(alphabet, keyword string) *SimpleSubstitutionCipher {
 	ctAlphabet := deduplicate(keyword + alphabet)
 	return NewSimpleSubstitutionCipher(alphabet, ctAlphabet)
 }
 
 // NewAffineCipher creates a new affine cipher.
-func NewAffineCipher(ptAlphabet string, a, b int) Cipher {
+func NewAffineCipher(ptAlphabet string, a, b int) *SimpleSubstitutionCipher {
 	m := utf8.RuneCountInString(ptAlphabet)
 
 	// TODO: consider using Hull-Dobell satisfaction to determine if `a` is valid (must be coprime with `m`)
@@ -113,21 +113,21 @@ func NewAffineCipher(ptAlphabet string, a, b int) Cipher {
 }
 
 // NewAtbashCipher creates a new Atbash cipher.
-func NewAtbashCipher(ptAlphabet string) Cipher {
+func NewAtbashCipher(ptAlphabet string) *SimpleSubstitutionCipher {
 	return NewAffineCipher(ptAlphabet, -1, -1)
 }
 
 // NewCaesarCipher creates a new Caesar cipher.
-func NewCaesarCipher(ptAlphabet string, b int) Cipher {
+func NewCaesarCipher(ptAlphabet string, b int) *SimpleSubstitutionCipher {
 	return NewAffineCipher(ptAlphabet, 1, b)
 }
 
 // NewDecimationCipher creates a new decimation cipher.
-func NewDecimationCipher(ptAlphabet string, a int) Cipher {
+func NewDecimationCipher(ptAlphabet string, a int) *SimpleSubstitutionCipher {
 	return NewAffineCipher(ptAlphabet, a, 0)
 }
 
 // NewRot13Cipher creates a new Rot13 (Caesar shift of 13) cipher.
-func NewRot13Cipher(ptAlphabet string) Cipher {
+func NewRot13Cipher(ptAlphabet string) *SimpleSubstitutionCipher {
 	return NewCaesarCipher(ptAlphabet, 13)
 }

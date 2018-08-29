@@ -6,7 +6,7 @@ import (
 
 const defaultMonoalphabeticAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-func runMonoalphabeticReciprocalTests(t *testing.T, plaintext, ciphertext string, c Cipher, strict bool) {
+func runMonoalphabeticReciprocalTests(t *testing.T, plaintext, ciphertext string, c *SimpleSubstitutionCipher, strict bool) {
 	encrypted := c.Encipher(plaintext, strict)
 	decrypted := c.Decipher(ciphertext, strict)
 	if string(encrypted) != ciphertext {
