@@ -37,8 +37,8 @@ type Cipher interface {
 	Decipher(string, bool) string
 }
 
-// not needed if we're returning a Cipher from the func, thanks to static typing
-// var _ Cipher = NewAtbashCipher()
+var _ Cipher = &SimpleSubstitutionCipher{}
+var _ Cipher = &TabulaRecta{}
 
 // // Invert swaps indices and values in an array of integers.
 // // Invert panics upon encountering elements that don't represent valid indices in the source array.

@@ -7,7 +7,7 @@ import (
 
 const defaultPolyalphabeticAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-func runPolyalphabeticReciprocalTests(t *testing.T, plaintext, ciphertext string, c Cipher, strict bool) {
+func runPolyalphabeticReciprocalTests(t *testing.T, plaintext, ciphertext string, c *TabulaRecta, strict bool) {
 	encrypted := c.Encipher(plaintext, strict)
 	decrypted := c.Decipher(ciphertext, strict)
 	if string(encrypted) != ciphertext {

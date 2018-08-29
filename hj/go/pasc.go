@@ -9,7 +9,7 @@ import (
 // Polyalphabetic substitution ciphers
 
 // TabulaRecta holds a tabula recta.
-type tabulaRecta struct {
+type TabulaRecta struct {
 	ptAlphabet    string
 	ctAlphabet    string
 	keyAlphabet   string
@@ -19,7 +19,7 @@ type tabulaRecta struct {
 	Keyautoclave  bool
 }
 
-func (tr *tabulaRecta) String() string {
+func (tr *TabulaRecta) String() string {
 	var out strings.Builder
 	formatForPrinting := func(s string) string {
 		spl := strings.Split(s, "")
@@ -41,8 +41,8 @@ func (tr *tabulaRecta) String() string {
 // NewTabulaRecta creates a new tabula recta suitable for use with the Vigenere family of ciphers.
 // NOTE: we roll the countersign into the tabula recta so it has all the data it needs
 // to decode/encode a string reusably, for parallelism with the monoalphabetic ciphers.
-func NewTabulaRecta(countersign, ptAlphabet, ctAlphabet, keyAlphabet string) Cipher {
-	tr := tabulaRecta{
+func NewTabulaRecta(countersign, ptAlphabet, ctAlphabet, keyAlphabet string) *TabulaRecta {
+	tr := TabulaRecta{
 		ptAlphabet:  ptAlphabet,
 		ctAlphabet:  ctAlphabet,
 		keyAlphabet: keyAlphabet,
@@ -58,8 +58,8 @@ func NewTabulaRecta(countersign, ptAlphabet, ctAlphabet, keyAlphabet string) Cip
 }
 
 // NewDellaPortaReciprocalTable creates a new tabula recta suitable for use with the Della Porta cipher.
-func NewDellaPortaReciprocalTable(countersign, ptAlphabet, ctAlphabet, keyAlphabet string) Cipher {
-	tr := tabulaRecta{
+func NewDellaPortaReciprocalTable(countersign, ptAlphabet, ctAlphabet, keyAlphabet string) *TabulaRecta {
+	tr := TabulaRecta{
 		ptAlphabet:  ptAlphabet,
 		ctAlphabet:  ctAlphabet,
 		keyAlphabet: keyAlphabet,
@@ -79,7 +79,7 @@ func NewDellaPortaReciprocalTable(countersign, ptAlphabet, ctAlphabet, keyAlphab
 }
 
 // Encipher a message from plaintext to ciphertext.
-func (tr *tabulaRecta) Encipher(s string, strict bool) string {
+func (tr *TabulaRecta) Encipher(s string, strict bool) string {
 	var out strings.Builder
 	keyRunes := []rune(tr.countersign)
 	var transcodedCharCount = 0
@@ -103,7 +103,7 @@ func (tr *tabulaRecta) Encipher(s string, strict bool) string {
 }
 
 // Decipher a message from ciphertext to plaintext.
-func (tr *tabulaRecta) Decipher(s string, strict bool) string {
+func (tr *TabulaRecta) Decipher(s string, strict bool) string {
 	var out strings.Builder
 	keyRunes := []rune(tr.countersign)
 	var transcodedCharCount = 0
@@ -146,49 +146,49 @@ func owrapString(s string, i int) string {
 }
 
 // NewVigenereCipher creates a new Vigenere cipher.
-func NewVigenereCipher(countersign, alphabet string) Cipher {
+func NewVigenereCipher(countersign, alphabet string) *TabulaRecta {
 	return NewTabulaRecta(countersign, alphabet, alphabet, alphabet)
 }
 
 // NewVigenereTextAutoclaveCipher creates a new Vigenere (text autoclave) cipher.
-func NewVigenereTextAutoclaveCipher(countersign, alphabet string) Cipher {
+func NewVigenereTextAutoclaveCipher(countersign, alphabet string) *TabulaRecta {
 	c := NewTabulaRecta(countersign, alphabet, alphabet, alphabet)
-	c.(*tabulaRecta).Textautoclave = true
+	c.Textautoclave = true
 	return c
 }
 
 // NewVigenereKeyAutoclaveCipher creates a new Vigenere (key autoclave) cipher.
-func NewVigenereKeyAutoclaveCipher(countersign, alphabet string) Cipher {
+func NewVigenereKeyAutoclaveCipher(countersign, alphabet string) *TabulaRecta {
 	c := NewTabulaRecta(countersign, alphabet, alphabet, alphabet)
-	c.(*tabulaRecta).Keyautoclave = true
+	c.Keyautoclave = true
 	return c
 }
 
 // NewBeaufortCipher creates a new Beaufort cipher.
-func NewBeaufortCipher(countersign, alphabet string) Cipher {
+func NewBeaufortCipher(countersign, alphabet string) *TabulaRecta {
 	revAlphabet := reverseString(alphabet)
 	return NewTabulaRecta(countersign, alphabet, revAlphabet, revAlphabet)
 }
 
 // NewGronsfeldCipher creates a new Gronsfeld cipher.
-func NewGronsfeldCipher(countersign, alphabet string) Cipher {
+func NewGronsfeldCipher(countersign, alphabet string) *TabulaRecta {
 	return NewTabulaRecta(countersign, alphabet, alphabet, "0123456789")
 }
 
 // NewVariantBeaufortCipher creates a new Vigenere cipher.
-func NewVariantBeaufortCipher(countersign, alphabet string) Cipher {
+func NewVariantBeaufortCipher(countersign, alphabet string) *TabulaRecta {
 	revAlphabet := reverseString(alphabet)
 	return NewTabulaRecta(countersign, revAlphabet, revAlphabet, alphabet)
 }
 
 // NewTrithemiusCipher creates a new Trithemius cipher.
 // NewTrithemiusCipher considers this simply the Vigenere cipher with the countersign equal to the alphabet.
-func NewTrithemiusCipher(alphabet string) Cipher {
+func NewTrithemiusCipher(alphabet string) *TabulaRecta {
 	countersign := alphabet
 	return NewVigenereCipher(countersign, alphabet)
 }
 
 // NewDellaPortaCipher creates a new DellaPorta cipher.
-func NewDellaPortaCipher(countersign, alphabet string) Cipher {
+func NewDellaPortaCipher(countersign, alphabet string) *TabulaRecta {
 	return NewDellaPortaReciprocalTable(countersign, alphabet, alphabet, alphabet)
 }
