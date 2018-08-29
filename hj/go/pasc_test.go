@@ -7,7 +7,7 @@ import (
 
 const defaultPolyalphabeticAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-func runPolyalphabeticReciprocalTests(t *testing.T, plaintext, ciphertext string, c *TabulaRecta, strict bool) {
+func runPolyalphabeticReciprocalTests(t *testing.T, plaintext, ciphertext string, c VigenereFamilyCipher, strict bool) {
 	encrypted := c.Encipher(plaintext, strict)
 	decrypted := c.Decipher(ciphertext, strict)
 	if string(encrypted) != ciphertext {
@@ -32,7 +32,7 @@ func TestVigenereCipher(t *testing.T) {
 		// {defaultPolyalphabeticAlphabet, "LJOOF, WFEOI!", "HELLOWORLD", "KANGAROO", true},
 	}
 	for _, table := range tables {
-		c := NewVigenereCipher(table.countersign, table.alphabet)
+		c := MakeVigenereCipher(table.countersign, table.alphabet)
 		runPolyalphabeticReciprocalTests(t, table.plaintext, table.ciphertext, c, table.strict)
 	}
 }
@@ -52,7 +52,7 @@ func TestVigenereTextAutoclaveCipher(t *testing.T) {
 		// {defaultPolyalphabeticAlphabet, "LJOOF, WFEOI!", "HELLOWORLD", "KANGAROO", true},
 	}
 	for _, table := range tables {
-		c := NewVigenereTextAutoclaveCipher(table.countersign, table.alphabet)
+		c := MakeVigenereTextAutoclaveCipher(table.countersign, table.alphabet)
 		runPolyalphabeticReciprocalTests(t, table.plaintext, table.ciphertext, c, table.strict)
 	}
 }
@@ -72,7 +72,7 @@ func TestVigenereKeyAutoclaveCipher(t *testing.T) {
 		// {defaultPolyalphabeticAlphabet, "LJOOF, WFEOI!", "HELLOWORLD", "KANGAROO", true},
 	}
 	for _, table := range tables {
-		c := NewVigenereKeyAutoclaveCipher(table.countersign, table.alphabet)
+		c := MakeVigenereKeyAutoclaveCipher(table.countersign, table.alphabet)
 		runPolyalphabeticReciprocalTests(t, table.plaintext, table.ciphertext, c, table.strict)
 	}
 }
@@ -91,7 +91,7 @@ func TestBeaufortCipher(t *testing.T) {
 		// {defaultPolyalphabeticAlphabet, "LJOOF, WFEOI!", "HELLOWORLD", "KANGAROO", true},
 	}
 	for _, table := range tables {
-		c := NewBeaufortCipher(table.countersign, table.alphabet)
+		c := MakeBeaufortCipher(table.countersign, table.alphabet)
 		runPolyalphabeticReciprocalTests(t, table.plaintext, table.ciphertext, c, table.strict)
 	}
 }
@@ -110,7 +110,7 @@ func TestGronsfeldCipher(t *testing.T) {
 		// {defaultPolyalphabeticAlphabet, "LJOOF, WFEOI!", "HELLOWORLD", "KANGAROO", true},
 	}
 	for _, table := range tables {
-		c := NewGronsfeldCipher(table.countersign, table.alphabet)
+		c := MakeGronsfeldCipher(table.countersign, table.alphabet)
 		runPolyalphabeticReciprocalTests(t, table.plaintext, table.ciphertext, c, table.strict)
 	}
 }
@@ -128,7 +128,7 @@ func TestTrithemiusCipher(t *testing.T) {
 		// {defaultPolyalphabeticAlphabet, "LJOOF, WFEOI!", "HELLOWORLD", "KANGAROO", true},
 	}
 	for _, table := range tables {
-		c := NewTrithemiusCipher(table.alphabet)
+		c := MakeTrithemiusCipher(table.alphabet)
 		runPolyalphabeticReciprocalTests(t, table.plaintext, table.ciphertext, c, table.strict)
 	}
 }
@@ -147,7 +147,7 @@ func TestVariantBeaufortCipher(t *testing.T) {
 		// {defaultPolyalphabeticAlphabet, "LJOOF, WFEOI!", "HELLOWORLD", "KANGAROO", true},
 	}
 	for _, table := range tables {
-		c := NewVariantBeaufortCipher(table.countersign, table.alphabet)
+		c := MakeVariantBeaufortCipher(table.countersign, table.alphabet)
 		runPolyalphabeticReciprocalTests(t, table.plaintext, table.ciphertext, c, table.strict)
 	}
 }
@@ -166,7 +166,7 @@ func TestDellaPortaCipher(t *testing.T) {
 		// {defaultPolyalphabeticAlphabet, "LJOOF, WFEOI!", "HELLOWORLD", "KANGAROO", true},
 	}
 	for _, table := range tables {
-		c := NewDellaPortaCipher(table.countersign, table.alphabet)
+		c := MakeDellaPortaCipher(table.countersign, table.alphabet)
 		runPolyalphabeticReciprocalTests(t, table.plaintext, table.ciphertext, c, table.strict)
 	}
 }
@@ -186,7 +186,7 @@ func TestReverseString(t *testing.T) {
 
 func ExampleVigenereCipher() {
 	alphabet := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	c := NewVigenereCipher("", alphabet)
+	c := MakeVigenereCipher("", alphabet)
 	fmt.Println(c)
 	// Output:
 	//     A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
@@ -221,7 +221,7 @@ func ExampleVigenereCipher() {
 
 func ExampleBeaufortCipher() {
 	alphabet := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	c := NewBeaufortCipher("", alphabet)
+	c := MakeBeaufortCipher("", alphabet)
 	fmt.Println(c)
 	// Output:
 	//     A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
@@ -256,7 +256,7 @@ func ExampleBeaufortCipher() {
 
 func ExampleGronsfeldCipher() {
 	alphabet := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	c := NewGronsfeldCipher("", alphabet)
+	c := MakeGronsfeldCipher("", alphabet)
 	fmt.Println(c)
 	// Output:
 	//     A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
@@ -275,7 +275,7 @@ func ExampleGronsfeldCipher() {
 
 func ExampleTrithemiusCipher() {
 	alphabet := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	c := NewTrithemiusCipher(alphabet)
+	c := MakeTrithemiusCipher(alphabet)
 	fmt.Println(c)
 	// Output:
 	//     A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
@@ -310,7 +310,7 @@ func ExampleTrithemiusCipher() {
 
 func ExampleVariantBeaufortCipher() {
 	alphabet := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	c := NewVariantBeaufortCipher("", alphabet)
+	c := MakeVariantBeaufortCipher("", alphabet)
 	fmt.Println(c)
 	// Output:
 	//     Z Y X W V U T S R Q P O N M L K J I H G F E D C B A
@@ -345,7 +345,7 @@ func ExampleVariantBeaufortCipher() {
 
 func ExampleDellaPortaCipher() {
 	alphabet := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	c := NewDellaPortaCipher("", alphabet)
+	c := MakeDellaPortaCipher("", alphabet)
 	fmt.Println(c)
 	// Output:
 	//     A B C D E F G H I J K L M N O P Q R S T U V W X Y Z

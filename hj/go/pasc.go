@@ -10,16 +10,13 @@ import (
 
 // TabulaRecta holds a tabula recta.
 type TabulaRecta struct {
-	ptAlphabet    string
-	ctAlphabet    string
-	keyAlphabet   string
-	ciphers       map[rune]SimpleSubstitutionCipher
-	countersign   string
-	Textautoclave bool
-	Keyautoclave  bool
+	ptAlphabet  string
+	ctAlphabet  string
+	keyAlphabet string
+	ciphers     map[rune]SimpleSubstitutionCipher
 }
 
-func (tr *TabulaRecta) String() string {
+func (tr TabulaRecta) String() string {
 	var out strings.Builder
 	formatForPrinting := func(s string) string {
 		spl := strings.Split(s, "")
@@ -38,15 +35,22 @@ func (tr *TabulaRecta) String() string {
 	return out.String()
 }
 
-// NewTabulaRecta creates a new tabula recta suitable for use with the Vigenere family of ciphers.
+// A VigenereFamilyCipher represents a cipher in the Vigenere family.
+type VigenereFamilyCipher struct {
+	TabulaRecta
+	countersign   string
+	Textautoclave bool
+	Keyautoclave  bool
+}
+
+// MakeVigenereFamilyCipher creates a new tabula recta suitable for use with the Vigenere family of ciphers.
 // NOTE: we roll the countersign into the tabula recta so it has all the data it needs
 // to decode/encode a string reusably, for parallelism with the monoalphabetic ciphers.
-func NewTabulaRecta(countersign, ptAlphabet, ctAlphabet, keyAlphabet string) *TabulaRecta {
+func MakeVigenereFamilyCipher(countersign, ptAlphabet, ctAlphabet, keyAlphabet string) VigenereFamilyCipher {
 	tr := TabulaRecta{
 		ptAlphabet:  ptAlphabet,
 		ctAlphabet:  ctAlphabet,
 		keyAlphabet: keyAlphabet,
-		countersign: countersign,
 		ciphers:     make(map[rune]SimpleSubstitutionCipher),
 	}
 	// this cast is necessary to ensure that the index increases without gaps
@@ -54,16 +58,18 @@ func NewTabulaRecta(countersign, ptAlphabet, ctAlphabet, keyAlphabet string) *Ta
 		ctAlphabet3 := wrapString(ctAlphabet, i)
 		tr.ciphers[r] = MakeSimpleSubstitutionCipher(ptAlphabet, ctAlphabet3)
 	}
-	return &tr
+	return VigenereFamilyCipher{
+		TabulaRecta: tr,
+		countersign: countersign,
+	}
 }
 
-// NewDellaPortaReciprocalTable creates a new tabula recta suitable for use with the Della Porta cipher.
-func NewDellaPortaReciprocalTable(countersign, ptAlphabet, ctAlphabet, keyAlphabet string) *TabulaRecta {
+// MakeDellaPortaReciprocalTable creates a new tabula recta suitable for use with the Della Porta cipher.
+func MakeDellaPortaReciprocalTable(countersign, ptAlphabet, ctAlphabet, keyAlphabet string) VigenereFamilyCipher {
 	tr := TabulaRecta{
 		ptAlphabet:  ptAlphabet,
 		ctAlphabet:  ctAlphabet,
 		keyAlphabet: keyAlphabet,
-		countersign: countersign,
 		ciphers:     make(map[rune]SimpleSubstitutionCipher),
 	}
 	if utf8.RuneCountInString(ctAlphabet)%2 != 0 {
@@ -75,24 +81,27 @@ func NewDellaPortaReciprocalTable(countersign, ptAlphabet, ctAlphabet, keyAlphab
 		ctAlphabet3 := owrapString(ctAlphabet2, i/2)
 		tr.ciphers[r] = MakeSimpleSubstitutionCipher(ptAlphabet, ctAlphabet3)
 	}
-	return &tr
+	return VigenereFamilyCipher{
+		TabulaRecta: tr,
+		countersign: countersign,
+	}
 }
 
 // Encipher a message from plaintext to ciphertext.
-func (tr *TabulaRecta) Encipher(s string, strict bool) string {
+func (c VigenereFamilyCipher) Encipher(s string, strict bool) string {
 	var out strings.Builder
-	keyRunes := []rune(tr.countersign)
+	keyRunes := []rune(c.countersign)
 	var transcodedCharCount = 0
 	for _, r := range s {
 		k := keyRunes[transcodedCharCount%len(keyRunes)]
-		cipher := tr.ciphers[k]
+		cipher := c.ciphers[k]
 		if o, ok := cipher.encipherRune(r); ok {
 			out.WriteRune(o)
 			transcodedCharCount++
 
-			if tr.Textautoclave {
+			if c.Textautoclave {
 				keyRunes = append(keyRunes, r)
-			} else if tr.Keyautoclave {
+			} else if c.Keyautoclave {
 				keyRunes = append(keyRunes, o)
 			}
 		} else if !strict {
@@ -103,19 +112,19 @@ func (tr *TabulaRecta) Encipher(s string, strict bool) string {
 }
 
 // Decipher a message from ciphertext to plaintext.
-func (tr *TabulaRecta) Decipher(s string, strict bool) string {
+func (c VigenereFamilyCipher) Decipher(s string, strict bool) string {
 	var out strings.Builder
-	keyRunes := []rune(tr.countersign)
+	keyRunes := []rune(c.countersign)
 	var transcodedCharCount = 0
 	for _, r := range s {
 		k := keyRunes[transcodedCharCount%len(keyRunes)]
-		cipher := tr.ciphers[k]
+		cipher := c.ciphers[k]
 		if o, ok := cipher.decipherRune(r); ok {
 			out.WriteRune(o)
 			transcodedCharCount++
-			if tr.Textautoclave {
+			if c.Textautoclave {
 				keyRunes = append(keyRunes, o)
-			} else if tr.Keyautoclave {
+			} else if c.Keyautoclave {
 				keyRunes = append(keyRunes, r)
 			}
 		} else if !strict {
@@ -145,49 +154,49 @@ func owrapString(s string, i int) string {
 	return wrapString(string(u), i) + wrapString(string(v), len(v)-i)
 }
 
-// NewVigenereCipher creates a new Vigenere cipher.
-func NewVigenereCipher(countersign, alphabet string) *TabulaRecta {
-	return NewTabulaRecta(countersign, alphabet, alphabet, alphabet)
+// MakeVigenereCipher creates a new Vigenere cipher.
+func MakeVigenereCipher(countersign, alphabet string) VigenereFamilyCipher {
+	return MakeVigenereFamilyCipher(countersign, alphabet, alphabet, alphabet)
 }
 
-// NewVigenereTextAutoclaveCipher creates a new Vigenere (text autoclave) cipher.
-func NewVigenereTextAutoclaveCipher(countersign, alphabet string) *TabulaRecta {
-	c := NewVigenereCipher(countersign, alphabet)
+// MakeVigenereTextAutoclaveCipher creates a new Vigenere (text autoclave) cipher.
+func MakeVigenereTextAutoclaveCipher(countersign, alphabet string) VigenereFamilyCipher {
+	c := MakeVigenereCipher(countersign, alphabet)
 	c.Textautoclave = true
 	return c
 }
 
-// NewVigenereKeyAutoclaveCipher creates a new Vigenere (key autoclave) cipher.
-func NewVigenereKeyAutoclaveCipher(countersign, alphabet string) *TabulaRecta {
-	c := NewVigenereCipher(countersign, alphabet)
+// MakeVigenereKeyAutoclaveCipher creates a new Vigenere (key autoclave) cipher.
+func MakeVigenereKeyAutoclaveCipher(countersign, alphabet string) VigenereFamilyCipher {
+	c := MakeVigenereCipher(countersign, alphabet)
 	c.Keyautoclave = true
 	return c
 }
 
-// NewBeaufortCipher creates a new Beaufort cipher.
-func NewBeaufortCipher(countersign, alphabet string) *TabulaRecta {
+// MakeBeaufortCipher creates a new Beaufort cipher.
+func MakeBeaufortCipher(countersign, alphabet string) VigenereFamilyCipher {
 	revAlphabet := reverseString(alphabet)
-	return NewTabulaRecta(countersign, alphabet, revAlphabet, revAlphabet)
+	return MakeVigenereFamilyCipher(countersign, alphabet, revAlphabet, revAlphabet)
 }
 
-// NewGronsfeldCipher creates a new Gronsfeld cipher.
-func NewGronsfeldCipher(countersign, alphabet string) *TabulaRecta {
-	return NewTabulaRecta(countersign, alphabet, alphabet, "0123456789")
+// MakeGronsfeldCipher creates a new Gronsfeld cipher.
+func MakeGronsfeldCipher(countersign, alphabet string) VigenereFamilyCipher {
+	return MakeVigenereFamilyCipher(countersign, alphabet, alphabet, "0123456789")
 }
 
-// NewVariantBeaufortCipher creates a new Vigenere cipher.
-func NewVariantBeaufortCipher(countersign, alphabet string) *TabulaRecta {
+// MakeVariantBeaufortCipher creates a new Vigenere cipher.
+func MakeVariantBeaufortCipher(countersign, alphabet string) VigenereFamilyCipher {
 	revAlphabet := reverseString(alphabet)
-	return NewTabulaRecta(countersign, revAlphabet, revAlphabet, alphabet)
+	return MakeVigenereFamilyCipher(countersign, revAlphabet, revAlphabet, alphabet)
 }
 
-// NewTrithemiusCipher creates a new Trithemius cipher.
-// NewTrithemiusCipher considers this simply the Vigenere cipher with the countersign equal to the alphabet.
-func NewTrithemiusCipher(alphabet string) *TabulaRecta {
-	return NewVigenereCipher(alphabet, alphabet)
+// MakeTrithemiusCipher creates a new Trithemius cipher.
+// MakeTrithemiusCipher considers this simply the Vigenere cipher with the countersign equal to the alphabet.
+func MakeTrithemiusCipher(alphabet string) VigenereFamilyCipher {
+	return MakeVigenereCipher(alphabet, alphabet)
 }
 
-// NewDellaPortaCipher creates a new DellaPorta cipher.
-func NewDellaPortaCipher(countersign, alphabet string) *TabulaRecta {
-	return NewDellaPortaReciprocalTable(countersign, alphabet, alphabet, alphabet)
+// MakeDellaPortaCipher creates a new DellaPorta cipher.
+func MakeDellaPortaCipher(countersign, alphabet string) VigenereFamilyCipher {
+	return MakeDellaPortaReciprocalTable(countersign, alphabet, alphabet, alphabet)
 }

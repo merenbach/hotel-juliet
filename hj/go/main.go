@@ -1,6 +1,5 @@
 package main
 
-// TODO: question: can we do an encipherRune for pasc? something something key advancement closure mumble mumble something?
 //todo: strict
 //todo: param groups (caesar, atbash, etc)
 // TODO:
@@ -37,8 +36,8 @@ type Cipher interface {
 	Decipher(string, bool) string
 }
 
-var _ Cipher = &SimpleSubstitutionCipher{}
-var _ Cipher = &TabulaRecta{}
+var _ Cipher = SimpleSubstitutionCipher{}
+var _ Cipher = VigenereFamilyCipher{}
 
 // // Invert swaps indices and values in an array of integers.
 // // Invert panics upon encountering elements that don't represent valid indices in the source array.
