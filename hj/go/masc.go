@@ -33,24 +33,20 @@ func (c SimpleSubstitutionCipher) String() string {
 // Encipher a message from plaintext to ciphertext.
 func (c SimpleSubstitutionCipher) Encipher(s string, strict bool) string {
 	return strings.Map(func(r rune) rune {
-		if o := c.encipherRune(r); o != (-1) {
+		if o := c.encipherRune(r); strict || o != (-1) {
 			return o
-		} else if !strict {
-			return r
 		}
-		return (-1)
+		return r
 	}, s)
 }
 
 // Decipher a message from ciphertext to plaintext.
 func (c SimpleSubstitutionCipher) Decipher(s string, strict bool) string {
 	return strings.Map(func(r rune) rune {
-		if o := c.decipherRune(r); o != (-1) {
+		if o := c.decipherRune(r); strict || o != (-1) {
 			return o
-		} else if !strict {
-			return r
 		}
-		return (-1)
+		return r
 	}, s)
 }
 
