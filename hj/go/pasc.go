@@ -1,12 +1,12 @@
 package main
 
+// Polyalphabetic substitution ciphers
+
 import (
 	"fmt"
 	"strings"
 	"unicode/utf8"
 )
-
-// Polyalphabetic substitution ciphers
 
 // TabulaRecta holds a tabula recta.
 type TabulaRecta struct {
