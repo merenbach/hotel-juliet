@@ -32,21 +32,27 @@ func (c SimpleSubstitutionCipher) String() string {
 
 // Encipher a message from plaintext to ciphertext.
 func (c SimpleSubstitutionCipher) Encipher(s string, strict bool) string {
+	xtable := makeRuneMap(c.ptAlphabet, c.ctAlphabet)
 	return strings.Map(func(r rune) rune {
-		if o := c.encipherRune(r); strict || o != (-1) {
+		if o, ok := xtable[r]; ok {
 			return o
+		} else if !strict {
+			return r
 		}
-		return r
+		return (-1)
 	}, s)
 }
 
 // Decipher a message from ciphertext to plaintext.
 func (c SimpleSubstitutionCipher) Decipher(s string, strict bool) string {
+	xtable := makeRuneMap(c.ctAlphabet, c.ptAlphabet)
 	return strings.Map(func(r rune) rune {
-		if o := c.decipherRune(r); strict || o != (-1) {
+		if o, ok := xtable[r]; ok {
 			return o
+		} else if !strict {
+			return r
 		}
-		return r
+		return (-1)
 	}, s)
 }
 
