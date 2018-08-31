@@ -92,7 +92,7 @@ func MakeAffineCipher(ptAlphabet string, a, b int) SimpleSubstitutionCipher {
 		b += m
 	}
 
-	lcg := NewLCG(uint(m), 1, uint(a), uint(b))
+	lcg := MakeLCG(uint(m), 1, uint(a), uint(b))
 	ctAlphabet := backpermute(ptAlphabet, lcg.Iterator())
 
 	return SimpleSubstitutionCipher{ptAlphabet, ctAlphabet}

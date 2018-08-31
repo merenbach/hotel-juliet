@@ -59,8 +59,8 @@ type LCG struct {
 	seed       uint // X_0
 }
 
-// NewLCG creates a pointer to a new LCG.
-func NewLCG(m, a, c, seed uint) *LCG {
+// MakeLCG creates a new LCG.
+func MakeLCG(m, a, c, seed uint) LCG {
 	if m == 0 {
 		panic("modulus must be greater than zero")
 	}
@@ -68,7 +68,7 @@ func NewLCG(m, a, c, seed uint) *LCG {
 		panic("multiplier must be greater than zero")
 	}
 
-	return &LCG{
+	return LCG{
 		modulus:    m,
 		multiplier: a,
 		increment:  c,
@@ -79,7 +79,7 @@ func NewLCG(m, a, c, seed uint) *LCG {
 // HullDobell tests for compliance with the Hull-Dobell theorem.
 // The error parameter, if set, will contain the first-found failing constraint.
 // When c != 0, this test passing means that the cycle is equal to g.multiplier.
-func (g *LCG) HullDobell() (bool, error) {
+func (g LCG) HullDobell() (bool, error) {
 	switch {
 	case !coprime(g.modulus, g.increment):
 		return false, errors.New("multiplier and increment should be coprime")
@@ -93,7 +93,7 @@ func (g *LCG) HullDobell() (bool, error) {
 }
 
 // Iterator returns a generator function to iterate over the values of the LCG.
-func (g *LCG) Iterator() func() uint {
+func (g LCG) Iterator() func() uint {
 	state := g.seed % g.modulus
 	return func() uint {
 		prev := state

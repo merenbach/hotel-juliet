@@ -132,7 +132,7 @@ func TestLCG(t *testing.T) {
 	}
 
 	for _, table := range tables {
-		lcg := NewLCG(table.m, table.a, table.c, table.seed)
+		lcg := MakeLCG(table.m, table.a, table.c, table.seed)
 		hulldobell, err := lcg.HullDobell()
 		if hulldobell != table.hulldobell {
 			if hulldobell {
