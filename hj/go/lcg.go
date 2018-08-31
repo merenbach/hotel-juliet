@@ -53,27 +53,10 @@ func regular(a, b uint) bool {
 // An LCG is a linear congruential generator, a method of generating pseudo-random numbers.
 // TODO: this may be better as a simple generator function, rather than a struct.
 type LCG struct {
-	modulus    uint // m
-	multiplier uint // a
-	increment  uint // c
-	seed       uint // X_0
-}
-
-// MakeLCG creates a new LCG.
-func MakeLCG(m, a, c, seed uint) LCG {
-	if m == 0 {
-		panic("modulus must be greater than zero")
-	}
-	if a == 0 {
-		panic("multiplier must be greater than zero")
-	}
-
-	return LCG{
-		modulus:    m,
-		multiplier: a,
-		increment:  c,
-		seed:       seed,
-	}
+	Modulus    uint // m
+	Multiplier uint // a
+	Increment  uint // c
+	Seed       uint // X_0
 }
 
 // HullDobell tests for compliance with the Hull-Dobell theorem.
@@ -81,11 +64,11 @@ func MakeLCG(m, a, c, seed uint) LCG {
 // When c != 0, this test passing means that the cycle is equal to g.multiplier.
 func (g LCG) HullDobell() (bool, error) {
 	switch {
-	case !coprime(g.modulus, g.increment):
+	case !coprime(g.Modulus, g.Increment):
 		return false, errors.New("multiplier and increment should be coprime")
-	case !regular(g.modulus, g.multiplier-1):
+	case !regular(g.Modulus, g.Multiplier-1):
 		return false, errors.New("prime factors of modulus should also divide multiplier-minus-one")
-	case g.modulus%4 == 0 && (g.multiplier-1)%4 != 0:
+	case g.Modulus%4 == 0 && (g.Multiplier-1)%4 != 0:
 		return false, errors.New("if 4 divides modulus, 4 should divide multiplier-minus-one")
 	default:
 		return true, nil
@@ -94,10 +77,17 @@ func (g LCG) HullDobell() (bool, error) {
 
 // Iterator returns a generator function to iterate over the values of the LCG.
 func (g LCG) Iterator() func() uint {
-	state := g.seed % g.modulus
+	if g.Modulus == 0 {
+		panic("modulus must be greater than zero")
+	}
+	if g.Multiplier == 0 {
+		panic("multiplier must be greater than zero")
+	}
+
+	state := g.Seed % g.Modulus
 	return func() uint {
 		prev := state
-		state = (state*g.multiplier + g.increment) % g.modulus
+		state = (state*g.Multiplier + g.Increment) % g.Modulus
 		return prev
 	}
 }
