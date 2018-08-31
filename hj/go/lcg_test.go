@@ -142,8 +142,9 @@ func TestLCG(t *testing.T) {
 			}
 		}
 
+		iter := lcg.Iterator()
 		for idx, e := range table.expected {
-			if f := lcg.Next(); e != f {
+			if f := iter(); e != f {
 				t.Errorf("expected item %d from LCG %+v to equal %d, but got %d instead", idx, lcg, e, f)
 			}
 		}

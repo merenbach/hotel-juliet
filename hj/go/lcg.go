@@ -56,7 +56,7 @@ type LCG struct {
 	modulus    uint // m
 	multiplier uint // a
 	increment  uint // c
-	state      uint
+	seed       uint // X_0
 }
 
 // NewLCG creates a pointer to a new LCG.
@@ -72,7 +72,7 @@ func NewLCG(m, a, c, seed uint) *LCG {
 		modulus:    m,
 		multiplier: a,
 		increment:  c,
-		state:      seed % m,
+		seed:       seed,
 	}
 }
 
@@ -92,9 +92,12 @@ func (g *LCG) HullDobell() (bool, error) {
 	}
 }
 
-// Next returns the next value in the generator.
-func (g *LCG) Next() uint {
-	state := g.state
-	g.state = (state*g.multiplier + g.increment) % g.modulus
-	return state
+// Iterator returns a generator function to iterate over the values of the LCG.
+func (g *LCG) Iterator() func() uint {
+	state := g.seed % g.modulus
+	return func() uint {
+		prev := state
+		state = (state*g.multiplier + g.increment) % g.modulus
+		return prev
+	}
 }
